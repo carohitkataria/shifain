@@ -24,7 +24,7 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
   return (
     <section id="quote" className="relative overflow-hidden bg-surface-muted">
       <div aria-hidden="true" className="pointer-events-none absolute -right-32 -top-40 h-[34rem] w-[34rem] rounded-full bg-brand-tint blur-3xl" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -left-32 h-[30rem] w-[30rem] rounded-full bg-leaf-tint blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -left-32 h-[30rem] w-[30rem] rounded-full bg-[#efe9fd] blur-3xl" />
 
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:py-20">
         <div>
@@ -40,7 +40,7 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">{t(hero.body, locale)}</p>
 
           <div className="mt-7 flex flex-wrap gap-3">
-            <a href="#quote-form" className="btn btn-primary">
+            <a href="#quote-form" className="btn btn-accent">
               {t(hero.primaryCta, locale)}
               <span aria-hidden="true">&rarr;</span>
             </a>
@@ -61,7 +61,9 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
           </ul>
         </div>
 
-        <div id="quote-form" className="card scroll-mt-28 p-6 shadow-xl shadow-ink/5 sm:p-7">
+        <div id="quote-form" className="card scroll-mt-28 overflow-hidden p-0 shadow-xl shadow-ink/5">
+          <div className="tricolour-rule" />
+          <div className="p-6 sm:p-7">
           <div className="flex items-start gap-3">
             <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-brand-tint text-brand-deep">
               <Icon name="spark" className="h-6 w-6" />
@@ -142,7 +144,8 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
               </svg>
               {t(hero.form.privacy, locale)}
             </p>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </section>

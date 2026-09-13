@@ -35,7 +35,8 @@ language; a blank translation falls back to English.
 
 ## Homepage control panel (`/admin`)
 
-Sign in with `ADMIN_PASSWORD`. The panel can:
+Sign in with `ADMIN_PASSWORD`. A hamburger-driven sidebar groups the areas, so new ones can be
+added to `GROUPS` in `src/lib/admin-groups.ts` without touching the chrome. The panel can:
 
 - **show, hide and reorder** every homepage section
 - **publish the text and numbers** of each section, in all three languages
@@ -64,9 +65,10 @@ Because the marketing pages are statically rendered per language, publishing cal
 ## The homepage
 
 Sections, in shipped order: hero and enquiry form · headline numbers · why ShifaIn (star) ·
-your journey (path) · treatment categories · AI plan & estimate builder · price guarantee and
-translator · indicative costs · hospitals · doctors · comparison · included services (star) ·
-why India (star) · for doctors & hospitals · patient stories · FAQ.
+your journey (path) · treatment categories · AI plan & estimate builder · upload reports band ·
+live case tracker · price guarantee and translator · indicative costs · hospitals · doctors ·
+comparison · included services (star) · why India (star) · for doctors & hospitals ·
+patient stories · FAQ · closing call to action.
 
 Notable pieces:
 
@@ -103,6 +105,14 @@ behind them yet.
 | `SHIFAIN_CONTENT_PATH` | where published content is stored |
 | `SHIFAIN_ENQUIRY_LOG` | where enquiries are appended |
 | `SHIFAIN_NOINDEX` | set to `1` on preview deployments to keep them out of search engines |
+
+## Theme
+
+Brand colour is the Omnivest violet (`--color-brand: #7c3aed`), with a very light violet as the
+alternating section background (`--color-surface-muted: #f8f6fe`). The design's other colours are
+unchanged: navy ink for headings and dark bands, saffron for primary marketing calls to action,
+green for confirmations and accreditation. All of it is defined once in the `@theme` block of
+`src/app/globals.css`.
 
 ## Preview deployments
 

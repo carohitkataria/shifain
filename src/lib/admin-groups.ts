@@ -15,6 +15,8 @@ export const GROUPS: Group[] = [
   { key: "journey", label: SECTION_LABELS.journey, hint: "Each stop on the journey path", section: "journey" },
   { key: "specialties", label: SECTION_LABELS.specialties, hint: "Clickable treatment cards and their pages", section: "specialties" },
   { key: "aiPlanner", label: SECTION_LABELS.aiPlanner, hint: "Package lines, prices and what is optional", section: "aiPlanner" },
+  { key: "upload", label: SECTION_LABELS.upload, hint: "Dark band inviting a report upload", section: "upload" },
+  { key: "tracker", label: SECTION_LABELS.tracker, hint: "Live case tracker and its steps", section: "tracker" },
   { key: "guarantee", label: SECTION_LABELS.guarantee, hint: "Price guarantee and in-app translator", section: "guarantee" },
   { key: "costs", label: SECTION_LABELS.costs, hint: "Starting-from prices", section: "costs" },
   { key: "hospitals", label: SECTION_LABELS.hospitals, hint: "Hospital cards and their numbers", section: "hospitals" },
@@ -25,6 +27,7 @@ export const GROUPS: Group[] = [
   { key: "partners", label: SECTION_LABELS.partners, hint: "Doctor and hospital panels, including their logins", section: "partners" },
   { key: "stories", label: SECTION_LABELS.stories, hint: "Patient quotes", section: "stories" },
   { key: "faq", label: SECTION_LABELS.faq, hint: "Questions and answers", section: "faq" },
+  { key: "closing", label: SECTION_LABELS.closing, hint: "Final call to action before the footer", section: "closing" },
   { key: "footer", label: "Footer", hint: "About text, link columns and disclaimer" },
 ];
 

@@ -464,6 +464,56 @@ export const defaultContent: SiteContent = {
     ],
   },
 
+  upload: {
+    eyebrow: l("Not sure where to start?", "Не знаете, с чего начать?", "Nimadan boshlashni bilmayapsizmi?"),
+    title: l(
+      "Upload your reports, we'll take it from there",
+      "Загрузите документы — дальше всё на нас",
+      "Hujjatlaringizni yuklang — qolganini biz bajaramiz",
+    ),
+    body: l(
+      "Send your medical reports and tell us what you need. The AI drafts your plan and estimate straight away, and a coordinator picks it up from there.",
+      "Отправьте медицинские документы и скажите, что вам нужно. ИИ сразу составит план и смету, а дальше подключится координатор.",
+      "Tibbiy hujjatlaringizni yuboring va nima kerakligini ayting. Sun'iy intellekt darhol reja va hisob tuzadi, so'ngra koordinator ishni davom ettiradi.",
+    ),
+    dropTitle: l(
+      "Drag reports here or click to browse",
+      "Перетащите документы сюда или выберите файл",
+      "Hujjatlarni shu yerga tashlang yoki tanlang",
+    ),
+    dropNote: l("Handled with care · kept private", "Обращаемся бережно · конфиденциально", "Ehtiyotkorlik bilan · maxfiy saqlanadi"),
+    formats: ["PDF", "JPG", "PNG", "DICOM"],
+  },
+
+  tracker: {
+    eyebrow: l("Your journey manager", "Ваш менеджер маршрута", "Safar menejeringiz"),
+    title: l("We manage the whole journey", "Мы ведём весь маршрут", "Butun safarni biz boshqaramiz"),
+    body: l(
+      "One live case, tracked end to end — every team working from the same file.",
+      "Одно живое дело, отслеживаемое от начала до конца — все команды работают с одним файлом.",
+      "Bitta jonli ish boshidan oxirigacha kuzatiladi — barcha jamoalar bitta fayl bilan ishlaydi.",
+    ),
+    patientName: l("Sample patient", "Пример пациента", "Namuna bemor"),
+    caseMeta: l(
+      "Case #SHIN-1042 · Knee replacement",
+      "Дело №SHIN-1042 · Замена коленного сустава",
+      "Ish №SHIN-1042 · Tizza bo'g'imini almashtirish",
+    ),
+    currentLabel: l("Current", "Сейчас", "Hozir"),
+    steps: [
+      { id: "tk1", label: l("Enquiry", "Заявка", "So'rov"), state: "done" },
+      { id: "tk2", label: l("AI plan", "План ИИ", "AI reja"), state: "done" },
+      { id: "tk3", label: l("Doctor opinion", "Мнение врача", "Shifokor xulosasi"), state: "done" },
+      { id: "tk4", label: l("Hospital", "Клиника", "Shifoxona"), state: "done" },
+      { id: "tk5", label: l("Visa & travel", "Виза и поездка", "Viza va safar"), state: "current" },
+      { id: "tk6", label: l("Arrival", "Прибытие", "Kelish"), state: "todo" },
+      { id: "tk7", label: l("Admission", "Госпитализация", "Gospitalizatsiya"), state: "todo" },
+      { id: "tk8", label: l("Treatment", "Лечение", "Davolash"), state: "todo" },
+      { id: "tk9", label: l("Recovery", "Восстановление", "Tiklanish"), state: "todo" },
+      { id: "tk10", label: l("Follow-up", "Наблюдение", "Kuzatuv"), state: "todo" },
+    ],
+  },
+
   guarantee: {
     eyebrow: l("Our promises", "Наши обещания", "Bizning va'dalarimiz"),
     priceTitle: l("The price we confirm is the price you pay", "Подтверждённая цена — окончательная", "Tasdiqlangan narx — yakuniy narx"),
@@ -519,9 +569,9 @@ export const defaultContent: SiteContent = {
     viewLabel: l("View hospital", "Открыть клинику", "Shifoxonani ko'rish"),
     allLabel: l("View all 600+ hospitals", "Все 600+ клиник", "Barcha 600+ shifoxona"),
     items: [
-      { id: "h1", name: "BLK-Max Super Speciality", city: "Delhi", tags: ["Oncology", "BMT", "Cardiac"], beds: "650", procedures: "302", rating: "5.0" },
-      { id: "h2", name: "Medanta – The Medicity", city: "Gurgaon", tags: ["Heart", "Transplant", "Neuro"], beds: "1250", procedures: "281", rating: "4.6" },
-      { id: "h3", name: "Indraprastha Apollo", city: "Delhi", tags: ["Transplant", "Cardiac", "Oncology"], beds: "710", procedures: "304", rating: "4.4" },
+      { id: "h1", name: "BLK-Max Super Speciality", city: "Delhi", tags: ["Oncology", "BMT", "Cardiac"], accreditations: ["JCI", "NABH"], beds: "650", procedures: "302", rating: "5.0" },
+      { id: "h2", name: "Medanta – The Medicity", city: "Gurgaon", tags: ["Heart", "Transplant", "Neuro"], accreditations: ["JCI", "NABH"], beds: "1250", procedures: "281", rating: "4.6" },
+      { id: "h3", name: "Indraprastha Apollo", city: "Delhi", tags: ["Transplant", "Cardiac", "Oncology"], accreditations: ["JCI"], beds: "710", procedures: "304", rating: "4.4" },
     ],
   },
 
@@ -764,6 +814,21 @@ export const defaultContent: SiteContent = {
         ),
       },
     ],
+  },
+
+  closing: {
+    title: l(
+      "Your health journey to India, handled end to end.",
+      "Ваш путь к лечению в Индии — под ключ.",
+      "Hindistonga salomatlik safaringiz — to'liq xizmat.",
+    ),
+    body: l(
+      "Upload your reports and get an AI-assisted plan and estimate right away — with support in your language, every step of the way.",
+      "Загрузите документы и сразу получите план и смету с помощью ИИ — с поддержкой на вашем языке на каждом этапе.",
+      "Hujjatlaringizni yuklang va sun'iy intellekt yordamida reja hamda hisobni darhol oling — har bosqichda o'z tilingizda qo'llov bilan.",
+    ),
+    primaryCta: l("Start your medical journey", "Начать медицинский маршрут", "Tibbiy safarni boshlash"),
+    secondaryCta: l("Upload medical reports", "Загрузить документы", "Hujjatlarni yuklash"),
   },
 
   footer: {
