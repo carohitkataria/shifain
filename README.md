@@ -102,6 +102,17 @@ behind them yet.
 | `ADMIN_SECRET` | signs the admin session cookie; 16+ chars, required in production |
 | `SHIFAIN_CONTENT_PATH` | where published content is stored |
 | `SHIFAIN_ENQUIRY_LOG` | where enquiries are appended |
+| `SHIFAIN_NOINDEX` | set to `1` on preview deployments to keep them out of search engines |
+
+## Preview deployments
+
+A preview service on Render tracks the development branch and redeploys on every
+push, so the site can be reviewed in a browser without installing anything.
+
+Set `SHIFAIN_NOINDEX=1` on any deployment that is not production: `robots.txt`
+then disallows everything and every page is served with `X-Robots-Tag:
+noindex, nofollow`. Both are decided per request, so the flag can be flipped
+without rebuilding.
 
 ## Scripts
 

@@ -1,6 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALES, LOCALE_COOKIE, isLocale, resolveLocale } from "@/lib/i18n";
 
+/** Preview deployments must not be indexed; decided per request, not at build. */
+function applyIndexingPolicy(response: NextResponse): NextResponse {
+  if (process.env.SHIFAIN_NOINDEX === "1") {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+  return response;
+}
+
 /**
  * Sends visitors to the language that fits the country they are browsing from,
  * unless they have already chosen one. English is the fallback everywhere.
@@ -11,7 +19,7 @@ export function middleware(request: NextRequest) {
   const hasLocale = LOCALES.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
   );
-  if (hasLocale) return NextResponse.next();
+  if (hasLocale) return applyIndexingPolicy(NextResponse.next());
 
   const cookie = request.cookies.get(LOCALE_COOKIE)?.value;
   const country =
@@ -27,7 +35,7 @@ export function middleware(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   url.pathname = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
-  return NextResponse.redirect(url);
+  return applyIndexingPolicy(NextResponse.redirect(url));
 }
 
 export const config = {
