@@ -2,7 +2,8 @@ import type { L } from "./content-types";
 
 const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
 
-export const PORTAL_ROLES = ["patient", "doctor", "hospital"] as const;
+// The doctor portal is live at /portal/doctor and is served by its own route.
+export const PORTAL_ROLES = ["patient", "hospital"] as const;
 export type PortalRole = (typeof PORTAL_ROLES)[number];
 
 export const isPortalRole = (value: string): value is PortalRole =>
@@ -21,16 +22,6 @@ export const PORTAL_COPY: Record<PortalRole, { title: L; body: L; cta: L; ctaHre
       "Reja, hujjatlar va qabullarni kuzatadigan bemor kabineti tez orada ochiladi. Hozircha hujjatlaringizni yuklang — AI reja va hisob darhol tayyorlanadi.",
     ),
     cta: l("Upload reports", "Загрузить документы", "Hujjatlarni yuklash"),
-    ctaHref: "#quote-form",
-  },
-  doctor: {
-    title: l("Doctor portal", "Кабинет врача", "Shifokor kabineti"),
-    body: l(
-      "The referring-doctor portal — submit cases, request specialist opinions and follow your patient's journey — is opening soon. Send us the case in the meantime and a coordinator will set you up.",
-      "Кабинет направляющего врача — отправка случаев, запрос мнений специалистов и отслеживание маршрута пациента — скоро откроется. А пока отправьте случай, и координатор всё настроит.",
-      "Yo'llovchi shifokor kabineti — holat yuborish, mutaxassis fikrini so'rash va bemor safarini kuzatish — tez orada ochiladi. Hozircha holatni yuboring, koordinator hammasini sozlaydi.",
-    ),
-    cta: l("Refer a patient", "Направить пациента", "Bemor yo'llash"),
     ctaHref: "#quote-form",
   },
   hospital: {

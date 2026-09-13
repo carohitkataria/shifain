@@ -50,6 +50,10 @@ export function AdminNav({ brand, actions }: { brand: React.ReactNode; actions: 
       heading: "Homepage content",
       links: GROUPS.map((group) => ({ href: `/admin/${group.key}`, label: group.label })),
     },
+    {
+      heading: "People",
+      links: [{ href: "/admin/access", label: "Partner logins" }],
+    },
   ];
 
   return (

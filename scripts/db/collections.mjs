@@ -319,6 +319,86 @@ export const COLLECTIONS = [
     indexes: [{ key: { hospitalId: 1 } }, { key: { status: 1 } }],
   },
   {
+    name: "price_bands",
+    validator: doc(["treatmentCode", "currency", "min", "max", "basis"], {
+      treatmentCode: { bsonType: "string" },
+      currency: { bsonType: "string" },
+      min: { bsonType: ["double", "int"] },
+      max: { bsonType: ["double", "int"] },
+      // An indicative band is a planning figure, never a quote. Only a
+      // cost_estimates row sourced from a hospital can be shown as a price.
+      basis: { enum: ["indicative-research", "negotiated-average"] },
+      inclusions: { bsonType: "array", items: { bsonType: "string" } },
+      exclusions: { bsonType: "array", items: { bsonType: "string" } },
+      provenance,
+    }),
+    indexes: [{ key: { treatmentCode: 1 }, options: { unique: true } }],
+  },
+  // ------------------------------------------------------------------ accounts
+  {
+    name: "partner_users",
+    validator: doc(["email", "role", "passwordHash", "status"], {
+      email: { bsonType: "string" },
+      name: { bsonType: "string" },
+      role: { enum: ["doctor", "hospital", "coordinator"] },
+      // Which provider record this login speaks for, if any.
+      doctorId: { bsonType: ["string", "null"] },
+      hospitalId: { bsonType: ["string", "null"] },
+      passwordHash: { bsonType: "string" },
+      status: { enum: ["invited", "active", "suspended"] },
+      createdAt: { bsonType: ["string", "date"] },
+      lastLoginAt: { bsonType: ["string", "date", "null"] },
+    }),
+    indexes: [
+      { key: { email: 1 }, options: { unique: true } },
+      { key: { role: 1 } },
+      { key: { doctorId: 1 } },
+    ],
+  },
+  {
+    name: "cases",
+    // A case is the patient's file. Report contents are never stored here —
+    // only what the reports were, and the plan derived from them.
+    validator: doc(["status", "createdAt", "patient"], {
+      status: { enum: ["new", "planning", "planned", "plan-failed", "confirmed", "closed"] },
+      createdAt: { bsonType: ["string", "date"] },
+      locale: { bsonType: "string" },
+      patient: {
+        bsonType: "object",
+        required: ["name", "phone", "country"],
+        properties: {
+          name: { bsonType: "string" },
+          phone: { bsonType: "string" },
+          country: { bsonType: "string" },
+          email: { bsonType: ["string", "null"] },
+        },
+      },
+      statedNeed: { bsonType: ["string", "null"] },
+      reports: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["filename", "mediaType", "bytes"],
+          properties: {
+            filename: { bsonType: "string" },
+            mediaType: { bsonType: "string" },
+            bytes: { bsonType: ["int", "long"] },
+          },
+        },
+      },
+      plan: { bsonType: ["object", "null"] },
+      planError: { bsonType: ["string", "null"] },
+      // Set when a partner doctor submitted the case rather than the patient.
+      referredBy: { bsonType: ["string", "null"] },
+      updatedAt: { bsonType: ["string", "date", "null"] },
+    }),
+    indexes: [
+      { key: { createdAt: -1 } },
+      { key: { status: 1 } },
+      { key: { referredBy: 1, createdAt: -1 } },
+    ],
+  },
+  {
     name: "sources",
     validator: doc(["title", "kind", "publicationAllowed"], {
       title: { bsonType: "string" },

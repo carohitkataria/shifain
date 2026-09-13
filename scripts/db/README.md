@@ -22,10 +22,33 @@ seed owns outright.
 | Providers | `hospitals`, `doctors` |
 | Provider mapping | `hospital_doctor_map`, `hospital_specialty_map`, `treatment_hospital_map`, `treatment_doctor_map` |
 | Commercial | `cost_estimates`, `tieups` |
+| Pricing | `price_bands` |
+| Accounts | `partner_users` |
+| Cases | `cases` |
 | Audit | `sources` |
 
 The provider-mapping and commercial collections ship empty. They are filled as
 the team signs hospitals — a seed can never invent a capability claim or a price.
+
+## Prices
+
+Two collections, and the difference between them matters.
+
+`price_bands` holds one indicative range per treatment, gathered from published Indian hospital and
+facilitator pricing. It is what a patient sees on their plan before anyone has quoted, and the page
+labels it as research.
+
+`cost_estimates` holds a real figure for a real treatment at a real hospital, with a `source` of
+`hospital-quoted` or `negotiated-package`. Only that becomes the guaranteed price.
+
+## Logins and cases
+
+`partner_users` holds the sign-ins for referring doctors, hospital desks and coordinators —
+scrypt-hashed passwords, created from the admin panel or with `npm run db:partner`.
+
+`cases` is the patient's file: who they are, what they are seeking, what each uploaded report was,
+and the plan derived from it. **The report files themselves are never stored** — they are read
+once to produce the plan and then dropped.
 
 ## The publication gate
 

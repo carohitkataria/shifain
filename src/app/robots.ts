@@ -11,5 +11,13 @@ export default function robots(): MetadataRoute.Robots {
   if (process.env.SHIFAIN_NOINDEX === "1") {
     return { rules: { userAgent: "*", disallow: "/" } };
   }
-  return { rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api"] } };
+  return {
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      // Case plans carry a patient's medical summary and the portals are
+      // sign-in only. Neither belongs in a search index, ever.
+      disallow: ["/admin", "/api", "/*/plan/", "/*/portal/"],
+    },
+  };
 }

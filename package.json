@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "db:seed": "node scripts/db/seed.mjs"
+    "db:seed": "node scripts/db/seed.mjs",
+    "db:partner": "node scripts/db/partner-user.mjs",
+    "test": "node --experimental-strip-types --no-warnings scripts/test/plan-schema.test.mts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
     "mongodb": "^7.6.0",
     "next": "^15.5.25",
     "react": "19.1.1",

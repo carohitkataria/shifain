@@ -27,6 +27,15 @@
     "collectedAt": "2026-09-13T00:00:00.000Z"
   },
   {
+    "_id": "src-indicative-pricing",
+    "title": "Published Indian hospital and facilitator pricing",
+    "url": null,
+    "kind": "third-party-research",
+    "usage": "Indicative treatment cost bands only. Shown to patients as a research range, never as a quote; a quoted price comes from a hospital under a signed tie-up.",
+    "publicationAllowed": true,
+    "collectedAt": "2026-09-13T00:00:00.000Z"
+  },
+  {
     "_id": "src-nabh-directory",
     "title": "NABH accredited healthcare organisation directory",
     "url": "https://nabh.co/find-a-healthcare-organisation/",

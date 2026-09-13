@@ -1,9 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALES, LOCALE_COOKIE, isLocale, resolveLocale } from "@/lib/i18n";
 
-/** Preview deployments must not be indexed; decided per request, not at build. */
-function applyIndexingPolicy(response: NextResponse): NextResponse {
-  if (process.env.SHIFAIN_NOINDEX === "1") {
+/** Pages that must never be indexed regardless of which deployment this is. */
+const PRIVATE = /^\/[a-z]{2}\/(plan|portal)\//;
+
+/**
+ * Preview deployments must not be indexed; decided per request, not at build.
+ * A case plan or a partner portal is private on every deployment — robots.txt
+ * is only a request, so the header says it too.
+ */
+function applyIndexingPolicy(response: NextResponse, pathname: string): NextResponse {
+  if (process.env.SHIFAIN_NOINDEX === "1" || PRIVATE.test(pathname)) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
   return response;
@@ -19,7 +26,7 @@ export function middleware(request: NextRequest) {
   const hasLocale = LOCALES.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
   );
-  if (hasLocale) return applyIndexingPolicy(NextResponse.next());
+  if (hasLocale) return applyIndexingPolicy(NextResponse.next(), pathname);
 
   const cookie = request.cookies.get(LOCALE_COOKIE)?.value;
   const country =
@@ -35,7 +42,7 @@ export function middleware(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   url.pathname = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
-  return applyIndexingPolicy(NextResponse.redirect(url));
+  return applyIndexingPolicy(NextResponse.redirect(url), url.pathname);
 }
 
 export const config = {

@@ -92,9 +92,34 @@ system and object storage before launch.
 
 ## Not built yet
 
-The patient, doctor and hospital portals are placeholder pages that say so and offer the step
-that does work today. They are deliberately not sign-in forms, since there is no auth backend
-behind them yet.
+The patient and hospital portals are still placeholder pages that say so and offer the step that
+does work today. The **doctor portal is live**: a referring doctor signs in at
+`/[locale]/portal/doctor`, refers a patient with their reports, and follows every case they have
+sent. Logins are created in the admin panel under **People → Partner logins**, or from the command
+line with `npm run db:partner`.
+
+## The AI plan
+
+A patient uploads their reports on the homepage; a partner doctor uploads them on their portal.
+Either way the case is opened immediately and the reports are read by Claude
+(`src/lib/ai/plan.ts`) against the treatment catalogue in the database. The patient lands on
+`/[locale]/plan/<reference>` while that happens and the page fills itself in.
+
+Three rules hold the planner in place:
+
+- **It chooses, it does not invent.** The disease, treatment and specialty codes it may return are
+  a JSON-schema enum built from the catalogue, and the length of stay comes from `matching_rules`.
+- **It never prices anything.** The estimate is looked up in `price_bands` and labelled as
+  research; a figure only becomes a quote when a hospital supplies one under a signed tie-up.
+- **It is not a diagnosis.** It reads what the reports already say, flags anything needing
+  emergency care where the patient is now, and says what it still needs to see. A treating doctor
+  confirms the plan within 48 hours.
+
+If the planner fails or no API key is set, the case is still opened and marked for a coordinator —
+a patient who has uploaded their reports is never dropped.
+
+Report files are not stored. The case keeps what each report was (filename, type, size) and the
+plan derived from it.
 
 ## Environment
 
@@ -102,6 +127,10 @@ behind them yet.
 |---|---|
 | `ADMIN_PASSWORD` | password for `/admin` (required in production) |
 | `ADMIN_SECRET` | signs the admin session cookie; 16+ chars, required in production |
+| `PARTNER_SECRET` | signs the partner-portal session cookie; falls back to `ADMIN_SECRET` |
+| `MONGODB_URI` | catalogue and case database; without it the plan and portals are unavailable |
+| `MONGODB_DB` | database name, default `shifain` |
+| `ANTHROPIC_API_KEY` | reads uploaded reports and writes the plan |
 | `SHIFAIN_CONTENT_PATH` | where published content is stored |
 | `SHIFAIN_ENQUIRY_LOG` | where enquiries are appended |
 | `SHIFAIN_NOINDEX` | set to `1` on preview deployments to keep them out of search engines |
@@ -131,5 +160,9 @@ npm run dev        # development server
 npm run build      # production build
 npm start          # serve the production build
 npm run typecheck  # TypeScript, no emit
-npm run lint       # Next.js lint
+npm run lint       # ESLint
+npm test           # the planner's contract: schema, catalogue codes, price bands
+
+npm run db:seed    # load src/data/catalogue into MongoDB
+npm run db:partner -- --email dr@example.com --name "Dr A Rao" --role doctor
 ```
