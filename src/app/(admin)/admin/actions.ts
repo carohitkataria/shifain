@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { checkPassword, endSession, isAuthenticated, startSession } from "@/lib/auth";
 import { getContent, resetContent, saveContent } from "@/lib/store";
-import { buildEditor, collectBooleanPaths, setAtPath } from "@/lib/editor";
+import { addListItem, buildEditor, collectBooleanPaths, removeListItem, setAtPath } from "@/lib/editor";
 import { findGroup } from "@/lib/admin-groups";
 import { SECTION_IDS, type SectionId } from "@/lib/content-types";
 
@@ -48,6 +48,8 @@ export async function saveGroupAction(formData: FormData) {
     if (!node) return;
     if (node.kind === "group") {
       node.children.forEach(walk);
+    } else if (node.kind === "list") {
+      node.items.forEach(walk);
     } else if (node.kind === "localized") {
       allowed.add(`${node.path}.en`);
       allowed.add(`${node.path}.ru`);
@@ -63,9 +65,30 @@ export async function saveGroupAction(formData: FormData) {
     setAtPath(content, field, value);
   }
 
+  // The section's own visibility rides along with its content, so an editor
+  // hiding a section never has to remember a second page.
+  if (group.section) {
+    const current = content.sections[group.section];
+    content.sections[group.section] = {
+      enabled: formData.get("__visible") === "on",
+      order: current?.order ?? 0,
+    };
+  }
+
+  // Adding or removing a list entry is submitted by the same form, so whatever
+  // the editor had typed is saved alongside the structural change.
+  const intent = String(formData.get("__intent") ?? "");
+  const [verb, path, index] = intent.split(":");
+
+  if (verb === "add" && path?.startsWith(`${group.key}.`)) {
+    addListItem(content, path);
+  } else if (verb === "remove" && path?.startsWith(`${group.key}.`)) {
+    removeListItem(content, path, Number(index));
+  }
+
   await saveContent(content);
   refreshSite();
-  redirect(`/admin/${group.key}?saved=1`);
+  redirect(`/admin/${group.key}?saved=${verb === "add" ? "added" : verb === "remove" ? "removed" : "1"}`);
 }
 
 export async function saveSectionsAction(formData: FormData) {

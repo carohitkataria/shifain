@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import type { PartnerUser } from "@/lib/partner-auth";
+import { AdminShell } from "@/components/admin/AdminShell";
 import {
   clearGeneratedPassword,
   readGeneratedPassword,
@@ -32,32 +33,29 @@ export default async function AccessPage({
   if (generated) await clearGeneratedPassword();
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
-      <h1 className="text-2xl font-extrabold tracking-tight text-ink">Partner logins</h1>
-      <p className="mt-1.5 text-ink-soft">
-        Sign-ins for referring doctors, hospital desks and coordinators. A doctor signs in at{" "}
-        <code className="rounded bg-surface-muted px-1.5 py-0.5 text-sm">/portal/doctor</code>.
-      </p>
-
+    <AdminShell
+      title="Partner logins"
+      subtitle="Sign-ins for referring doctors, hospital desks and coordinators. A doctor signs in at /portal/doctor."
+    >
       {!isDatabaseConfigured() && (
-        <p className="mt-4 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">
+        <p className="mb-4 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">
           MONGODB_URI is not set on this deployment, so logins cannot be created or read yet.
         </p>
       )}
 
       {error && (
-        <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">
+        <p role="alert" className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">
           Name, email and role are all required.
         </p>
       )}
       {saved && !generated && (
-        <p className="mt-4 rounded-lg bg-leaf/10 px-3 py-2 text-sm font-semibold text-leaf">
+        <p className="mb-4 rounded-lg bg-leaf/10 px-3 py-2 text-sm font-semibold text-leaf">
           Login {saved}.
         </p>
       )}
 
       {generated && (
-        <div className="mt-4 rounded-xl border-2 border-brand bg-brand-tint p-4">
+        <div className="mb-4 rounded-xl border-2 border-brand bg-brand-tint p-4">
           <p className="text-sm font-bold uppercase tracking-wider text-brand">
             Password for {generated.email}
           </p>
@@ -69,7 +67,7 @@ export default async function AccessPage({
         </div>
       )}
 
-      <form action={savePartnerAction} className="card mt-6 space-y-4 p-6">
+      <form action={savePartnerAction} className="card space-y-4 p-6">
         <h2 className="font-bold text-ink">Create or update a login</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block min-w-0">
@@ -146,6 +144,6 @@ export default async function AccessPage({
           ))}
         </ul>
       )}
-    </div>
+    </AdminShell>
   );
 }

@@ -35,7 +35,11 @@ language; a blank translation falls back to English.
 
 ## Homepage control panel (`/admin`)
 
-Sign in with `ADMIN_PASSWORD`. A hamburger-driven sidebar groups the areas, so new ones can be
+Sign in with `ADMIN_PASSWORD`. The sidebar groups the areas — Overview, Site content, and Patients
+& partners — and each group folds away, with the choice remembered per browser. Every page carries
+its save button beside the title. Repeatable lists (paragraphs, badges, FAQ rows) can be added to
+and removed from in place: both are submitted by the same form as the fields, so a half-written
+paragraph is never lost to an accidental "Add". A hamburger-driven sidebar groups the areas, so new ones can be
 added to `GROUPS` in `src/lib/admin-groups.ts` without touching the chrome. The panel can:
 
 - **show, hide and reorder** every homepage section
@@ -162,6 +166,10 @@ npm start          # serve the production build
 npm run typecheck  # TypeScript, no emit
 npm run lint       # ESLint
 npm test           # the planner's contract: schema, catalogue codes, price bands
+
+# The owner console, driven in a real browser (needs a running server):
+npm i --no-save playwright-core
+node scripts/test/admin-panel.mjs
 
 npm run db:seed    # load src/data/catalogue into MongoDB
 npm run db:partner -- --email dr@example.com --name "Dr A Rao" --role doctor

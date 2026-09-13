@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { GROUPS } from "@/lib/admin-groups";
+import { NAV_GROUPS } from "@/lib/admin-nav";
+import { AdminIcon } from "./AdminIcon";
 
-type NavSection = { heading: string; links: { href: string; label: string }[] };
+const COLLAPSED_KEY = "shifain-admin-nav-collapsed";
 
 function MenuButton({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   return (
@@ -25,12 +26,36 @@ function MenuButton({ open, onToggle }: { open: boolean; onToggle: () => void })
 }
 
 /**
- * Hamburger-driven admin navigation. Off-canvas on narrow screens, pinned open
- * on wide ones. Sections are grouped so more areas can be added later.
+ * The console sidebar: collapsible groups, off-canvas on narrow screens and
+ * pinned open on wide ones. Which groups are folded away is remembered per
+ * browser, because an editor who only touches the FAQ should not have to
+ * scroll past twenty content sections every visit.
  */
 export function AdminNav({ brand, actions }: { brand: React.ReactNode; actions: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(COLLAPSED_KEY);
+      if (stored) setCollapsed(JSON.parse(stored));
+    } catch {
+      // A browser that refuses storage just gets every group open.
+    }
+  }, []);
+
+  const toggleGroup = (id: string) => {
+    setCollapsed((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      try {
+        localStorage.setItem(COLLAPSED_KEY, JSON.stringify(next));
+      } catch {
+        // Not worth failing the click over.
+      }
+      return next;
+    });
+  };
 
   // Close the drawer whenever navigation lands on a new page.
   useEffect(() => setOpen(false), [pathname]);
@@ -44,17 +69,53 @@ export function AdminNav({ brand, actions }: { brand: React.ReactNode; actions: 
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
-  const sections: NavSection[] = [
-    { heading: "Overview", links: [{ href: "/admin", label: "Homepage layout" }] },
-    {
-      heading: "Homepage content",
-      links: GROUPS.map((group) => ({ href: `/admin/${group.key}`, label: group.label })),
-    },
-    {
-      heading: "People",
-      links: [{ href: "/admin/access", label: "Partner logins" }],
-    },
-  ];
+  const nav = (
+    <nav id="admin-nav" className="space-y-5 px-3 py-5">
+      {NAV_GROUPS.map((group) => {
+        const folded = Boolean(collapsed[group.id]);
+        return (
+          <div key={group.id}>
+            <button
+              type="button"
+              onClick={() => toggleGroup(group.id)}
+              aria-expanded={!folded}
+              className="flex w-full items-center justify-between gap-2 px-3 py-1.5 text-[0.7rem] font-bold uppercase tracking-[0.12em] text-ink-muted transition hover:text-ink"
+            >
+              {group.heading}
+              <AdminIcon
+                name="chevron"
+                className={`h-4 w-4 transition-transform ${folded ? "-rotate-90" : ""}`}
+              />
+            </button>
+
+            {!folded && (
+              <ul className="mt-1 space-y-0.5">
+                {group.items.map((item) => {
+                  const active = pathname === item.href;
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition ${
+                          active
+                            ? "bg-brand-tint font-bold text-brand-deep"
+                            : "font-medium text-ink-soft hover:bg-surface-muted hover:text-ink"
+                        }`}
+                      >
+                        <AdminIcon name={item.icon} className="h-[18px] w-[18px] shrink-0" />
+                        <span className="min-w-0 truncate">{item.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        );
+      })}
+    </nav>
+  );
 
   return (
     <>
@@ -68,64 +129,26 @@ export function AdminNav({ brand, actions }: { brand: React.ReactNode; actions: 
         </div>
       </header>
 
-
-      {open ? (
-        <div
-          role="presentation"
+      {open && (
+        <button
+          type="button"
+          aria-label="Close menu"
           onClick={() => setOpen(false)}
           className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
         />
-      ) : null}
+      )}
 
-      <nav
-        id="admin-nav"
-        aria-label="Admin sections"
-        className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto border-r border-line bg-white p-4 transition-transform lg:sticky lg:top-0 lg:z-0 lg:h-[100dvh] lg:translate-x-0 ${
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto border-r border-line bg-white transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="mb-4 flex items-center justify-between lg:hidden">
+        <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 lg:hidden">
           <span className="text-sm font-extrabold text-ink">Menu</span>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            aria-label="Close menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-line text-ink"
-          >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
-          </button>
+          <MenuButton open onToggle={() => setOpen(false)} />
         </div>
-
-        {sections.map((section) => (
-          <div key={section.heading} className="mb-5">
-            <p className="px-3 pb-2 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-ink-muted">
-              {section.heading}
-            </p>
-            <ul className="space-y-0.5">
-              {section.links.map((link) => {
-                const active = pathname === link.href;
-                return (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      aria-current={active ? "page" : undefined}
-                      className={`block rounded-lg px-3 py-2 text-sm transition ${
-                        active
-                          ? "bg-brand-tint font-bold text-brand-deep"
-                          : "text-ink-soft hover:bg-surface-muted hover:text-ink"
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
-      </nav>
+        {nav}
+      </aside>
     </>
   );
 }
