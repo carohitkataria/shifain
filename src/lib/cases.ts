@@ -109,6 +109,17 @@ export async function casesForPhone(digits: string, limit = 20): Promise<Patient
     .toArray();
 }
 
+/** A patient's own cases, found by the email they gave us. */
+export async function casesForEmail(email: string, limit = 20): Promise<PatientCase[]> {
+  const db = await getDb();
+  return db
+    .collection<PatientCase>("cases")
+    .find({ "patient.email": email.toLowerCase() })
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .toArray();
+}
+
 /** The cases one partner doctor has referred, newest first. */
 export async function casesReferredBy(partnerUserId: string, limit = 50): Promise<PatientCase[]> {
   const db = await getDb();

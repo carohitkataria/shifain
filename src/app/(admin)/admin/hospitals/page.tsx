@@ -4,6 +4,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
 import type { Hospital } from "@/lib/catalogue";
+import { createHospitalAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +18,10 @@ const TONE: Record<string, string> = {
 export default async function HospitalsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; city?: string; state?: string }>;
+  searchParams: Promise<{ q?: string; city?: string; state?: string; saved?: string }>;
 }) {
   if (!(await isAuthenticated())) redirect("/admin/login");
-  const { q = "", city = "", state = "" } = await searchParams;
+  const { q = "", city = "", state = "", saved } = await searchParams;
 
   const query: Record<string, unknown> = {};
   if (q.trim()) query.name = { $regex: q.trim(), $options: "i" };
@@ -46,6 +47,47 @@ export default async function HospitalsPage({
           MONGODB_URI is not set on this deployment, so the catalogue cannot be read yet.
         </p>
       )}
+
+      {saved ? (
+        <p className="mb-6 rounded-lg bg-leaf/10 px-3 py-2 text-sm font-semibold text-leaf">
+          Hospital {saved}.
+        </p>
+      ) : null}
+
+      <form action={createHospitalAction} className="card mb-4 flex flex-wrap items-end gap-3 p-5">
+        <label className="min-w-0 flex-1 basis-52">
+          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">
+            Add a hospital
+          </span>
+          <input
+            name="name"
+            required
+            placeholder="Hospital name"
+            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
+          />
+        </label>
+        <label className="min-w-0 basis-40">
+          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">City</span>
+          <input
+            name="city"
+            required
+            placeholder="Delhi"
+            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
+          />
+        </label>
+        <label className="min-w-0 basis-36">
+          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">State</span>
+          <input
+            name="state"
+            placeholder="Delhi"
+            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
+          />
+        </label>
+        <button type="submit" className="btn btn-primary !py-2.5 text-sm">Add</button>
+        <p className="basis-full text-sm text-ink-soft">
+          Bulk instead? <Link href="/admin/import" className="font-semibold text-brand hover:underline">Import a sheet</Link>.
+        </p>
+      </form>
 
       <form className="card mb-6 flex flex-wrap items-end gap-3 p-5">
         <label className="min-w-0 flex-1 basis-48">

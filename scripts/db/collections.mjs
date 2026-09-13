@@ -409,6 +409,27 @@ export const COLLECTIONS = [
     ],
   },
   {
+    name: "doctor_schedules",
+    // When a doctor is at a hospital. Every field beyond the two ids is
+    // optional: most of this is unknown until a partnership is live, and a
+    // half-known rota is more useful to a coordinator than an empty one.
+    validator: doc(["doctorId", "hospitalId"], {
+      doctorId: { bsonType: "string" },
+      hospitalId: { bsonType: "string" },
+      day: { enum: ["mon", "tue", "wed", "thu", "fri", "sat", "sun", null] },
+      from: { bsonType: ["string", "null"] },
+      to: { bsonType: ["string", "null"] },
+      slotMinutes: { bsonType: ["int", "null"] },
+      note: { bsonType: ["string", "null"] },
+      updatedAt: { bsonType: ["string", "date", "null"] },
+    }),
+    indexes: [
+      { key: { doctorId: 1 } },
+      { key: { hospitalId: 1 } },
+      { key: { doctorId: 1, hospitalId: 1, day: 1 } },
+    ],
+  },
+  {
     name: "attractions",
     // What a patient can reasonably see while they are here, per city. Only
     // ever offered for treatments marked tourFriendly, and only as an option.

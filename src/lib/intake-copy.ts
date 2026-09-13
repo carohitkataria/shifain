@@ -15,6 +15,13 @@ export const INTAKE_COPY = {
     "Код страны подставляется автоматически — измените, если ваш отличается.",
     "Mamlakat kodi avtomatik qo'yiladi — sizniki boshqacha bo'lsa, o'zgartiring.",
   ),
+  emailLabel: l("Email (optional)", "Эл. почта (необязательно)", "Pochta (ixtiyoriy)"),
+  emailPlaceholder: l("you@example.com", "you@example.com", "you@example.com"),
+  emailHint: l(
+    "Leave it and you can sign in later to follow your plan. We do not send marketing.",
+    "Оставьте — и сможете войти позже, чтобы следить за планом. Рассылок не будет.",
+    "Qoldiring — keyin kirib rejangizni kuzatasiz. Reklama yubormaymiz.",
+  ),
   routeTitle: l("How would you like to tell us?", "Как вам удобнее рассказать?", "Qanday aytishni xohlaysiz?"),
   routes: {
     reports: l("Upload my reports", "Загрузить документы", "Hujjatlarimni yuklash"),

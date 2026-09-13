@@ -102,6 +102,22 @@ does work today. The **doctor portal is live**: a referring doctor signs in at
 sent. Logins are created in the admin panel under **People → Partner logins**, or from the command
 line with `npm run db:partner`.
 
+## Who signs in, and how
+
+| Who | Where | With what |
+|---|---|---|
+| Owner / coordinator | `/admin` | `ADMIN_PASSWORD` |
+| Referring doctor | `/[locale]/portal/doctor` | email and password, created in admin |
+| Patient | `/[locale]/portal/patient` | a six-digit code emailed to them, or their case reference and phone |
+
+The patient's email route asks for an address, sends a code, and answers
+identically whether or not that address has a case — so the page cannot be used
+to find out who is a patient here. With no mail provider configured the code is
+still issued and shown to a coordinator to read out, rather than a sign-in that
+silently cannot work. WhatsApp OTP slots in beside it later: the code issuing
+and checking in `src/lib/patient-auth.ts` is already independent of how the code
+is delivered.
+
 ## Telling us what is wrong
 
 Three routes, all of which produce a plan:
@@ -153,6 +169,21 @@ a patient who has uploaded their reports is never dropped.
 Report files are not stored. The case keeps what each report was (filename, type, size) and the
 plan derived from it.
 
+## Managing the catalogue
+
+Admin → Catalogue holds all 126 hospitals and every doctor record: add, edit and
+delete, search by name, filter by city and stage. A doctor can be mapped to as
+many hospitals as they actually work at, each with an optional rota — day, times,
+slot length — so a plan can suggest an appointment that exists rather than one we
+invented. Every field of that rota is optional, because most of it is unknown
+until a partnership is live.
+
+**Import a sheet** takes pasted CSV for hospitals, doctors, or doctor-to-hospital
+mappings with days. Column names are matched loosely, so `Speciality`,
+`Department` and `specialtyCode` all land in the same place. Importing never
+publishes: rows arrive as research and stay invisible to patients until someone
+signs a tie-up and publishes them by hand.
+
 ## Environment
 
 | variable | purpose |
@@ -163,6 +194,8 @@ plan derived from it.
 | `MONGODB_URI` | catalogue and case database; without it the plan and portals are unavailable |
 | `MONGODB_DB` | database name, default `shifain` |
 | `ANTHROPIC_API_KEY` | reads uploaded reports and writes the plan |
+| `RESEND_API_KEY` | sends the patient sign-in code; without it a coordinator reads the code out |
+| `MAIL_FROM` | the address that code comes from |
 | `SHIFAIN_CONTENT_PATH` | where published content is stored |
 | `SHIFAIN_ENQUIRY_LOG` | where enquiries are appended |
 | `SHIFAIN_NOINDEX` | set to `1` on preview deployments to keep them out of search engines |

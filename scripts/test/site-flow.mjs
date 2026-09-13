@@ -76,14 +76,29 @@ check(
   submitted.filter((k) => k.startsWith("answer.") || k === "description" || k === "reports").join(",") || "none",
 );
 
+// An email is asked for, because email sign-in has to have something to match.
+check(await page.locator('input[name="email"]').count() > 0, "the enquiry asks for an email");
+
 // Public pages the patient can now click through to.
 for (const [path, needle] of [
   ["/en/hospitals", "Partner hospitals"],
-  ["/en/portal/patient/login", "Your ShifaIn file"],
+  ["/en/doctors", "Doctors"],
+  ["/en/conditions", "Conditions we plan for"],
+  ["/en/portal/patient/login", "Send me a code"],
   ["/en/portal/doctor/login", "Partner doctor sign-in"],
 ]) {
   const response = await page.goto(BASE + path, { waitUntil: "networkidle" });
   check(response.status() === 200 && (await page.locator(`text=${needle}`).first().isVisible()), `${path} loads`);
+}
+
+// The homepage cards go to those pages rather than back to the form.
+await page.goto(`${BASE}/en`, { waitUntil: "networkidle" });
+for (const [href, what] of [
+  ["/en/hospitals", "hospital cards"],
+  ["/en/doctors", "doctor cards"],
+  ["/en/conditions", "cost cards"],
+]) {
+  check(await page.locator(`a[href="${href}"]`).count() > 0, `${what} link through to ${href}`);
 }
 
 // Language follows the country the visitor is browsing from.

@@ -135,6 +135,18 @@ export function IntakeForm({
         <p className="mt-1.5 text-xs text-ink-muted">{t(INTAKE_COPY.phoneHint, locale)}</p>
       </Field>
 
+      <Field label={t(INTAKE_COPY.emailLabel, locale)} htmlFor="email">
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder={t(INTAKE_COPY.emailPlaceholder, locale)}
+          className={inputClass}
+        />
+        <p className="mt-1.5 text-xs text-ink-muted">{t(INTAKE_COPY.emailHint, locale)}</p>
+      </Field>
+
       <Field label={labels.treatment} htmlFor="treatment">
         <select id="treatment" name="treatment" required defaultValue="" className={inputClass}>
           <option value="" disabled>

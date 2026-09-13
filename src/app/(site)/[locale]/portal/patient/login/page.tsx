@@ -4,13 +4,17 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { LogoMark } from "@/components/Logo";
 import { getContent } from "@/lib/store";
-import { currentPatientPhone } from "@/lib/patient-auth";
+import { currentPatient } from "@/lib/patient-auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { PATIENT_COPY } from "@/lib/patient-copy";
 import { PORTAL_BACK } from "@/lib/portal-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
-import { patientLoginAction } from "../actions";
+import {
+  patientLoginAction,
+  requestEmailCodeAction,
+  verifyEmailCodeAction,
+} from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -22,14 +26,14 @@ export default async function PatientLoginPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; sent?: string; email?: string }>;
 }) {
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
-  const { error } = await searchParams;
+  const { error, sent, email } = await searchParams;
   const content = await getContent();
 
-  if (isDatabaseConfigured() && (await currentPatientPhone().catch(() => null))) {
+  if (isDatabaseConfigured() && (await currentPatient().catch(() => null))) {
     redirect(`/${locale}/portal/patient`);
   }
 
@@ -52,11 +56,65 @@ export default async function PatientLoginPage({
               role="alert"
               className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"
             >
-              {t(PATIENT_COPY.failed, locale)}
+              {t(error === "code" ? PATIENT_COPY.codeFailed : PATIENT_COPY.failed, locale)}
             </p>
           ) : null}
 
-          <form action={patientLoginAction} className="mt-5 space-y-4">
+          {sent ? (
+            <>
+              <p className="mt-4 rounded-lg bg-brand-tint px-3 py-2.5 text-sm leading-relaxed text-ink">
+                {t(sent === "coordinator" ? PATIENT_COPY.codeViaCoordinator : PATIENT_COPY.codeSent, locale)}
+              </p>
+              <form action={verifyEmailCodeAction} className="mt-5 space-y-4">
+                <input type="hidden" name="locale" value={locale} />
+                <input type="hidden" name="email" value={email ?? ""} />
+                <label className="block">
+                  <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">
+                    {t(PATIENT_COPY.code, locale)}
+                  </span>
+                  <input
+                    name="code"
+                    required
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    className={`${field} text-center font-mono text-lg tracking-[0.3em]`}
+                  />
+                </label>
+                <button type="submit" className="btn btn-primary w-full">
+                  {t(PATIENT_COPY.verify, locale)}
+                </button>
+              </form>
+              <Link
+                href={`/${locale}/portal/patient/login`}
+                className="mt-4 inline-block text-sm font-semibold text-brand hover:underline"
+              >
+                {t(PATIENT_COPY.useAnother, locale)}
+              </Link>
+            </>
+          ) : (
+            <>
+          <form action={requestEmailCodeAction} className="mt-5 space-y-4">
+            <input type="hidden" name="locale" value={locale} />
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">
+                {t(PATIENT_COPY.email, locale)}
+              </span>
+              <input name="email" type="email" required autoComplete="email" className={field} />
+              <span className="mt-1.5 block text-xs text-ink-muted">
+                {t(PATIENT_COPY.emailBody, locale)}
+              </span>
+            </label>
+            <button type="submit" className="btn btn-primary w-full">
+              {t(PATIENT_COPY.sendCode, locale)}
+            </button>
+          </form>
+
+          <p className="mt-6 border-t border-line pt-5 text-xs font-bold uppercase tracking-wider text-ink-soft">
+            {t(PATIENT_COPY.referenceTab, locale)}
+          </p>
+
+          <form action={patientLoginAction} className="mt-3 space-y-4">
             <input type="hidden" name="locale" value={locale} />
             <label className="block">
               <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">
@@ -76,10 +134,12 @@ export default async function PatientLoginPage({
                 {t(PATIENT_COPY.phoneHint, locale)}
               </span>
             </label>
-            <button type="submit" className="btn btn-primary w-full">
+            <button type="submit" className="btn btn-secondary w-full">
               {t(PATIENT_COPY.signIn, locale)}
             </button>
           </form>
+            </>
+          )}
 
           <p className="mt-5 text-sm leading-relaxed text-ink-soft">
             {t(PATIENT_COPY.noReference, locale)}

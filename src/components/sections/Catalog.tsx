@@ -83,9 +83,9 @@ export function Costs({ content, locale }: { content: SiteContent; locale: Local
             <p className="mt-2 text-xs text-ink-muted">{t(costs.fromLabel, locale)}</p>
             <p className="text-2xl font-extrabold tracking-tight text-brand-deep">{item.amount}</p>
             <p className="mt-1 flex-1 text-xs text-ink-muted">{t(item.note, locale)}</p>
-            <a href="#quote-form" className="btn btn-tint mt-4 w-full !py-2.5 text-sm">
+            <Link href={`/${locale}/conditions`} className="btn btn-tint mt-4 w-full !py-2.5 text-sm">
               {t(costs.ctaLabel, locale)}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
@@ -166,18 +166,18 @@ export function Hospitals({ content, locale }: { content: SiteContent; locale: L
                 </div>
               </dl>
 
-              <a href="#quote-form" className="btn btn-tint mt-5 w-full !py-2.5 text-sm">
+              <Link href={`/${locale}/hospitals`} className="btn btn-tint mt-5 w-full !py-2.5 text-sm">
                 {t(hospitals.viewLabel, locale)}
-              </a>
+              </Link>
             </div>
           </li>
         ))}
       </ul>
 
       <div className="mt-9 text-center">
-        <a href="#quote-form" className="btn btn-ink">
+        <Link href={`/${locale}/hospitals`} className="btn btn-ink">
           {t(hospitals.allLabel, locale)}
-        </a>
+        </Link>
       </div>
     </Section>
   );
@@ -209,7 +209,7 @@ export function Doctors({ content, locale }: { content: SiteContent; locale: Loc
             </p>
             <p className="mt-1 flex-1 text-xs text-ink-muted">{t(item.highlight, locale)}</p>
             <a
-              href="#quote-form"
+              href={`/${locale}/doctors`}
               className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-leaf-tint px-3 py-2 text-xs font-bold text-leaf transition hover:bg-[#d8f0de]"
             >
               {t(doctors.consultLabel, locale)} &middot; {item.fee}
@@ -219,9 +219,9 @@ export function Doctors({ content, locale }: { content: SiteContent; locale: Loc
       </ul>
 
       <div className="mt-9 text-center">
-        <a href="#quote-form" className="btn btn-ink">
+        <Link href={`/${locale}/doctors`} className="btn btn-ink">
           {t(doctors.allLabel, locale)}
-        </a>
+        </Link>
       </div>
     </Section>
   );

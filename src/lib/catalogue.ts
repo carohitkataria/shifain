@@ -110,6 +110,32 @@ export type Doctor = {
 
 export type Category = { _id: string; name: L; tier: string; order: number };
 
+export const WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+export type Weekday = (typeof WEEKDAYS)[number];
+
+/** When a doctor sits at a hospital. Everything but the two ids is optional. */
+export type DoctorSchedule = {
+  _id: string;
+  doctorId: string;
+  hospitalId: string;
+  day: Weekday | null;
+  from: string | null;
+  to: string | null;
+  slotMinutes: number | null;
+  note: string | null;
+  updatedAt: string | null;
+};
+
+export type HospitalDoctorLink = {
+  _id: string;
+  hospitalId: string;
+  doctorId: string;
+  specialtyCode: string | null;
+  attachment: "primary" | "visiting" | "consultant";
+  current: boolean;
+  stale?: boolean;
+};
+
 /**
  * The publication gate, in one place. A provider record is only ever shown to
  * a patient once it is published against a signed tie-up — research rows exist
@@ -188,6 +214,30 @@ export async function attractionsFor(city: string | null): Promise<Attraction[]>
   if (!city) return [];
   return readOr<Attraction[]>([], async (db) =>
     db.collection<Attraction>("attractions").find({ city }).sort({ travelHours: 1 }).toArray(),
+  );
+}
+
+export async function schedulesForDoctor(doctorId: string): Promise<DoctorSchedule[]> {
+  return readOr<DoctorSchedule[]>([], async (db) =>
+    db.collection<DoctorSchedule>("doctor_schedules").find({ doctorId }).toArray(),
+  );
+}
+
+export async function schedulesForHospital(hospitalId: string): Promise<DoctorSchedule[]> {
+  return readOr<DoctorSchedule[]>([], async (db) =>
+    db.collection<DoctorSchedule>("doctor_schedules").find({ hospitalId }).toArray(),
+  );
+}
+
+/** Doctors the site may name: consented, published, and at a published hospital. */
+export async function publishedDoctors(limit = 60): Promise<Doctor[]> {
+  return readOr<Doctor[]>([], async (db) =>
+    db
+      .collection<Doctor>("doctors")
+      .find({ consentToList: true, "publication.state": "published" })
+      .sort({ name: 1 })
+      .limit(limit)
+      .toArray(),
   );
 }
 

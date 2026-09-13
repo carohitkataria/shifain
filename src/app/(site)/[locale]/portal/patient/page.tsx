@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { getContent } from "@/lib/store";
-import { currentPatientPhone } from "@/lib/patient-auth";
-import { casesForPhone, type CaseStatus } from "@/lib/cases";
+import { currentPatient } from "@/lib/patient-auth";
+import { casesForEmail, casesForPhone, type CaseStatus } from "@/lib/cases";
 import { isDatabaseConfigured } from "@/lib/db";
 import { PATIENT_COPY } from "@/lib/patient-copy";
 import { t } from "@/lib/localize";
@@ -27,10 +27,13 @@ export default async function PatientPortal({ params }: { params: Promise<{ loca
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
 
   if (!isDatabaseConfigured()) redirect(`/${locale}/portal/patient/login`);
-  const phone = await currentPatientPhone().catch(() => null);
-  if (!phone) redirect(`/${locale}/portal/patient/login`);
+  const identity = await currentPatient().catch(() => null);
+  if (!identity) redirect(`/${locale}/portal/patient/login`);
 
-  const [content, cases] = await Promise.all([getContent(), casesForPhone(phone)]);
+  const [content, cases] = await Promise.all([
+    getContent(),
+    identity.kind === "email" ? casesForEmail(identity.email) : casesForPhone(identity.digits),
+  ]);
 
   return (
     <>

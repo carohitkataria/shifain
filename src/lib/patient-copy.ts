@@ -24,6 +24,32 @@ export const PATIENT_COPY = {
     "Номер обращения и телефон не совпали ни с одним делом.",
     "Bu murojaat raqami va telefon hech qaysi ishga mos kelmadi.",
   ),
+  referenceTab: l("Use my reference", "По номеру обращения", "Murojaat raqami bilan"),
+  email: l("Email address", "Электронная почта", "Elektron pochta"),
+  emailBody: l(
+    "The address you gave us. We send a six-digit code to it.",
+    "Адрес, который вы оставили. Мы пришлём на него шестизначный код.",
+    "Siz qoldirgan manzil. Unga olti xonali kod yuboramiz.",
+  ),
+  sendCode: l("Send me a code", "Отправить код", "Kod yuborish"),
+  codeSent: l(
+    "If that address has a case with us, a code is on its way. It works for 15 minutes.",
+    "Если по этому адресу есть обращение, код уже в пути. Он действует 15 минут.",
+    "Agar bu manzilda murojaat bo'lsa, kod yo'lda. U 15 daqiqa amal qiladi.",
+  ),
+  codeViaCoordinator: l(
+    "Email is not switched on for this site yet, so your coordinator has your code — call or message them and they will read it out. It works for 15 minutes.",
+    "Отправка писем на этом сайте пока не включена — код есть у вашего координатора, он его продиктует. Код действует 15 минут.",
+    "Bu saytda pochta yuborish hali yoqilmagan — kod koordinatoringizda, u aytib beradi. Kod 15 daqiqa amal qiladi.",
+  ),
+  code: l("Six-digit code", "Шестизначный код", "Olti xonali kod"),
+  codeFailed: l(
+    "That code did not work. Ask for a new one and try again.",
+    "Код не подошёл. Запросите новый и попробуйте снова.",
+    "Kod to'g'ri kelmadi. Yangisini so'rang va qayta urinib ko'ring.",
+  ),
+  verify: l("Sign in", "Войти", "Kirish"),
+  useAnother: l("Use a different address", "Другой адрес", "Boshqa manzil"),
   noReference: l(
     "Do not have a reference? Upload your reports and one is created for you straight away.",
     "Нет номера обращения? Загрузите документы — он появится сразу.",
