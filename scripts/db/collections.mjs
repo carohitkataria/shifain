@@ -347,6 +347,14 @@ export const COLLECTIONS = [
       // Which provider record this login speaks for, if any.
       doctorId: { bsonType: ["string", "null"] },
       hospitalId: { bsonType: ["string", "null"] },
+      // Where they practise, and what they earn on a referral.
+      country: { bsonType: ["string", "null"] },
+      city: { bsonType: ["string", "null"] },
+      clinic: { bsonType: ["string", "null"] },
+      specialty: { bsonType: ["string", "null"] },
+      offerId: { bsonType: ["string", "null"] },
+      payoutMethod: { bsonType: ["string", "null"] },
+      payoutDetails: { bsonType: ["string", "null"] },
       passwordHash: { bsonType: "string" },
       status: { enum: ["invited", "active", "suspended"] },
       createdAt: { bsonType: ["string", "date"] },
@@ -462,6 +470,153 @@ export const COLLECTIONS = [
       { key: { reference: 1 } },
       { key: { expiresAt: 1 }, options: { expireAfterSeconds: 0 } },
     ],
+  },
+  // --------------------------------------------------------------- partners
+  {
+    name: "partner_applications",
+    // A doctor abroad asking to refer patients to us. Reviewed by hand: a
+    // referral relationship is a commercial and clinical one, not a signup.
+    validator: doc(["name", "email", "country", "status", "createdAt"], {
+      name: { bsonType: "string" },
+      email: { bsonType: "string" },
+      phone: { bsonType: ["string", "null"] },
+      country: { bsonType: "string" },
+      city: { bsonType: ["string", "null"] },
+      clinic: { bsonType: ["string", "null"] },
+      specialty: { bsonType: ["string", "null"] },
+      registrationNumber: { bsonType: ["string", "null"] },
+      patientsPerYear: { bsonType: ["int", "null"] },
+      note: { bsonType: ["string", "null"] },
+      status: { enum: ["new", "reviewing", "approved", "declined"] },
+      decidedAt: { bsonType: ["string", "null"] },
+      decidedBy: { bsonType: ["string", "null"] },
+      partnerUserId: { bsonType: ["string", "null"] },
+      createdAt: { bsonType: ["string", "date"] },
+    }),
+    indexes: [{ key: { status: 1, createdAt: -1 } }, { key: { email: 1 } }],
+  },
+  {
+    name: "referral_offers",
+    // What a partner earns. Kept as records rather than a hardcoded rate so a
+    // change to terms never rewrites what was already agreed on past referrals.
+    validator: doc(["name", "kind", "value", "currency", "status"], {
+      name: { bsonType: "string" },
+      description: { bsonType: ["string", "null"] },
+      kind: { enum: ["percent-of-treatment", "flat-per-referral", "flat-per-travelled"] },
+      value: { bsonType: ["double", "int"] },
+      currency: { bsonType: "string" },
+      appliesTo: { enum: ["all", "specialty", "treatment"] },
+      appliesToCodes: { bsonType: "array", items: { bsonType: "string" } },
+      minTreatmentValue: { bsonType: ["double", "int", "null"] },
+      capAmount: { bsonType: ["double", "int", "null"] },
+      validFrom: { bsonType: ["string", "null"] },
+      validUntil: { bsonType: ["string", "null"] },
+      status: { enum: ["draft", "active", "retired"] },
+      isDefault: { bsonType: "bool" },
+      createdAt: { bsonType: ["string", "date"] },
+    }),
+    indexes: [{ key: { status: 1 } }, { key: { isDefault: 1 } }],
+  },
+  {
+    name: "referrals",
+    // One row per referred case: where the commercial state of a referral
+    // lives, kept apart from the clinical case so a coordinator editing one
+    // never disturbs the other.
+    validator: doc(["caseReference", "partnerUserId", "status", "createdAt"], {
+      caseReference: { bsonType: "string" },
+      partnerUserId: { bsonType: "string" },
+      partnerName: { bsonType: ["string", "null"] },
+      patientName: { bsonType: ["string", "null"] },
+      status: { enum: ["new", "qualified", "travelled", "treated", "cancelled"] },
+      offerId: { bsonType: ["string", "null"] },
+      treatmentValue: { bsonType: ["double", "int", "null"] },
+      currency: { bsonType: ["string", "null"] },
+      commissionAmount: { bsonType: ["double", "int", "null"] },
+      payoutId: { bsonType: ["string", "null"] },
+      note: { bsonType: ["string", "null"] },
+      createdAt: { bsonType: ["string", "date"] },
+      updatedAt: { bsonType: ["string", "date", "null"] },
+    }),
+    indexes: [
+      { key: { partnerUserId: 1, createdAt: -1 } },
+      { key: { status: 1 } },
+      { key: { caseReference: 1 }, options: { unique: true } },
+      { key: { payoutId: 1 } },
+    ],
+  },
+  {
+    name: "payouts",
+    // A statement: the referrals it covers, what is owed, and whether it has
+    // been paid. Referrals carry the payout id back, so nothing is ever paid
+    // twice.
+    validator: doc(["partnerUserId", "amount", "currency", "status", "createdAt"], {
+      partnerUserId: { bsonType: "string" },
+      partnerName: { bsonType: ["string", "null"] },
+      referralIds: { bsonType: "array", items: { bsonType: "string" } },
+      amount: { bsonType: ["double", "int"] },
+      currency: { bsonType: "string" },
+      status: { enum: ["draft", "approved", "paid", "cancelled"] },
+      reference: { bsonType: ["string", "null"] },
+      note: { bsonType: ["string", "null"] },
+      createdAt: { bsonType: ["string", "date"] },
+      paidAt: { bsonType: ["string", "null"] },
+    }),
+    indexes: [{ key: { partnerUserId: 1, createdAt: -1 } }, { key: { status: 1 } }],
+  },
+  {
+    name: "broadcasts",
+    // A message to partners, read in their portal. Not email: a record of what
+    // was said, to whom and when, that outlives anyone's inbox.
+    validator: doc(["title", "body", "audience", "createdAt"], {
+      title: { bsonType: "string" },
+      body: { bsonType: "string" },
+      audience: { enum: ["all", "country", "specialty"] },
+      audienceValue: { bsonType: ["string", "null"] },
+      pinned: { bsonType: "bool" },
+      createdAt: { bsonType: ["string", "date"] },
+      createdBy: { bsonType: ["string", "null"] },
+      expiresAt: { bsonType: ["string", "null"] },
+    }),
+    indexes: [{ key: { createdAt: -1 } }, { key: { audience: 1 } }],
+  },
+  {
+    name: "leads",
+    // Someone who reached us outside the form — a phone call, a WhatsApp, a
+    // partner's message. Becomes a case once there is enough to plan from.
+    validator: doc(["name", "source", "status", "createdAt"], {
+      name: { bsonType: "string" },
+      phone: { bsonType: ["string", "null"] },
+      email: { bsonType: ["string", "null"] },
+      country: { bsonType: ["string", "null"] },
+      need: { bsonType: ["string", "null"] },
+      source: { enum: ["phone", "whatsapp", "email", "partner", "walk-in", "other"] },
+      partnerUserId: { bsonType: ["string", "null"] },
+      status: { enum: ["new", "contacted", "qualified", "converted", "lost"] },
+      caseReference: { bsonType: ["string", "null"] },
+      note: { bsonType: ["string", "null"] },
+      createdAt: { bsonType: ["string", "date"] },
+      updatedAt: { bsonType: ["string", "date", "null"] },
+    }),
+    indexes: [{ key: { status: 1, createdAt: -1 } }, { key: { partnerUserId: 1 } }],
+  },
+  {
+    name: "site_settings",
+    validator: {
+      $jsonSchema: {
+        bsonType: "object",
+        required: ["_id"],
+        properties: {
+          reportRetentionDays: { bsonType: ["int", "long", "double"] },
+          plannerEnabled: { bsonType: "bool" },
+          offerTourism: { bsonType: "bool" },
+          opsEmail: { bsonType: ["string", "null"] },
+          partnerApplicationsOpen: { bsonType: "bool" },
+          defaultCurrency: { bsonType: "string" },
+          updatedAt: { bsonType: ["string", "date", "null"] },
+        },
+      },
+    },
+    indexes: [],
   },
   {
     name: "sources",

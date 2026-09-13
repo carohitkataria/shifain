@@ -9,7 +9,9 @@
  */
 import { chromium } from "playwright-core";
 
-const BASE = process.env.BASE_URL || "http://127.0.0.1:3210";
+// localhost, not 127.0.0.1: Next aliases the loopback IP to "localhost" in
+// its own redirects, so serving one and fetching the other looks cross-origin.
+const BASE = process.env.BASE_URL || "http://localhost:3210";
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined });
 let bad = 0;
 const check = (ok, label, extra = "") => {
@@ -86,10 +88,30 @@ for (const [path, needle] of [
   ["/en/conditions", "Conditions we plan for"],
   ["/en/portal/patient/login", "Send me a code"],
   ["/en/portal/doctor/login", "Partner doctor sign-in"],
+  ["/en/portal/doctor/apply", "Apply to refer patients"],
 ]) {
   const response = await page.goto(BASE + path, { waitUntil: "networkidle" });
   check(response.status() === 200 && (await page.locator(`text=${needle}`).first().isVisible()), `${path} loads`);
 }
+
+// A doctor who lands on the sign-in page without an account has to be able to
+// get to the application form from there, or the form may as well not exist.
+await page.goto(`${BASE}/en/portal/doctor/login`, { waitUntil: "networkidle" });
+check(
+  (await page.locator('a[href="/en/portal/doctor/apply"]').count()) > 0,
+  "the doctor sign-in page links to the application form",
+);
+
+// The application form must never write a login — it only ever takes a name.
+await page.goto(`${BASE}/en/portal/doctor/apply`, { waitUntil: "networkidle" });
+check(
+  (await page.locator('input[type="password"]').count()) === 0,
+  "the application form never asks for a password",
+);
+check(
+  (await page.locator('select[name="country"] option').count()) > 50,
+  "the application form asks which country they practise in",
+);
 
 // The homepage cards go to those pages rather than back to the form.
 await page.goto(`${BASE}/en`, { waitUntil: "networkidle" });

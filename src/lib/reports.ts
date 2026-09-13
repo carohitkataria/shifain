@@ -3,9 +3,11 @@ import { Binary } from "mongodb";
 import { getDb } from "./db";
 
 /**
- * Uploaded reports are kept for thirty days, long enough for a coordinator and
- * the treating hospital to work from them, then removed by MongoDB itself via
- * the TTL index on expiresAt. Nothing has to remember to clean up.
+ * Uploaded reports are kept for thirty days by default — long enough for a
+ * coordinator and the treating hospital to work from them — then removed by
+ * MongoDB itself via the TTL index on expiresAt. Nothing has to remember to
+ * clean up. Site settings can lengthen or shorten the window; the constant
+ * here is what the site ships with and falls back to.
  *
  * They live in the database because that is what this deployment has. It is
  * the right boundary to move to object storage behind: a case holds only ids,
@@ -33,8 +35,8 @@ export type ReportUpload = {
   body: Buffer;
 };
 
-export function expiryFromNow(): Date {
-  return new Date(Date.now() + RETENTION_DAYS * 24 * 60 * 60 * 1000);
+export function expiryFromNow(days: number = RETENTION_DAYS): Date {
+  return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 }
 
 /**
@@ -63,14 +65,18 @@ function ensureRetention(): Promise<void> {
 }
 
 /** Stores the files for a case. A failure here must not lose the case. */
-export async function storeReports(reference: string, uploads: ReportUpload[]): Promise<number> {
+export async function storeReports(
+  reference: string,
+  uploads: ReportUpload[],
+  retentionDays: number = RETENTION_DAYS,
+): Promise<number> {
   const keepable = uploads.filter((upload) => upload.body.byteLength <= MAX_REPORT_BYTES);
   if (keepable.length === 0) return 0;
 
   // A file is never written before the rule that deletes it exists.
   await ensureRetention();
 
-  const expiresAt = expiryFromNow();
+  const expiresAt = expiryFromNow(retentionDays);
   const uploadedAt = new Date().toISOString();
 
   const db = await getDb();

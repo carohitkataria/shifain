@@ -83,7 +83,13 @@ export default async function DoctorLoginPage({
           </form>
 
           <p className="mt-5 text-sm leading-relaxed text-ink-soft">
-            {t(DOCTOR_COPY.noAccount, locale)}
+            {t(DOCTOR_COPY.noAccount, locale)}{" "}
+            <Link
+              href={`/${locale}/portal/doctor/apply`}
+              className="font-semibold text-brand hover:underline"
+            >
+              {t(DOCTOR_COPY.applyLink, locale)}
+            </Link>
           </p>
           <Link href={`/${locale}`} className="mt-4 inline-block text-sm font-semibold text-brand hover:underline">
             {t(PORTAL_BACK, locale)}

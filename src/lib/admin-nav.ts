@@ -31,27 +31,34 @@ const GROUP_ICONS: Record<string, string> = {
 };
 
 /**
- * The console's sidebar. Grouped rather than one long list, because the panel
- * is where the business runs the site and more areas land here over time.
+ * The console's sidebar, grouped the way the business is actually run:
+ * the partner relationship, the day's operations, the catalogue behind a
+ * plan, the site's own words, and the machinery under all of it.
  */
 export const NAV_GROUPS: NavGroup[] = [
   {
-    id: "overview",
-    heading: "Overview",
-    items: [{ href: "/admin", label: "Homepage layout", icon: "layout" }],
+    id: "partners",
+    heading: "Partners & referrals",
+    items: [
+      { href: "/admin/partners/applications", label: "Partner applications", icon: "people" },
+      { href: "/admin/partners", label: "Approved partners", icon: "people" },
+      { href: "/admin/offers", label: "Referral offers", icon: "star" },
+      { href: "/admin/payouts", label: "Commissions & payouts", icon: "grid" },
+      { href: "/admin/broadcasts", label: "Broadcasts", icon: "chat" },
+    ],
   },
   {
-    id: "content",
-    heading: "Site content",
-    items: GROUPS.map((group) => ({
-      href: `/admin/${group.key}`,
-      label: group.label,
-      icon: GROUP_ICONS[group.key] ?? "text",
-    })),
+    id: "operations",
+    heading: "Operations",
+    items: [
+      { href: "/admin/leads", label: "Leads", icon: "folder" },
+      { href: "/admin/referrals", label: "Referrals", icon: "route" },
+      { href: "/admin/cases", label: "Patient cases", icon: "folder" },
+    ],
   },
   {
     id: "catalogue",
-    heading: "Catalogue",
+    heading: "Care catalogue",
     items: [
       { href: "/admin/hospitals", label: "Hospitals", icon: "grid" },
       { href: "/admin/doctors", label: "Doctors", icon: "people" },
@@ -59,11 +66,24 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "operations",
-    heading: "Patients & partners",
+    id: "content",
+    heading: "Site content",
     items: [
-      { href: "/admin/cases", label: "Patient cases", icon: "folder" },
+      { href: "/admin", label: "Homepage layout", icon: "layout" },
+      ...GROUPS.map((group) => ({
+        href: `/admin/${group.key}`,
+        label: group.label,
+        icon: GROUP_ICONS[group.key] ?? "text",
+      })),
+    ],
+  },
+  {
+    id: "system",
+    heading: "System",
+    items: [
       { href: "/admin/access", label: "Partner logins", icon: "people" },
+      { href: "/admin/system/database", label: "Database", icon: "grid" },
+      { href: "/admin/system/settings", label: "Site settings", icon: "sliders" },
     ],
   },
 ];

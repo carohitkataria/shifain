@@ -38,6 +38,20 @@ const PATHS: Record<string, React.ReactNode> = {
   plus: <path d="M12 5v14M5 12h14" />,
   chevron: <path d="m6 9 6 6 6-6" />,
   reset: <path d="M4 12a8 8 0 1 1 2.6 5.9M4 12V6m0 6h6" />,
+  sliders: (
+    <>
+      <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
+      <circle cx="16" cy="7" r="2" />
+      <circle cx="10" cy="17" r="2" />
+    </>
+  ),
+  money: (
+    <>
+      <rect x="2.5" y="6" width="19" height="12" rx="2" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M6 12h.01M18 12h.01" />
+    </>
+  ),
 };
 
 export type AdminIconName = keyof typeof PATHS;

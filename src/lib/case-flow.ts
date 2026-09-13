@@ -4,6 +4,7 @@ import { loadGrounding } from "./catalogue";
 import { createCase, savePlan, savePlanFailure, type CaseStatus, type PatientCase } from "./cases";
 import { generatePlan } from "./ai/plan";
 import { expiryFromNow, storeReports } from "./reports";
+import { getSettings } from "./settings";
 import type { Intake } from "./intake";
 import type { Locale } from "./i18n";
 
@@ -23,6 +24,7 @@ export async function openCase(input: {
   status?: CaseStatus;
 }): Promise<PatientCase> {
   const { intake } = input;
+  const settings = await getSettings();
 
   const record = await createCase({
     status: input.status ?? "planning",
@@ -33,16 +35,28 @@ export async function openCase(input: {
     description: intake.description,
     answers: intake.answers as Record<string, string> | null,
     reports: intake.meta,
-    reportsExpireAt: intake.uploads.length > 0 ? expiryFromNow().toISOString() : null,
+    reportsExpireAt:
+      intake.uploads.length > 0
+        ? expiryFromNow(settings.reportRetentionDays).toISOString()
+        : null,
     referredBy: input.referredBy,
   });
 
   after(async () => {
     if (intake.uploads.length > 0) {
-      await storeReports(record._id, intake.uploads).catch((error) =>
+      await storeReports(record._id, intake.uploads, settings.reportRetentionDays).catch((error) =>
         // The plan matters more than the archive, so this never blocks it.
         console.error("[shifain] could not store reports for", record._id, error),
       );
+    }
+
+    if (!settings.plannerEnabled) {
+      // Turned off deliberately: the case stands, a coordinator plans it.
+      await savePlanFailure(
+        record._id,
+        "Automatic planning is switched off. A coordinator is preparing this plan by hand.",
+      ).catch(() => undefined);
+      return;
     }
 
     try {
@@ -57,6 +71,8 @@ export async function openCase(input: {
         },
         await loadGrounding(),
       );
+      // A day out is offered at all only while the site is offering them.
+      if (!settings.offerTourism) plan.leisureSuitable = false;
       await savePlan(record._id, plan);
     } catch (error) {
       console.error("[shifain] could not plan case", record._id, error);

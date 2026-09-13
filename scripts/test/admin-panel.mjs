@@ -12,7 +12,10 @@
  */
 import { chromium } from "playwright-core";
 
-const BASE = process.env.BASE_URL || "http://127.0.0.1:3210";
+// localhost, not 127.0.0.1: Next aliases the loopback IP to "localhost" in
+// its own redirects, and a page served from one spelling fetching the other is
+// a cross-origin request as far as the browser is concerned.
+const BASE = process.env.BASE_URL || "http://localhost:3210";
 const PASSWORD = process.env.ADMIN_PASSWORD || "test-admin-password";
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined });
 let bad = 0;
@@ -48,7 +51,7 @@ for (const width of [390, 1280]) {
 
   if (width === 390) await page.click('button[aria-controls="admin-nav"]');
 
-  for (const heading of ["Overview", "Site content", "Patients & partners"]) {
+  for (const heading of ["Partners & referrals", "Operations", "Care catalogue", "Site content", "System"]) {
     check(await page.locator(`#admin-nav button:has-text("${heading}")`).count() > 0, `${width}px  sidebar group "${heading}"`);
   }
 
@@ -142,7 +145,7 @@ const flash = Buffer.from(
   JSON.stringify({ email: "dr@example.com", password: "not-a-real-password" }),
 ).toString("base64url");
 await context.addCookies([
-  { name: "shifain_partner_secret", value: flash, domain: "127.0.0.1", path: "/admin" },
+  { name: "shifain_partner_secret", value: flash, domain: "localhost", path: "/admin" },
 ]);
 const flashResponse = await page.goto(`${BASE}/admin/access`, { waitUntil: "networkidle" });
 check(flashResponse.status() === 200, "the generated-password banner renders", `status ${flashResponse.status()}`);
@@ -158,6 +161,45 @@ check(cleared, "and Done clears it without a server error");
 await page.goto(`${BASE}/admin/cases`, { waitUntil: "networkidle" });
 check(await page.locator("h1:has-text('Patient cases')").isVisible(), "the cases page loads");
 check(await page.locator("text=MONGODB_URI is not set").isVisible(), "cases says the database is not configured instead of erroring");
+
+// Every console section renders without a database. A page that throws here
+// is a 500 in production the first time somebody clicks it.
+for (const [path, heading] of [
+  ["/admin/partners/applications", "Partner applications"],
+  ["/admin/partners", "Approved partners"],
+  ["/admin/offers", "Referral offers"],
+  ["/admin/payouts", "Commissions & payouts"],
+  ["/admin/broadcasts", "Broadcasts"],
+  ["/admin/leads", "Leads"],
+  ["/admin/referrals", "Referrals"],
+  ["/admin/system/database", "Database"],
+  ["/admin/system/settings", "Site settings"],
+]) {
+  const response = await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+  const ok = response.status() === 200 && (await page.locator(`h1:has-text("${heading}")`).isVisible());
+  check(ok, `${path} renders`, `status ${response.status()}`);
+  const wide = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  check(wide <= 0, `${path} does not scroll sideways`, `${wide}px`);
+}
+
+// The offers page has to say loudly when nothing is the default, because a
+// referral that opens without one earns the partner nothing.
+await page.goto(`${BASE}/admin/offers`, { waitUntil: "networkidle" });
+check(
+  await page.locator('button:has-text("Create offer")').isVisible(),
+  "offers offers a create form even with no database",
+);
+
+// Settings must never print a secret, only whether it is set.
+await page.goto(`${BASE}/admin/system/settings`, { waitUntil: "networkidle" });
+const body = await page.locator("body").innerText();
+check(body.includes("ANTHROPIC_API_KEY"), "settings lists the environment it expects");
+check(
+  !/sk-ant-|mongodb\+srv:\/\//.test(body),
+  "settings never prints a secret's value",
+);
 
 await browser.close();
 console.log(bad === 0 ? "\nALL CHECKS PASSED" : `\n${bad} CHECK(S) FAILED`);

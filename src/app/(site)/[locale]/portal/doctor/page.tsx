@@ -8,6 +8,7 @@ import { currentPartner } from "@/lib/partner-auth";
 import { casesReferredBy, type CaseStatus } from "@/lib/cases";
 import { isDatabaseConfigured } from "@/lib/db";
 import { DOCTOR_COPY } from "@/lib/doctor-copy";
+import { broadcastsFor, listReferrals, money } from "@/lib/partners";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 import { doctorLogoutAction, referPatientAction } from "./actions";
@@ -35,7 +36,18 @@ export default async function DoctorPortalPage({
   const doctor = await currentPartner().catch(() => null);
   if (!doctor || doctor.role !== "doctor") redirect(`/${locale}/portal/doctor/login`);
 
-  const [content, referrals] = await Promise.all([getContent(), casesReferredBy(doctor._id)]);
+  const [content, referrals, notices, commissions] = await Promise.all([
+    getContent(),
+    casesReferredBy(doctor._id),
+    broadcastsFor(doctor),
+    listReferrals({ partnerUserId: doctor._id }),
+  ]);
+
+  const earned = commissions.reduce((sum, row) => sum + (row.commissionAmount ?? 0), 0);
+  const unpaid = commissions
+    .filter((row) => !row.payoutId)
+    .reduce((sum, row) => sum + (row.commissionAmount ?? 0), 0);
+  const currency = commissions[0]?.currency ?? "USD";
 
   return (
     <>
@@ -57,6 +69,64 @@ export default async function DoctorPortalPage({
               </button>
             </form>
           </div>
+
+          {notices.length > 0 ? (
+            <section className="mt-8">
+              <h2 className="text-xl font-extrabold tracking-tight text-ink">
+                {t(DOCTOR_COPY.notices, locale)}
+              </h2>
+              <ul className="mt-4 space-y-3">
+                {notices.map((notice) => (
+                  <li
+                    key={notice._id}
+                    className={`card p-5 ${notice.pinned ? "border-l-4 border-l-brand" : ""}`}
+                  >
+                    <p className="font-extrabold text-ink">{notice.title}</p>
+                    <p className="mt-1 whitespace-pre-line leading-relaxed text-ink-soft">
+                      {notice.body}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {commissions.length > 0 ? (
+            <section className="card mt-8 p-7">
+              <h2 className="text-xl font-extrabold tracking-tight text-ink">
+                {t(DOCTOR_COPY.earnings, locale)}
+              </h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                <p>
+                  <span className="block text-sm font-bold uppercase tracking-wider text-ink-soft">
+                    {t(DOCTOR_COPY.earned, locale)}
+                  </span>
+                  <span className="mt-0.5 block text-2xl font-extrabold text-ink">
+                    {money(earned, currency)}
+                  </span>
+                </p>
+                <p>
+                  <span className="block text-sm font-bold uppercase tracking-wider text-ink-soft">
+                    {t(DOCTOR_COPY.unpaid, locale)}
+                  </span>
+                  <span className="mt-0.5 block text-2xl font-extrabold text-saffron">
+                    {money(unpaid, currency)}
+                  </span>
+                </p>
+                <p>
+                  <span className="block text-sm font-bold uppercase tracking-wider text-ink-soft">
+                    {t(DOCTOR_COPY.paid, locale)}
+                  </span>
+                  <span className="mt-0.5 block text-2xl font-extrabold text-leaf">
+                    {money(earned - unpaid, currency)}
+                  </span>
+                </p>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-ink-soft">
+                {t(DOCTOR_COPY.commissionNote, locale)}
+              </p>
+            </section>
+          ) : null}
 
           <section className="card mt-8 p-7">
             <h2 className="text-xl font-extrabold tracking-tight text-ink">

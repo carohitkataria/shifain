@@ -16,6 +16,14 @@ export type PartnerUser = {
   role: PartnerRole;
   doctorId: string | null;
   hospitalId: string | null;
+  /** Where they practise, and what they earn on a referral. */
+  country?: string | null;
+  city?: string | null;
+  clinic?: string | null;
+  specialty?: string | null;
+  offerId?: string | null;
+  payoutMethod?: string | null;
+  payoutDetails?: string | null;
   passwordHash: string;
   status: "invited" | "active" | "suspended";
   createdAt: string;

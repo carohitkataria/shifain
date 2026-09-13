@@ -40,9 +40,24 @@ export function middleware(request: NextRequest) {
     acceptLanguage: request.headers.get("accept-language"),
   });
 
-  const url = request.nextUrl.clone();
-  url.pathname = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
-  return applyIndexingPolicy(NextResponse.redirect(url), url.pathname);
+  const path = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
+
+  // Redirect to the host the visitor actually asked for. request.nextUrl
+  // resolves to whatever Next decided the origin is — on a deployment reached
+  // by more than one hostname, or behind a proxy, that is not the host in the
+  // request, and bouncing someone to a different origin breaks the page they
+  // were on. The forwarded headers, then Host, are the visitor's own.
+  //
+  // A plain URL, not the cloned NextURL: NextResponse.redirect serialises a
+  // NextURL from the origin it was built with, so a host set on the clone is
+  // quietly dropped.
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const proto = request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol.replace(":", "");
+  const target = host
+    ? new URL(`${proto}://${host}${path}${request.nextUrl.search}`)
+    : new URL(`${path}${request.nextUrl.search}`, request.nextUrl.origin);
+
+  return applyIndexingPolicy(NextResponse.redirect(target), path);
 }
 
 export const config = {
