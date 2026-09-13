@@ -8,9 +8,10 @@ import { PlanWaiting } from "@/components/PlanWaiting";
 import { getContent } from "@/lib/store";
 import { getCase } from "@/lib/cases";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listDiseases, listTreatments, priceBandsFor } from "@/lib/catalogue";
+import { attractionsFor, listDiseases, listTreatments, priceBandsFor } from "@/lib/catalogue";
 import { estimateFor } from "@/lib/ai/estimate";
 import { PACKAGE_LINES, PLAN_COPY } from "@/lib/plan-copy";
+import { TOUR_COPY } from "@/lib/intake-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 
@@ -86,7 +87,7 @@ export default async function PlanPage({
   }
 
   const plan = record.plan;
-  const [diseases, treatments, bands] = await Promise.all([
+  const [diseases, treatments, bands, attractions] = await Promise.all([
     listDiseases(),
     listTreatments(),
     priceBandsFor(
@@ -94,6 +95,8 @@ export default async function PlanPage({
         (code): code is string => Boolean(code),
       ),
     ),
+    // Only fetched when the plan says a day out would be reasonable at all.
+    plan.leisureSuitable ? attractionsFor(plan.destinationCity) : Promise.resolve([]),
   ]);
 
   const treatmentName = (code: string) =>
@@ -104,6 +107,32 @@ export default async function PlanPage({
 
   const estimate = estimateFor(plan.recommendedTreatmentCode, bands);
   const suggested = new Set(plan.suggestedPackage);
+
+  /**
+   * A car, a driver, entry tickets and a guide for the day. Indicative like
+   * everything else on this page, and scaled by how far the drive is.
+   */
+  const tourCost = (travelHours: number) => {
+    const min = Math.round(35 + 28 * travelHours);
+    return { min, max: Math.round(min * 2.1) };
+  };
+
+  const tourLines: PlanLine[] = attractions.map((attraction) => {
+    const cost = tourCost(attraction.travelHours);
+    const length = t(attraction.halfDay ? TOUR_COPY.halfDay : TOUR_COPY.fullDay, locale);
+    const away = `${attraction.travelHours}${t(TOUR_COPY.hours, locale)} ${t(TOUR_COPY.travel, locale)}`;
+    return {
+      id: attraction._id,
+      icon: attraction.kind === "spiritual" ? "shield" : attraction.kind === "leisure" ? "sliders" : "route",
+      title: attraction.name,
+      note: `${length} · ${away} · ${attraction.note}`,
+      min: cost.min,
+      max: cost.max,
+      optional: true,
+      // Nothing leisure is ever ticked by default on a medical plan.
+      preselected: false,
+    };
+  });
 
   const lines: PlanLine[] =
     estimate.kind === "none"
@@ -129,6 +158,7 @@ export default async function PlanPage({
             optional: true,
             preselected: suggested.has(id as keyof typeof PACKAGE_LINES),
           })),
+          ...tourLines,
         ];
 
   return shell(
@@ -229,6 +259,17 @@ export default async function PlanPage({
           {lines.length > 0 ? (
             <>
               <p className="mb-3 text-ink-soft">{t(PLAN_COPY.packageNote, locale)}</p>
+              {tourLines.length > 0 && (
+                <div className="mb-4 rounded-2xl bg-brand-tint/60 p-4">
+                  <p className="font-semibold text-ink">
+                    {t(TOUR_COPY.title, locale)}
+                    {plan.destinationCity ? ` — ${plan.destinationCity}` : ""}
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-ink-soft">
+                    {t(TOUR_COPY.body, locale)}
+                  </p>
+                </div>
+              )}
               <PlanPackage
                 currency="USD"
                 lines={lines}

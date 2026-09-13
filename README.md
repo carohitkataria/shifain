@@ -102,6 +102,28 @@ does work today. The **doctor portal is live**: a referring doctor signs in at
 sent. Logins are created in the admin panel under **People → Partner logins**, or from the command
 line with `npm run db:partner`.
 
+## Telling us what is wrong
+
+Three routes, all of which produce a plan:
+
+- **Upload reports** — the most accurate. PDFs and photos, read directly.
+- **Describe it** — for a patient with nothing to hand.
+- **Answer the standard questions** — for a patient who would rather not send
+  documents to a company they have just met.
+
+Country is asked before the phone number so the dialling code fills itself in,
+and the code stays editable for anyone whose number does not match where they
+live. The site opens in the language that fits the country the visitor is
+browsing from, and every language stays in the header switcher.
+
+## Reports
+
+Uploaded files are kept for **30 days** so a coordinator and the treating
+hospital can work from them, then deleted by MongoDB itself — a TTL index on
+`expiresAt`, created by the app on its first upload rather than by a script
+someone has to remember to run. A case keeps only what each report *was*; the
+plan page and the patient portal both say when the files go.
+
 ## The AI plan
 
 A patient uploads their reports on the homepage; a partner doctor uploads them on their portal.
@@ -118,6 +140,12 @@ Three rules hold the planner in place:
 - **It is not a diagnosis.** It reads what the reports already say, flags anything needing
   emergency care where the patient is now, and says what it still needs to see. A treating doctor
   confirms the plan within 48 hours.
+
+It also picks the city we would most likely place the case in, and says whether this patient is
+likely to be well enough for a day out. When they are — and only for treatments the catalogue
+marks tour-friendly — the plan offers what is worth seeing from that city, as package lines the
+patient adds or drops like any other. Dental work in Gurgaon offers the Red Fort; nothing on a
+cancer or transplant pathway offers anything.
 
 If the planner fails or no API key is set, the case is still opened and marked for a coordinator —
 a patient who has uploaded their reports is never dropped.

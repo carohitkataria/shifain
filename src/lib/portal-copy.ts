@@ -3,7 +3,7 @@ import type { L } from "./content-types";
 const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
 
 // The doctor portal is live at /portal/doctor and is served by its own route.
-export const PORTAL_ROLES = ["patient", "hospital"] as const;
+export const PORTAL_ROLES = ["hospital"] as const;
 export type PortalRole = (typeof PORTAL_ROLES)[number];
 
 export const isPortalRole = (value: string): value is PortalRole =>
@@ -14,16 +14,6 @@ export const isPortalRole = (value: string): value is PortalRole =>
  * visitor the step that does work today rather than a dead sign-in box.
  */
 export const PORTAL_COPY: Record<PortalRole, { title: L; body: L; cta: L; ctaHref: string }> = {
-  patient: {
-    title: l("Patient portal", "Личный кабинет пациента", "Bemor kabineti"),
-    body: l(
-      "The patient portal — where you track your plan, documents and appointments — is opening soon. In the meantime, upload your reports and your AI plan and estimate are generated right away.",
-      "Личный кабинет пациента, где вы отслеживаете план, документы и приёмы, скоро откроется. А пока загрузите документы — план и смета от ИИ будут готовы сразу.",
-      "Reja, hujjatlar va qabullarni kuzatadigan bemor kabineti tez orada ochiladi. Hozircha hujjatlaringizni yuklang — AI reja va hisob darhol tayyorlanadi.",
-    ),
-    cta: l("Upload reports", "Загрузить документы", "Hujjatlarni yuklash"),
-    ctaHref: "#quote-form",
-  },
   hospital: {
     title: l("Hospital portal", "Кабинет клиники", "Shifoxona kabineti"),
     body: l(

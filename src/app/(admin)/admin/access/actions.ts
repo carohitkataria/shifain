@@ -83,6 +83,56 @@ export async function savePartnerAction(formData: FormData) {
   redirect(`/admin/access?saved=${existing ? "updated" : "created"}`);
 }
 
+/**
+ * Regenerates a password. The old one cannot be shown again — only its hash is
+ * kept — so resetting and handing over the new one is the whole recovery path.
+ */
+export async function resetPartnerPasswordAction(formData: FormData) {
+  if (!(await isAuthenticated())) redirect("/admin/login");
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) redirect("/admin/access");
+
+  const db = await getDb();
+  const users = db.collection<PartnerUser>("partner_users");
+  const user = await users.findOne({ _id: id });
+  if (!user) redirect("/admin/access");
+
+  const password = crypto.randomBytes(12).toString("base64url");
+  await users.updateOne({ _id: id }, { $set: { passwordHash: hashPassword(password) } });
+
+  const jar = await cookies();
+  jar.set(
+    FLASH_COOKIE,
+    Buffer.from(JSON.stringify({ email: user.email, password })).toString("base64url"),
+    {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: FLASH_PATH,
+      maxAge: FLASH_MAX_AGE_SECONDS,
+    },
+  );
+
+  revalidatePath("/admin/access");
+  redirect("/admin/access?saved=reset");
+}
+
+/** Removes a login outright. The cases they referred are not touched. */
+export async function deletePartnerAction(formData: FormData) {
+  if (!(await isAuthenticated())) redirect("/admin/login");
+  await clearFlash();
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) redirect("/admin/access");
+
+  const db = await getDb();
+  await db.collection<PartnerUser>("partner_users").deleteOne({ _id: id });
+
+  revalidatePath("/admin/access");
+  redirect("/admin/access?saved=deleted");
+}
+
 export async function setPartnerStatusAction(formData: FormData) {
   if (!(await isAuthenticated())) redirect("/admin/login");
 

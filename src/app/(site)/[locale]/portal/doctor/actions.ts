@@ -1,16 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { after } from "next/server";
 import { authenticate, currentPartner, endPartnerSession, startPartnerSession } from "@/lib/partner-auth";
-import { createCase, savePlan, savePlanFailure, type CaseReport } from "@/lib/cases";
-import { loadGrounding } from "@/lib/catalogue";
-import { generatePlan, type PlanReport } from "@/lib/ai/plan";
+import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
+import { openCase } from "@/lib/case-flow";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
-
-const MAX_FILES = 10;
-const MAX_TOTAL_BYTES = 25 * 1024 * 1024;
-const READABLE = /^(application\/pdf|image\/(png|jpeg|gif|webp))$/;
 
 function localeOf(formData: FormData): Locale {
   const value = String(formData.get("locale") ?? "");
@@ -51,58 +45,22 @@ export async function referPatientAction(formData: FormData) {
   if (!doctor || doctor.role !== "doctor") redirect(`/${locale}/portal/doctor/login`);
 
   const name = String(formData.get("name") ?? "").trim();
-  const phone = String(formData.get("phone") ?? "").trim();
   const country = String(formData.get("country") ?? "").trim();
-  const need = String(formData.get("need") ?? "").trim();
-  if (!name || !phone || !country || !need) redirect(`/${locale}/portal/doctor?error=1`);
+  const dial = String(formData.get("dial") ?? "").trim();
+  const local = String(formData.get("phone") ?? "").trim();
+  const phone = [dial, local].filter(Boolean).join(" ").trim();
+  if (!name || !phone || !country) redirect(`/${locale}/portal/doctor?error=1`);
 
-  const uploads = formData
-    .getAll("reports")
-    .filter((value): value is File => value instanceof File && value.size > 0);
-  const totalBytes = uploads.reduce((sum, file) => sum + file.size, 0);
-  if (uploads.length > MAX_FILES || totalBytes > MAX_TOTAL_BYTES) {
+  const intake = await readIntake(formData);
+  if (intake.tooLarge || !hasSomethingToPlanFrom(intake)) {
     redirect(`/${locale}/portal/doctor?error=1`);
   }
 
-  const files: { meta: CaseReport; body: PlanReport }[] = await Promise.all(
-    uploads.map(async (file) => {
-      const mediaType = READABLE.test(file.type) ? file.type : "application/octet-stream";
-      return {
-        meta: { filename: file.name, mediaType, bytes: file.size },
-        body: {
-          filename: file.name,
-          mediaType,
-          data: READABLE.test(file.type)
-            ? Buffer.from(await file.arrayBuffer()).toString("base64")
-            : "",
-        },
-      };
-    }),
-  );
-
-  const record = await createCase({
-    status: "planning",
+  const record = await openCase({
     locale,
     patient: { name, phone, country, email: null },
-    statedNeed: need,
-    reports: files.map((f) => f.meta),
+    intake,
     referredBy: doctor._id,
-  });
-
-  after(async () => {
-    try {
-      const plan = await generatePlan(
-        { statedNeed: need, country, locale, reports: files.map((f) => f.body) },
-        await loadGrounding(),
-      );
-      await savePlan(record._id, plan);
-    } catch (error) {
-      console.error("[shifain] could not plan referral", record._id, error);
-      await savePlanFailure(
-        record._id,
-        error instanceof Error ? error.message : "The planner did not complete.",
-      ).catch(() => undefined);
-    }
   });
 
   redirect(`/${locale}/plan/${record._id}`);

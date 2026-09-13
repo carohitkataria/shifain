@@ -1,0 +1,699 @@
+[
+  {
+    "_id": "att-red-fort",
+    "city": "Delhi",
+    "name": "Red Fort (Lal Qila)",
+    "kind": "heritage",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "The Mughal fort at the heart of Old Delhi. A UNESCO site, and an easy half-day.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-qutub-minar",
+    "city": "Delhi",
+    "name": "Qutub Minar",
+    "kind": "heritage",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "The tallest brick minaret in the world, in a quiet garden complex.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-humayun-tomb",
+    "city": "Delhi",
+    "name": "Humayun's Tomb",
+    "kind": "heritage",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "The garden tomb the Taj Mahal was modelled on. Level paths throughout.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-lotus-temple",
+    "city": "Delhi",
+    "name": "Lotus Temple",
+    "kind": "spiritual",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "A quiet place to sit, open to people of every faith. Step-free.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-akshardham",
+    "city": "Delhi",
+    "name": "Akshardham Temple",
+    "kind": "spiritual",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "Carved stone temple complex with gardens. Allow a slow afternoon.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-agra-taj-mahal",
+    "city": "Delhi",
+    "name": "Taj Mahal, Agra",
+    "kind": "heritage",
+    "travelHours": 3.5,
+    "halfDay": false,
+    "note": "A long but very doable day trip by expressway. Leave early; wheelchairs are available at the gate.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-red-fort-from-gurgaon",
+    "city": "Gurgaon",
+    "name": "Red Fort (Lal Qila), Delhi",
+    "kind": "heritage",
+    "travelHours": 1.5,
+    "halfDay": true,
+    "note": "An hour and a half into Old Delhi for the Mughal fort.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-qutub-from-gurgaon",
+    "city": "Gurgaon",
+    "name": "Qutub Minar, Delhi",
+    "kind": "heritage",
+    "travelHours": 1.0,
+    "halfDay": true,
+    "note": "The closest of Delhi's great monuments to Gurgaon.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-kingdom-of-dreams",
+    "city": "Gurgaon",
+    "name": "Cyber Hub and Kingdom of Dreams",
+    "kind": "leisure",
+    "travelHours": 0.3,
+    "halfDay": true,
+    "note": "Food and an evening show, ten minutes from most Gurgaon hospitals.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-agra-from-gurgaon",
+    "city": "Gurgaon",
+    "name": "Taj Mahal, Agra",
+    "kind": "heritage",
+    "travelHours": 4.0,
+    "halfDay": false,
+    "note": "A full day. Worth it if the surgeon has cleared you to travel.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-red-fort-from-noida",
+    "city": "Noida",
+    "name": "Red Fort (Lal Qila), Delhi",
+    "kind": "heritage",
+    "travelHours": 1.0,
+    "halfDay": true,
+    "note": "Straight across the river into Old Delhi.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-agra-from-noida",
+    "city": "Noida",
+    "name": "Taj Mahal, Agra",
+    "kind": "heritage",
+    "travelHours": 3.0,
+    "halfDay": false,
+    "note": "Noida sits on the Agra expressway, so this is the shortest run of the NCR.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-agra-from-faridabad",
+    "city": "Faridabad",
+    "name": "Taj Mahal, Agra",
+    "kind": "heritage",
+    "travelHours": 3.0,
+    "halfDay": false,
+    "note": "A day trip down the Agra road.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-surajkund",
+    "city": "Faridabad",
+    "name": "Surajkund and the Aravalli hills",
+    "kind": "leisure",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "A tenth-century reservoir and quiet hill paths on the city's edge.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-gateway-of-india",
+    "city": "Mumbai",
+    "name": "Gateway of India and Colaba",
+    "kind": "heritage",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "The seafront arch, the old quarter behind it, and a boat if you want one.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-elephanta",
+    "city": "Mumbai",
+    "name": "Elephanta Caves",
+    "kind": "heritage",
+    "travelHours": 1.5,
+    "halfDay": false,
+    "note": "Rock-cut temples on an island. Involves a ferry and steps.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-marine-drive",
+    "city": "Mumbai",
+    "name": "Marine Drive at sunset",
+    "kind": "leisure",
+    "travelHours": 0.3,
+    "halfDay": true,
+    "note": "A flat seafront walk. The gentlest outing on this list.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-lalbagh",
+    "city": "Bangalore",
+    "name": "Lalbagh Botanical Garden",
+    "kind": "leisure",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "Shaded walks and a glasshouse. Easy on someone still recovering.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-bangalore-palace",
+    "city": "Bangalore",
+    "name": "Bangalore Palace",
+    "kind": "heritage",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "A Tudor-style palace with an audio tour, right in the city.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-mysore-palace",
+    "city": "Bangalore",
+    "name": "Mysore Palace",
+    "kind": "heritage",
+    "travelHours": 3.0,
+    "halfDay": false,
+    "note": "A day trip south. Spectacular when lit in the evening.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-marina-beach",
+    "city": "Chennai",
+    "name": "Marina Beach and the Santhome basilica",
+    "kind": "leisure",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "One of the longest urban beaches in the world, and a quiet cathedral.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-mahabalipuram",
+    "city": "Chennai",
+    "name": "Mahabalipuram shore temples",
+    "kind": "heritage",
+    "travelHours": 1.5,
+    "halfDay": false,
+    "note": "Seventh-century temples carved out of the rock, an hour down the coast.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-charminar",
+    "city": "Hyderabad",
+    "name": "Charminar and the old bazaars",
+    "kind": "heritage",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "The city's landmark arch, with the bangle markets around it.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-golconda",
+    "city": "Hyderabad",
+    "name": "Golconda Fort",
+    "kind": "heritage",
+    "travelHours": 0.6,
+    "halfDay": true,
+    "note": "A hill fort with a famous acoustic trick. There are steps.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-ramoji",
+    "city": "Hyderabad",
+    "name": "Ramoji Film City",
+    "kind": "leisure",
+    "travelHours": 1.0,
+    "halfDay": false,
+    "note": "A full day out, and easy to take slowly.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-sabarmati-ashram",
+    "city": "Ahmedabad",
+    "name": "Sabarmati Ashram",
+    "kind": "heritage",
+    "travelHours": 0.3,
+    "halfDay": true,
+    "note": "Gandhi's home by the river. Quiet, flat and unhurried.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-adalaj",
+    "city": "Ahmedabad",
+    "name": "Adalaj Stepwell",
+    "kind": "heritage",
+    "travelHours": 0.7,
+    "halfDay": true,
+    "note": "A carved five-storey stepwell, cool even in summer.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-victoria-memorial",
+    "city": "Kolkata",
+    "name": "Victoria Memorial and the Maidan",
+    "kind": "heritage",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "Marble halls and a large park to walk in.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-howrah-bridge",
+    "city": "Kolkata",
+    "name": "Howrah Bridge and the flower market",
+    "kind": "leisure",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "Best at dawn, when the market is at its busiest.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-amber-fort",
+    "city": "Jaipur",
+    "name": "Amber Fort",
+    "kind": "heritage",
+    "travelHours": 0.8,
+    "halfDay": true,
+    "note": "The hill fort above the old city. A jeep takes you to the gate.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-hawa-mahal",
+    "city": "Jaipur",
+    "name": "Hawa Mahal and the City Palace",
+    "kind": "heritage",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "The pink facade everyone knows, and the palace museum behind it.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-aga-khan-palace",
+    "city": "Pune",
+    "name": "Aga Khan Palace",
+    "kind": "heritage",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "Gardens and a small museum. Level throughout.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-sinhagad",
+    "city": "Pune",
+    "name": "Sinhagad Fort",
+    "kind": "heritage",
+    "travelHours": 1.2,
+    "halfDay": false,
+    "note": "A hill fort with a steep last stretch — only once you are walking well.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-fort-kochi",
+    "city": "Kochi",
+    "name": "Fort Kochi and the Chinese fishing nets",
+    "kind": "heritage",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "A slow waterfront afternoon among Portuguese and Dutch streets.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-backwaters",
+    "city": "Kochi",
+    "name": "Alleppey backwaters houseboat",
+    "kind": "leisure",
+    "travelHours": 1.5,
+    "halfDay": false,
+    "note": "A day on still water. About as restful as India gets.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-kozhikode-beach",
+    "city": "Kerala",
+    "name": "Kozhikode beach and the spice markets",
+    "kind": "leisure",
+    "travelHours": 0.3,
+    "halfDay": true,
+    "note": "A flat seafront and the old pepper warehouses behind it.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-bara-imambara",
+    "city": "Lucknow",
+    "name": "Bara Imambara and the Bhulbhulaiya",
+    "kind": "heritage",
+    "travelHours": 0.4,
+    "halfDay": true,
+    "note": "A vast vaulted hall and a maze of corridors above it.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-golden-temple",
+    "city": "Amritsar",
+    "name": "Golden Temple",
+    "kind": "spiritual",
+    "travelHours": 0.3,
+    "halfDay": true,
+    "note": "Open all hours, to everyone, and it feeds anyone who comes.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-wagah",
+    "city": "Amritsar",
+    "name": "Wagah border ceremony",
+    "kind": "leisure",
+    "travelHours": 1.0,
+    "halfDay": false,
+    "note": "The evening flag ceremony at the Pakistan border. Arrive early for a seat.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-rock-garden",
+    "city": "Mohali",
+    "name": "Rock Garden and Sukhna Lake, Chandigarh",
+    "kind": "leisure",
+    "travelHours": 0.5,
+    "halfDay": true,
+    "note": "A sculpture garden made of salvage, and a lakeside walk after it.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "att-dutch-garden",
+    "city": "Surat",
+    "name": "Dutch Garden and the old riverfront",
+    "kind": "heritage",
+    "travelHours": 0.3,
+    "halfDay": true,
+    "note": "A small colonial cemetery garden and a walk along the Tapi.",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

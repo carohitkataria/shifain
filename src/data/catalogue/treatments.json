@@ -29,7 +29,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "angioplasty-stent",
@@ -60,7 +61,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "coronary-angiography",
@@ -90,7 +92,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "valve-replacement",
@@ -122,7 +125,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "valve-repair",
@@ -153,7 +157,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "tavi",
@@ -184,7 +189,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "pacemaker-implant",
@@ -214,7 +220,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "cardiac-ablation",
@@ -245,7 +252,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "icd-implant",
@@ -276,7 +284,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "asd-vsd-closure",
@@ -308,7 +317,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "tetralogy-repair",
@@ -341,7 +351,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "heart-transplant",
@@ -374,7 +385,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "lvad",
@@ -406,7 +418,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "peripheral-angioplasty",
@@ -436,7 +449,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "bypass-graft-limb",
@@ -467,7 +481,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "evar",
@@ -498,7 +513,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "open-aneurysm-repair",
@@ -530,7 +546,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "endovenous-laser",
@@ -560,7 +577,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "mastectomy",
@@ -592,7 +610,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "breast-conserving-surgery",
@@ -623,7 +642,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "chemotherapy-breast",
@@ -653,7 +673,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "radiotherapy-breast",
@@ -684,7 +705,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "lobectomy",
@@ -716,7 +738,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "chemotherapy-lung",
@@ -746,7 +769,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "immunotherapy",
@@ -777,7 +801,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "colectomy",
@@ -809,7 +834,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "robotic-colorectal",
@@ -841,7 +867,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "head-neck-resection",
@@ -873,7 +900,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "robotic-head-neck",
@@ -904,7 +932,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "radical-prostatectomy",
@@ -936,7 +965,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "radiotherapy-prostate",
@@ -967,7 +997,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "radical-hysterectomy",
@@ -999,7 +1030,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "brachytherapy",
@@ -1030,7 +1062,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "liver-resection",
@@ -1062,7 +1095,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "tace",
@@ -1093,7 +1127,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "gastrectomy",
@@ -1125,7 +1160,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "craniotomy-tumour",
@@ -1158,7 +1194,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "awake-craniotomy",
@@ -1190,7 +1227,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "gamma-knife",
@@ -1222,7 +1260,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "chemotherapy-leukaemia",
@@ -1254,7 +1293,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "car-t",
@@ -1286,7 +1326,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "chemotherapy-lymphoma",
@@ -1317,7 +1358,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "kidney-transplant",
@@ -1349,7 +1391,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "haemodialysis",
@@ -1379,7 +1422,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "liver-transplant",
@@ -1411,7 +1455,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "bone-marrow-transplant",
@@ -1443,7 +1488,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "bmt-thalassaemia",
@@ -1476,7 +1522,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "corneal-transplant",
@@ -1506,7 +1553,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "total-knee-replacement",
@@ -1537,7 +1585,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "partial-knee-replacement",
@@ -1567,7 +1616,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "robotic-knee-replacement",
@@ -1598,7 +1648,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "total-hip-replacement",
@@ -1629,7 +1680,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "hip-revision",
@@ -1660,7 +1712,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "spinal-fusion",
@@ -1692,7 +1745,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "microdiscectomy",
@@ -1722,7 +1776,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "disc-replacement",
@@ -1753,7 +1808,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "acl-reconstruction",
@@ -1783,7 +1839,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "shoulder-arthroscopy",
@@ -1813,7 +1870,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "mechanical-thrombectomy",
@@ -1844,7 +1902,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "stroke-rehabilitation",
@@ -1874,7 +1933,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "epilepsy-surgery",
@@ -1905,7 +1965,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "deep-brain-stimulation",
@@ -1936,7 +1997,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "aneurysm-coiling",
@@ -1967,7 +2029,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "aneurysm-clipping",
@@ -1999,7 +2062,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "vp-shunt",
@@ -2030,7 +2094,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "pcnl",
@@ -2060,7 +2125,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "ureteroscopy-laser",
@@ -2090,7 +2156,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "turp",
@@ -2120,7 +2187,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "holep",
@@ -2150,7 +2218,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "sleeve-gastrectomy",
@@ -2180,7 +2249,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "gastric-bypass",
@@ -2210,7 +2280,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "laparoscopic-cholecystectomy",
@@ -2240,7 +2311,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "hernia-repair",
@@ -2270,7 +2342,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "ibd-biologics",
@@ -2300,7 +2373,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "ivf-cycle",
@@ -2330,7 +2404,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "icsi",
@@ -2360,7 +2435,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "pgt",
@@ -2390,7 +2466,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "tese",
@@ -2421,7 +2498,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "myomectomy",
@@ -2451,7 +2529,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "hysterectomy",
@@ -2482,7 +2561,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "phacoemulsification",
@@ -2512,7 +2592,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "vitrectomy",
@@ -2542,7 +2623,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "cochlear-implant",
@@ -2573,7 +2655,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "fess",
@@ -2604,7 +2687,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "reconstructive-flap",
@@ -2635,7 +2719,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "liposuction",
@@ -2665,7 +2750,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "abdominoplasty",
@@ -2695,7 +2781,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "hair-transplant",
@@ -2725,7 +2812,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "dental-implant",
@@ -2755,7 +2843,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "full-mouth-rehab",
@@ -2785,7 +2874,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": true
   },
   {
     "_id": "paediatric-corrective-surgery",
@@ -2817,7 +2907,8 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   },
   {
     "_id": "pulmonary-rehabilitation",
@@ -2847,6 +2938,7 @@
       "collectedAt": "2026-09-13T00:00:00.000Z",
       "verifiedAt": null,
       "verifiedBy": null
-    }
+    },
+    "tourFriendly": false
   }
 ]

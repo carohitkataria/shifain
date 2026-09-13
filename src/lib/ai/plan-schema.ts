@@ -27,19 +27,27 @@ export type Plan = {
   treatments: { treatmentCode: string; why: string }[];
   recommendedTreatmentCode: string | null;
   specialtyCode: string | null;
+  /** Where we would most likely place this case, from the cities we cover. */
+  destinationCity: string | null;
   stay: { inpatientNights: number; daysInCountry: number };
   itinerary: { day: string; title: string; detail: string }[];
   suggestedPackage: PlanPackageOption[];
+  /**
+   * Whether this patient is likely to be well enough for a gentle outing.
+   * Only ever set for a treatment the catalogue marks tourFriendly, and the
+   * plan says plainly that the treating doctor decides.
+   */
+  leisureSuitable: boolean;
   questionsForPatient: string[];
   missingReports: string[];
   confidence: "low" | "medium" | "high";
 };
 
-
 export function schemaFor(grounding: Grounding): Record<string, unknown> {
   const diseaseCodes = grounding.diseases.map((d) => d._id);
   const treatmentCodes = grounding.treatments.map((t) => t._id);
   const specialtyCodes = [...new Set(grounding.rules.map((r) => r.specialtyCode))];
+  const cities = grounding.cities.map((c) => c.name);
 
   return {
     type: "object",
@@ -52,9 +60,11 @@ export function schemaFor(grounding: Grounding): Record<string, unknown> {
       "treatments",
       "recommendedTreatmentCode",
       "specialtyCode",
+      "destinationCity",
       "stay",
       "itinerary",
       "suggestedPackage",
+      "leisureSuitable",
       "questionsForPatient",
       "missingReports",
       "confidence",
@@ -71,12 +81,14 @@ export function schemaFor(grounding: Grounding): Record<string, unknown> {
       },
       understanding: {
         type: "string",
-        description: "Plain-language summary of what the reports say, addressed to the patient. At most 120 words.",
+        description:
+          "Plain-language summary of what you were told or shown, addressed to the patient. At most 120 words.",
       },
       reportsRead: {
         type: "array",
         items: { type: "string" },
-        description: "One short line per uploaded file describing what it was, e.g. 'Chest CT, 4 March'.",
+        description:
+          "One short line per uploaded file describing what it was, e.g. 'Chest CT, 4 March'. Empty when no reports were uploaded.",
       },
       diseaseCode: { type: ["string", "null"], enum: [...diseaseCodes, null] },
       treatments: {
@@ -87,12 +99,18 @@ export function schemaFor(grounding: Grounding): Record<string, unknown> {
           required: ["treatmentCode", "why"],
           properties: {
             treatmentCode: { type: "string", enum: treatmentCodes },
-            why: { type: "string", description: "One sentence on why this pathway fits these reports." },
+            why: { type: "string", description: "One sentence on why this pathway fits." },
           },
         },
       },
       recommendedTreatmentCode: { type: ["string", "null"], enum: [...treatmentCodes, null] },
       specialtyCode: { type: ["string", "null"], enum: [...specialtyCodes, null] },
+      destinationCity: {
+        type: ["string", "null"],
+        enum: [...cities, null],
+        description:
+          "The city we would most likely place this case in, from the cities ShifaIn covers. Null if it is too early to say.",
+      },
       stay: {
         type: "object",
         additionalProperties: false,
@@ -104,13 +122,17 @@ export function schemaFor(grounding: Grounding): Record<string, unknown> {
       },
       itinerary: {
         type: "array",
-        description: "The journey end to end, from reports reviewed to follow-up after returning home.",
+        description:
+          "The journey end to end, from reports reviewed to follow-up after returning home.",
         items: {
           type: "object",
           additionalProperties: false,
           required: ["day", "title", "detail"],
           properties: {
-            day: { type: "string", description: "e.g. 'Before travel', 'Day 1', 'Days 4-9', 'After returning home'." },
+            day: {
+              type: "string",
+              description: "e.g. 'Before travel', 'Day 1', 'Days 4-9', 'After returning home'.",
+            },
             title: { type: "string" },
             detail: { type: "string" },
           },
@@ -119,7 +141,13 @@ export function schemaFor(grounding: Grounding): Record<string, unknown> {
       suggestedPackage: {
         type: "array",
         items: { type: "string", enum: [...PLAN_PACKAGE_OPTIONS] },
-        description: "Which travel elements this patient is likely to want. They can add or remove any of them.",
+        description:
+          "Which travel elements this patient is likely to want. They can add or remove any of them.",
+      },
+      leisureSuitable: {
+        type: "boolean",
+        description:
+          "True only if the chosen treatment is marked tour-friendly in the catalogue AND nothing you were told suggests this particular patient would be unwell, immobile or immunosuppressed during their stay. False whenever you are unsure.",
       },
       questionsForPatient: { type: "array", items: { type: "string" } },
       missingReports: { type: "array", items: { type: "string" } },
@@ -127,4 +155,3 @@ export function schemaFor(grounding: Grounding): Record<string, unknown> {
     },
   };
 }
-

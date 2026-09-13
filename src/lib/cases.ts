@@ -5,7 +5,16 @@ import type { Plan } from "./ai/plan-schema";
 
 export type CaseStatus = "new" | "planning" | "planned" | "plan-failed" | "confirmed" | "closed";
 
-export type CaseReport = { filename: string; mediaType: string; bytes: number };
+export type CaseReport = {
+  /** Matches the stored file's id, so a coordinator can open it. */
+  id?: string;
+  filename: string;
+  mediaType: string;
+  bytes: number;
+};
+
+/** How the patient told us about their problem. */
+export type IntakeRoute = "reports" | "description" | "questions";
 
 export type PatientCase = {
   _id: string;
@@ -15,7 +24,12 @@ export type PatientCase = {
   locale: string;
   patient: { name: string; phone: string; country: string; email: string | null };
   statedNeed: string | null;
+  intakeRoute: IntakeRoute;
+  description: string | null;
+  answers: Record<string, string> | null;
   reports: CaseReport[];
+  /** When the stored files are removed automatically. */
+  reportsExpireAt: string | null;
   plan: Plan | null;
   planError: string | null;
   referredBy: string | null;
@@ -45,7 +59,11 @@ export async function createCase(
     locale: input.locale,
     patient: input.patient,
     statedNeed: input.statedNeed,
+    intakeRoute: input.intakeRoute,
+    description: input.description,
+    answers: input.answers,
     reports: input.reports,
+    reportsExpireAt: input.reportsExpireAt,
     plan: null,
     planError: null,
     referredBy: input.referredBy,
@@ -74,6 +92,21 @@ export async function savePlanFailure(reference: string, message: string): Promi
 export async function getCase(reference: string): Promise<PatientCase | null> {
   const db = await getDb();
   return db.collection<PatientCase>("cases").findOne({ _id: reference });
+}
+
+/** A patient's own cases, found by the phone number they gave us. */
+export async function casesForPhone(digits: string, limit = 20): Promise<PatientCase[]> {
+  if (digits.length < 6) return [];
+  const db = await getDb();
+  // Numbers are typed inconsistently, so match on the trailing digits rather
+  // than on whatever spacing or country-code form was used on the day.
+  const tail = digits.slice(-9).split("").join("[^0-9]*");
+  return db
+    .collection<PatientCase>("cases")
+    .find({ "patient.phone": { $regex: `${tail}$` } })
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .toArray();
 }
 
 /** The cases one partner doctor has referred, newest first. */

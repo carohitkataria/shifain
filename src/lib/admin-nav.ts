@@ -50,6 +50,14 @@ export const NAV_GROUPS: NavGroup[] = [
     })),
   },
   {
+    id: "catalogue",
+    heading: "Catalogue",
+    items: [
+      { href: "/admin/hospitals", label: "Hospitals", icon: "grid" },
+      { href: "/admin/doctors", label: "Doctors", icon: "people" },
+    ],
+  },
+  {
     id: "operations",
     heading: "Patients & partners",
     items: [

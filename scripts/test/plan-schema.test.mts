@@ -18,6 +18,8 @@ const grounding: Grounding = {
   diseases: await read("diseases"),
   treatments: await read("treatments"),
   rules: await read("matching_rules"),
+  cities: await read("cities"),
+  coverage: [],
 };
 
 type SchemaNode = {
@@ -60,6 +62,27 @@ for (const code of props.specialtyCode.enum!) {
 assert.equal(props.diseaseCode.enum!.length, diseaseCodes.size + 1, "null must be offered");
 assert.equal(props.treatments.items!.properties!.treatmentCode.enum!.length, treatmentCodes.size);
 
+// Only the cities we actually cover may be offered as a destination.
+const cityNames = new Set(grounding.cities.map((city) => city.name));
+for (const name of props.destinationCity.enum!) {
+  assert.ok(name === null || cityNames.has(name), `unknown city ${name}`);
+}
+assert.equal(props.destinationCity.enum!.length, cityNames.size + 1, "null must be offered");
+
+// A day out is only ever offered where the catalogue says the pathway allows
+// it, so every tour-friendly treatment needs somewhere to go.
+const attractions = await read("attractions");
+const withAttractions = new Set(attractions.map((a: { city: string }) => a.city));
+for (const city of cityNames) {
+  assert.ok(withAttractions.has(city), `no attractions for ${city}, which the planner can pick`);
+}
+const tourFriendly = grounding.treatments.filter((t) => t.tourFriendly);
+assert.ok(tourFriendly.length > 0, "no treatment is marked tour-friendly");
+assert.ok(
+  tourFriendly.every((t) => t.daysInCountry.min >= 5),
+  "a pathway too short for an outing should not be tour-friendly",
+);
+
 // Every package option the model can suggest must have copy to render it.
 const { PACKAGE_LINES } = await import("../../src/lib/plan-copy.ts");
 for (const option of PLAN_PACKAGE_OPTIONS) {
@@ -93,7 +116,27 @@ for (const treatment of grounding.treatments) {
   );
 }
 
+// Every standard question must be answerable in all three languages.
+const { INTAKE_COPY } = await import("../../src/lib/intake-copy.ts");
+const { INTAKE_QUESTIONS } = await import("../../src/lib/ai/plan-questions.ts");
+for (const question of INTAKE_QUESTIONS) {
+  const copy = INTAKE_COPY.questions[question.id];
+  assert.ok(copy, `no copy for intake question ${question.id}`);
+  for (const locale of ["en", "ru", "uz"] as const) {
+    assert.ok(copy[locale]?.trim(), `intake question ${question.id} has no ${locale}`);
+  }
+}
+
+// And every country can fill in a dialling code.
+const { COUNTRIES } = await import("../../src/lib/countries.ts");
+for (const country of COUNTRIES) {
+  assert.match(country.dial, /^[0-9]{1,4}$/, `${country.name} has a bad dialling code`);
+  assert.match(country.code, /^[A-Z]{2}$/, `${country.name} has a bad ISO code`);
+}
+
 console.log(
   `plan schema OK — ${diseaseCodes.size} diseases, ${treatmentCodes.size} treatments, ` +
-    `${specialtyCodes.size} specialties, ${PLAN_PACKAGE_OPTIONS.length} package options`,
+    `${specialtyCodes.size} specialties, ${cityNames.size} cities, ` +
+    `${attractions.length} attractions, ${tourFriendly.length} tour-friendly pathways, ` +
+    `${INTAKE_QUESTIONS.length} standard questions, ${COUNTRIES.length} countries`,
 );

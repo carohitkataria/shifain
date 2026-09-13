@@ -34,7 +34,7 @@ const SEED_OWNED = new Set([
   "categories", "specialties", "capabilities", "cities",
   "diseases", "treatments",
   "disease_specialty_map", "disease_treatment_map", "treatment_specialty_map",
-  "matching_rules", "price_bands", "sources",
+  "matching_rules", "price_bands", "attractions", "sources",
 ]);
 
 /**

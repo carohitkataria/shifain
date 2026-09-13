@@ -113,6 +113,9 @@ export const COLLECTIONS = [
       inpatientNights: range("min", "max"),
       daysInCountry: range("min", "max"),
       requiredCapabilities: { bsonType: "array", items: { bsonType: "string" } },
+      // Whether a patient on this pathway is usually well enough, and here
+      // long enough, for a gentle outing. A treating doctor still decides.
+      tourFriendly: { bsonType: "bool" },
       provenance,
     }),
     indexes: [{ key: { primarySpecialtyCode: 1 } }, { key: { categoryCode: 1 } }, { key: { type: 1 } }],
@@ -374,12 +377,19 @@ export const COLLECTIONS = [
         },
       },
       statedNeed: { bsonType: ["string", "null"] },
+      // How the patient told us: uploaded reports, described it themselves, or
+      // answered the standard questions.
+      intakeRoute: { enum: ["reports", "description", "questions"] },
+      description: { bsonType: ["string", "null"] },
+      answers: { bsonType: ["object", "null"] },
+      reportsExpireAt: { bsonType: ["string", "null"] },
       reports: {
         bsonType: "array",
         items: {
           bsonType: "object",
           required: ["filename", "mediaType", "bytes"],
           properties: {
+            id: { bsonType: "string" },
             filename: { bsonType: "string" },
             mediaType: { bsonType: "string" },
             bytes: { bsonType: ["int", "long"] },
@@ -396,6 +406,40 @@ export const COLLECTIONS = [
       { key: { createdAt: -1 } },
       { key: { status: 1 } },
       { key: { referredBy: 1, createdAt: -1 } },
+    ],
+  },
+  {
+    name: "attractions",
+    // What a patient can reasonably see while they are here, per city. Only
+    // ever offered for treatments marked tourFriendly, and only as an option.
+    validator: doc(["city", "name", "kind", "travelHours"], {
+      city: { bsonType: "string" },
+      name: { bsonType: "string" },
+      kind: { enum: ["heritage", "spiritual", "leisure"] },
+      travelHours: { bsonType: ["double", "int"] },
+      halfDay: { bsonType: "bool" },
+      note: { bsonType: "string" },
+      provenance,
+    }),
+    indexes: [{ key: { city: 1 } }],
+  },
+  {
+    name: "case_reports",
+    // The uploaded files themselves, kept for thirty days so a coordinator and
+    // the treating hospital can work from them, then removed automatically by
+    // the TTL index on expiresAt.
+    validator: doc(["reference", "filename", "mediaType", "bytes", "uploadedAt", "expiresAt"], {
+      reference: { bsonType: "string" },
+      filename: { bsonType: "string" },
+      mediaType: { bsonType: "string" },
+      bytes: { bsonType: ["int", "long"] },
+      data: { bsonType: "binData" },
+      uploadedAt: { bsonType: ["string", "date"] },
+      expiresAt: { bsonType: "date" },
+    }),
+    indexes: [
+      { key: { reference: 1 } },
+      { key: { expiresAt: 1 }, options: { expireAfterSeconds: 0 } },
     ],
   },
   {

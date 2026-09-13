@@ -3,7 +3,13 @@ import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import type { PartnerUser } from "@/lib/partner-auth";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { dismissPasswordAction, savePartnerAction, setPartnerStatusAction } from "./actions";
+import {
+  deletePartnerAction,
+  dismissPasswordAction,
+  resetPartnerPasswordAction,
+  savePartnerAction,
+  setPartnerStatusAction,
+} from "./actions";
 import { readGeneratedPassword } from "./flash";
 
 export const dynamic = "force-dynamic";
@@ -50,6 +56,13 @@ export default async function AccessPage({
           Login {saved}.
         </p>
       )}
+
+      <p className="mb-4 rounded-lg bg-surface-muted px-3.5 py-2.5 text-sm leading-relaxed text-ink-soft">
+        A password cannot be looked up — only its hash is stored, which is what
+        keeps it safe if this database is ever copied. If someone has lost
+        theirs, use <strong>Reset password</strong>: it generates a new one and
+        shows it to you once.
+      </p>
 
       {generated && (
         <div className="mb-4 rounded-xl border-2 border-brand bg-brand-tint p-4">
@@ -131,17 +144,31 @@ export default async function AccessPage({
               >
                 {user.status}
               </span>
-              <form action={setPartnerStatusAction} className="shrink-0">
-                <input type="hidden" name="id" value={user._id} />
-                <input
-                  type="hidden"
-                  name="status"
-                  value={user.status === "active" ? "suspended" : "active"}
-                />
-                <button type="submit" className="text-sm font-semibold text-brand hover:underline">
-                  {user.status === "active" ? "Suspend" : "Reactivate"}
-                </button>
-              </form>
+              <div className="flex shrink-0 flex-wrap items-center gap-4">
+                <form action={resetPartnerPasswordAction}>
+                  <input type="hidden" name="id" value={user._id} />
+                  <button type="submit" className="text-sm font-semibold text-brand hover:underline">
+                    Reset password
+                  </button>
+                </form>
+                <form action={setPartnerStatusAction}>
+                  <input type="hidden" name="id" value={user._id} />
+                  <input
+                    type="hidden"
+                    name="status"
+                    value={user.status === "active" ? "suspended" : "active"}
+                  />
+                  <button type="submit" className="text-sm font-semibold text-brand hover:underline">
+                    {user.status === "active" ? "Suspend" : "Reactivate"}
+                  </button>
+                </form>
+                <form action={deletePartnerAction}>
+                  <input type="hidden" name="id" value={user._id} />
+                  <button type="submit" className="text-sm font-semibold text-red-600 hover:underline">
+                    Delete
+                  </button>
+                </form>
+              </div>
             </li>
           ))}
         </ul>

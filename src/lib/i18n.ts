@@ -1,3 +1,5 @@
+import { COUNTRIES } from "./countries";
+
 export const LOCALES = ["en", "ru", "uz"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
@@ -9,25 +11,15 @@ export const LOCALE_META: Record<Locale, { label: string; english: string; dir: 
 };
 
 /**
- * Country -> language mapping. The site picks the language that fits the
- * country the visitor is browsing from; anything not listed falls back to
- * English. This is a preference, never a restriction: every language stays
- * available from the switcher in the header.
+ * Country -> language mapping, taken from the country list so there is one
+ * place to add a country and the language it reads best in. The site opens in
+ * the language that fits where the visitor is browsing from; anything not
+ * listed falls back to English. This is a preference, never a restriction:
+ * every language stays available from the switcher in the header.
  */
-const COUNTRY_LOCALE: Record<string, Locale> = {
-  UZ: "uz",
-  RU: "ru",
-  KZ: "ru",
-  KG: "ru",
-  TJ: "ru",
-  TM: "ru",
-  BY: "ru",
-  AM: "ru",
-  AZ: "ru",
-  GE: "ru",
-  MD: "ru",
-  UA: "ru",
-};
+const COUNTRY_LOCALE: Record<string, Locale> = Object.fromEntries(
+  COUNTRIES.filter((country) => country.locale).map((country) => [country.code, country.locale!]),
+);
 
 export function isLocale(value: string | undefined | null): value is Locale {
   return !!value && (LOCALES as readonly string[]).includes(value);

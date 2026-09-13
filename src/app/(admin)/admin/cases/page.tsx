@@ -79,10 +79,40 @@ export default async function CasesPage() {
                   </p>
                   <p className="mt-1 text-sm text-ink-soft">
                     {item.statedNeed || "No stated need"} ·{" "}
-                    {item.reports.length === 0
-                      ? "no reports"
-                      : `${item.reports.length} report${item.reports.length > 1 ? "s" : ""}`}
+                    {item.intakeRoute === "reports"
+                      ? `${item.reports.length} report${item.reports.length === 1 ? "" : "s"}`
+                      : item.intakeRoute === "description"
+                        ? "described in their own words"
+                        : "answered the standard questions"}
                   </p>
+
+                  {item.reports.length > 0 ? (
+                    <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm">
+                      {item.reports.map((report, index) =>
+                        report.id ? (
+                          <a
+                            key={report.id}
+                            href={`/api/admin/report/${item._id}/${item._id}-${report.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-brand hover:underline"
+                          >
+                            {report.filename}
+                          </a>
+                        ) : (
+                          <span key={`${report.filename}-${index}`} className="text-ink-muted">
+                            {report.filename} (not stored)
+                          </span>
+                        ),
+                      )}
+                    </p>
+                  ) : null}
+
+                  {item.description ? (
+                    <p className="mt-2 rounded-lg bg-surface-muted px-3 py-2 text-sm leading-relaxed text-ink-soft">
+                      {item.description}
+                    </p>
+                  ) : null}
                 </div>
 
                 <span
@@ -104,6 +134,9 @@ export default async function CasesPage() {
                 <span className="font-bold tracking-wide text-ink-soft">{item._id}</span> ·{" "}
                 {new Date(item.createdAt).toUTCString()}
                 {item.referredBy ? " · referred by a partner doctor" : " · from the homepage"}
+                {item.reportsExpireAt
+                  ? ` · reports held until ${new Date(item.reportsExpireAt).toUTCString().slice(5, 16)}`
+                  : ""}
               </p>
 
               {item.planError ? (
