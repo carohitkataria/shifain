@@ -120,22 +120,40 @@ if (hasList) {
 
 // Section visibility on a group page round-trips. Reload between steps: the
 // URL already says "saved", so waiting on it again would not wait at all.
-const saveHero = async () => {
-  // A plain save lands on ?saved=1; waiting for that rather than for the
-  // network keeps the reload below from racing the action that is still
-  // writing.
+// Start each round from the clean URL: a save lands on ?saved=1, so waiting
+// for that while already on ?saved=1 would not wait at all.
+const setVisible = async (want) => {
+  await page.goto(`${BASE}/admin/hero`, { waitUntil: "networkidle" });
+  await page.setChecked('input[name="__visible"]', want);
   await Promise.all([
     page.waitForURL(/saved=1/),
     page.locator('button:has-text("Save hero")').first().click(),
   ]);
-  await page.reload({ waitUntil: "networkidle" });
+  await page.goto(`${BASE}/admin/hero`, { waitUntil: "networkidle" });
+  return page.isChecked('input[name="__visible"]');
 };
-await page.uncheck('input[name="__visible"]');
-await saveHero();
-check(!(await page.isChecked('input[name="__visible"]')), "hiding a section from its own page sticks");
-await page.check('input[name="__visible"]');
-await saveHero();
-check(await page.isChecked('input[name="__visible"]'), "and showing it again sticks");
+check((await setVisible(false)) === false, "hiding a section from its own page sticks");
+check((await setVisible(true)) === true, "and showing it again sticks");
+
+// A generated password is handed over in a flash cookie. Rendering that state
+// once crashed the page: it cleared the cookie mid-render, which Next.js
+// forbids. No database needed to exercise it — just the cookie.
+const flash = Buffer.from(
+  JSON.stringify({ email: "dr@example.com", password: "not-a-real-password" }),
+).toString("base64url");
+await context.addCookies([
+  { name: "shifain_partner_secret", value: flash, domain: "127.0.0.1", path: "/admin" },
+]);
+const flashResponse = await page.goto(`${BASE}/admin/access`, { waitUntil: "networkidle" });
+check(flashResponse.status() === 200, "the generated-password banner renders", `status ${flashResponse.status()}`);
+check(await page.locator("text=not-a-real-password").isVisible(), "it shows the password once");
+await page.locator('button:has-text("Done")').click();
+const cleared = await page
+  .locator("text=not-a-real-password")
+  .waitFor({ state: "detached", timeout: 10000 })
+  .then(() => true)
+  .catch(() => false);
+check(cleared, "and Done clears it without a server error");
 
 await page.goto(`${BASE}/admin/cases`, { waitUntil: "networkidle" });
 check(await page.locator("h1:has-text('Patient cases')").isVisible(), "the cases page loads");

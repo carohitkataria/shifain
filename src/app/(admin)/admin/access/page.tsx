@@ -3,12 +3,8 @@ import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import type { PartnerUser } from "@/lib/partner-auth";
 import { AdminShell } from "@/components/admin/AdminShell";
-import {
-  clearGeneratedPassword,
-  readGeneratedPassword,
-  savePartnerAction,
-  setPartnerStatusAction,
-} from "./actions";
+import { dismissPasswordAction, savePartnerAction, setPartnerStatusAction } from "./actions";
+import { readGeneratedPassword } from "./flash";
 
 export const dynamic = "force-dynamic";
 
@@ -28,9 +24,10 @@ export default async function AccessPage({
     db.collection<PartnerUser>("partner_users").find({}).sort({ createdAt: -1 }).toArray(),
   );
 
-  // Shown once, then gone — reading it clears the cookie that carried it.
+  // Only a render here: the cookie is cleared by the Done button below, since
+  // Next.js forbids writing a cookie while a page is rendering. It also expires
+  // on its own within five minutes.
   const generated = await readGeneratedPassword();
-  if (generated) await clearGeneratedPassword();
 
   return (
     <AdminShell
@@ -64,6 +61,11 @@ export default async function AccessPage({
             Copy it now and send it over a channel you trust. It is stored only as a hash, so this
             is the one and only time it is shown. To change it, save the login again.
           </p>
+          <form action={dismissPasswordAction} className="mt-3">
+            <button type="submit" className="btn btn-secondary !py-2 text-sm">
+              Done — hide this
+            </button>
+          </form>
         </div>
       )}
 

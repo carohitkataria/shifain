@@ -7,28 +7,22 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { hashPassword, type PartnerUser } from "@/lib/partner-auth";
 import { getDb } from "@/lib/db";
+import { FLASH_COOKIE, FLASH_MAX_AGE_SECONDS, FLASH_PATH } from "./flash";
 
-/**
- * A generated password is shown to the admin exactly once. It travels in a
- * short-lived httpOnly cookie rather than the URL, so it never reaches the
- * browser history, a referrer header or a server access log.
- */
-const FLASH_COOKIE = "shifain_partner_secret";
-
-export async function readGeneratedPassword(): Promise<{ email: string; password: string } | null> {
+/** Clearing a cookie is only legal from an action, never during a render. */
+async function clearFlash(): Promise<void> {
   const jar = await cookies();
-  const raw = jar.get(FLASH_COOKIE)?.value;
-  if (!raw) return null;
-  try {
-    return JSON.parse(Buffer.from(raw, "base64url").toString("utf8"));
-  } catch {
-    return null;
-  }
+  // Deleted with the path it was set with, rather than relying on the jar to
+  // match by name alone.
+  jar.delete({ name: FLASH_COOKIE, path: FLASH_PATH });
 }
 
-export async function clearGeneratedPassword(): Promise<void> {
-  const jar = await cookies();
-  jar.delete(FLASH_COOKIE);
+/** The Done button under a freshly generated password. */
+export async function dismissPasswordAction() {
+  if (!(await isAuthenticated())) redirect("/admin/login");
+  await clearFlash();
+  revalidatePath("/admin/access");
+  redirect("/admin/access");
 }
 
 export async function savePartnerAction(formData: FormData) {
@@ -71,14 +65,17 @@ export async function savePartnerAction(formData: FormData) {
     { upsert: true },
   );
 
-  if (!typed) {
+  if (typed) {
+    // A password the admin chose is never echoed back, so drop any stale one.
+    await clearFlash();
+  } else {
     const jar = await cookies();
     jar.set(FLASH_COOKIE, Buffer.from(JSON.stringify({ email, password })).toString("base64url"), {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      path: "/admin",
-      maxAge: 300,
+      path: FLASH_PATH,
+      maxAge: FLASH_MAX_AGE_SECONDS,
     });
   }
 
@@ -88,6 +85,8 @@ export async function savePartnerAction(formData: FormData) {
 
 export async function setPartnerStatusAction(formData: FormData) {
   if (!(await isAuthenticated())) redirect("/admin/login");
+
+  await clearFlash();
 
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "");
