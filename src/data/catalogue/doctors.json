@@ -1,0 +1,343 @@
+[
+  {
+    "_id": "d-dr-naresh-trehan",
+    "legacyId": "D0001",
+    "name": "Dr. Naresh Trehan",
+    "specialtyCode": "cardiac-surgery",
+    "specialtyLabelRaw": "Cardiac Surgery",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 40,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": 4.9,
+      "ratingCount": 655
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-rajiv-parakh",
+    "legacyId": "D0002",
+    "name": "Dr. Rajiv Parakh",
+    "specialtyCode": "vascular-surgery",
+    "specialtyLabelRaw": "Vascular Surgery",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 40,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": 5.0,
+      "ratingCount": 38
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-v-p-singh",
+    "legacyId": "D0003",
+    "name": "Dr. V. P. Singh",
+    "specialtyCode": "neurosurgery",
+    "specialtyLabelRaw": "Neurosurgery",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 36,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": 4.4,
+      "ratingCount": 52
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-rajneesh-kachhara",
+    "legacyId": "D0004",
+    "name": "Dr. Rajneesh Kachhara",
+    "specialtyCode": "neurosurgery",
+    "specialtyLabelRaw": "Neurosurgery",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 30,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": null,
+      "ratingCount": null
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-ratnadip-bose",
+    "legacyId": "D0005",
+    "name": "Dr. Ratnadip Bose",
+    "specialtyCode": "neurosurgery",
+    "specialtyLabelRaw": "Neurosurgery",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 17,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": 4.8,
+      "ratingCount": 13
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-satyakam-baruah",
+    "legacyId": "D0006",
+    "name": "Dr. Satyakam Baruah",
+    "specialtyCode": "neurosurgery",
+    "specialtyLabelRaw": "Neurosurgery",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 12,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": null,
+      "ratingCount": null
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-rishabh-kedia",
+    "legacyId": "D0007",
+    "name": "Dr. Rishabh Kedia",
+    "specialtyCode": "neurosurgery",
+    "specialtyLabelRaw": "Neurosurgery",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 11,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": null,
+      "ratingCount": null
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-ashok-k-vaid",
+    "legacyId": "D0008",
+    "name": "Dr. Ashok K. Vaid",
+    "specialtyCode": "medical-oncology",
+    "specialtyLabelRaw": "Medical Oncology",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 41,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": 4.8,
+      "ratingCount": 136
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-vinay-goyal",
+    "legacyId": "D0009",
+    "name": "Dr. Vinay Goyal",
+    "specialtyCode": "neurology",
+    "specialtyLabelRaw": "Neurology",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 25,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": 3.2,
+      "ratingCount": 33
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-gaurav-goel",
+    "legacyId": "D0010",
+    "name": "Dr. Gaurav Goel",
+    "specialtyCode": "neurology",
+    "specialtyLabelRaw": "Neurology",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 20,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": null,
+      "ratingCount": null
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "d-dr-sushant-kumar-bhuyan",
+    "legacyId": "D0011",
+    "name": "Dr. Sushant Kumar Bhuyan",
+    "specialtyCode": "neurology",
+    "specialtyLabelRaw": "Neurology",
+    "qualifications": null,
+    "registrationNumber": null,
+    "experienceYears": 7,
+    "officialProfileUrl": null,
+    "consentToList": false,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "thirdParty": {
+      "source": "vaidam",
+      "rating": 4.9,
+      "ratingCount": 12
+    },
+    "provenance": {
+      "source": "Vaidam public doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

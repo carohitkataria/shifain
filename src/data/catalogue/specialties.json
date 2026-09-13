@@ -1,0 +1,524 @@
+[
+  {
+    "_id": "cardiology",
+    "name": {
+      "en": "Cardiology",
+      "ru": "Кардиология",
+      "uz": "Kardiologiya"
+    },
+    "categoryCode": "cardiac-care",
+    "order": 0,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cardiac-surgery",
+    "name": {
+      "en": "Cardiac surgery",
+      "ru": "Кардиохирургия",
+      "uz": "Yurak jarrohligi"
+    },
+    "categoryCode": "cardiac-care",
+    "order": 1,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "paediatric-cardiac-surgery",
+    "name": {
+      "en": "Paediatric cardiac surgery",
+      "ru": "Детская кардиохирургия",
+      "uz": "Bolalar yurak jarrohligi"
+    },
+    "categoryCode": "cardiac-care",
+    "order": 2,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "vascular-surgery",
+    "name": {
+      "en": "Vascular surgery",
+      "ru": "Сосудистая хирургия",
+      "uz": "Qon tomir jarrohligi"
+    },
+    "categoryCode": "complex-surgery",
+    "order": 3,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medical-oncology",
+    "name": {
+      "en": "Medical oncology",
+      "ru": "Химиотерапия",
+      "uz": "Kimyoterapiya"
+    },
+    "categoryCode": "oncology",
+    "order": 4,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "surgical-oncology",
+    "name": {
+      "en": "Surgical oncology",
+      "ru": "Онкохирургия",
+      "uz": "Onkoxirurgiya"
+    },
+    "categoryCode": "oncology",
+    "order": 5,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "radiation-oncology",
+    "name": {
+      "en": "Radiation oncology",
+      "ru": "Лучевая терапия",
+      "uz": "Nurlanish terapiyasi"
+    },
+    "categoryCode": "oncology",
+    "order": 6,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "haematology-bmt",
+    "name": {
+      "en": "Haematology & bone marrow transplant",
+      "ru": "Гематология и трансплантация костного мозга",
+      "uz": "Gematologiya va ilik transplantatsiyasi"
+    },
+    "categoryCode": "haematology",
+    "order": 7,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "orthopaedics",
+    "name": {
+      "en": "Orthopaedics",
+      "ru": "Ортопедия",
+      "uz": "Ortopediya"
+    },
+    "categoryCode": "orthopaedics",
+    "order": 8,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "spine-surgery",
+    "name": {
+      "en": "Spine surgery",
+      "ru": "Хирургия позвоночника",
+      "uz": "Umurtqa jarrohligi"
+    },
+    "categoryCode": "orthopaedics",
+    "order": 9,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "neurology",
+    "name": {
+      "en": "Neurology",
+      "ru": "Неврология",
+      "uz": "Nevrologiya"
+    },
+    "categoryCode": "neurosciences",
+    "order": 10,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "neurosurgery",
+    "name": {
+      "en": "Neurosurgery",
+      "ru": "Нейрохирургия",
+      "uz": "Neyroxirurgiya"
+    },
+    "categoryCode": "neurosciences",
+    "order": 11,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "nephrology",
+    "name": {
+      "en": "Nephrology",
+      "ru": "Нефрология",
+      "uz": "Nefrologiya"
+    },
+    "categoryCode": "nephrology",
+    "order": 12,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "urology",
+    "name": {
+      "en": "Urology",
+      "ru": "Урология",
+      "uz": "Urologiya"
+    },
+    "categoryCode": "urology",
+    "order": 13,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "transplant-surgery",
+    "name": {
+      "en": "Transplant surgery",
+      "ru": "Трансплантационная хирургия",
+      "uz": "Transplantatsiya jarrohligi"
+    },
+    "categoryCode": "transplant",
+    "order": 14,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "gastroenterology",
+    "name": {
+      "en": "Gastroenterology",
+      "ru": "Гастроэнтерология",
+      "uz": "Gastroenterologiya"
+    },
+    "categoryCode": "gastroenterology",
+    "order": 15,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "gi-surgery",
+    "name": {
+      "en": "GI & hepatobiliary surgery",
+      "ru": "Абдоминальная хирургия",
+      "uz": "Qorin bo'shlig'i jarrohligi"
+    },
+    "categoryCode": "complex-surgery",
+    "order": 16,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "bariatric-surgery",
+    "name": {
+      "en": "Bariatric surgery",
+      "ru": "Бариатрическая хирургия",
+      "uz": "Bariatrik jarrohlik"
+    },
+    "categoryCode": "bariatric",
+    "order": 17,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "reproductive-medicine",
+    "name": {
+      "en": "Reproductive medicine",
+      "ru": "Репродуктология",
+      "uz": "Reproduktologiya"
+    },
+    "categoryCode": "fertility",
+    "order": 18,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "obstetrics-gynaecology",
+    "name": {
+      "en": "Obstetrics & gynaecology",
+      "ru": "Акушерство и гинекология",
+      "uz": "Akusherlik va ginekologiya"
+    },
+    "categoryCode": "gynaecology",
+    "order": 19,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "ophthalmology",
+    "name": {
+      "en": "Ophthalmology",
+      "ru": "Офтальмология",
+      "uz": "Oftalmologiya"
+    },
+    "categoryCode": "ophthalmology",
+    "order": 20,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "ent",
+    "name": {
+      "en": "ENT & head-neck surgery",
+      "ru": "ЛОР и хирургия головы и шеи",
+      "uz": "LOR va bosh-bo'yin jarrohligi"
+    },
+    "categoryCode": "ent",
+    "order": 21,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "plastic-surgery",
+    "name": {
+      "en": "Plastic & reconstructive surgery",
+      "ru": "Пластическая хирургия",
+      "uz": "Plastik jarrohlik"
+    },
+    "categoryCode": "cosmetic",
+    "order": 22,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "dermatology",
+    "name": {
+      "en": "Dermatology",
+      "ru": "Дерматология",
+      "uz": "Dermatologiya"
+    },
+    "categoryCode": "dermatology",
+    "order": 23,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "paediatrics",
+    "name": {
+      "en": "Paediatrics",
+      "ru": "Педиатрия",
+      "uz": "Pediatriya"
+    },
+    "categoryCode": "paediatrics",
+    "order": 24,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "pulmonology",
+    "name": {
+      "en": "Pulmonology",
+      "ru": "Пульмонология",
+      "uz": "Pulmonologiya"
+    },
+    "categoryCode": "pulmonology",
+    "order": 25,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "dentistry",
+    "name": {
+      "en": "Dentistry",
+      "ru": "Стоматология",
+      "uz": "Stomatologiya"
+    },
+    "categoryCode": "dental",
+    "order": 26,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "endocrinology",
+    "name": {
+      "en": "Endocrinology",
+      "ru": "Эндокринология",
+      "uz": "Endokrinologiya"
+    },
+    "categoryCode": "endocrinology",
+    "order": 27,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "general-surgery",
+    "name": {
+      "en": "General surgery",
+      "ru": "Общая хирургия",
+      "uz": "Umumiy jarrohlik"
+    },
+    "categoryCode": "complex-surgery",
+    "order": 28,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

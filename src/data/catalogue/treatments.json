@@ -1,0 +1,2852 @@
+[
+  {
+    "_id": "cabg",
+    "name": {
+      "en": "Coronary artery bypass grafting (CABG)",
+      "ru": "Аортокоронарное шунтирование (АКШ)",
+      "uz": "Koronar shuntlash (CABG)"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 7,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 28
+    },
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "angioplasty-stent",
+    "name": {
+      "en": "Angioplasty with stent",
+      "ru": "Ангиопластика со стентированием",
+      "uz": "Angioplastika va stentlash"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "coronary-angiography",
+    "name": {
+      "en": "Coronary angiography",
+      "ru": "Коронарография",
+      "uz": "Koronarografiya"
+    },
+    "type": "diagnostic",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 5,
+      "max": 7
+    },
+    "requiredCapabilities": [
+      "cath-lab"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "valve-replacement",
+    "name": {
+      "en": "Heart valve replacement",
+      "ru": "Протезирование клапана сердца",
+      "uz": "Yurak klapanini almashtirish"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 8,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 30
+    },
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "valve-repair",
+    "name": {
+      "en": "Heart valve repair",
+      "ru": "Пластика клапана сердца",
+      "uz": "Yurak klapanini tiklash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 7,
+      "max": 11
+    },
+    "daysInCountry": {
+      "min": 22,
+      "max": 28
+    },
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "tavi",
+    "name": {
+      "en": "Transcatheter aortic valve implantation (TAVI)",
+      "ru": "Транскатетерная имплантация аортального клапана (TAVI)",
+      "uz": "Transkateter aorta klapani implantatsiyasi (TAVI)"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 21
+    },
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "pacemaker-implant",
+    "name": {
+      "en": "Pacemaker implantation",
+      "ru": "Имплантация кардиостимулятора",
+      "uz": "Kardiostimulyator implantatsiyasi"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "cath-lab"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cardiac-ablation",
+    "name": {
+      "en": "Radiofrequency ablation",
+      "ru": "Радиочастотная абляция",
+      "uz": "Radiochastotali ablatsiya"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "icd-implant",
+    "name": {
+      "en": "ICD implantation",
+      "ru": "Имплантация кардиовертера-дефибриллятора",
+      "uz": "Kardioverter-defibrillyator implantatsiyasi"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 16
+    },
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "asd-vsd-closure",
+    "name": {
+      "en": "ASD / VSD closure",
+      "ru": "Закрытие дефекта перегородки сердца",
+      "uz": "Yurak to'sig'i nuqsonini yopish"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "paediatric-cardiac-surgery",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 26
+    },
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "nicu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "tetralogy-repair",
+    "name": {
+      "en": "Tetralogy of Fallot repair",
+      "ru": "Коррекция тетрады Фалло",
+      "uz": "Fallo tetradasini tuzatish"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "paediatric-cardiac-surgery",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 10,
+      "max": 16
+    },
+    "daysInCountry": {
+      "min": 28,
+      "max": 40
+    },
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "nicu",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "heart-transplant",
+    "name": {
+      "en": "Heart transplant",
+      "ru": "Трансплантация сердца",
+      "uz": "Yurak transplantatsiyasi"
+    },
+    "type": "transplant",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 21,
+      "max": 35
+    },
+    "daysInCountry": {
+      "min": 90,
+      "max": 120
+    },
+    "requiredCapabilities": [
+      "transplant-programme",
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "lvad",
+    "name": {
+      "en": "Left ventricular assist device (LVAD)",
+      "ru": "Имплантация системы вспомогательного кровообращения (LVAD)",
+      "uz": "LVAD implantatsiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "cardiology",
+    "categoryCode": "cardiac-care",
+    "inpatientNights": {
+      "min": 18,
+      "max": 28
+    },
+    "daysInCountry": {
+      "min": 60,
+      "max": 80
+    },
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "peripheral-angioplasty",
+    "name": {
+      "en": "Peripheral angioplasty",
+      "ru": "Периферическая ангиопластика",
+      "uz": "Periferik angioplastika"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "vascular-surgery",
+    "categoryCode": "complex-surgery",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "cath-lab"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "bypass-graft-limb",
+    "name": {
+      "en": "Lower limb bypass graft",
+      "ru": "Шунтирование артерий нижних конечностей",
+      "uz": "Oyoq arteriyalarini shuntlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "vascular-surgery",
+    "categoryCode": "complex-surgery",
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 28
+    },
+    "requiredCapabilities": [
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "evar",
+    "name": {
+      "en": "Endovascular aneurysm repair (EVAR)",
+      "ru": "Эндоваскулярное протезирование аорты (EVAR)",
+      "uz": "Endovaskulyar aorta protezlash (EVAR)"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "vascular-surgery",
+    "categoryCode": "complex-surgery",
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 22
+    },
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "open-aneurysm-repair",
+    "name": {
+      "en": "Open aneurysm repair",
+      "ru": "Открытая операция при аневризме",
+      "uz": "Ochiq anevrizma operatsiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "vascular-surgery",
+    "categoryCode": "complex-surgery",
+    "inpatientNights": {
+      "min": 10,
+      "max": 16
+    },
+    "daysInCountry": {
+      "min": 28,
+      "max": 38
+    },
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "blood-bank",
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "endovenous-laser",
+    "name": {
+      "en": "Endovenous laser ablation",
+      "ru": "Эндовазальная лазерная коагуляция",
+      "uz": "Endovenoz lazer ablatsiyasi"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "vascular-surgery",
+    "categoryCode": "complex-surgery",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 5,
+      "max": 8
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "mastectomy",
+    "name": {
+      "en": "Mastectomy",
+      "ru": "Мастэктомия",
+      "uz": "Mastektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 22
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "breast-conserving-surgery",
+    "name": {
+      "en": "Breast-conserving surgery",
+      "ru": "Органосохраняющая операция",
+      "uz": "A'zoni saqlovchi operatsiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "chemotherapy-breast",
+    "name": {
+      "en": "Chemotherapy (breast)",
+      "ru": "Химиотерапия (молочная железа)",
+      "uz": "Kimyoterapiya (ko'krak bezi)"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 10
+    },
+    "requiredCapabilities": [
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "radiotherapy-breast",
+    "name": {
+      "en": "Radiotherapy (breast)",
+      "ru": "Лучевая терапия (молочная железа)",
+      "uz": "Nurlanish terapiyasi (ko'krak bezi)"
+    },
+    "type": "radiation",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 35,
+      "max": 45
+    },
+    "requiredCapabilities": [
+      "linac",
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "lobectomy",
+    "name": {
+      "en": "Lobectomy",
+      "ru": "Лобэктомия",
+      "uz": "Lobektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 7,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 32
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "chemotherapy-lung",
+    "name": {
+      "en": "Chemotherapy (lung)",
+      "ru": "Химиотерапия (лёгкое)",
+      "uz": "Kimyoterapiya (o'pka)"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 10
+    },
+    "requiredCapabilities": [
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "immunotherapy",
+    "name": {
+      "en": "Immunotherapy",
+      "ru": "Иммунотерапия",
+      "uz": "Immunoterapiya"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 1,
+      "max": 2
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 10
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "pet-ct"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "colectomy",
+    "name": {
+      "en": "Colectomy",
+      "ru": "Колэктомия",
+      "uz": "Kolektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 7,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 32
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "robotic-colorectal",
+    "name": {
+      "en": "Robotic colorectal resection",
+      "ru": "Роботизированная резекция",
+      "uz": "Robotli rezeksiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 5,
+      "max": 9
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 28
+    },
+    "requiredCapabilities": [
+      "robotic-surgery",
+      "tumour-board",
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "head-neck-resection",
+    "name": {
+      "en": "Head & neck tumour resection",
+      "ru": "Резекция опухоли головы и шеи",
+      "uz": "Bosh-bo'yin o'smasini olib tashlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 8,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "robotic-head-neck",
+    "name": {
+      "en": "Robotic head & neck surgery",
+      "ru": "Роботизированная хирургия головы и шеи",
+      "uz": "Robotli bosh-bo'yin jarrohligi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 22,
+      "max": 30
+    },
+    "requiredCapabilities": [
+      "robotic-surgery",
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "radical-prostatectomy",
+    "name": {
+      "en": "Radical prostatectomy",
+      "ru": "Радикальная простатэктомия",
+      "uz": "Radikal prostatektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 5,
+      "max": 8
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 25
+    },
+    "requiredCapabilities": [
+      "robotic-surgery",
+      "tumour-board",
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "radiotherapy-prostate",
+    "name": {
+      "en": "Radiotherapy (prostate)",
+      "ru": "Лучевая терапия (простата)",
+      "uz": "Nurlanish terapiyasi (prostata)"
+    },
+    "type": "radiation",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 35,
+      "max": 45
+    },
+    "requiredCapabilities": [
+      "linac",
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "radical-hysterectomy",
+    "name": {
+      "en": "Radical hysterectomy",
+      "ru": "Радикальная гистерэктомия",
+      "uz": "Radikal gisterektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 28
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "brachytherapy",
+    "name": {
+      "en": "Brachytherapy",
+      "ru": "Брахитерапия",
+      "uz": "Braxiterapiya"
+    },
+    "type": "radiation",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 30
+    },
+    "requiredCapabilities": [
+      "linac",
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "liver-resection",
+    "name": {
+      "en": "Liver resection",
+      "ru": "Резекция печени",
+      "uz": "Jigar rezeksiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 9,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "tace",
+    "name": {
+      "en": "Transarterial chemoembolisation (TACE)",
+      "ru": "Трансартериальная химиоэмболизация (TACE)",
+      "uz": "Transarterial kimyoembolizatsiya (TACE)"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 16
+    },
+    "requiredCapabilities": [
+      "cath-lab",
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "gastrectomy",
+    "name": {
+      "en": "Gastrectomy",
+      "ru": "Гастрэктомия",
+      "uz": "Gastrektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "surgical-oncology",
+    "categoryCode": "oncology",
+    "inpatientNights": {
+      "min": 9,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "craniotomy-tumour",
+    "name": {
+      "en": "Craniotomy for tumour resection",
+      "ru": "Краниотомия с удалением опухоли",
+      "uz": "Kraniotomiya va o'smani olib tashlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "neurosurgery",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 8,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation",
+      "tumour-board",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "awake-craniotomy",
+    "name": {
+      "en": "Awake craniotomy",
+      "ru": "Краниотомия в сознании",
+      "uz": "Hushdagi kraniotomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "neurosurgery",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 9,
+      "max": 15
+    },
+    "daysInCountry": {
+      "min": 28,
+      "max": 38
+    },
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation",
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "gamma-knife",
+    "name": {
+      "en": "Gamma knife radiosurgery",
+      "ru": "Радиохирургия гамма-нож",
+      "uz": "Gamma pichoq radioxirurgiyasi"
+    },
+    "type": "radiation",
+    "primarySpecialtyCode": "neurosurgery",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "linac",
+      "neuro-navigation",
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "chemotherapy-leukaemia",
+    "name": {
+      "en": "Induction chemotherapy",
+      "ru": "Индукционная химиотерапия",
+      "uz": "Induksion kimyoterapiya"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "haematology-bmt",
+    "categoryCode": "haematology",
+    "inpatientNights": {
+      "min": 21,
+      "max": 35
+    },
+    "daysInCountry": {
+      "min": 45,
+      "max": 60
+    },
+    "requiredCapabilities": [
+      "bmt-unit",
+      "blood-bank",
+      "tumour-board"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "car-t",
+    "name": {
+      "en": "CAR-T cell therapy",
+      "ru": "CAR-T клеточная терапия",
+      "uz": "CAR-T hujayra terapiyasi"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "haematology-bmt",
+    "categoryCode": "haematology",
+    "inpatientNights": {
+      "min": 21,
+      "max": 30
+    },
+    "daysInCountry": {
+      "min": 60,
+      "max": 90
+    },
+    "requiredCapabilities": [
+      "bmt-unit",
+      "tumour-board",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "chemotherapy-lymphoma",
+    "name": {
+      "en": "Chemotherapy (lymphoma)",
+      "ru": "Химиотерапия (лимфома)",
+      "uz": "Kimyoterapiya (limfoma)"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "haematology-bmt",
+    "categoryCode": "haematology",
+    "inpatientNights": {
+      "min": 2,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "tumour-board",
+      "pet-ct"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "kidney-transplant",
+    "name": {
+      "en": "Kidney transplant",
+      "ru": "Трансплантация почки",
+      "uz": "Buyrak transplantatsiyasi"
+    },
+    "type": "transplant",
+    "primarySpecialtyCode": "nephrology",
+    "categoryCode": "nephrology",
+    "inpatientNights": {
+      "min": 12,
+      "max": 20
+    },
+    "daysInCountry": {
+      "min": 60,
+      "max": 90
+    },
+    "requiredCapabilities": [
+      "transplant-programme",
+      "dialysis-unit",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "haemodialysis",
+    "name": {
+      "en": "Haemodialysis",
+      "ru": "Гемодиализ",
+      "uz": "Gemodializ"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "nephrology",
+    "categoryCode": "nephrology",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "dialysis-unit"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "liver-transplant",
+    "name": {
+      "en": "Liver transplant",
+      "ru": "Трансплантация печени",
+      "uz": "Jigar transplantatsiyasi"
+    },
+    "type": "transplant",
+    "primarySpecialtyCode": "gastroenterology",
+    "categoryCode": "gastroenterology",
+    "inpatientNights": {
+      "min": 18,
+      "max": 30
+    },
+    "daysInCountry": {
+      "min": 75,
+      "max": 110
+    },
+    "requiredCapabilities": [
+      "transplant-programme",
+      "blood-bank",
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "bone-marrow-transplant",
+    "name": {
+      "en": "Bone marrow transplant",
+      "ru": "Трансплантация костного мозга",
+      "uz": "Ilik transplantatsiyasi"
+    },
+    "type": "transplant",
+    "primarySpecialtyCode": "haematology-bmt",
+    "categoryCode": "haematology",
+    "inpatientNights": {
+      "min": 28,
+      "max": 42
+    },
+    "daysInCountry": {
+      "min": 90,
+      "max": 120
+    },
+    "requiredCapabilities": [
+      "bmt-unit",
+      "transplant-programme",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "bmt-thalassaemia",
+    "name": {
+      "en": "Allogeneic BMT for thalassaemia",
+      "ru": "Аллогенная ТКМ при талассемии",
+      "uz": "Talassemiyada allogen ilik ko'chirish"
+    },
+    "type": "transplant",
+    "primarySpecialtyCode": "haematology-bmt",
+    "categoryCode": "haematology",
+    "inpatientNights": {
+      "min": 30,
+      "max": 45
+    },
+    "daysInCountry": {
+      "min": 100,
+      "max": 130
+    },
+    "requiredCapabilities": [
+      "bmt-unit",
+      "transplant-programme",
+      "blood-bank",
+      "nicu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "corneal-transplant",
+    "name": {
+      "en": "Corneal transplant (keratoplasty)",
+      "ru": "Кератопластика",
+      "uz": "Keratoplastika"
+    },
+    "type": "transplant",
+    "primarySpecialtyCode": "ophthalmology",
+    "categoryCode": "ophthalmology",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 21
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "total-knee-replacement",
+    "name": {
+      "en": "Total knee replacement",
+      "ru": "Тотальное эндопротезирование коленного сустава",
+      "uz": "Tizza bo'g'imini to'liq protezlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "orthopaedics",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 5,
+      "max": 8
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 25
+    },
+    "requiredCapabilities": [
+      "joint-replacement-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "partial-knee-replacement",
+    "name": {
+      "en": "Partial knee replacement",
+      "ru": "Частичное эндопротезирование коленного сустава",
+      "uz": "Tizza bo'g'imini qisman protezlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "orthopaedics",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 4,
+      "max": 6
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 22
+    },
+    "requiredCapabilities": [
+      "joint-replacement-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "robotic-knee-replacement",
+    "name": {
+      "en": "Robotic knee replacement",
+      "ru": "Роботизированное эндопротезирование колена",
+      "uz": "Robotli tizza protezlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "orthopaedics",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 17,
+      "max": 24
+    },
+    "requiredCapabilities": [
+      "robotic-surgery",
+      "joint-replacement-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "total-hip-replacement",
+    "name": {
+      "en": "Total hip replacement",
+      "ru": "Тотальное эндопротезирование тазобедренного сустава",
+      "uz": "Chanoq-son bo'g'imini to'liq protezlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "orthopaedics",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 5,
+      "max": 8
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 26
+    },
+    "requiredCapabilities": [
+      "joint-replacement-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hip-revision",
+    "name": {
+      "en": "Hip revision surgery",
+      "ru": "Ревизионное эндопротезирование бедра",
+      "uz": "Revizion chanoq protezlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "orthopaedics",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 7,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 32
+    },
+    "requiredCapabilities": [
+      "joint-replacement-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "spinal-fusion",
+    "name": {
+      "en": "Spinal fusion",
+      "ru": "Спондилодез",
+      "uz": "Umurtqa fiksatsiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "spine-surgery",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 30
+    },
+    "requiredCapabilities": [
+      "modular-ot",
+      "neuro-navigation",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "microdiscectomy",
+    "name": {
+      "en": "Microdiscectomy",
+      "ru": "Микродискэктомия",
+      "uz": "Mikrodiskektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "spine-surgery",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "disc-replacement",
+    "name": {
+      "en": "Artificial disc replacement",
+      "ru": "Протезирование межпозвонкового диска",
+      "uz": "Sun'iy disk protezlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "spine-surgery",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 5,
+      "max": 8
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 26
+    },
+    "requiredCapabilities": [
+      "modular-ot",
+      "neuro-navigation"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "acl-reconstruction",
+    "name": {
+      "en": "ACL reconstruction",
+      "ru": "Пластика передней крестообразной связки",
+      "uz": "Oldingi xoch bog'lamni tiklash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "orthopaedics",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 18
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "shoulder-arthroscopy",
+    "name": {
+      "en": "Shoulder arthroscopy",
+      "ru": "Артроскопия плечевого сустава",
+      "uz": "Yelka bo'g'imi artroskopiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "orthopaedics",
+    "categoryCode": "orthopaedics",
+    "inpatientNights": {
+      "min": 2,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 16
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "mechanical-thrombectomy",
+    "name": {
+      "en": "Mechanical thrombectomy",
+      "ru": "Механическая тромбэктомия",
+      "uz": "Mexanik trombektomiya"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "neurology",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 7,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 35
+    },
+    "requiredCapabilities": [
+      "neuro-icu",
+      "cath-lab"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "stroke-rehabilitation",
+    "name": {
+      "en": "Stroke rehabilitation programme",
+      "ru": "Программа реабилитации после инсульта",
+      "uz": "Insultdan keyingi reabilitatsiya"
+    },
+    "type": "rehabilitation",
+    "primarySpecialtyCode": "neurology",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 14,
+      "max": 28
+    },
+    "daysInCountry": {
+      "min": 30,
+      "max": 60
+    },
+    "requiredCapabilities": [
+      "neuro-icu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "epilepsy-surgery",
+    "name": {
+      "en": "Epilepsy surgery",
+      "ru": "Хирургия эпилепсии",
+      "uz": "Epilepsiya jarrohligi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "neurology",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 10,
+      "max": 16
+    },
+    "daysInCountry": {
+      "min": 30,
+      "max": 42
+    },
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "deep-brain-stimulation",
+    "name": {
+      "en": "Deep brain stimulation (DBS)",
+      "ru": "Глубокая стимуляция мозга (DBS)",
+      "uz": "Chuqur miya stimulyatsiyasi (DBS)"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "neurology",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 8,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "aneurysm-coiling",
+    "name": {
+      "en": "Endovascular coiling",
+      "ru": "Эндоваскулярная эмболизация",
+      "uz": "Endovaskulyar emboliizatsiya"
+    },
+    "type": "interventional",
+    "primarySpecialtyCode": "neurosurgery",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 5,
+      "max": 9
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 26
+    },
+    "requiredCapabilities": [
+      "neuro-icu",
+      "cath-lab"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "aneurysm-clipping",
+    "name": {
+      "en": "Surgical clipping",
+      "ru": "Клипирование аневризмы",
+      "uz": "Anevrizmani kliplash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "neurosurgery",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 9,
+      "max": 15
+    },
+    "daysInCountry": {
+      "min": 28,
+      "max": 38
+    },
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "vp-shunt",
+    "name": {
+      "en": "Ventriculoperitoneal shunt",
+      "ru": "Вентрикулоперитонеальное шунтирование",
+      "uz": "Ventrikuloperitoneal shuntlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "neurosurgery",
+    "categoryCode": "neurosciences",
+    "inpatientNights": {
+      "min": 5,
+      "max": 9
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 26
+    },
+    "requiredCapabilities": [
+      "neuro-icu",
+      "nicu"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "pcnl",
+    "name": {
+      "en": "Percutaneous nephrolithotomy (PCNL)",
+      "ru": "Чрескожная нефролитотрипсия (ПНЛ)",
+      "uz": "Perkutan nefrolitotripsiya (PCNL)"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "urology",
+    "categoryCode": "urology",
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 18
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "ureteroscopy-laser",
+    "name": {
+      "en": "Laser ureteroscopy (RIRS)",
+      "ru": "Лазерная уретероскопия (RIRS)",
+      "uz": "Lazerli ureteroskopiya (RIRS)"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "urology",
+    "categoryCode": "urology",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 8,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "turp",
+    "name": {
+      "en": "TURP",
+      "ru": "Трансуретральная резекция простаты (ТУРП)",
+      "uz": "Prostatani transuretral rezeksiyasi (TURP)"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "urology",
+    "categoryCode": "urology",
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 18
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "holep",
+    "name": {
+      "en": "HoLEP laser enucleation",
+      "ru": "Лазерная энуклеация простаты (HoLEP)",
+      "uz": "HoLEP lazer enukleatsiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "urology",
+    "categoryCode": "urology",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 11,
+      "max": 16
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "sleeve-gastrectomy",
+    "name": {
+      "en": "Sleeve gastrectomy",
+      "ru": "Рукавная резекция желудка",
+      "uz": "Oshqozon sleeve rezeksiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "bariatric-surgery",
+    "categoryCode": "bariatric",
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "gastric-bypass",
+    "name": {
+      "en": "Gastric bypass",
+      "ru": "Шунтирование желудка",
+      "uz": "Oshqozon shuntlash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "bariatric-surgery",
+    "categoryCode": "bariatric",
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 24
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "laparoscopic-cholecystectomy",
+    "name": {
+      "en": "Laparoscopic cholecystectomy",
+      "ru": "Лапароскопическая холецистэктомия",
+      "uz": "Laparoskopik xoletsistektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "gi-surgery",
+    "categoryCode": "complex-surgery",
+    "inpatientNights": {
+      "min": 2,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hernia-repair",
+    "name": {
+      "en": "Laparoscopic hernia repair",
+      "ru": "Лапароскопическая герниопластика",
+      "uz": "Laparoskopik churra plastikasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "general-surgery",
+    "categoryCode": "complex-surgery",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 8,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "ibd-biologics",
+    "name": {
+      "en": "Biologic therapy programme",
+      "ru": "Терапия биологическими препаратами",
+      "uz": "Biologik terapiya dasturi"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "gastroenterology",
+    "categoryCode": "gastroenterology",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 12
+    },
+    "requiredCapabilities": [
+      "endoscopy-suite"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "ivf-cycle",
+    "name": {
+      "en": "IVF cycle",
+      "ru": "Цикл ЭКО",
+      "uz": "EKO sikli"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "reproductive-medicine",
+    "categoryCode": "fertility",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 30
+    },
+    "requiredCapabilities": [
+      "art-lab"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "icsi",
+    "name": {
+      "en": "IVF with ICSI",
+      "ru": "ЭКО с ИКСИ",
+      "uz": "IKSI bilan EKO"
+    },
+    "type": "medical",
+    "primarySpecialtyCode": "reproductive-medicine",
+    "categoryCode": "fertility",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 30
+    },
+    "requiredCapabilities": [
+      "art-lab"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "pgt",
+    "name": {
+      "en": "Preimplantation genetic testing",
+      "ru": "Преимплантационное генетическое тестирование",
+      "uz": "Implantatsiyagacha genetik test"
+    },
+    "type": "diagnostic",
+    "primarySpecialtyCode": "reproductive-medicine",
+    "categoryCode": "fertility",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 25,
+      "max": 35
+    },
+    "requiredCapabilities": [
+      "art-lab"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "tese",
+    "name": {
+      "en": "Surgical sperm retrieval (TESE)",
+      "ru": "Хирургическое получение сперматозоидов (TESE)",
+      "uz": "Jarrohlik yo'li bilan sperma olish (TESE)"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "reproductive-medicine",
+    "categoryCode": "fertility",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 16
+    },
+    "requiredCapabilities": [
+      "art-lab",
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "myomectomy",
+    "name": {
+      "en": "Laparoscopic myomectomy",
+      "ru": "Лапароскопическая миомэктомия",
+      "uz": "Laparoskopik miomektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "obstetrics-gynaecology",
+    "categoryCode": "gynaecology",
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hysterectomy",
+    "name": {
+      "en": "Hysterectomy",
+      "ru": "Гистерэктомия",
+      "uz": "Gisterektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "obstetrics-gynaecology",
+    "categoryCode": "gynaecology",
+    "inpatientNights": {
+      "min": 4,
+      "max": 6
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 22
+    },
+    "requiredCapabilities": [
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "phacoemulsification",
+    "name": {
+      "en": "Phacoemulsification with IOL",
+      "ru": "Факоэмульсификация с имплантацией ИОЛ",
+      "uz": "Fakoemulsifikatsiya va IOL implantatsiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "ophthalmology",
+    "categoryCode": "ophthalmology",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 5,
+      "max": 9
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "vitrectomy",
+    "name": {
+      "en": "Vitrectomy",
+      "ru": "Витрэктомия",
+      "uz": "Vitrektomiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "ophthalmology",
+    "categoryCode": "ophthalmology",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 16
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cochlear-implant",
+    "name": {
+      "en": "Cochlear implant",
+      "ru": "Кохлеарная имплантация",
+      "uz": "Koxlear implantatsiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "ent",
+    "categoryCode": "ent",
+    "inpatientNights": {
+      "min": 3,
+      "max": 6
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 24
+    },
+    "requiredCapabilities": [
+      "modular-ot",
+      "neuro-navigation"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "fess",
+    "name": {
+      "en": "Functional endoscopic sinus surgery",
+      "ru": "Функциональная эндоскопическая хирургия пазух",
+      "uz": "Funksional endoskopik sinus jarrohligi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "ent",
+    "categoryCode": "ent",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 9,
+      "max": 14
+    },
+    "requiredCapabilities": [
+      "modular-ot",
+      "endoscopy-suite"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "reconstructive-flap",
+    "name": {
+      "en": "Reconstructive flap surgery",
+      "ru": "Реконструктивная пластика лоскутом",
+      "uz": "Rekonstruktiv loskut jarrohligi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "plastic-surgery",
+    "categoryCode": "cosmetic",
+    "inpatientNights": {
+      "min": 7,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 40
+    },
+    "requiredCapabilities": [
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "liposuction",
+    "name": {
+      "en": "Liposuction",
+      "ru": "Липосакция",
+      "uz": "Liposaksiya"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "plastic-surgery",
+    "categoryCode": "cosmetic",
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 16
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "abdominoplasty",
+    "name": {
+      "en": "Abdominoplasty",
+      "ru": "Абдоминопластика",
+      "uz": "Abdominoplastika"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "plastic-surgery",
+    "categoryCode": "cosmetic",
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hair-transplant",
+    "name": {
+      "en": "Hair transplant (FUE)",
+      "ru": "Пересадка волос (FUE)",
+      "uz": "Soch ko'chirish (FUE)"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "dermatology",
+    "categoryCode": "dermatology",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 5,
+      "max": 9
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "dental-implant",
+    "name": {
+      "en": "Dental implant",
+      "ru": "Дентальная имплантация",
+      "uz": "Tish implantatsiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "dentistry",
+    "categoryCode": "dental",
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 12
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "full-mouth-rehab",
+    "name": {
+      "en": "Full mouth rehabilitation",
+      "ru": "Полная реабилитация полости рта",
+      "uz": "Og'iz bo'shlig'ini to'liq tiklash"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "dentistry",
+    "categoryCode": "dental",
+    "inpatientNights": {
+      "min": 0,
+      "max": 2
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 21
+    },
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "paediatric-corrective-surgery",
+    "name": {
+      "en": "Paediatric corrective surgery",
+      "ru": "Детская корригирующая операция",
+      "uz": "Bolalar korreksion operatsiyasi"
+    },
+    "type": "surgical",
+    "primarySpecialtyCode": "paediatrics",
+    "categoryCode": "paediatrics",
+    "inpatientNights": {
+      "min": 5,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 32
+    },
+    "requiredCapabilities": [
+      "nicu",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "pulmonary-rehabilitation",
+    "name": {
+      "en": "Pulmonary rehabilitation",
+      "ru": "Лёгочная реабилитация",
+      "uz": "O'pka reabilitatsiyasi"
+    },
+    "type": "rehabilitation",
+    "primarySpecialtyCode": "pulmonology",
+    "categoryCode": "pulmonology",
+    "inpatientNights": {
+      "min": 7,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 35
+    },
+    "requiredCapabilities": [
+      "endoscopy-suite"
+    ],
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

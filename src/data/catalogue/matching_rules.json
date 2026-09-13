@@ -1,0 +1,1748 @@
+[
+  {
+    "_id": "coronary-artery-disease__cabg",
+    "diseaseCode": "coronary-artery-disease",
+    "treatmentCode": "cabg",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 7,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 28
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "coronary-artery-disease__angioplasty-stent",
+    "diseaseCode": "coronary-artery-disease",
+    "treatmentCode": "angioplasty-stent",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "coronary-artery-disease__coronary-angiography",
+    "diseaseCode": "coronary-artery-disease",
+    "treatmentCode": "coronary-angiography",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cath-lab"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 5,
+      "max": 7
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "heart-valve-disease__valve-replacement",
+    "diseaseCode": "heart-valve-disease",
+    "treatmentCode": "valve-replacement",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 8,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 30
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "heart-valve-disease__valve-repair",
+    "diseaseCode": "heart-valve-disease",
+    "treatmentCode": "valve-repair",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass"
+    ],
+    "inpatientNights": {
+      "min": 7,
+      "max": 11
+    },
+    "daysInCountry": {
+      "min": 22,
+      "max": 28
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "heart-valve-disease__tavi",
+    "diseaseCode": "heart-valve-disease",
+    "treatmentCode": "tavi",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 21
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "cardiac-arrhythmia__pacemaker-implant",
+    "diseaseCode": "cardiac-arrhythmia",
+    "treatmentCode": "pacemaker-implant",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cath-lab"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "cardiac-arrhythmia__cardiac-ablation",
+    "diseaseCode": "cardiac-arrhythmia",
+    "treatmentCode": "cardiac-ablation",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "cardiac-arrhythmia__icd-implant",
+    "diseaseCode": "cardiac-arrhythmia",
+    "treatmentCode": "icd-implant",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 16
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "congenital-heart-disease__asd-vsd-closure",
+    "diseaseCode": "congenital-heart-disease",
+    "treatmentCode": "asd-vsd-closure",
+    "specialtyCode": "paediatric-cardiac-surgery",
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "nicu"
+    ],
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 26
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "congenital-heart-disease__tetralogy-repair",
+    "diseaseCode": "congenital-heart-disease",
+    "treatmentCode": "tetralogy-repair",
+    "specialtyCode": "paediatric-cardiac-surgery",
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "nicu",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 10,
+      "max": 16
+    },
+    "daysInCountry": {
+      "min": 28,
+      "max": 40
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "heart-failure__heart-transplant",
+    "diseaseCode": "heart-failure",
+    "treatmentCode": "heart-transplant",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "transplant-programme",
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 21,
+      "max": 35
+    },
+    "daysInCountry": {
+      "min": 90,
+      "max": 120
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "heart-failure__lvad",
+    "diseaseCode": "heart-failure",
+    "treatmentCode": "lvad",
+    "specialtyCode": "cardiology",
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "cardiopulmonary-bypass",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 18,
+      "max": 28
+    },
+    "daysInCountry": {
+      "min": 60,
+      "max": 80
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "peripheral-artery-disease__peripheral-angioplasty",
+    "diseaseCode": "peripheral-artery-disease",
+    "treatmentCode": "peripheral-angioplasty",
+    "specialtyCode": "vascular-surgery",
+    "requiredCapabilities": [
+      "cath-lab"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "peripheral-artery-disease__bypass-graft-limb",
+    "diseaseCode": "peripheral-artery-disease",
+    "treatmentCode": "bypass-graft-limb",
+    "specialtyCode": "vascular-surgery",
+    "requiredCapabilities": [
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 28
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "aortic-aneurysm__evar",
+    "diseaseCode": "aortic-aneurysm",
+    "treatmentCode": "evar",
+    "specialtyCode": "vascular-surgery",
+    "requiredCapabilities": [
+      "cath-lab",
+      "cardiac-icu"
+    ],
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 22
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "aortic-aneurysm__open-aneurysm-repair",
+    "diseaseCode": "aortic-aneurysm",
+    "treatmentCode": "open-aneurysm-repair",
+    "specialtyCode": "vascular-surgery",
+    "requiredCapabilities": [
+      "cardiac-icu",
+      "blood-bank",
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 10,
+      "max": 16
+    },
+    "daysInCountry": {
+      "min": 28,
+      "max": 38
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "varicose-veins__endovenous-laser",
+    "diseaseCode": "varicose-veins",
+    "treatmentCode": "endovenous-laser",
+    "specialtyCode": "vascular-surgery",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 5,
+      "max": 8
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "breast-cancer__mastectomy",
+    "diseaseCode": "breast-cancer",
+    "treatmentCode": "mastectomy",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 22
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "breast-cancer__breast-conserving-surgery",
+    "diseaseCode": "breast-cancer",
+    "treatmentCode": "breast-conserving-surgery",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "breast-cancer__chemotherapy-breast",
+    "diseaseCode": "breast-cancer",
+    "treatmentCode": "chemotherapy-breast",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 10
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "breast-cancer__radiotherapy-breast",
+    "diseaseCode": "breast-cancer",
+    "treatmentCode": "radiotherapy-breast",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "linac",
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 35,
+      "max": 45
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "lung-cancer__lobectomy",
+    "diseaseCode": "lung-cancer",
+    "treatmentCode": "lobectomy",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 7,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 32
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "lung-cancer__chemotherapy-lung",
+    "diseaseCode": "lung-cancer",
+    "treatmentCode": "chemotherapy-lung",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 10
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "lung-cancer__immunotherapy",
+    "diseaseCode": "lung-cancer",
+    "treatmentCode": "immunotherapy",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "pet-ct"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 2
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 10
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "colorectal-cancer__colectomy",
+    "diseaseCode": "colorectal-cancer",
+    "treatmentCode": "colectomy",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 7,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 32
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "colorectal-cancer__robotic-colorectal",
+    "diseaseCode": "colorectal-cancer",
+    "treatmentCode": "robotic-colorectal",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "robotic-surgery",
+      "tumour-board",
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 5,
+      "max": 9
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 28
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "head-neck-cancer__head-neck-resection",
+    "diseaseCode": "head-neck-cancer",
+    "treatmentCode": "head-neck-resection",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 8,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "head-neck-cancer__robotic-head-neck",
+    "diseaseCode": "head-neck-cancer",
+    "treatmentCode": "robotic-head-neck",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "robotic-surgery",
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 22,
+      "max": 30
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "prostate-cancer__radical-prostatectomy",
+    "diseaseCode": "prostate-cancer",
+    "treatmentCode": "radical-prostatectomy",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "robotic-surgery",
+      "tumour-board",
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 5,
+      "max": 8
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 25
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "prostate-cancer__radiotherapy-prostate",
+    "diseaseCode": "prostate-cancer",
+    "treatmentCode": "radiotherapy-prostate",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "linac",
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 35,
+      "max": 45
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "cervical-cancer__radical-hysterectomy",
+    "diseaseCode": "cervical-cancer",
+    "treatmentCode": "radical-hysterectomy",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 28
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "cervical-cancer__brachytherapy",
+    "diseaseCode": "cervical-cancer",
+    "treatmentCode": "brachytherapy",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "linac",
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 30
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "liver-cancer__liver-resection",
+    "diseaseCode": "liver-cancer",
+    "treatmentCode": "liver-resection",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 9,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "liver-cancer__tace",
+    "diseaseCode": "liver-cancer",
+    "treatmentCode": "tace",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "cath-lab",
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 16
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "stomach-cancer__gastrectomy",
+    "diseaseCode": "stomach-cancer",
+    "treatmentCode": "gastrectomy",
+    "specialtyCode": "surgical-oncology",
+    "requiredCapabilities": [
+      "tumour-board",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 9,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "brain-tumour__craniotomy-tumour",
+    "diseaseCode": "brain-tumour",
+    "treatmentCode": "craniotomy-tumour",
+    "specialtyCode": "neurosurgery",
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation",
+      "tumour-board",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 8,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "brain-tumour__awake-craniotomy",
+    "diseaseCode": "brain-tumour",
+    "treatmentCode": "awake-craniotomy",
+    "specialtyCode": "neurosurgery",
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation",
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 9,
+      "max": 15
+    },
+    "daysInCountry": {
+      "min": 28,
+      "max": 38
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "brain-tumour__gamma-knife",
+    "diseaseCode": "brain-tumour",
+    "treatmentCode": "gamma-knife",
+    "specialtyCode": "neurosurgery",
+    "requiredCapabilities": [
+      "linac",
+      "neuro-navigation",
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "leukaemia__chemotherapy-leukaemia",
+    "diseaseCode": "leukaemia",
+    "treatmentCode": "chemotherapy-leukaemia",
+    "specialtyCode": "haematology-bmt",
+    "requiredCapabilities": [
+      "bmt-unit",
+      "blood-bank",
+      "tumour-board"
+    ],
+    "inpatientNights": {
+      "min": 21,
+      "max": 35
+    },
+    "daysInCountry": {
+      "min": 45,
+      "max": 60
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "leukaemia__car-t",
+    "diseaseCode": "leukaemia",
+    "treatmentCode": "car-t",
+    "specialtyCode": "haematology-bmt",
+    "requiredCapabilities": [
+      "bmt-unit",
+      "tumour-board",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 21,
+      "max": 30
+    },
+    "daysInCountry": {
+      "min": 60,
+      "max": 90
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "lymphoma__chemotherapy-lymphoma",
+    "diseaseCode": "lymphoma",
+    "treatmentCode": "chemotherapy-lymphoma",
+    "specialtyCode": "haematology-bmt",
+    "requiredCapabilities": [
+      "tumour-board",
+      "pet-ct"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "kidney-failure__kidney-transplant",
+    "diseaseCode": "kidney-failure",
+    "treatmentCode": "kidney-transplant",
+    "specialtyCode": "nephrology",
+    "requiredCapabilities": [
+      "transplant-programme",
+      "dialysis-unit",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 12,
+      "max": 20
+    },
+    "daysInCountry": {
+      "min": 60,
+      "max": 90
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "kidney-failure__haemodialysis",
+    "diseaseCode": "kidney-failure",
+    "treatmentCode": "haemodialysis",
+    "specialtyCode": "nephrology",
+    "requiredCapabilities": [
+      "dialysis-unit"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "liver-failure__liver-transplant",
+    "diseaseCode": "liver-failure",
+    "treatmentCode": "liver-transplant",
+    "specialtyCode": "gastroenterology",
+    "requiredCapabilities": [
+      "transplant-programme",
+      "blood-bank",
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 18,
+      "max": 30
+    },
+    "daysInCountry": {
+      "min": 75,
+      "max": 110
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "bone-marrow-failure__bone-marrow-transplant",
+    "diseaseCode": "bone-marrow-failure",
+    "treatmentCode": "bone-marrow-transplant",
+    "specialtyCode": "haematology-bmt",
+    "requiredCapabilities": [
+      "bmt-unit",
+      "transplant-programme",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 28,
+      "max": 42
+    },
+    "daysInCountry": {
+      "min": 90,
+      "max": 120
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "thalassaemia__bmt-thalassaemia",
+    "diseaseCode": "thalassaemia",
+    "treatmentCode": "bmt-thalassaemia",
+    "specialtyCode": "haematology-bmt",
+    "requiredCapabilities": [
+      "bmt-unit",
+      "transplant-programme",
+      "blood-bank",
+      "nicu"
+    ],
+    "inpatientNights": {
+      "min": 30,
+      "max": 45
+    },
+    "daysInCountry": {
+      "min": 100,
+      "max": 130
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "corneal-blindness__corneal-transplant",
+    "diseaseCode": "corneal-blindness",
+    "treatmentCode": "corneal-transplant",
+    "specialtyCode": "ophthalmology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 21
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "knee-osteoarthritis__total-knee-replacement",
+    "diseaseCode": "knee-osteoarthritis",
+    "treatmentCode": "total-knee-replacement",
+    "specialtyCode": "orthopaedics",
+    "requiredCapabilities": [
+      "joint-replacement-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 5,
+      "max": 8
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 25
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "knee-osteoarthritis__partial-knee-replacement",
+    "diseaseCode": "knee-osteoarthritis",
+    "treatmentCode": "partial-knee-replacement",
+    "specialtyCode": "orthopaedics",
+    "requiredCapabilities": [
+      "joint-replacement-ot"
+    ],
+    "inpatientNights": {
+      "min": 4,
+      "max": 6
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 22
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "knee-osteoarthritis__robotic-knee-replacement",
+    "diseaseCode": "knee-osteoarthritis",
+    "treatmentCode": "robotic-knee-replacement",
+    "specialtyCode": "orthopaedics",
+    "requiredCapabilities": [
+      "robotic-surgery",
+      "joint-replacement-ot"
+    ],
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 17,
+      "max": 24
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "hip-osteoarthritis__total-hip-replacement",
+    "diseaseCode": "hip-osteoarthritis",
+    "treatmentCode": "total-hip-replacement",
+    "specialtyCode": "orthopaedics",
+    "requiredCapabilities": [
+      "joint-replacement-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 5,
+      "max": 8
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 26
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "hip-osteoarthritis__hip-revision",
+    "diseaseCode": "hip-osteoarthritis",
+    "treatmentCode": "hip-revision",
+    "specialtyCode": "orthopaedics",
+    "requiredCapabilities": [
+      "joint-replacement-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 7,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 32
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "spinal-stenosis__spinal-fusion",
+    "diseaseCode": "spinal-stenosis",
+    "treatmentCode": "spinal-fusion",
+    "specialtyCode": "spine-surgery",
+    "requiredCapabilities": [
+      "modular-ot",
+      "neuro-navigation",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 6,
+      "max": 10
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 30
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "spinal-stenosis__microdiscectomy",
+    "diseaseCode": "spinal-stenosis",
+    "treatmentCode": "microdiscectomy",
+    "specialtyCode": "spine-surgery",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "spinal-stenosis__disc-replacement",
+    "diseaseCode": "spinal-stenosis",
+    "treatmentCode": "disc-replacement",
+    "specialtyCode": "spine-surgery",
+    "requiredCapabilities": [
+      "modular-ot",
+      "neuro-navigation"
+    ],
+    "inpatientNights": {
+      "min": 5,
+      "max": 8
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 26
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "sports-injury__acl-reconstruction",
+    "diseaseCode": "sports-injury",
+    "treatmentCode": "acl-reconstruction",
+    "specialtyCode": "orthopaedics",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 18
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "sports-injury__shoulder-arthroscopy",
+    "diseaseCode": "sports-injury",
+    "treatmentCode": "shoulder-arthroscopy",
+    "specialtyCode": "orthopaedics",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 16
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "stroke__mechanical-thrombectomy",
+    "diseaseCode": "stroke",
+    "treatmentCode": "mechanical-thrombectomy",
+    "specialtyCode": "neurology",
+    "requiredCapabilities": [
+      "neuro-icu",
+      "cath-lab"
+    ],
+    "inpatientNights": {
+      "min": 7,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 35
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "stroke__stroke-rehabilitation",
+    "diseaseCode": "stroke",
+    "treatmentCode": "stroke-rehabilitation",
+    "specialtyCode": "neurology",
+    "requiredCapabilities": [
+      "neuro-icu"
+    ],
+    "inpatientNights": {
+      "min": 14,
+      "max": 28
+    },
+    "daysInCountry": {
+      "min": 30,
+      "max": 60
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "epilepsy__epilepsy-surgery",
+    "diseaseCode": "epilepsy",
+    "treatmentCode": "epilepsy-surgery",
+    "specialtyCode": "neurology",
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation"
+    ],
+    "inpatientNights": {
+      "min": 10,
+      "max": 16
+    },
+    "daysInCountry": {
+      "min": 30,
+      "max": 42
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "parkinsons-disease__deep-brain-stimulation",
+    "diseaseCode": "parkinsons-disease",
+    "treatmentCode": "deep-brain-stimulation",
+    "specialtyCode": "neurology",
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation"
+    ],
+    "inpatientNights": {
+      "min": 8,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 26,
+      "max": 35
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "cerebral-aneurysm__aneurysm-coiling",
+    "diseaseCode": "cerebral-aneurysm",
+    "treatmentCode": "aneurysm-coiling",
+    "specialtyCode": "neurosurgery",
+    "requiredCapabilities": [
+      "neuro-icu",
+      "cath-lab"
+    ],
+    "inpatientNights": {
+      "min": 5,
+      "max": 9
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 26
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "cerebral-aneurysm__aneurysm-clipping",
+    "diseaseCode": "cerebral-aneurysm",
+    "treatmentCode": "aneurysm-clipping",
+    "specialtyCode": "neurosurgery",
+    "requiredCapabilities": [
+      "neuro-icu",
+      "neuro-navigation",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 9,
+      "max": 15
+    },
+    "daysInCountry": {
+      "min": 28,
+      "max": 38
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "hydrocephalus__vp-shunt",
+    "diseaseCode": "hydrocephalus",
+    "treatmentCode": "vp-shunt",
+    "specialtyCode": "neurosurgery",
+    "requiredCapabilities": [
+      "neuro-icu",
+      "nicu"
+    ],
+    "inpatientNights": {
+      "min": 5,
+      "max": 9
+    },
+    "daysInCountry": {
+      "min": 18,
+      "max": 26
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "kidney-stones__pcnl",
+    "diseaseCode": "kidney-stones",
+    "treatmentCode": "pcnl",
+    "specialtyCode": "urology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 18
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "kidney-stones__ureteroscopy-laser",
+    "diseaseCode": "kidney-stones",
+    "treatmentCode": "ureteroscopy-laser",
+    "specialtyCode": "urology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 8,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "benign-prostatic-hyperplasia__turp",
+    "diseaseCode": "benign-prostatic-hyperplasia",
+    "treatmentCode": "turp",
+    "specialtyCode": "urology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 12,
+      "max": 18
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "benign-prostatic-hyperplasia__holep",
+    "diseaseCode": "benign-prostatic-hyperplasia",
+    "treatmentCode": "holep",
+    "specialtyCode": "urology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 11,
+      "max": 16
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "obesity__sleeve-gastrectomy",
+    "diseaseCode": "obesity",
+    "treatmentCode": "sleeve-gastrectomy",
+    "specialtyCode": "bariatric-surgery",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "obesity__gastric-bypass",
+    "diseaseCode": "obesity",
+    "treatmentCode": "gastric-bypass",
+    "specialtyCode": "bariatric-surgery",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 4,
+      "max": 7
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 24
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "gallstones__laparoscopic-cholecystectomy",
+    "diseaseCode": "gallstones",
+    "treatmentCode": "laparoscopic-cholecystectomy",
+    "specialtyCode": "gi-surgery",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "hernia__hernia-repair",
+    "diseaseCode": "hernia",
+    "treatmentCode": "hernia-repair",
+    "specialtyCode": "general-surgery",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 8,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "inflammatory-bowel-disease__ibd-biologics",
+    "diseaseCode": "inflammatory-bowel-disease",
+    "treatmentCode": "ibd-biologics",
+    "specialtyCode": "gastroenterology",
+    "requiredCapabilities": [
+      "endoscopy-suite"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 12
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "female-infertility__ivf-cycle",
+    "diseaseCode": "female-infertility",
+    "treatmentCode": "ivf-cycle",
+    "specialtyCode": "reproductive-medicine",
+    "requiredCapabilities": [
+      "art-lab"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 30
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "female-infertility__icsi",
+    "diseaseCode": "female-infertility",
+    "treatmentCode": "icsi",
+    "specialtyCode": "reproductive-medicine",
+    "requiredCapabilities": [
+      "art-lab"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 30
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "female-infertility__pgt",
+    "diseaseCode": "female-infertility",
+    "treatmentCode": "pgt",
+    "specialtyCode": "reproductive-medicine",
+    "requiredCapabilities": [
+      "art-lab"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 25,
+      "max": 35
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "male-infertility__tese",
+    "diseaseCode": "male-infertility",
+    "treatmentCode": "tese",
+    "specialtyCode": "reproductive-medicine",
+    "requiredCapabilities": [
+      "art-lab",
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 16
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "uterine-fibroids__myomectomy",
+    "diseaseCode": "uterine-fibroids",
+    "treatmentCode": "myomectomy",
+    "specialtyCode": "obstetrics-gynaecology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 5
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "uterine-fibroids__hysterectomy",
+    "diseaseCode": "uterine-fibroids",
+    "treatmentCode": "hysterectomy",
+    "specialtyCode": "obstetrics-gynaecology",
+    "requiredCapabilities": [
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 4,
+      "max": 6
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 22
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "cataract__phacoemulsification",
+    "diseaseCode": "cataract",
+    "treatmentCode": "phacoemulsification",
+    "specialtyCode": "ophthalmology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 5,
+      "max": 9
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "retinal-disease__vitrectomy",
+    "diseaseCode": "retinal-disease",
+    "treatmentCode": "vitrectomy",
+    "specialtyCode": "ophthalmology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 16
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "hearing-loss__cochlear-implant",
+    "diseaseCode": "hearing-loss",
+    "treatmentCode": "cochlear-implant",
+    "specialtyCode": "ent",
+    "requiredCapabilities": [
+      "modular-ot",
+      "neuro-navigation"
+    ],
+    "inpatientNights": {
+      "min": 3,
+      "max": 6
+    },
+    "daysInCountry": {
+      "min": 16,
+      "max": 24
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "chronic-sinusitis__fess",
+    "diseaseCode": "chronic-sinusitis",
+    "treatmentCode": "fess",
+    "specialtyCode": "ent",
+    "requiredCapabilities": [
+      "modular-ot",
+      "endoscopy-suite"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 9,
+      "max": 14
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "post-burn-deformity__reconstructive-flap",
+    "diseaseCode": "post-burn-deformity",
+    "treatmentCode": "reconstructive-flap",
+    "specialtyCode": "plastic-surgery",
+    "requiredCapabilities": [
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 7,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 24,
+      "max": 40
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "body-contouring-need__liposuction",
+    "diseaseCode": "body-contouring-need",
+    "treatmentCode": "liposuction",
+    "specialtyCode": "plastic-surgery",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 1,
+      "max": 3
+    },
+    "daysInCountry": {
+      "min": 10,
+      "max": 16
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "body-contouring-need__abdominoplasty",
+    "diseaseCode": "body-contouring-need",
+    "treatmentCode": "abdominoplasty",
+    "specialtyCode": "plastic-surgery",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 2,
+      "max": 4
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 20
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "hair-loss__hair-transplant",
+    "diseaseCode": "hair-loss",
+    "treatmentCode": "hair-transplant",
+    "specialtyCode": "dermatology",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 5,
+      "max": 9
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "tooth-loss__dental-implant",
+    "diseaseCode": "tooth-loss",
+    "treatmentCode": "dental-implant",
+    "specialtyCode": "dentistry",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 1
+    },
+    "daysInCountry": {
+      "min": 7,
+      "max": 12
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "tooth-loss__full-mouth-rehab",
+    "diseaseCode": "tooth-loss",
+    "treatmentCode": "full-mouth-rehab",
+    "specialtyCode": "dentistry",
+    "requiredCapabilities": [
+      "modular-ot"
+    ],
+    "inpatientNights": {
+      "min": 0,
+      "max": 2
+    },
+    "daysInCountry": {
+      "min": 14,
+      "max": 21
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "congenital-anomaly__paediatric-corrective-surgery",
+    "diseaseCode": "congenital-anomaly",
+    "treatmentCode": "paediatric-corrective-surgery",
+    "specialtyCode": "paediatrics",
+    "requiredCapabilities": [
+      "nicu",
+      "modular-ot",
+      "blood-bank"
+    ],
+    "inpatientNights": {
+      "min": 5,
+      "max": 12
+    },
+    "daysInCountry": {
+      "min": 20,
+      "max": 32
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  },
+  {
+    "_id": "copd__pulmonary-rehabilitation",
+    "diseaseCode": "copd",
+    "treatmentCode": "pulmonary-rehabilitation",
+    "specialtyCode": "pulmonology",
+    "requiredCapabilities": [
+      "endoscopy-suite"
+    ],
+    "inpatientNights": {
+      "min": 7,
+      "max": 14
+    },
+    "daysInCountry": {
+      "min": 21,
+      "max": 35
+    },
+    "note": "Matching input only. A treating doctor confirms the plan."
+  }
+]

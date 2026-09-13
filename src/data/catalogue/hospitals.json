@@ -1,0 +1,4790 @@
+[
+  {
+    "_id": "h-indraprastha-apollo-hospital-delhi",
+    "legacyId": "VAI-H-0001",
+    "name": "Indraprastha Apollo Hospital",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-escorts-heart-institute-delhi",
+    "legacyId": "VAI-H-0002",
+    "name": "Fortis Escorts Heart Institute",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-max-super-speciality-hospital-saket-delhi",
+    "legacyId": "VAI-H-0003",
+    "name": "Max Super Speciality Hospital, Saket",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-blk-super-speciality-hospital-delhi",
+    "legacyId": "VAI-H-0004",
+    "name": "BLK Super Speciality Hospital",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospitals-dwarka-delhi",
+    "legacyId": "VAI-H-0005",
+    "name": "Manipal Hospitals Dwarka",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-hospital-shalimar-bagh-delhi",
+    "legacyId": "VAI-H-0006",
+    "name": "Fortis Hospital, Shalimar Bagh",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-indian-spinal-injuries-center-delhi",
+    "legacyId": "VAI-H-0007",
+    "name": "Indian Spinal Injuries Center",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-max-super-speciality-hospital-shalimar-bagh-delhi",
+    "legacyId": "VAI-H-0008",
+    "name": "Max Super Speciality Hospital, Shalimar Bagh",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-ibs-institute-of-brain-and-spine-delhi",
+    "legacyId": "VAI-H-0009",
+    "name": "IBS Institute of Brain and Spine",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-venkateshwar-hospital-delhi",
+    "legacyId": "VAI-H-0010",
+    "name": "Venkateshwar Hospital",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-ck-birla-hospital-punjabi-bagh-delhi",
+    "legacyId": "VAI-H-0011",
+    "name": "CK Birla Hospital, Punjabi Bagh",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-max-super-speciality-hospital-patparganj-delhi",
+    "legacyId": "VAI-H-0012",
+    "name": "Max Super Speciality Hospital, Patparganj",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-la-femme-delhi",
+    "legacyId": "VAI-H-0013",
+    "name": "Fortis La Femme",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-pushpawati-singhania-research-institute-delhi",
+    "legacyId": "VAI-H-0014",
+    "name": "Pushpawati Singhania Research Institute",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-looks-cosmetic-plastic-surgery-hair-transplant-centre-delhi",
+    "legacyId": "VAI-H-0015",
+    "name": "Looks Cosmetic / Plastic Surgery & Hair Transplant Centre",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-flt-lt-rajan-dhall-hospital-vasant-kunj-delhi",
+    "legacyId": "VAI-H-0016",
+    "name": "Fortis Flt. Lt. Rajan Dhall Hospital, Vasant Kunj",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-nova-ivi-fertility-delhi",
+    "legacyId": "VAI-H-0017",
+    "name": "NOVA IVI Fertility",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-center-for-sight-delhi",
+    "legacyId": "VAI-H-0018",
+    "name": "Center for Sight",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-art-fertility-clinics-delhi",
+    "legacyId": "VAI-H-0019",
+    "name": "ART Fertility Clinics",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-mediworld-ivf-center-and-fertility-delhi",
+    "legacyId": "VAI-H-0020",
+    "name": "Mediworld IVF Center and Fertility",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-max-multi-speciality-hospital-panchsheel-park-delhi",
+    "legacyId": "VAI-H-0021",
+    "name": "Max Multi Speciality Hospital, Panchsheel Park",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-aakash-healthcare-super-speciality-hospital-dwarka-delhi",
+    "legacyId": "VAI-H-0022",
+    "name": "Aakash Healthcare Super Speciality Hospital, Dwarka",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-sri-balaji-action-medical-institute-delhi",
+    "legacyId": "VAI-H-0023",
+    "name": "Sri Balaji Action Medical Institute",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-fertility-center-lajpat-nagar-delhi",
+    "legacyId": "VAI-H-0024",
+    "name": "Apollo Fertility Center, Lajpat Nagar",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-rainbow-children-s-hospital-delhi",
+    "legacyId": "VAI-H-0025",
+    "name": "Rainbow Children’s Hospital",
+    "legalName": null,
+    "city": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-medanta-the-medicity-gurgaon",
+    "legacyId": "VAI-H-0026",
+    "name": "Medanta - The Medicity",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-memorial-research-institute-gurgaon",
+    "legacyId": "VAI-H-0027",
+    "name": "Fortis Memorial Research Institute",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-artemis-hospital-gurgaon",
+    "legacyId": "VAI-H-0028",
+    "name": "Artemis Hospital",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-nova-ivf-fertility-gurgaon",
+    "legacyId": "VAI-H-0029",
+    "name": "Nova IVF Fertility",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-palam-vihar-gurgaon",
+    "legacyId": "VAI-H-0030",
+    "name": "Manipal Hospital, Palam Vihar",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-max-super-specialty-hospital-gurgaon",
+    "legacyId": "VAI-H-0031",
+    "name": "Max Super Specialty Hospital",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-paras-hospitals-gurgaon",
+    "legacyId": "VAI-H-0032",
+    "name": "Paras Hospitals",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-neelkanth-hospitals-gurgaon",
+    "legacyId": "VAI-H-0033",
+    "name": "Neelkanth Hospitals",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-marengo-asia-hospitals-gurgaon",
+    "legacyId": "VAI-H-0034",
+    "name": "Marengo Asia Hospitals",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-ck-birla-hospital-gurgaon",
+    "legacyId": "VAI-H-0035",
+    "name": "CK Birla Hospital",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-la-midas-gurgaon",
+    "legacyId": "VAI-H-0036",
+    "name": "La Midas",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-the-dental-hub-gurgaon",
+    "legacyId": "VAI-H-0037",
+    "name": "The Dental Hub",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-art-fertility-clinics-gurgaon",
+    "legacyId": "VAI-H-0038",
+    "name": "ART Fertility Clinics",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-sanar-international-hospital-gurgaon",
+    "legacyId": "VAI-H-0039",
+    "name": "Sanar International Hospital",
+    "legalName": null,
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-jaypee-hospital-noida",
+    "legacyId": "VAI-H-0040",
+    "name": "Jaypee Hospital",
+    "legalName": null,
+    "city": "Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-hospital-noida",
+    "legacyId": "VAI-H-0041",
+    "name": "Fortis Hospital",
+    "legalName": null,
+    "city": "Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-max-multi-speciality-centre-noida",
+    "legacyId": "VAI-H-0042",
+    "name": "Max Multi Speciality Centre",
+    "legalName": null,
+    "city": "Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-kailash-hospital-noida",
+    "legacyId": "VAI-H-0043",
+    "name": "Kailash Hospital",
+    "legalName": null,
+    "city": "Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-sharda-hospital-noida",
+    "legacyId": "VAI-H-0044",
+    "name": "Sharda Hospital",
+    "legalName": null,
+    "city": "Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-marengo-asia-hospitals-faridabad",
+    "legacyId": "VAI-H-0045",
+    "name": "Marengo Asia Hospitals",
+    "legalName": null,
+    "city": "Faridabad",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-escorts-hospital-faridabad",
+    "legacyId": "VAI-H-0046",
+    "name": "Fortis Escorts Hospital",
+    "legalName": null,
+    "city": "Faridabad",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-asian-institute-of-medical-sciences-faridabad",
+    "legacyId": "VAI-H-0047",
+    "name": "Asian Institute of Medical Sciences",
+    "legalName": null,
+    "city": "Faridabad",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-amrita-hospital-faridabad",
+    "legacyId": "VAI-H-0048",
+    "name": "Amrita Hospital",
+    "legalName": null,
+    "city": "Faridabad",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-miot-international-chennai",
+    "legacyId": "VAI-H-0049",
+    "name": "MIOT International",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-mgm-healthcare-chennai",
+    "legacyId": "VAI-H-0050",
+    "name": "MGM Healthcare",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-sims-hospital-vadapalani-chennai",
+    "legacyId": "VAI-H-0051",
+    "name": "SIMS Hospital, Vadapalani",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-gleneagles-global-hospital-chennai",
+    "legacyId": "VAI-H-0052",
+    "name": "Gleneagles Global Hospital",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-kauvery-hospital-alwarpet-chennai",
+    "legacyId": "VAI-H-0053",
+    "name": "Kauvery Hospital, Alwarpet",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-kauvery-hospital-vadapalani-chennai",
+    "legacyId": "VAI-H-0054",
+    "name": "Kauvery Hospital, Vadapalani",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-dr-rela-institute-and-medical-centre-chennai",
+    "legacyId": "VAI-H-0055",
+    "name": "Dr. Rela Institute and Medical Centre",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-nova-ivi-fertility-chennai",
+    "legacyId": "VAI-H-0056",
+    "name": "Nova IVI Fertility",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-malar-hospital-chennai",
+    "legacyId": "VAI-H-0057",
+    "name": "Fortis Malar Hospital",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-sims-hospital-nungambakkam-chennai",
+    "legacyId": "VAI-H-0058",
+    "name": "SIMS Hospital, Nungambakkam",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-desire-aesthetics-clinic-chennai",
+    "legacyId": "VAI-H-0059",
+    "name": "Desire Aesthetics Clinic",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-rainbow-children-s-hospital-birthright-chennai",
+    "legacyId": "VAI-H-0060",
+    "name": "Rainbow Children's Hospital & BirthRight",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-art-fertility-clinic-chennai",
+    "legacyId": "VAI-H-0061",
+    "name": "ART Fertility Clinic",
+    "legalName": null,
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-old-airport-road-bangalore",
+    "legacyId": "VAI-H-0062",
+    "name": "Manipal Hospital, Old Airport Road",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-hospital-bannerghatta-road-bangalore",
+    "legacyId": "VAI-H-0063",
+    "name": "Apollo Hospital, Bannerghatta Road",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-hcg-cancer-centre-bangalore",
+    "legacyId": "VAI-H-0064",
+    "name": "HCG Cancer Centre",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-hospital-bannerghatta-road-bangalore",
+    "legacyId": "VAI-H-0065",
+    "name": "Fortis Hospital, Bannerghatta Road",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-rainbow-children-s-hospital-birthright-bannerghatta-road-bangalore",
+    "legacyId": "VAI-H-0066",
+    "name": "Rainbow Children's Hospital & BirthRight, Bannerghatta Road",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-varthur-road-bangalore",
+    "legacyId": "VAI-H-0067",
+    "name": "Manipal Hospital, Varthur Road",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-yeshwanthpur-bangalore",
+    "legacyId": "VAI-H-0068",
+    "name": "Manipal Hospital, Yeshwanthpur",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-bgs-gleneagles-global-hospitals-bangalore",
+    "legacyId": "VAI-H-0069",
+    "name": "BGS Gleneagles Global Hospitals",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospitals-life-s-on-whitefield-bangalore",
+    "legacyId": "VAI-H-0070",
+    "name": "Manipal Hospitals Life's On, Whitefield",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-speciality-hospital-jayanagar-bangalore",
+    "legacyId": "VAI-H-0071",
+    "name": "Apollo Speciality Hospital, Jayanagar",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-millers-road-bangalore",
+    "legacyId": "VAI-H-0072",
+    "name": "Manipal Hospital Millers Road",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-north-side-hospital-malleshwaram-bangalore",
+    "legacyId": "VAI-H-0073",
+    "name": "Manipal North Side Hospital, Malleshwaram",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-sarjapur-road-bangalore",
+    "legacyId": "VAI-H-0074",
+    "name": "Manipal Hospital, Sarjapur Road",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-nova-ivi-fertility-bangalore",
+    "legacyId": "VAI-H-0075",
+    "name": "Nova IVI Fertility",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-aster-cmi-hospital-bangalore",
+    "legacyId": "VAI-H-0076",
+    "name": "Aster CMI Hospital",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-cradle-children-s-hospital-jayanagar-bangalore",
+    "legacyId": "VAI-H-0077",
+    "name": "Apollo Cradle & Children's Hospital, Jayanagar",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-rainbow-children-s-hospital-birthright-bangalore",
+    "legacyId": "VAI-H-0078",
+    "name": "Rainbow Children's Hospital & BirthRight",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-aster-rv-hospital-bangalore",
+    "legacyId": "VAI-H-0079",
+    "name": "Aster RV Hospital",
+    "legalName": null,
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-kokilaben-dhirubhai-ambani-hospital-mumbai",
+    "legacyId": "VAI-H-0080",
+    "name": "Kokilaben Dhirubhai Ambani Hospital",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-nanavati-super-specialty-hospital-mumbai",
+    "legacyId": "VAI-H-0081",
+    "name": "Nanavati Super Specialty Hospital",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-wockhardt-hospital-mumbai",
+    "legacyId": "VAI-H-0082",
+    "name": "Wockhardt Hospital",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-wockhardt-super-speciality-hospital-mira-road-mumbai",
+    "legacyId": "VAI-H-0083",
+    "name": "Wockhardt Super Speciality Hospital, Mira Road",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-hospital-mulund-mumbai",
+    "legacyId": "VAI-H-0084",
+    "name": "Fortis Hospital, Mulund",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-hcg-cancer-centre-mumbai",
+    "legacyId": "VAI-H-0085",
+    "name": "HCG Cancer Centre",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-hospitals-mumbai",
+    "legacyId": "VAI-H-0086",
+    "name": "Apollo Hospitals",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-jaslok-hospital-mumbai",
+    "legacyId": "VAI-H-0087",
+    "name": "Jaslok Hospital",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-saifee-hospital-mumbai",
+    "legacyId": "VAI-H-0088",
+    "name": "Saifee Hospital",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-neurogen-brain-and-spine-institute-mumbai",
+    "legacyId": "VAI-H-0089",
+    "name": "Neurogen Brain and Spine Institute",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-hiranandani-hospital-vashi-mumbai",
+    "legacyId": "VAI-H-0090",
+    "name": "Fortis Hiranandani Hospital, Vashi",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-art-fertility-clinics-mumbai",
+    "legacyId": "VAI-H-0091",
+    "name": "ART Fertility Clinics",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-nova-ivi-fertility-mumbai",
+    "legacyId": "VAI-H-0092",
+    "name": "NOVA IVI Fertility",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-fertility-borivali-mumbai",
+    "legacyId": "VAI-H-0093",
+    "name": "Apollo Fertility, Borivali",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-fertility-navi-mumbai-mumbai",
+    "legacyId": "VAI-H-0094",
+    "name": "Apollo Fertility, Navi Mumbai",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-hospital-kalyan-mumbai",
+    "legacyId": "VAI-H-0095",
+    "name": "Fortis Hospital, Kalyan",
+    "legalName": null,
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-hospitals-jubilee-hills-hyderabad",
+    "legacyId": "VAI-H-0096",
+    "name": "Apollo Hospitals, Jubilee Hills",
+    "legalName": null,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-hospital-drdo-hyderabad",
+    "legacyId": "VAI-H-0097",
+    "name": "Apollo Hospital DRDO",
+    "legalName": null,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-rainbow-children-s-hospital-hyderabad",
+    "legacyId": "VAI-H-0098",
+    "name": "Rainbow Children's Hospital",
+    "legalName": null,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-nova-ivi-fertility-clinic-hyderabad",
+    "legacyId": "VAI-H-0099",
+    "name": "Nova IVI Fertility Clinic",
+    "legalName": null,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-art-fertility-clinics-hyderabad",
+    "legacyId": "VAI-H-0100",
+    "name": "ART Fertility Clinics",
+    "legalName": null,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-gleneagles-global-hospital-l-b-nagar-hyderabad",
+    "legacyId": "VAI-H-0101",
+    "name": "Gleneagles Global Hospital, L.B. Nagar",
+    "legalName": null,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-aster-prime-hospital-hyderabad",
+    "legacyId": "VAI-H-0102",
+    "name": "Aster Prime Hospital",
+    "legalName": null,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-kims-hospital-secunderabad-hyderabad",
+    "legacyId": "VAI-H-0103",
+    "name": "KIMS Hospital, Secunderabad",
+    "legalName": null,
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-nova-ivi-fertility-ahmedabad",
+    "legacyId": "VAI-H-0104",
+    "name": "Nova IVI Fertility",
+    "legalName": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "AMD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-art-fertility-ahmedabad",
+    "legacyId": "VAI-H-0105",
+    "name": "ART Fertility",
+    "legalName": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "AMD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-shalby-hospital-ahmedabad",
+    "legacyId": "VAI-H-0106",
+    "name": "Shalby Hospital",
+    "legalName": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "AMD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-cims-hospital-ahmedabad",
+    "legacyId": "VAI-H-0107",
+    "name": "CIMS Hospital",
+    "legalName": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "AMD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-sterling-hospital-ahmedabad",
+    "legacyId": "VAI-H-0108",
+    "name": "Sterling Hospital",
+    "legalName": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "AMD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-kd-hospital-ahmedabad",
+    "legacyId": "VAI-H-0109",
+    "name": "KD Hospital",
+    "legalName": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "AMD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-hcg-ahmedabad-ahmedabad",
+    "legacyId": "VAI-H-0110",
+    "name": "HCG Ahmedabad",
+    "legalName": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "AMD",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-amri-hospital-kolkata-dhakuria-kolkata",
+    "legacyId": "VAI-H-0111",
+    "name": "AMRI Hospital, Kolkata (Dhakuria)",
+    "legalName": null,
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "nearestAirportIata": "CCU",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-hospital-kolkata-kolkata",
+    "legacyId": "VAI-H-0112",
+    "name": "Fortis Hospital Kolkata",
+    "legalName": null,
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "nearestAirportIata": "CCU",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-medanta-hospital-lucknow",
+    "legacyId": "VAI-H-0113",
+    "name": "Medanta Hospital",
+    "legalName": null,
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "LKO",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-apollo-medics-super-speciality-hospital-lucknow",
+    "legacyId": "VAI-H-0114",
+    "name": "Apollo Medics Super Speciality Hospital",
+    "legalName": null,
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "LKO",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-baner-pune",
+    "legacyId": "VAI-H-0115",
+    "name": "Manipal Hospital, Baner",
+    "legalName": null,
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "PNQ",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-kharadi-pune",
+    "legacyId": "VAI-H-0116",
+    "name": "Manipal Hospital, Kharadi",
+    "legalName": null,
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "PNQ",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-ck-birla-hospital-jaipur",
+    "legacyId": "VAI-H-0117",
+    "name": "CK Birla Hospital",
+    "legalName": null,
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "nearestAirportIata": "JAI",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-escorts-hospital-jaipur",
+    "legacyId": "VAI-H-0118",
+    "name": "Fortis Escorts Hospital",
+    "legalName": null,
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "nearestAirportIata": "JAI",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-manipal-hospital-jaipur",
+    "legacyId": "VAI-H-0119",
+    "name": "Manipal Hospital",
+    "legalName": null,
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "nearestAirportIata": "JAI",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-amandeep-hospital-amritsar",
+    "legacyId": "VAI-H-0120",
+    "name": "Amandeep Hospital",
+    "legalName": null,
+    "city": "Amritsar",
+    "state": "Punjab",
+    "country": "India",
+    "nearestAirportIata": "ATQ",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-escorts-hospital-amritsar",
+    "legacyId": "VAI-H-0121",
+    "name": "Fortis Escorts Hospital",
+    "legalName": null,
+    "city": "Amritsar",
+    "state": "Punjab",
+    "country": "India",
+    "nearestAirportIata": "ATQ",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-aster-medcity-kochi",
+    "legacyId": "VAI-H-0122",
+    "name": "Aster Medcity",
+    "legalName": null,
+    "city": "Kochi",
+    "state": "Kerala",
+    "country": "India",
+    "nearestAirportIata": "COK",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-rajagiri-hospital-kochi",
+    "legacyId": "VAI-H-0123",
+    "name": "Rajagiri Hospital",
+    "legalName": null,
+    "city": "Kochi",
+    "state": "Kerala",
+    "country": "India",
+    "nearestAirportIata": "COK",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-kiran-multi-speciality-hospital-research-center-surat",
+    "legacyId": "VAI-H-0124",
+    "name": "Kiran Multi Speciality Hospital & Research Center",
+    "legalName": null,
+    "city": "Surat",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "STV",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-fortis-hospital-mohali",
+    "legacyId": "VAI-H-0125",
+    "name": "Fortis Hospital",
+    "legalName": null,
+    "city": "Mohali",
+    "state": "Punjab",
+    "country": "India",
+    "nearestAirportIata": "IXC",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "h-meitra-hospital-kerala",
+    "legacyId": "VAI-H-0126",
+    "name": "Meitra Hospital",
+    "legalName": null,
+    "city": "Kerala",
+    "state": "Kerala",
+    "country": "India",
+    "nearestAirportIata": "COK",
+    "hospitalType": null,
+    "beds": null,
+    "icuBeds": null,
+    "accreditations": [],
+    "specialtyCodes": [],
+    "capabilities": [],
+    "internationalDesk": {
+      "exists": null,
+      "contactName": null,
+      "email": null,
+      "phone": null,
+      "languages": []
+    },
+    "officialWebsite": null,
+    "partnerStatus": "prospect",
+    "publication": {
+      "state": "research",
+      "publishedAt": null,
+      "tieupId": null
+    },
+    "provenance": {
+      "source": "Vaidam-hosted MasterCard empanelment list",
+      "sourceUrl": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

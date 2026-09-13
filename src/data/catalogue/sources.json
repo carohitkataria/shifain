@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "src-mastercard-empanelment",
+    "title": "MasterCard-empanelled Indian hospitals list (PDF hosted on vaidam.com)",
+    "url": "https://www.vaidam.com/assets/v2/images/mastercard/List-for-Empaneled-Indian-Hospitals-MasterCard-Bangladesh.pdf",
+    "kind": "third-party-research",
+    "usage": "Hospital names and cities only. Factual directory entries; no descriptions, images or ratings taken.",
+    "publicationAllowed": false,
+    "collectedAt": "2026-09-13T00:00:00.000Z"
+  },
+  {
+    "_id": "src-vaidam-doctors",
+    "title": "Vaidam public doctor listing pages",
+    "url": "https://www.vaidam.com/doctors",
+    "kind": "third-party-research",
+    "usage": "Internal research leads only. Ratings quarantined under thirdParty and never published.",
+    "publicationAllowed": false,
+    "collectedAt": "2026-09-13T00:00:00.000Z"
+  },
+  {
+    "_id": "src-shifain-catalogue",
+    "title": "ShifaIn clinical catalogue",
+    "url": null,
+    "kind": "authored",
+    "usage": "Specialties, diseases, treatments, capabilities and matching rules authored for ShifaIn.",
+    "publicationAllowed": true,
+    "collectedAt": "2026-09-13T00:00:00.000Z"
+  },
+  {
+    "_id": "src-nabh-directory",
+    "title": "NABH accredited healthcare organisation directory",
+    "url": "https://nabh.co/find-a-healthcare-organisation/",
+    "kind": "public-registry",
+    "usage": "Authoritative source for accreditation status and validity. Not yet imported.",
+    "publicationAllowed": true,
+    "collectedAt": null
+  }
+]

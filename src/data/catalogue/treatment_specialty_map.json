@@ -1,0 +1,554 @@
+[
+  {
+    "_id": "cabg__cardiology",
+    "treatmentCode": "cabg",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "angioplasty-stent__cardiology",
+    "treatmentCode": "angioplasty-stent",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "coronary-angiography__cardiology",
+    "treatmentCode": "coronary-angiography",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "valve-replacement__cardiology",
+    "treatmentCode": "valve-replacement",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "valve-repair__cardiology",
+    "treatmentCode": "valve-repair",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "tavi__cardiology",
+    "treatmentCode": "tavi",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "pacemaker-implant__cardiology",
+    "treatmentCode": "pacemaker-implant",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "cardiac-ablation__cardiology",
+    "treatmentCode": "cardiac-ablation",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "icd-implant__cardiology",
+    "treatmentCode": "icd-implant",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "asd-vsd-closure__paediatric-cardiac-surgery",
+    "treatmentCode": "asd-vsd-closure",
+    "specialtyCode": "paediatric-cardiac-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "tetralogy-repair__paediatric-cardiac-surgery",
+    "treatmentCode": "tetralogy-repair",
+    "specialtyCode": "paediatric-cardiac-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "heart-transplant__cardiology",
+    "treatmentCode": "heart-transplant",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "lvad__cardiology",
+    "treatmentCode": "lvad",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "peripheral-angioplasty__vascular-surgery",
+    "treatmentCode": "peripheral-angioplasty",
+    "specialtyCode": "vascular-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "bypass-graft-limb__vascular-surgery",
+    "treatmentCode": "bypass-graft-limb",
+    "specialtyCode": "vascular-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "evar__vascular-surgery",
+    "treatmentCode": "evar",
+    "specialtyCode": "vascular-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "open-aneurysm-repair__vascular-surgery",
+    "treatmentCode": "open-aneurysm-repair",
+    "specialtyCode": "vascular-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "endovenous-laser__vascular-surgery",
+    "treatmentCode": "endovenous-laser",
+    "specialtyCode": "vascular-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "mastectomy__surgical-oncology",
+    "treatmentCode": "mastectomy",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "breast-conserving-surgery__surgical-oncology",
+    "treatmentCode": "breast-conserving-surgery",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "chemotherapy-breast__surgical-oncology",
+    "treatmentCode": "chemotherapy-breast",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "radiotherapy-breast__surgical-oncology",
+    "treatmentCode": "radiotherapy-breast",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "lobectomy__surgical-oncology",
+    "treatmentCode": "lobectomy",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "chemotherapy-lung__surgical-oncology",
+    "treatmentCode": "chemotherapy-lung",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "immunotherapy__surgical-oncology",
+    "treatmentCode": "immunotherapy",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "colectomy__surgical-oncology",
+    "treatmentCode": "colectomy",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "robotic-colorectal__surgical-oncology",
+    "treatmentCode": "robotic-colorectal",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "head-neck-resection__surgical-oncology",
+    "treatmentCode": "head-neck-resection",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "robotic-head-neck__surgical-oncology",
+    "treatmentCode": "robotic-head-neck",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "radical-prostatectomy__surgical-oncology",
+    "treatmentCode": "radical-prostatectomy",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "radiotherapy-prostate__surgical-oncology",
+    "treatmentCode": "radiotherapy-prostate",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "radical-hysterectomy__surgical-oncology",
+    "treatmentCode": "radical-hysterectomy",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "brachytherapy__surgical-oncology",
+    "treatmentCode": "brachytherapy",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "liver-resection__surgical-oncology",
+    "treatmentCode": "liver-resection",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "tace__surgical-oncology",
+    "treatmentCode": "tace",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "gastrectomy__surgical-oncology",
+    "treatmentCode": "gastrectomy",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "craniotomy-tumour__neurosurgery",
+    "treatmentCode": "craniotomy-tumour",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "awake-craniotomy__neurosurgery",
+    "treatmentCode": "awake-craniotomy",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "gamma-knife__neurosurgery",
+    "treatmentCode": "gamma-knife",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "chemotherapy-leukaemia__haematology-bmt",
+    "treatmentCode": "chemotherapy-leukaemia",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "car-t__haematology-bmt",
+    "treatmentCode": "car-t",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "chemotherapy-lymphoma__haematology-bmt",
+    "treatmentCode": "chemotherapy-lymphoma",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "kidney-transplant__nephrology",
+    "treatmentCode": "kidney-transplant",
+    "specialtyCode": "nephrology",
+    "isPrimary": true
+  },
+  {
+    "_id": "haemodialysis__nephrology",
+    "treatmentCode": "haemodialysis",
+    "specialtyCode": "nephrology",
+    "isPrimary": true
+  },
+  {
+    "_id": "liver-transplant__gastroenterology",
+    "treatmentCode": "liver-transplant",
+    "specialtyCode": "gastroenterology",
+    "isPrimary": true
+  },
+  {
+    "_id": "bone-marrow-transplant__haematology-bmt",
+    "treatmentCode": "bone-marrow-transplant",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "bmt-thalassaemia__haematology-bmt",
+    "treatmentCode": "bmt-thalassaemia",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "corneal-transplant__ophthalmology",
+    "treatmentCode": "corneal-transplant",
+    "specialtyCode": "ophthalmology",
+    "isPrimary": true
+  },
+  {
+    "_id": "total-knee-replacement__orthopaedics",
+    "treatmentCode": "total-knee-replacement",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "partial-knee-replacement__orthopaedics",
+    "treatmentCode": "partial-knee-replacement",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "robotic-knee-replacement__orthopaedics",
+    "treatmentCode": "robotic-knee-replacement",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "total-hip-replacement__orthopaedics",
+    "treatmentCode": "total-hip-replacement",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "hip-revision__orthopaedics",
+    "treatmentCode": "hip-revision",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "spinal-fusion__spine-surgery",
+    "treatmentCode": "spinal-fusion",
+    "specialtyCode": "spine-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "microdiscectomy__spine-surgery",
+    "treatmentCode": "microdiscectomy",
+    "specialtyCode": "spine-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "disc-replacement__spine-surgery",
+    "treatmentCode": "disc-replacement",
+    "specialtyCode": "spine-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "acl-reconstruction__orthopaedics",
+    "treatmentCode": "acl-reconstruction",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "shoulder-arthroscopy__orthopaedics",
+    "treatmentCode": "shoulder-arthroscopy",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "mechanical-thrombectomy__neurology",
+    "treatmentCode": "mechanical-thrombectomy",
+    "specialtyCode": "neurology",
+    "isPrimary": true
+  },
+  {
+    "_id": "stroke-rehabilitation__neurology",
+    "treatmentCode": "stroke-rehabilitation",
+    "specialtyCode": "neurology",
+    "isPrimary": true
+  },
+  {
+    "_id": "epilepsy-surgery__neurology",
+    "treatmentCode": "epilepsy-surgery",
+    "specialtyCode": "neurology",
+    "isPrimary": true
+  },
+  {
+    "_id": "deep-brain-stimulation__neurology",
+    "treatmentCode": "deep-brain-stimulation",
+    "specialtyCode": "neurology",
+    "isPrimary": true
+  },
+  {
+    "_id": "aneurysm-coiling__neurosurgery",
+    "treatmentCode": "aneurysm-coiling",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "aneurysm-clipping__neurosurgery",
+    "treatmentCode": "aneurysm-clipping",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "vp-shunt__neurosurgery",
+    "treatmentCode": "vp-shunt",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "pcnl__urology",
+    "treatmentCode": "pcnl",
+    "specialtyCode": "urology",
+    "isPrimary": true
+  },
+  {
+    "_id": "ureteroscopy-laser__urology",
+    "treatmentCode": "ureteroscopy-laser",
+    "specialtyCode": "urology",
+    "isPrimary": true
+  },
+  {
+    "_id": "turp__urology",
+    "treatmentCode": "turp",
+    "specialtyCode": "urology",
+    "isPrimary": true
+  },
+  {
+    "_id": "holep__urology",
+    "treatmentCode": "holep",
+    "specialtyCode": "urology",
+    "isPrimary": true
+  },
+  {
+    "_id": "sleeve-gastrectomy__bariatric-surgery",
+    "treatmentCode": "sleeve-gastrectomy",
+    "specialtyCode": "bariatric-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "gastric-bypass__bariatric-surgery",
+    "treatmentCode": "gastric-bypass",
+    "specialtyCode": "bariatric-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "laparoscopic-cholecystectomy__gi-surgery",
+    "treatmentCode": "laparoscopic-cholecystectomy",
+    "specialtyCode": "gi-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "hernia-repair__general-surgery",
+    "treatmentCode": "hernia-repair",
+    "specialtyCode": "general-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "ibd-biologics__gastroenterology",
+    "treatmentCode": "ibd-biologics",
+    "specialtyCode": "gastroenterology",
+    "isPrimary": true
+  },
+  {
+    "_id": "ivf-cycle__reproductive-medicine",
+    "treatmentCode": "ivf-cycle",
+    "specialtyCode": "reproductive-medicine",
+    "isPrimary": true
+  },
+  {
+    "_id": "icsi__reproductive-medicine",
+    "treatmentCode": "icsi",
+    "specialtyCode": "reproductive-medicine",
+    "isPrimary": true
+  },
+  {
+    "_id": "pgt__reproductive-medicine",
+    "treatmentCode": "pgt",
+    "specialtyCode": "reproductive-medicine",
+    "isPrimary": true
+  },
+  {
+    "_id": "tese__reproductive-medicine",
+    "treatmentCode": "tese",
+    "specialtyCode": "reproductive-medicine",
+    "isPrimary": true
+  },
+  {
+    "_id": "myomectomy__obstetrics-gynaecology",
+    "treatmentCode": "myomectomy",
+    "specialtyCode": "obstetrics-gynaecology",
+    "isPrimary": true
+  },
+  {
+    "_id": "hysterectomy__obstetrics-gynaecology",
+    "treatmentCode": "hysterectomy",
+    "specialtyCode": "obstetrics-gynaecology",
+    "isPrimary": true
+  },
+  {
+    "_id": "phacoemulsification__ophthalmology",
+    "treatmentCode": "phacoemulsification",
+    "specialtyCode": "ophthalmology",
+    "isPrimary": true
+  },
+  {
+    "_id": "vitrectomy__ophthalmology",
+    "treatmentCode": "vitrectomy",
+    "specialtyCode": "ophthalmology",
+    "isPrimary": true
+  },
+  {
+    "_id": "cochlear-implant__ent",
+    "treatmentCode": "cochlear-implant",
+    "specialtyCode": "ent",
+    "isPrimary": true
+  },
+  {
+    "_id": "fess__ent",
+    "treatmentCode": "fess",
+    "specialtyCode": "ent",
+    "isPrimary": true
+  },
+  {
+    "_id": "reconstructive-flap__plastic-surgery",
+    "treatmentCode": "reconstructive-flap",
+    "specialtyCode": "plastic-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "liposuction__plastic-surgery",
+    "treatmentCode": "liposuction",
+    "specialtyCode": "plastic-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "abdominoplasty__plastic-surgery",
+    "treatmentCode": "abdominoplasty",
+    "specialtyCode": "plastic-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "hair-transplant__dermatology",
+    "treatmentCode": "hair-transplant",
+    "specialtyCode": "dermatology",
+    "isPrimary": true
+  },
+  {
+    "_id": "dental-implant__dentistry",
+    "treatmentCode": "dental-implant",
+    "specialtyCode": "dentistry",
+    "isPrimary": true
+  },
+  {
+    "_id": "full-mouth-rehab__dentistry",
+    "treatmentCode": "full-mouth-rehab",
+    "specialtyCode": "dentistry",
+    "isPrimary": true
+  },
+  {
+    "_id": "paediatric-corrective-surgery__paediatrics",
+    "treatmentCode": "paediatric-corrective-surgery",
+    "specialtyCode": "paediatrics",
+    "isPrimary": true
+  },
+  {
+    "_id": "pulmonary-rehabilitation__pulmonology",
+    "treatmentCode": "pulmonary-rehabilitation",
+    "specialtyCode": "pulmonology",
+    "isPrimary": true
+  }
+]

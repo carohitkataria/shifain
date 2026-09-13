@@ -1,0 +1,290 @@
+[
+  {
+    "_id": "cardiac-icu",
+    "name": {
+      "en": "Cardiac ICU",
+      "ru": "Кардиореанимация",
+      "uz": "Yurak reanimatsiyasi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cath-lab",
+    "name": {
+      "en": "Catheterisation lab",
+      "ru": "Рентгенэндоваскулярная операционная",
+      "uz": "Kateterizatsiya laboratoriyasi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cardiopulmonary-bypass",
+    "name": {
+      "en": "Cardiopulmonary bypass",
+      "ru": "Аппарат искусственного кровообращения",
+      "uz": "Sun'iy qon aylanish apparati"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "neuro-icu",
+    "name": {
+      "en": "Neuro ICU",
+      "ru": "Нейрореанимация",
+      "uz": "Neyroreanimatsiya"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "neuro-navigation",
+    "name": {
+      "en": "Neuro-navigation & intra-op monitoring",
+      "ru": "Нейронавигация и интраоперационный мониторинг",
+      "uz": "Neyronavigatsiya va operatsiya monitoringi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "transplant-programme",
+    "name": {
+      "en": "Licensed transplant programme",
+      "ru": "Лицензированная программа трансплантации",
+      "uz": "Litsenziyalangan transplantatsiya dasturi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "bmt-unit",
+    "name": {
+      "en": "Bone marrow transplant unit",
+      "ru": "Отделение трансплантации костного мозга",
+      "uz": "Ilik ko'chirish bo'limi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "tumour-board",
+    "name": {
+      "en": "Multidisciplinary tumour board",
+      "ru": "Онкологический консилиум",
+      "uz": "Onkologik konsilium"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "linac",
+    "name": {
+      "en": "Linear accelerator",
+      "ru": "Линейный ускоритель",
+      "uz": "Chiziqli tezlatgich"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "pet-ct",
+    "name": {
+      "en": "PET-CT",
+      "ru": "ПЭТ-КТ",
+      "uz": "PET-KT"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "modular-ot",
+    "name": {
+      "en": "Modular operating theatre",
+      "ru": "Модульная операционная",
+      "uz": "Modulli operatsiya xonasi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "joint-replacement-ot",
+    "name": {
+      "en": "Laminar-flow joint replacement theatre",
+      "ru": "Операционная с ламинарным потоком",
+      "uz": "Laminar oqimli operatsiya xonasi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "dialysis-unit",
+    "name": {
+      "en": "Dialysis unit",
+      "ru": "Отделение диализа",
+      "uz": "Dializ bo'limi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "nicu",
+    "name": {
+      "en": "Neonatal ICU",
+      "ru": "Отделение реанимации новорождённых",
+      "uz": "Yangi tug'ilganlar reanimatsiyasi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "art-lab",
+    "name": {
+      "en": "ART / embryology laboratory",
+      "ru": "Эмбриологическая лаборатория",
+      "uz": "Embriologiya laboratoriyasi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "blood-bank",
+    "name": {
+      "en": "In-house blood bank",
+      "ru": "Собственный банк крови",
+      "uz": "O'z qon banki"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "robotic-surgery",
+    "name": {
+      "en": "Robotic surgery system",
+      "ru": "Роботизированная хирургическая система",
+      "uz": "Robotli jarrohlik tizimi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "endoscopy-suite",
+    "name": {
+      "en": "Endoscopy suite",
+      "ru": "Эндоскопическое отделение",
+      "uz": "Endoskopiya bo'limi"
+    },
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]
