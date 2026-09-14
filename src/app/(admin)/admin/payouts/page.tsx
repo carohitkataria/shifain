@@ -4,6 +4,7 @@ import { Card, Empty, NotConfigured, Saved, Stage, Warn, adminField, adminLabel 
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import { listPartners, listReferrals, money, type Payout, type PayoutStatus } from "@/lib/partners";
+import { getSettings } from "@/lib/settings";
 import { createPayoutAction, setPayoutStatusAction } from "../partners/actions";
 
 export const dynamic = "force-dynamic";
@@ -34,12 +35,13 @@ export default async function PayoutsPage({
   if (!(await isAuthenticated())) redirect("/admin/login");
   const { saved, error } = await searchParams;
 
-  const [payouts, partners, referrals] = await Promise.all([
+  const [payouts, partners, referrals, settings] = await Promise.all([
     readOr<Payout[]>([], (db) =>
       db.collection<Payout>("payouts").find({}).sort({ createdAt: -1 }).limit(200).toArray(),
     ),
     listPartners(),
     listReferrals({ payoutId: null }),
+    getSettings(),
   ]);
 
   // Who is owed something right now — the only people worth drawing a statement for.
@@ -50,7 +52,7 @@ export default async function PayoutsPage({
     const row = owed.get(referral.partnerUserId) ?? {
       amount: 0,
       count: 0,
-      currency: referral.currency ?? "USD",
+      currency: referral.currency ?? settings.defaultCurrency,
     };
     row.amount += amount;
     row.count += 1;
@@ -81,17 +83,17 @@ export default async function PayoutsPage({
           <span className="block text-xs font-bold uppercase tracking-wider text-ink-soft">
             Earned, not yet on a statement
           </span>
-          <span className="mt-1 block text-2xl font-extrabold text-saffron">{money(outstanding)}</span>
+          <span className="mt-1 block text-2xl font-extrabold text-saffron">{money(outstanding, settings.defaultCurrency)}</span>
         </p>
         <p className="card p-4">
           <span className="block text-xs font-bold uppercase tracking-wider text-ink-soft">
             On a statement, unpaid
           </span>
-          <span className="mt-1 block text-2xl font-extrabold text-ink">{money(awaitingPayment)}</span>
+          <span className="mt-1 block text-2xl font-extrabold text-ink">{money(awaitingPayment, settings.defaultCurrency)}</span>
         </p>
         <p className="card p-4">
           <span className="block text-xs font-bold uppercase tracking-wider text-ink-soft">Paid out</span>
-          <span className="mt-1 block text-2xl font-extrabold text-leaf">{money(paidOut)}</span>
+          <span className="mt-1 block text-2xl font-extrabold text-leaf">{money(paidOut, settings.defaultCurrency)}</span>
         </p>
       </div>
 

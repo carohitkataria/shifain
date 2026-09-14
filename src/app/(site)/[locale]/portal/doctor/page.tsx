@@ -9,6 +9,7 @@ import { casesReferredBy, type CaseStatus } from "@/lib/cases";
 import { isDatabaseConfigured } from "@/lib/db";
 import { DOCTOR_COPY } from "@/lib/doctor-copy";
 import { broadcastsFor, listReferrals, money } from "@/lib/partners";
+import { getSettings } from "@/lib/settings";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 import { doctorLogoutAction, referPatientAction } from "./actions";
@@ -36,18 +37,19 @@ export default async function DoctorPortalPage({
   const doctor = await currentPartner().catch(() => null);
   if (!doctor || doctor.role !== "doctor") redirect(`/${locale}/portal/doctor/login`);
 
-  const [content, referrals, notices, commissions] = await Promise.all([
+  const [content, referrals, notices, commissions, settings] = await Promise.all([
     getContent(),
     casesReferredBy(doctor._id),
     broadcastsFor(doctor),
     listReferrals({ partnerUserId: doctor._id }),
+    getSettings(),
   ]);
 
   const earned = commissions.reduce((sum, row) => sum + (row.commissionAmount ?? 0), 0);
   const unpaid = commissions
     .filter((row) => !row.payoutId)
     .reduce((sum, row) => sum + (row.commissionAmount ?? 0), 0);
-  const currency = commissions[0]?.currency ?? "USD";
+  const currency = commissions[0]?.currency ?? settings.defaultCurrency;
 
   return (
     <>

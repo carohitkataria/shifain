@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb, readOr } from "./db";
+import { getSettings } from "./settings";
 import type { PartnerUser } from "./partner-auth";
 
 export type ApplicationStatus = "new" | "reviewing" | "approved" | "declined";
@@ -221,7 +222,7 @@ export async function openReferral(input: {
         status: "new",
         offerId: offer?._id ?? null,
         treatmentValue: null,
-        currency: offer?.currency ?? "USD",
+        currency: offer?.currency ?? (await getSettings()).defaultCurrency,
         commissionAmount: null,
         payoutId: null,
         note: null,

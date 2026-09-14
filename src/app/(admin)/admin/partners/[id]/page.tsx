@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { AdminShell, Notice, SaveButton } from "@/components/admin/AdminShell";
 import { Card, Stage, adminField, adminLabel } from "@/components/admin/Panel";
 import { isAuthenticated } from "@/lib/auth";
+import { getSettings } from "@/lib/settings";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import type { PartnerUser } from "@/lib/partner-auth";
 import { listOffers, money, type Payout, type Referral } from "@/lib/partners";
@@ -32,10 +33,11 @@ export default async function PartnerPage({
   const partner = await db.collection<PartnerUser>("partner_users").findOne({ _id: id });
   if (!partner) notFound();
 
-  const [offers, referrals, payouts] = await Promise.all([
+  const [offers, referrals, payouts, settings] = await Promise.all([
     listOffers(),
     db.collection<Referral>("referrals").find({ partnerUserId: id }).sort({ createdAt: -1 }).toArray(),
     db.collection<Payout>("payouts").find({ partnerUserId: id }).sort({ createdAt: -1 }).toArray(),
+    getSettings(),
   ]);
 
   const owed = referrals
@@ -131,7 +133,7 @@ export default async function PartnerPage({
             <form action={createPayoutAction}>
               <input type="hidden" name="partnerUserId" value={partner._id} />
               <button type="submit" className="btn btn-primary !py-2.5 text-sm">
-                Draw a statement for {money(owed)}
+                Draw a statement for {money(owed, settings.defaultCurrency)}
               </button>
             </form>
           ) : null}
@@ -152,7 +154,7 @@ export default async function PartnerPage({
                 <Stage value={referral.status} tone={REFERRAL_TONE[referral.status]} />
                 <span className="shrink-0 text-sm font-semibold text-ink">
                   {referral.commissionAmount
-                    ? money(referral.commissionAmount, referral.currency ?? "USD")
+                    ? money(referral.commissionAmount, referral.currency ?? settings.defaultCurrency)
                     : "—"}
                 </span>
                 <span className="shrink-0 text-xs text-ink-muted">

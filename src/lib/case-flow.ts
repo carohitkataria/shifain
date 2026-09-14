@@ -5,6 +5,7 @@ import { createCase, savePlan, savePlanFailure, type CaseStatus, type PatientCas
 import { generatePlan } from "./ai/plan";
 import { expiryFromNow, storeReports } from "./reports";
 import { getSettings } from "./settings";
+import { notifyOps } from "./mailer";
 import type { Intake } from "./intake";
 import type { Locale } from "./i18n";
 
@@ -43,6 +44,16 @@ export async function openCase(input: {
   });
 
   after(async () => {
+    // The inbox learns a case arrived, not what is wrong with anybody.
+    await notifyOps(settings.opsEmail, `New case ${record._id}`, [
+      `A new case opened from ${input.patient.country}.`,
+      `Reference: ${record._id}`,
+      `Route: ${intake.route}`,
+      input.referredBy ? `Referred by: ${input.referredBy}` : "Came in through the website.",
+      "",
+      "Open it in the console under Patient cases. Nothing clinical is in this email.",
+    ]);
+
     if (intake.uploads.length > 0) {
       await storeReports(record._id, intake.uploads, settings.reportRetentionDays).catch((error) =>
         // The plan matters more than the archive, so this never blocks it.

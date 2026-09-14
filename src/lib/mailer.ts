@@ -35,3 +35,23 @@ export async function send(to: string, subject: string, text: string): Promise<b
     return false;
   }
 }
+
+/**
+ * Tells the operations inbox that something arrived, and nothing more.
+ *
+ * Deliberately free of clinical detail: email is not a secure channel, and a
+ * subject line naming somebody's condition leaks it to every relay and every
+ * phone the inbox is open on. The notice carries a reference and a link; what
+ * the patient actually said stays behind the console's login.
+ *
+ * Never throws and never blocks: an unreachable mail provider must not cost a
+ * patient their case.
+ */
+export async function notifyOps(
+  opsEmail: string | null,
+  subject: string,
+  lines: string[],
+): Promise<void> {
+  if (!opsEmail) return;
+  await send(opsEmail, subject, lines.join("\n")).catch(() => false);
+}

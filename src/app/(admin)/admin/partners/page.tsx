@@ -5,15 +5,17 @@ import { Empty, NotConfigured, Stage } from "@/components/admin/Panel";
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import { listPartners, money, type Referral } from "@/lib/partners";
+import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function PartnersPage() {
   if (!(await isAuthenticated())) redirect("/admin/login");
 
-  const [partners, referrals] = await Promise.all([
+  const [partners, referrals, settings] = await Promise.all([
     listPartners(),
     readOr<Referral[]>([], (db) => db.collection<Referral>("referrals").find({}).toArray()),
+    getSettings(),
   ]);
 
   const byPartner = new Map<string, { count: number; earned: number; owed: number }>();
@@ -60,11 +62,11 @@ export default async function PartnersPage() {
                       {stats.count} referral{stats.count === 1 ? "" : "s"}
                     </span>
                     <span className="block font-semibold text-ink">
-                      {money(stats.earned)} earned
+                      {money(stats.earned, settings.defaultCurrency)} earned
                     </span>
                     {stats.owed > 0 ? (
                       <span className="block text-sm font-semibold text-saffron">
-                        {money(stats.owed)} unpaid
+                        {money(stats.owed, settings.defaultCurrency)} unpaid
                       </span>
                     ) : null}
                   </span>

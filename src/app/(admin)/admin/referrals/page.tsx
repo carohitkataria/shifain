@@ -5,6 +5,7 @@ import { Empty, NotConfigured, Saved, Stage, Warn, adminField, adminLabel } from
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { listOffers, listPartners, listReferrals, money, type ReferralStatus } from "@/lib/partners";
+import { getSettings } from "@/lib/settings";
 import { saveReferralAction } from "../partners/actions";
 
 export const dynamic = "force-dynamic";
@@ -40,10 +41,11 @@ export default async function ReferralsPage({
   if (status && STATUSES.includes(status as ReferralStatus)) filter.status = status;
   if (partner) filter.partnerUserId = partner;
 
-  const [referrals, offers, partners] = await Promise.all([
+  const [referrals, offers, partners, settings] = await Promise.all([
     listReferrals(filter),
     listOffers(),
     listPartners(),
+    getSettings(),
   ]);
 
   const earned = referrals.reduce((sum, row) => sum + (row.commissionAmount ?? 0), 0);
@@ -80,11 +82,11 @@ export default async function ReferralsPage({
         </p>
         <p className="card p-4">
           <span className="block text-xs font-bold uppercase tracking-wider text-ink-soft">Commission earned</span>
-          <span className="mt-1 block text-2xl font-extrabold text-ink">{money(earned)}</span>
+          <span className="mt-1 block text-2xl font-extrabold text-ink">{money(earned, settings.defaultCurrency)}</span>
         </p>
         <p className="card p-4">
           <span className="block text-xs font-bold uppercase tracking-wider text-ink-soft">Not yet paid</span>
-          <span className="mt-1 block text-2xl font-extrabold text-saffron">{money(unpaid)}</span>
+          <span className="mt-1 block text-2xl font-extrabold text-saffron">{money(unpaid, settings.defaultCurrency)}</span>
         </p>
       </div>
 
@@ -135,7 +137,7 @@ export default async function ReferralsPage({
 
                 <div className="shrink-0 text-right">
                   <span className="block font-semibold text-ink">
-                    {money(referral.commissionAmount ?? 0, referral.currency ?? "USD")}
+                    {money(referral.commissionAmount ?? 0, referral.currency ?? settings.defaultCurrency)}
                   </span>
                   <span className="block text-sm text-ink-soft">
                     {referral.payoutId ? "On a payout" : "Unpaid"}
@@ -206,7 +208,7 @@ export default async function ReferralsPage({
                     <input
                       name="currency"
                       maxLength={3}
-                      defaultValue={referral.currency ?? "USD"}
+                      defaultValue={referral.currency ?? settings.defaultCurrency}
                       disabled={Boolean(referral.payoutId)}
                       className={adminField}
                     />

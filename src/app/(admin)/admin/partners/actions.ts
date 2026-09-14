@@ -8,6 +8,8 @@ import { isAuthenticated } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { hashPassword, type PartnerUser } from "@/lib/partner-auth";
 import { commissionFor, type Broadcast, type Lead, type PartnerApplication, type Payout, type Referral, type ReferralOffer } from "@/lib/partners";
+import { getSettings } from "@/lib/settings";
+import { notifyOps } from "@/lib/mailer";
 import { FLASH_COOKIE, FLASH_MAX_AGE_SECONDS, FLASH_PATH } from "../access/flash";
 
 const text = (value: FormDataEntryValue | null) => String(value ?? "").trim() || null;
@@ -147,6 +149,7 @@ export async function saveOfferAction(formData: FormData) {
   if (!name) redirect("/admin/offers?error=name");
 
   const isDefault = formData.get("isDefault") === "on";
+  const settings = await getSettings();
   const db = await getDb();
   const offers = db.collection<ReferralOffer>("referral_offers");
 
@@ -161,7 +164,8 @@ export async function saveOfferAction(formData: FormData) {
         description: text(formData.get("description")),
         kind: String(formData.get("kind") ?? "percent-of-treatment") as never,
         value: num(formData.get("value")) ?? 0,
-        currency: String(formData.get("currency") ?? "USD").trim().toUpperCase(),
+        currency:
+          (String(formData.get("currency") ?? "").trim() || settings.defaultCurrency).toUpperCase(),
         appliesTo: String(formData.get("appliesTo") ?? "all") as never,
         appliesToCodes: String(formData.get("appliesToCodes") ?? "")
           .split(/[,;]/)
@@ -221,7 +225,7 @@ export async function saveReferralAction(formData: FormData) {
     status: String(formData.get("status") ?? current.status) as never,
     offerId,
     treatmentValue: num(formData.get("treatmentValue")),
-    currency: text(formData.get("currency")) ?? offer?.currency ?? "USD",
+    currency: text(formData.get("currency")) ?? offer?.currency ?? (await getSettings()).defaultCurrency,
     note: text(formData.get("note")),
   };
 
@@ -276,7 +280,7 @@ export async function createPayoutAction(formData: FormData) {
     partnerName: partner?.name ?? null,
     referralIds: owed.map((row) => row._id),
     amount,
-    currency: owed[0].currency ?? "USD",
+    currency: owed[0].currency ?? (await getSettings()).defaultCurrency,
     status: "draft",
     reference: null,
     note: null,
@@ -375,6 +379,7 @@ export async function saveLeadAction(formData: FormData) {
   if (!name) redirect("/admin/leads?error=name");
 
   const db = await getDb();
+  const existing = await db.collection<Lead>("leads").findOne({ _id: id });
   await db.collection<Lead>("leads").updateOne(
     { _id: id },
     {
@@ -395,6 +400,18 @@ export async function saveLeadAction(formData: FormData) {
     },
     { upsert: true },
   );
+
+  // Only a brand-new lead is worth a notice, and only the fact of it: whoever
+  // is on the rota may not be the person who typed it in.
+  if (!existing) {
+    const settings = await getSettings();
+    await notifyOps(settings.opsEmail, `New lead: ${name}`, [
+      `${name} got in touch via ${String(formData.get("source") ?? "phone")}.`,
+      text(formData.get("country")) ? `From: ${text(formData.get("country"))}` : "",
+      "",
+      "Their details are in the console under Leads.",
+    ].filter(Boolean));
+  }
 
   revalidatePath("/admin/leads");
   redirect("/admin/leads?saved=1");

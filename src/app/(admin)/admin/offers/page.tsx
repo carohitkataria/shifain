@@ -4,6 +4,7 @@ import { Card, Empty, NotConfigured, Saved, Stage, adminField, adminLabel } from
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { listOffers, money, type ReferralOffer } from "@/lib/partners";
+import { getSettings } from "@/lib/settings";
 import { deleteOfferAction, saveOfferAction } from "../partners/actions";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ function terms(offer: ReferralOffer): string {
   return limits.length ? `${base} — ${limits.join(", ")}` : base;
 }
 
-function OfferForm({ offer }: { offer?: ReferralOffer }) {
+function OfferForm({ offer, defaultCurrency }: { offer?: ReferralOffer; defaultCurrency: string }) {
   const formId = offer ? `offer-${offer._id}` : "offer-new";
   return (
     <form id={formId} action={saveOfferAction} className="grid gap-4 sm:grid-cols-2">
@@ -89,7 +90,7 @@ function OfferForm({ offer }: { offer?: ReferralOffer }) {
         <input
           name="currency"
           maxLength={3}
-          defaultValue={offer?.currency ?? "USD"}
+          defaultValue={offer?.currency ?? defaultCurrency}
           className={adminField}
         />
       </label>
@@ -185,7 +186,7 @@ export default async function OffersPage({
   if (!(await isAuthenticated())) redirect("/admin/login");
   const { saved, error } = await searchParams;
 
-  const offers = await listOffers();
+  const [offers, settings] = await Promise.all([listOffers(), getSettings()]);
   const hasDefault = offers.some((offer) => offer.isDefault && offer.status === "active");
 
   return (
@@ -236,7 +237,7 @@ export default async function OffersPage({
                 <details className="mt-4">
                   <summary className="cursor-pointer text-sm font-bold text-brand">Edit</summary>
                   <div className="mt-4 border-t border-line pt-4">
-                    <OfferForm offer={offer} />
+                    <OfferForm offer={offer} defaultCurrency={settings.defaultCurrency} />
                     <form action={deleteOfferAction} className="mt-3">
                       <input type="hidden" name="id" value={offer._id} />
                       <button type="submit" className="btn btn-secondary !py-2.5 text-sm !text-red-600">
@@ -254,7 +255,7 @@ export default async function OffersPage({
           title="New offer"
           hint="Commission is worked out from these terms every time a referral changes — nothing is typed in by hand."
         >
-          <OfferForm />
+          <OfferForm defaultCurrency={settings.defaultCurrency} />
         </Card>
       </div>
     </AdminShell>
