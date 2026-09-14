@@ -24,7 +24,29 @@ function client(): Promise<MongoClient> {
     // A page render must not hang on a database that is not answering.
     serverSelectionTimeoutMS: 8000,
     connectTimeoutMS: 8000,
-  }).connect();
+  })
+    .connect()
+    .then((connected) => {
+      // Say so once, on the first connection of the process. A read that falls
+      // back silently is the whole point of readOr, which also means a wrong
+      // MONGODB_URI looks exactly like a site with nothing in it yet. The
+      // deployment should be able to tell you which it is without anyone
+      // having to guess from an empty page.
+      console.log(`[shifain] connected to ${DB_NAME}.`);
+      return connected;
+    })
+    .catch((error) => {
+      // Let the next call try again rather than caching a rejected promise,
+      // and never print the connection string: Mongo's own errors name hosts
+      // only, but a wrapped error elsewhere could carry more.
+      globalForMongo.__shifainMongo = undefined;
+      const message = (error instanceof Error ? error.message : String(error)).replace(
+        /mongodb(\+srv)?:\/\/[^@\s]*@/gi,
+        "mongodb$1://<credentials>@",
+      );
+      console.error(`[shifain] could not connect to ${DB_NAME}: ${message}`);
+      throw error;
+    });
   return globalForMongo.__shifainMongo;
 }
 
