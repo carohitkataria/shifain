@@ -38,7 +38,6 @@ export default async function AccessPage({
   return (
     <AdminShell
       title="Partner logins"
-      subtitle="Sign-ins for referring doctors, hospital desks and coordinators. A doctor signs in at /portal/doctor."
     >
       {!isDatabaseConfigured() && (
         <p className="mb-4 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">

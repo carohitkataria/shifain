@@ -47,7 +47,12 @@ export async function referPatientAction(formData: FormData) {
   const doctor = await currentPartner();
   if (!doctor || doctor.role !== "doctor") redirect(`/${locale}/portal/doctor/login`);
 
-  const name = String(formData.get("name") ?? "").trim();
+  const name = (
+    [formData.get("prefix"), formData.get("firstName"), formData.get("lastName")]
+      .map((v) => String(v ?? "").trim())
+      .filter(Boolean)
+      .join(" ") || String(formData.get("name") ?? "").trim()
+  ).trim();
   const country = String(formData.get("country") ?? "").trim();
   const dial = String(formData.get("dial") ?? "").trim();
   const local = String(formData.get("phone") ?? "").trim();

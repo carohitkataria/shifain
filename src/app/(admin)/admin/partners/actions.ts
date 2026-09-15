@@ -139,6 +139,39 @@ export async function savePartnerProfileAction(formData: FormData) {
   redirect(`/admin/partners/${id}?saved=1`);
 }
 
+/**
+ * Sets the partner's sign-in password and account status from their profile.
+ * The password is one the admin typed, so it is hashed and never echoed back —
+ * hand it to the partner directly.
+ */
+export async function setPartnerCredentialsAction(formData: FormData) {
+  await guard();
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) redirect("/admin/partners");
+
+  const db = await getDb();
+  const users = db.collection<PartnerUser>("partner_users");
+  const user = await users.findOne({ _id: id });
+  if (!user) redirect("/admin/partners");
+
+  const set: Record<string, unknown> = {};
+  const status = String(formData.get("status") ?? "");
+  if (status === "active" || status === "suspended") set.status = status;
+
+  const password = String(formData.get("password") ?? "").trim();
+  if (password) {
+    if (password.length < 8) redirect(`/admin/partners/${id}?error=short`);
+    set.passwordHash = hashPassword(password);
+  }
+
+  if (Object.keys(set).length === 0) redirect(`/admin/partners/${id}`);
+  await users.updateOne({ _id: id }, { $set: set as never });
+
+  revalidatePath(`/admin/partners/${id}`);
+  redirect(`/admin/partners/${id}?saved=${password ? "password" : "status"}`);
+}
+
 // ------------------------------------------------------------------- offers
 
 export async function saveOfferAction(formData: FormData) {

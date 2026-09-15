@@ -70,7 +70,6 @@ export default async function PayoutsPage({
   return (
     <AdminShell
       title="Commissions & payouts"
-      subtitle="Earned commission gathered into statements. A referral can only ever sit on one statement, so nothing gets paid twice."
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "drafted" ? "statement drawn" : undefined} /> : null}

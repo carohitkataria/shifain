@@ -42,6 +42,11 @@ export const PATIENT_COPY = {
     "Отправка писем на этом сайте пока не включена — код есть у вашего координатора, он его продиктует. Код действует 15 минут.",
     "Bu saytda pochta yuborish hali yoqilmagan — kod koordinatoringizda, u aytib beradi. Kod 15 daqiqa amal qiladi.",
   ),
+  codeShown: l(
+    "Email is not switched on for this site yet, so here is your code. It works for 15 minutes.",
+    "Отправка писем пока не включена, поэтому вот ваш код. Он действует 15 минут.",
+    "Pochta hali yoqilmagan, shuning uchun kodingiz shu yerda. U 15 daqiqa amal qiladi.",
+  ),
   code: l("Six-digit code", "Шестизначный код", "Olti xonali kod"),
   codeFailed: l(
     "That code did not work. Ask for a new one and try again.",

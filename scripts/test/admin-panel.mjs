@@ -159,8 +159,8 @@ const cleared = await page
 check(cleared, "and Done clears it without a server error");
 
 await page.goto(`${BASE}/admin/cases`, { waitUntil: "networkidle" });
-check(await page.locator("h1:has-text('Patient cases')").isVisible(), "the cases page loads");
-check(await page.locator("text=MONGODB_URI is not set").isVisible(), "cases says the database is not configured instead of erroring");
+check(await page.locator("h1:has-text('Inquiries')").isVisible(), "the inquiries page loads");
+check(await page.locator("text=MONGODB_URI is not set").isVisible(), "inquiries says the database is not configured instead of erroring");
 
 // Every console section renders without a database. A page that throws here
 // is a 500 in production the first time somebody clicks it.

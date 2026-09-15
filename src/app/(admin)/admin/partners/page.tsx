@@ -30,7 +30,6 @@ export default async function PartnersPage() {
   return (
     <AdminShell
       title="Approved partners"
-      subtitle="Doctors and clinics abroad who send us patients. Each carries the offer they earn under and where their money goes."
     >
       {!isDatabaseConfigured() && <NotConfigured />}
 

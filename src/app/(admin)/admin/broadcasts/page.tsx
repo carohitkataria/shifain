@@ -38,7 +38,6 @@ export default async function BroadcastsPage({
   return (
     <AdminShell
       title="Broadcasts"
-      subtitle="Notices every partner sees on their portal — a new offer, a hospital added, a change in how something works. Sent to everyone, or narrowed to one country or specialty."
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "deleted" ? "notice removed" : "sent"} /> : null}

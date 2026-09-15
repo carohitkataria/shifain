@@ -53,7 +53,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/admin/leads", label: "Leads", icon: "folder" },
       { href: "/admin/referrals", label: "Referrals", icon: "route" },
-      { href: "/admin/cases", label: "Patient cases", icon: "folder" },
+      { href: "/admin/cases", label: "Inquiries", icon: "folder" },
     ],
   },
   {

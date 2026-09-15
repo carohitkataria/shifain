@@ -40,7 +40,6 @@ export default async function HospitalsPage({
   return (
     <AdminShell
       title="Hospitals"
-      subtitle="The 126 hospitals in the catalogue. All of them start as research — a hospital only appears on the public site once it is signed and published here."
     >
       {!isDatabaseConfigured() && (
         <p className="mb-6 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">

@@ -1,23 +1,28 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Filter } from "mongodb";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { Saved, adminField, adminLabel } from "@/components/admin/Panel";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
 import type { CaseStatus, PatientCase } from "@/lib/cases";
+import { deleteCaseAction, saveCaseAction, setCaseStatusAction } from "./actions";
 
 export const dynamic = "force-dynamic";
+
+const STATUSES: CaseStatus[] = ["new", "planning", "planned", "plan-failed", "confirmed", "closed"];
 
 const STATUS_LABEL: Record<CaseStatus, string> = {
   new: "Received",
   planning: "Reading reports",
   planned: "Plan ready",
   "plan-failed": "Needs a coordinator",
-  confirmed: "Confirmed by hospital",
+  confirmed: "Confirmed",
   closed: "Closed",
 };
 
 const STATUS_TONE: Record<CaseStatus, string> = {
-  new: "bg-surface-muted text-ink-soft",
+  new: "bg-brand-tint text-brand-deep",
   planning: "bg-brand-tint text-brand-deep",
   planned: "bg-leaf/10 text-leaf",
   "plan-failed": "bg-saffron/15 text-saffron",
@@ -25,47 +30,143 @@ const STATUS_TONE: Record<CaseStatus, string> = {
   closed: "bg-surface-muted text-ink-muted",
 };
 
-/** The order a coordinator wants to see first. */
-const PRIORITY: CaseStatus[] = ["plan-failed", "planning", "planned", "new", "confirmed", "closed"];
+type Query = {
+  status?: string;
+  country?: string;
+  from?: string;
+  to?: string;
+  sort?: string;
+  saved?: string;
+};
 
-export default async function CasesPage() {
+export default async function CasesPage({ searchParams }: { searchParams: Promise<Query> }) {
   if (!(await isAuthenticated())) redirect("/admin/login");
+  const sp = await searchParams;
 
-  const cases = await readOr<PatientCase[]>([], (db) =>
-    db.collection<PatientCase>("cases").find({}).sort({ createdAt: -1 }).limit(200).toArray(),
-  );
+  const status = STATUSES.includes(sp.status as CaseStatus) ? (sp.status as CaseStatus) : "";
+  const country = (sp.country ?? "").trim();
+  const from = (sp.from ?? "").trim();
+  const to = (sp.to ?? "").trim();
+  const sort = sp.sort === "oldest" ? 1 : -1;
 
-  const counts = PRIORITY.map((status) => ({
-    status,
-    count: cases.filter((item) => item.status === status).length,
-  })).filter((entry) => entry.count > 0);
+  const filter: Filter<PatientCase> = {};
+  if (status) filter.status = status;
+  if (country) filter["patient.country"] = country;
+  if (from || to) {
+    const range: Record<string, string> = {};
+    if (from) range.$gte = `${from}T00:00:00.000Z`;
+    if (to) range.$lte = `${to}T23:59:59.999Z`;
+    filter.createdAt = range as never;
+  }
+
+  const [cases, countries, counts] = await Promise.all([
+    readOr<PatientCase[]>([], (db) =>
+      db.collection<PatientCase>("cases").find(filter).sort({ createdAt: sort }).limit(300).toArray(),
+    ),
+    readOr<string[]>([], (db) => db.collection<PatientCase>("cases").distinct("patient.country")),
+    readOr<{ _id: CaseStatus; n: number }[]>([], (db) =>
+      db
+        .collection<PatientCase>("cases")
+        .aggregate<{ _id: CaseStatus; n: number }>([{ $group: { _id: "$status", n: { $sum: 1 } } }])
+        .toArray(),
+    ),
+  ]);
+
+  const countOf = (s: CaseStatus) => counts.find((c) => c._id === s)?.n ?? 0;
+  const total = counts.reduce((sum, c) => sum + c.n, 0);
+
+  // The current filters as a string, so an action can send the admin back to
+  // exactly the view they were on.
+  const back = (() => {
+    const p = new URLSearchParams();
+    if (status) p.set("status", status);
+    if (country) p.set("country", country);
+    if (from) p.set("from", from);
+    if (to) p.set("to", to);
+    if (sort === 1) p.set("sort", "oldest");
+    const s = p.toString();
+    return s ? `/admin/cases?${s}` : "/admin/cases";
+  })();
+
+  const chip = (value: string, label: string, n?: number) => {
+    const p = new URLSearchParams();
+    if (value) p.set("status", value);
+    if (country) p.set("country", country);
+    if (from) p.set("from", from);
+    if (to) p.set("to", to);
+    if (sort === 1) p.set("sort", "oldest");
+    const active = status === value;
+    return (
+      <Link
+        key={value || "all"}
+        href={`/admin/cases${p.toString() ? `?${p}` : ""}`}
+        className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${
+          active ? "bg-brand text-white" : "bg-surface-muted text-ink-soft"
+        }`}
+      >
+        {label}
+        {n !== undefined ? ` ${n}` : ""}
+      </Link>
+    );
+  };
 
   return (
-    <AdminShell
-      title="Patient cases"
-      subtitle="Every enquiry that came in with reports, and what the planner made of it. Report files are not stored — only what each report was and the plan it produced."
-    >
+    <AdminShell title="Inquiries">
       {!isDatabaseConfigured() && (
         <p className="mb-6 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">
-          MONGODB_URI is not set on this deployment, so cases cannot be read yet.
+          MONGODB_URI is not set on this deployment, so inquiries cannot be read yet.
         </p>
       )}
+      {sp.saved === "deleted" ? <Saved what="inquiry removed" /> : sp.saved ? <Saved /> : null}
 
-      {counts.length > 0 && (
-        <div className="mb-6 flex flex-wrap gap-3">
-          {counts.map(({ status, count }) => (
-            <span
-              key={status}
-              className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${STATUS_TONE[status]}`}
-            >
-              {count} {STATUS_LABEL[status].toLowerCase()}
-            </span>
-          ))}
-        </div>
-      )}
+      <div className="mb-4 flex flex-wrap gap-2">
+        {chip("", "All", total)}
+        {STATUSES.map((s) => chip(s, STATUS_LABEL[s], countOf(s)))}
+      </div>
+
+      <form method="get" className="mb-6 flex flex-wrap items-end gap-3 rounded-xl bg-surface-muted p-4">
+        {status ? <input type="hidden" name="status" value={status} /> : null}
+        <label className="min-w-40 flex-1">
+          <span className={adminLabel}>Country</span>
+          <select name="country" defaultValue={country} className={adminField}>
+            <option value="">Any country</option>
+            {countries.filter(Boolean).sort().map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span className={adminLabel}>From</span>
+          <input type="date" name="from" defaultValue={from} className={adminField} />
+        </label>
+        <label>
+          <span className={adminLabel}>To</span>
+          <input type="date" name="to" defaultValue={to} className={adminField} />
+        </label>
+        <label>
+          <span className={adminLabel}>Sort</span>
+          <select name="sort" defaultValue={sort === 1 ? "oldest" : "newest"} className={adminField}>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+        </label>
+        <button type="submit" className="btn btn-primary !py-2.5 text-sm">
+          Apply
+        </button>
+        {(country || from || to || sort === 1) && (
+          <Link
+            href={status ? `/admin/cases?status=${status}` : "/admin/cases"}
+            className="btn btn-secondary !py-2.5 text-sm"
+          >
+            Clear
+          </Link>
+        )}
+      </form>
 
       {cases.length === 0 ? (
-        <p className="card p-6 text-ink-soft">No cases yet.</p>
+        <p className="card p-6 text-ink-soft">No inquiries match this view.</p>
       ) : (
         <ul className="space-y-3">
           {cases.map((item) => (
@@ -85,7 +186,6 @@ export default async function CasesPage() {
                         ? "described in their own words"
                         : "answered the standard questions"}
                   </p>
-
                   {item.reports.length > 0 ? (
                     <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm">
                       {item.reports.map((report, index) =>
@@ -107,12 +207,6 @@ export default async function CasesPage() {
                       )}
                     </p>
                   ) : null}
-
-                  {item.description ? (
-                    <p className="mt-2 rounded-lg bg-surface-muted px-3 py-2 text-sm leading-relaxed text-ink-soft">
-                      {item.description}
-                    </p>
-                  ) : null}
                 </div>
 
                 <span
@@ -130,15 +224,69 @@ export default async function CasesPage() {
                 </Link>
               </div>
 
-              <p className="mt-3 border-t border-line pt-3 text-xs text-ink-muted">
+              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
+                <form action={setCaseStatusAction} className="flex items-center gap-2">
+                  <input type="hidden" name="id" value={item._id} />
+                  <input type="hidden" name="back" value={back} />
+                  <select name="status" defaultValue={item.status} className={`${adminField} !py-1.5 !w-auto text-sm`}>
+                    {STATUSES.map((s) => (
+                      <option key={s} value={s}>
+                        {STATUS_LABEL[s]}
+                      </option>
+                    ))}
+                  </select>
+                  <button type="submit" className="btn btn-secondary !py-1.5 text-sm">
+                    Set status
+                  </button>
+                </form>
+
+                <details className="ml-auto">
+                  <summary className="cursor-pointer text-sm font-bold text-brand">Edit</summary>
+                  <form action={saveCaseAction} className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <input type="hidden" name="id" value={item._id} />
+                    <input type="hidden" name="back" value={back} />
+                    <label className="block min-w-0">
+                      <span className={adminLabel}>Name</span>
+                      <input name="name" defaultValue={item.patient.name} className={adminField} />
+                    </label>
+                    <label className="block min-w-0">
+                      <span className={adminLabel}>Phone</span>
+                      <input name="phone" defaultValue={item.patient.phone} className={adminField} />
+                    </label>
+                    <label className="block min-w-0">
+                      <span className={adminLabel}>Country</span>
+                      <input name="country" defaultValue={item.patient.country} className={adminField} />
+                    </label>
+                    <label className="block min-w-0">
+                      <span className={adminLabel}>Email</span>
+                      <input name="email" defaultValue={item.patient.email ?? ""} className={adminField} />
+                    </label>
+                    <label className="block min-w-0 sm:col-span-2">
+                      <span className={adminLabel}>Stated need</span>
+                      <input name="statedNeed" defaultValue={item.statedNeed ?? ""} className={adminField} />
+                    </label>
+                    <input type="hidden" name="status" value={item.status} />
+                    <div className="flex gap-3 sm:col-span-2">
+                      <button type="submit" className="btn btn-primary !py-2.5 text-sm">
+                        Save changes
+                      </button>
+                    </div>
+                  </form>
+                  <form action={deleteCaseAction} className="mt-2">
+                    <input type="hidden" name="id" value={item._id} />
+                    <input type="hidden" name="back" value={back} />
+                    <button type="submit" className="btn btn-secondary !py-2.5 text-sm !text-red-600">
+                      Delete this inquiry
+                    </button>
+                  </form>
+                </details>
+              </div>
+
+              <p className="mt-3 text-xs text-ink-muted">
                 <span className="font-bold tracking-wide text-ink-soft">{item._id}</span> ·{" "}
                 {new Date(item.createdAt).toUTCString()}
                 {item.referredBy ? " · referred by a partner doctor" : " · from the homepage"}
-                {item.reportsExpireAt
-                  ? ` · reports held until ${new Date(item.reportsExpireAt).toUTCString().slice(5, 16)}`
-                  : ""}
               </p>
-
               {item.planError ? (
                 <p className="mt-2 rounded-lg bg-saffron/10 px-3 py-2 text-sm text-ink-soft">
                   Planner said: {item.planError}

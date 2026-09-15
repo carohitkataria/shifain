@@ -64,7 +64,6 @@ export default async function ReferralsPage({
   return (
     <AdminShell
       title="Referrals"
-      subtitle="Every case a partner sent us, and what it earned them. Moving a referral forward recalculates the commission from its offer."
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved /> : null}

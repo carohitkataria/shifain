@@ -7,7 +7,7 @@ import { getSettings } from "@/lib/settings";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import type { PartnerUser } from "@/lib/partner-auth";
 import { listOffers, money, type Payout, type Referral } from "@/lib/partners";
-import { savePartnerProfileAction } from "../actions";
+import { savePartnerProfileAction, setPartnerCredentialsAction } from "../actions";
 import { createPayoutAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -21,13 +21,13 @@ export default async function PartnerPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
   if (!(await isAuthenticated())) redirect("/admin/login");
   if (!isDatabaseConfigured()) notFound();
 
   const { id } = await params;
-  const { saved } = await searchParams;
+  const { saved, error } = await searchParams;
 
   const db = await getDb();
   const partner = await db.collection<PartnerUser>("partner_users").findOne({ _id: id });
@@ -54,7 +54,18 @@ export default async function PartnerPage({
         &larr; All partners
       </Link>
 
-      {saved ? <Notice>Saved.</Notice> : null}
+      {saved === "password" ? (
+        <Notice>Password set — hand it to the partner now; it is not shown again.</Notice>
+      ) : saved === "status" ? (
+        <Notice>Account status updated.</Notice>
+      ) : saved ? (
+        <Notice>Saved.</Notice>
+      ) : null}
+      {error === "short" ? (
+        <p role="alert" className="mb-6 rounded-lg bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700">
+          A password needs at least 8 characters.
+        </p>
+      ) : null}
 
       <form id="partner-form" action={savePartnerProfileAction} className="space-y-5">
         <input type="hidden" name="id" value={partner._id} />
@@ -124,6 +135,43 @@ export default async function PartnerPage({
         <div className="flex justify-end pt-2">
           <SaveButton form="partner-form">Save partner</SaveButton>
         </div>
+      </form>
+
+      <form action={setPartnerCredentialsAction} className="mt-5">
+        <input type="hidden" name="id" value={partner._id} />
+        <Card
+          title="Sign-in credentials"
+          hint="The partner signs in at /portal/doctor with their email and this password. Setting a new one replaces the old immediately; hand it over directly, as it is never shown again."
+        >
+          <div className="grid gap-4 sm:grid-cols-3">
+            <label className="block min-w-0">
+              <span className={adminLabel}>Email (their username)</span>
+              <input value={partner.email} disabled className={`${adminField} opacity-70`} />
+            </label>
+            <label className="block min-w-0">
+              <span className={adminLabel}>New password</span>
+              <input
+                name="password"
+                type="text"
+                autoComplete="new-password"
+                placeholder="At least 8 characters"
+                className={adminField}
+              />
+            </label>
+            <label className="block min-w-0">
+              <span className={adminLabel}>Account status</span>
+              <select name="status" defaultValue={partner.status} className={adminField}>
+                <option value="active">Active — can sign in</option>
+                <option value="suspended">Suspended — blocked</option>
+              </select>
+            </label>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button type="submit" className="btn btn-primary !py-2.5 text-sm">
+              Set credentials
+            </button>
+          </div>
+        </Card>
       </form>
 
       <section className="mt-10">

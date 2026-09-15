@@ -52,10 +52,19 @@ export async function requestEmailCodeAction(formData: FormData) {
     return { delivered: false, codeForCoordinator: null };
   });
 
-  // With no mail provider set up the code cannot reach them, so say so rather
-  // than leaving someone watching an inbox that will never ring.
-  const sent = codeForCoordinator === null ? "1" : "coordinator";
-  redirect(`/${locale}/portal/patient/login?sent=${sent}&email=${encodeURIComponent(email)}`);
+  // With no mail provider set up the code cannot reach them by email. Rather
+  // than leave someone watching an inbox that will never ring, show it on the
+  // page so they can sign straight in. This only ever happens when no mailer
+  // is configured; once RESEND_API_KEY is set the code is emailed and never
+  // shown here.
+  const params = new URLSearchParams({ email });
+  if (codeForCoordinator === null) {
+    params.set("sent", "1");
+  } else {
+    params.set("sent", "code");
+    params.set("code", codeForCoordinator);
+  }
+  redirect(`/${locale}/portal/patient/login?${params.toString()}`);
 }
 
 export async function verifyEmailCodeAction(formData: FormData) {

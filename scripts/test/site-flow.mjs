@@ -81,10 +81,19 @@ check(
 // An email is asked for, because email sign-in has to have something to match.
 check(await page.locator('input[name="email"]').count() > 0, "the enquiry asks for an email");
 
+// The name is split into title, first and last, laid out two-up.
+check(
+  (await page.locator('#prefix').count()) > 0 &&
+    (await page.locator('#firstName').count()) > 0 &&
+    (await page.locator('#lastName').count()) > 0,
+  "the enquiry splits the name into title, first and last",
+);
+
 // Public pages the patient can now click through to.
 for (const [path, needle] of [
   ["/en/hospitals", "Partner hospitals"],
   ["/en/doctors", "Doctors"],
+  ["/en/treatments", "Specialised care"],
   ["/en/conditions", "Conditions we plan for"],
   ["/en/portal/patient/login", "Send me a code"],
   ["/en/portal/doctor/login", "Partner doctor sign-in"],
