@@ -75,6 +75,7 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
       points: partners.doctorPoints.map((point) => ({ id: point.id, label: t(point.label, locale) })),
       cta: t(partners.doctorCta, locale),
       ctaHref: "#quote-form",
+      warm: false,
       login: t(partners.doctorLogin, locale),
       loginHref: `/${locale}/portal/doctor`,
     },
@@ -86,6 +87,7 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
       points: partners.hospitalPoints.map((point) => ({ id: point.id, label: t(point.label, locale) })),
       cta: t(partners.hospitalCta, locale),
       ctaHref: `/${locale}/portal/hospital`,
+      warm: true,
       login: t(partners.hospitalLogin, locale),
       loginHref: `/${locale}/portal/hospital`,
     },
@@ -97,8 +99,8 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {panels.map((panel) => (
-          <div key={panel.id} className="card flex flex-col p-7">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-tint text-brand-deep">
+          <div key={panel.id} className={`card flex flex-col p-7 ${panel.warm ? "!border-saffron/25 bg-saffron-tint/40" : ""}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-xl ${panel.warm ? "bg-saffron-tint text-saffron" : "bg-brand-tint text-brand-deep"}`}>
               <Icon name={panel.icon} className="h-6 w-6" />
             </span>
             <h3 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">{panel.title}</h3>
@@ -116,7 +118,7 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
             </ul>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href={panel.ctaHref} className="btn btn-primary !py-2.5 text-sm">
+              <Link href={panel.ctaHref} className={`btn !py-2.5 text-sm ${panel.warm ? "btn-accent" : "btn-primary"}`}>
                 {panel.cta}
               </Link>
               <Link href={panel.loginHref} className="btn btn-secondary !py-2.5 text-sm">
@@ -143,7 +145,13 @@ export function Stories({ content, locale }: { content: SiteContent; locale: Loc
       <ul className="mt-11 grid gap-5 lg:grid-cols-3">
         {stories.items.map((item) => (
           <li key={item.id} className="card flex flex-col p-6">
-            <p className="flex-1 text-ink-soft">&ldquo;{t(item.quote, locale)}&rdquo;</p>
+            <div className="flex items-start justify-between gap-3">
+              <span aria-hidden="true" className="text-sm tracking-tight text-saffron">
+                &#9733;&#9733;&#9733;&#9733;&#9733;
+              </span>
+              <span className="chip bg-saffron-tint text-saffron">SAMPLE</span>
+            </div>
+            <p className="mt-3 flex-1 italic text-ink-soft">&ldquo;{t(item.quote, locale)}&rdquo;</p>
             <div className="mt-5 flex items-center gap-3 border-t border-line pt-4">
               <span
                 aria-hidden="true"
@@ -171,19 +179,17 @@ export function Faq({ content, locale }: { content: SiteContent; locale: Locale 
     <Section id="faq">
       <SectionHeading eyebrow={t(faq.eyebrow, locale)} title={t(faq.title, locale)} body={t(faq.body, locale)} />
 
-      <div className="mx-auto mt-11 max-w-3xl divide-y divide-line border-y border-line">
+      <div className="mx-auto mt-11 max-w-3xl space-y-3">
         {faq.items.map((item, i) => (
-          <details key={item.id} className="group py-4" open={i === 0}>
+          <details key={item.id} className="faq-item group" open={i === 0}>
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-ink marker:content-none">
               {t(item.question, locale)}
-              <span
-                aria-hidden="true"
-                className="flex h-6 w-6 flex-none items-center justify-center rounded-full border border-line text-lg leading-none text-brand-deep transition group-open:rotate-45"
-              >
-                +
+              <span aria-hidden="true" className="faq-toggle">
+                <span className="group-open:hidden">+</span>
+                <span className="hidden group-open:inline">&minus;</span>
               </span>
             </summary>
-            <p className="mt-3 pr-10 leading-relaxed text-ink-soft">{t(item.answer, locale)}</p>
+            <p className="mt-3 pr-10 text-sm leading-relaxed text-ink-soft">{t(item.answer, locale)}</p>
           </details>
         ))}
       </div>

@@ -1,0 +1,584 @@
+[
+  {
+    "_id": "coronary-artery-disease__cardiology",
+    "diseaseCode": "coronary-artery-disease",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "coronary-artery-disease__cardiac-surgery",
+    "diseaseCode": "coronary-artery-disease",
+    "specialtyCode": "cardiac-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "heart-valve-disease__cardiology",
+    "diseaseCode": "heart-valve-disease",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "heart-valve-disease__cardiac-surgery",
+    "diseaseCode": "heart-valve-disease",
+    "specialtyCode": "cardiac-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "cardiac-arrhythmia__cardiology",
+    "diseaseCode": "cardiac-arrhythmia",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "congenital-heart-disease__paediatric-cardiac-surgery",
+    "diseaseCode": "congenital-heart-disease",
+    "specialtyCode": "paediatric-cardiac-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "congenital-heart-disease__cardiology",
+    "diseaseCode": "congenital-heart-disease",
+    "specialtyCode": "cardiology",
+    "isPrimary": false
+  },
+  {
+    "_id": "heart-failure__cardiology",
+    "diseaseCode": "heart-failure",
+    "specialtyCode": "cardiology",
+    "isPrimary": true
+  },
+  {
+    "_id": "heart-failure__cardiac-surgery",
+    "diseaseCode": "heart-failure",
+    "specialtyCode": "cardiac-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "heart-failure__transplant-surgery",
+    "diseaseCode": "heart-failure",
+    "specialtyCode": "transplant-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "peripheral-artery-disease__vascular-surgery",
+    "diseaseCode": "peripheral-artery-disease",
+    "specialtyCode": "vascular-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "aortic-aneurysm__vascular-surgery",
+    "diseaseCode": "aortic-aneurysm",
+    "specialtyCode": "vascular-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "aortic-aneurysm__cardiac-surgery",
+    "diseaseCode": "aortic-aneurysm",
+    "specialtyCode": "cardiac-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "varicose-veins__vascular-surgery",
+    "diseaseCode": "varicose-veins",
+    "specialtyCode": "vascular-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "breast-cancer__surgical-oncology",
+    "diseaseCode": "breast-cancer",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "breast-cancer__medical-oncology",
+    "diseaseCode": "breast-cancer",
+    "specialtyCode": "medical-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "breast-cancer__radiation-oncology",
+    "diseaseCode": "breast-cancer",
+    "specialtyCode": "radiation-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "lung-cancer__surgical-oncology",
+    "diseaseCode": "lung-cancer",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "lung-cancer__medical-oncology",
+    "diseaseCode": "lung-cancer",
+    "specialtyCode": "medical-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "lung-cancer__radiation-oncology",
+    "diseaseCode": "lung-cancer",
+    "specialtyCode": "radiation-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "lung-cancer__pulmonology",
+    "diseaseCode": "lung-cancer",
+    "specialtyCode": "pulmonology",
+    "isPrimary": false
+  },
+  {
+    "_id": "colorectal-cancer__surgical-oncology",
+    "diseaseCode": "colorectal-cancer",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "colorectal-cancer__medical-oncology",
+    "diseaseCode": "colorectal-cancer",
+    "specialtyCode": "medical-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "colorectal-cancer__gi-surgery",
+    "diseaseCode": "colorectal-cancer",
+    "specialtyCode": "gi-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "head-neck-cancer__surgical-oncology",
+    "diseaseCode": "head-neck-cancer",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "head-neck-cancer__ent",
+    "diseaseCode": "head-neck-cancer",
+    "specialtyCode": "ent",
+    "isPrimary": false
+  },
+  {
+    "_id": "head-neck-cancer__radiation-oncology",
+    "diseaseCode": "head-neck-cancer",
+    "specialtyCode": "radiation-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "prostate-cancer__surgical-oncology",
+    "diseaseCode": "prostate-cancer",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "prostate-cancer__urology",
+    "diseaseCode": "prostate-cancer",
+    "specialtyCode": "urology",
+    "isPrimary": false
+  },
+  {
+    "_id": "prostate-cancer__radiation-oncology",
+    "diseaseCode": "prostate-cancer",
+    "specialtyCode": "radiation-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "cervical-cancer__surgical-oncology",
+    "diseaseCode": "cervical-cancer",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "cervical-cancer__obstetrics-gynaecology",
+    "diseaseCode": "cervical-cancer",
+    "specialtyCode": "obstetrics-gynaecology",
+    "isPrimary": false
+  },
+  {
+    "_id": "cervical-cancer__radiation-oncology",
+    "diseaseCode": "cervical-cancer",
+    "specialtyCode": "radiation-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "liver-cancer__surgical-oncology",
+    "diseaseCode": "liver-cancer",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "liver-cancer__gi-surgery",
+    "diseaseCode": "liver-cancer",
+    "specialtyCode": "gi-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "liver-cancer__medical-oncology",
+    "diseaseCode": "liver-cancer",
+    "specialtyCode": "medical-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "stomach-cancer__surgical-oncology",
+    "diseaseCode": "stomach-cancer",
+    "specialtyCode": "surgical-oncology",
+    "isPrimary": true
+  },
+  {
+    "_id": "stomach-cancer__gi-surgery",
+    "diseaseCode": "stomach-cancer",
+    "specialtyCode": "gi-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "brain-tumour__neurosurgery",
+    "diseaseCode": "brain-tumour",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "brain-tumour__radiation-oncology",
+    "diseaseCode": "brain-tumour",
+    "specialtyCode": "radiation-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "brain-tumour__medical-oncology",
+    "diseaseCode": "brain-tumour",
+    "specialtyCode": "medical-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "leukaemia__haematology-bmt",
+    "diseaseCode": "leukaemia",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "leukaemia__medical-oncology",
+    "diseaseCode": "leukaemia",
+    "specialtyCode": "medical-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "lymphoma__haematology-bmt",
+    "diseaseCode": "lymphoma",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "lymphoma__medical-oncology",
+    "diseaseCode": "lymphoma",
+    "specialtyCode": "medical-oncology",
+    "isPrimary": false
+  },
+  {
+    "_id": "kidney-failure__nephrology",
+    "diseaseCode": "kidney-failure",
+    "specialtyCode": "nephrology",
+    "isPrimary": true
+  },
+  {
+    "_id": "kidney-failure__transplant-surgery",
+    "diseaseCode": "kidney-failure",
+    "specialtyCode": "transplant-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "kidney-failure__urology",
+    "diseaseCode": "kidney-failure",
+    "specialtyCode": "urology",
+    "isPrimary": false
+  },
+  {
+    "_id": "liver-failure__gastroenterology",
+    "diseaseCode": "liver-failure",
+    "specialtyCode": "gastroenterology",
+    "isPrimary": true
+  },
+  {
+    "_id": "liver-failure__transplant-surgery",
+    "diseaseCode": "liver-failure",
+    "specialtyCode": "transplant-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "liver-failure__gi-surgery",
+    "diseaseCode": "liver-failure",
+    "specialtyCode": "gi-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "bone-marrow-failure__haematology-bmt",
+    "diseaseCode": "bone-marrow-failure",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "thalassaemia__haematology-bmt",
+    "diseaseCode": "thalassaemia",
+    "specialtyCode": "haematology-bmt",
+    "isPrimary": true
+  },
+  {
+    "_id": "thalassaemia__paediatrics",
+    "diseaseCode": "thalassaemia",
+    "specialtyCode": "paediatrics",
+    "isPrimary": false
+  },
+  {
+    "_id": "corneal-blindness__ophthalmology",
+    "diseaseCode": "corneal-blindness",
+    "specialtyCode": "ophthalmology",
+    "isPrimary": true
+  },
+  {
+    "_id": "corneal-blindness__transplant-surgery",
+    "diseaseCode": "corneal-blindness",
+    "specialtyCode": "transplant-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "knee-osteoarthritis__orthopaedics",
+    "diseaseCode": "knee-osteoarthritis",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "hip-osteoarthritis__orthopaedics",
+    "diseaseCode": "hip-osteoarthritis",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "spinal-stenosis__spine-surgery",
+    "diseaseCode": "spinal-stenosis",
+    "specialtyCode": "spine-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "spinal-stenosis__orthopaedics",
+    "diseaseCode": "spinal-stenosis",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": false
+  },
+  {
+    "_id": "spinal-stenosis__neurosurgery",
+    "diseaseCode": "spinal-stenosis",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "sports-injury__orthopaedics",
+    "diseaseCode": "sports-injury",
+    "specialtyCode": "orthopaedics",
+    "isPrimary": true
+  },
+  {
+    "_id": "stroke__neurology",
+    "diseaseCode": "stroke",
+    "specialtyCode": "neurology",
+    "isPrimary": true
+  },
+  {
+    "_id": "stroke__neurosurgery",
+    "diseaseCode": "stroke",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "epilepsy__neurology",
+    "diseaseCode": "epilepsy",
+    "specialtyCode": "neurology",
+    "isPrimary": true
+  },
+  {
+    "_id": "epilepsy__neurosurgery",
+    "diseaseCode": "epilepsy",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "parkinsons-disease__neurology",
+    "diseaseCode": "parkinsons-disease",
+    "specialtyCode": "neurology",
+    "isPrimary": true
+  },
+  {
+    "_id": "parkinsons-disease__neurosurgery",
+    "diseaseCode": "parkinsons-disease",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "cerebral-aneurysm__neurosurgery",
+    "diseaseCode": "cerebral-aneurysm",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "hydrocephalus__neurosurgery",
+    "diseaseCode": "hydrocephalus",
+    "specialtyCode": "neurosurgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "hydrocephalus__paediatrics",
+    "diseaseCode": "hydrocephalus",
+    "specialtyCode": "paediatrics",
+    "isPrimary": false
+  },
+  {
+    "_id": "kidney-stones__urology",
+    "diseaseCode": "kidney-stones",
+    "specialtyCode": "urology",
+    "isPrimary": true
+  },
+  {
+    "_id": "benign-prostatic-hyperplasia__urology",
+    "diseaseCode": "benign-prostatic-hyperplasia",
+    "specialtyCode": "urology",
+    "isPrimary": true
+  },
+  {
+    "_id": "obesity__bariatric-surgery",
+    "diseaseCode": "obesity",
+    "specialtyCode": "bariatric-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "obesity__endocrinology",
+    "diseaseCode": "obesity",
+    "specialtyCode": "endocrinology",
+    "isPrimary": false
+  },
+  {
+    "_id": "gallstones__gi-surgery",
+    "diseaseCode": "gallstones",
+    "specialtyCode": "gi-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "gallstones__general-surgery",
+    "diseaseCode": "gallstones",
+    "specialtyCode": "general-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "hernia__general-surgery",
+    "diseaseCode": "hernia",
+    "specialtyCode": "general-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "hernia__gi-surgery",
+    "diseaseCode": "hernia",
+    "specialtyCode": "gi-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "inflammatory-bowel-disease__gastroenterology",
+    "diseaseCode": "inflammatory-bowel-disease",
+    "specialtyCode": "gastroenterology",
+    "isPrimary": true
+  },
+  {
+    "_id": "female-infertility__reproductive-medicine",
+    "diseaseCode": "female-infertility",
+    "specialtyCode": "reproductive-medicine",
+    "isPrimary": true
+  },
+  {
+    "_id": "female-infertility__obstetrics-gynaecology",
+    "diseaseCode": "female-infertility",
+    "specialtyCode": "obstetrics-gynaecology",
+    "isPrimary": false
+  },
+  {
+    "_id": "male-infertility__reproductive-medicine",
+    "diseaseCode": "male-infertility",
+    "specialtyCode": "reproductive-medicine",
+    "isPrimary": true
+  },
+  {
+    "_id": "male-infertility__urology",
+    "diseaseCode": "male-infertility",
+    "specialtyCode": "urology",
+    "isPrimary": false
+  },
+  {
+    "_id": "uterine-fibroids__obstetrics-gynaecology",
+    "diseaseCode": "uterine-fibroids",
+    "specialtyCode": "obstetrics-gynaecology",
+    "isPrimary": true
+  },
+  {
+    "_id": "cataract__ophthalmology",
+    "diseaseCode": "cataract",
+    "specialtyCode": "ophthalmology",
+    "isPrimary": true
+  },
+  {
+    "_id": "retinal-disease__ophthalmology",
+    "diseaseCode": "retinal-disease",
+    "specialtyCode": "ophthalmology",
+    "isPrimary": true
+  },
+  {
+    "_id": "hearing-loss__ent",
+    "diseaseCode": "hearing-loss",
+    "specialtyCode": "ent",
+    "isPrimary": true
+  },
+  {
+    "_id": "chronic-sinusitis__ent",
+    "diseaseCode": "chronic-sinusitis",
+    "specialtyCode": "ent",
+    "isPrimary": true
+  },
+  {
+    "_id": "post-burn-deformity__plastic-surgery",
+    "diseaseCode": "post-burn-deformity",
+    "specialtyCode": "plastic-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "body-contouring-need__plastic-surgery",
+    "diseaseCode": "body-contouring-need",
+    "specialtyCode": "plastic-surgery",
+    "isPrimary": true
+  },
+  {
+    "_id": "hair-loss__dermatology",
+    "diseaseCode": "hair-loss",
+    "specialtyCode": "dermatology",
+    "isPrimary": true
+  },
+  {
+    "_id": "hair-loss__plastic-surgery",
+    "diseaseCode": "hair-loss",
+    "specialtyCode": "plastic-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "tooth-loss__dentistry",
+    "diseaseCode": "tooth-loss",
+    "specialtyCode": "dentistry",
+    "isPrimary": true
+  },
+  {
+    "_id": "congenital-anomaly__paediatrics",
+    "diseaseCode": "congenital-anomaly",
+    "specialtyCode": "paediatrics",
+    "isPrimary": true
+  },
+  {
+    "_id": "congenital-anomaly__general-surgery",
+    "diseaseCode": "congenital-anomaly",
+    "specialtyCode": "general-surgery",
+    "isPrimary": false
+  },
+  {
+    "_id": "copd__pulmonology",
+    "diseaseCode": "copd",
+    "specialtyCode": "pulmonology",
+    "isPrimary": true
+  }
+]

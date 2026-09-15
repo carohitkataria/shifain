@@ -1,21 +1,21 @@
 import { promises as fs } from "node:fs";
-import crypto from "node:crypto";
 import path from "node:path";
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
+import { isDatabaseConfigured } from "@/lib/db";
+import { newReference } from "@/lib/cases";
+import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
+import { openCase } from "@/lib/case-flow";
 
 const ENQUIRY_LOG =
   process.env.SHIFAIN_ENQUIRY_LOG || path.join(process.cwd(), ".data", "enquiries.jsonl");
 
-const MAX_FILES = 10;
-const MAX_TOTAL_BYTES = 25 * 1024 * 1024;
-
 /**
- * Records an enquiry so a coordinator can pick it up. Attachments are counted
- * but not stored here — wire this to your case system and object storage when
- * the backend is ready.
+ * Fallback record for when the database is not reachable. A patient who has
+ * told us about their illness must never hit a dead end, so the enquiry still
+ * lands somewhere a coordinator can pick it up.
  */
-async function record(entry: Record<string, unknown>): Promise<void> {
+async function recordToDisk(entry: Record<string, unknown>): Promise<void> {
   await fs.mkdir(path.dirname(ENQUIRY_LOG), { recursive: true });
   await fs.appendFile(ENQUIRY_LOG, `${JSON.stringify(entry)}\n`, "utf8");
 }
@@ -25,41 +25,57 @@ export async function POST(request: NextRequest) {
 
   const localeField = String(form.get("locale") ?? "");
   const locale = isLocale(localeField) ? localeField : DEFAULT_LOCALE;
+  const back = NextResponse.redirect(new URL(`/${locale}#quote-form`, request.url), 303);
 
   const name = String(form.get("name") ?? "").trim();
-  const phone = String(form.get("phone") ?? "").trim();
   const country = String(form.get("country") ?? "").trim();
-  const treatment = String(form.get("treatment") ?? "").trim();
+  const dial = String(form.get("dial") ?? "").trim();
+  const local = String(form.get("phone") ?? "").trim();
+  const email = String(form.get("email") ?? "").trim() || null;
+  const phone = [dial, local].filter(Boolean).join(" ").trim();
 
-  if (!name || !phone || !country || !treatment) {
-    return NextResponse.redirect(new URL(`/${locale}#quote-form`, request.url), 303);
-  }
+  if (!name || !phone || !country) return back;
 
-  const uploads = form.getAll("reports").filter((value): value is File => value instanceof File && value.size > 0);
-  const totalBytes = uploads.reduce((sum, file) => sum + file.size, 0);
-  if (uploads.length > MAX_FILES || totalBytes > MAX_TOTAL_BYTES) {
-    return NextResponse.redirect(new URL(`/${locale}#quote-form`, request.url), 303);
-  }
+  const intake = await readIntake(form);
+  if (intake.tooLarge || !hasSomethingToPlanFrom(intake)) return back;
 
-  const reference = `SH-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
+  const patient = { name, phone, country, email };
 
-  try {
-    await record({
+  if (!isDatabaseConfigured()) {
+    const reference = newReference();
+    await recordToDisk({
       reference,
       receivedAt: new Date().toISOString(),
       locale,
-      name,
-      phone,
-      country,
-      treatment,
-      reportCount: uploads.length,
-      reportBytes: totalBytes,
-    });
-  } catch (error) {
-    // A storage failure must not lose the patient — surface it and let the
-    // coordinator follow up from the phone call instead.
-    console.error("[shifain] could not record enquiry", reference, error);
+      ...patient,
+      route: intake.route,
+      statedNeed: intake.statedNeed,
+      reportCount: intake.meta.length,
+    }).catch((error) => console.error("[shifain] could not record enquiry", reference, error));
+    return NextResponse.redirect(
+      new URL(`/${locale}/enquiry/received?ref=${reference}`, request.url),
+      303,
+    );
   }
 
-  return NextResponse.redirect(new URL(`/${locale}/enquiry/received?ref=${reference}`, request.url), 303);
+  try {
+    const record = await openCase({ locale, patient, intake, referredBy: null });
+    return NextResponse.redirect(new URL(`/${locale}/plan/${record._id}`, request.url), 303);
+  } catch (error) {
+    console.error("[shifain] could not open a case", error);
+    const fallback = newReference();
+    await recordToDisk({
+      reference: fallback,
+      receivedAt: new Date().toISOString(),
+      locale,
+      ...patient,
+      route: intake.route,
+      statedNeed: intake.statedNeed,
+      reportCount: intake.meta.length,
+    }).catch(() => undefined);
+    return NextResponse.redirect(
+      new URL(`/${locale}/enquiry/received?ref=${fallback}`, request.url),
+      303,
+    );
+  }
 }

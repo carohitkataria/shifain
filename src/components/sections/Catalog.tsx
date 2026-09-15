@@ -6,17 +6,20 @@ import type { Locale } from "@/lib/i18n";
 
 export function Stats({ content, locale }: { content: SiteContent; locale: Locale }) {
   return (
-    <section className="border-y border-line bg-white">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-8 px-4 py-10 sm:px-6 lg:grid-cols-4">
-        {content.stats.items.map((item) => (
-          <div key={item.id} className="text-center">
-            <p className="text-[clamp(1.6rem,1.2rem+1.2vw,2.25rem)] font-extrabold tracking-tight text-brand-deep">
-              {item.value}
-            </p>
-            <p className="mt-1 text-sm font-semibold text-ink-soft">{t(item.label, locale)}</p>
-          </div>
-        ))}
+    <section>
+      <div className="dark-band">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-8 px-4 py-10 sm:px-6 lg:grid-cols-4">
+          {content.stats.items.map((item) => (
+            <div key={item.id} className="text-center">
+              <p className="text-[clamp(1.6rem,1.2rem+1.2vw,2.25rem)] font-extrabold tracking-tight text-white">
+                {item.value}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-white/70">{t(item.label, locale)}</p>
+            </div>
+          ))}
+        </div>
       </div>
+      <div className="tricolour-rule" />
     </section>
   );
 }
@@ -69,19 +72,20 @@ export function Costs({ content, locale }: { content: SiteContent; locale: Local
 
       <ul className="mt-11 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {costs.items.map((item) => (
-          <li key={item.id} className="card flex flex-col p-6">
-            <span aria-hidden="true" className="text-2xl">
+          <li key={item.id} className="card flex flex-col p-4 text-center">
+            <span
+              aria-hidden="true"
+              className="flex h-20 items-center justify-center rounded-xl bg-brand-tint text-3xl"
+            >
               {item.icon}
             </span>
-            <h3 className="mt-3 font-extrabold leading-tight text-ink">{t(item.title, locale)}</h3>
-            <p className="mt-4 text-xs font-bold uppercase tracking-wider text-ink-muted">
-              {t(costs.fromLabel, locale)}
-            </p>
+            <h3 className="mt-4 font-extrabold leading-tight text-ink">{t(item.title, locale)}</h3>
+            <p className="mt-2 text-xs text-ink-muted">{t(costs.fromLabel, locale)}</p>
             <p className="text-2xl font-extrabold tracking-tight text-brand-deep">{item.amount}</p>
             <p className="mt-1 flex-1 text-xs text-ink-muted">{t(item.note, locale)}</p>
-            <a href="#quote-form" className="btn btn-secondary mt-5 w-full !py-2.5 text-sm">
+            <Link href={`/${locale}/conditions`} className="btn btn-tint mt-4 w-full !py-2.5 text-sm">
               {t(costs.ctaLabel, locale)}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
@@ -90,6 +94,13 @@ export function Costs({ content, locale }: { content: SiteContent; locale: Local
     </Section>
   );
 }
+
+/** Accreditation gradients echo the design's three coloured card headers. */
+const HOSPITAL_HEADERS = [
+  "from-brand to-brand-deep",
+  "from-ink to-[#1d4f7c]",
+  "from-leaf to-[#1e7a33]",
+];
 
 export function Hospitals({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { hospitals } = content;
@@ -102,52 +113,71 @@ export function Hospitals({ content, locale }: { content: SiteContent; locale: L
       />
 
       <ul className="mt-11 grid gap-5 lg:grid-cols-3">
-        {hospitals.items.map((item) => (
-          <li key={item.id} className="card link-card flex flex-col p-6">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-extrabold leading-tight text-ink">{item.name}</h3>
-                <p className="mt-0.5 text-sm text-ink-muted">{item.city}</p>
-              </div>
-              <span className="flex-none rounded-full bg-saffron-tint px-2.5 py-1 text-sm font-bold text-saffron">
-                {item.rating} &#9733;
+        {hospitals.items.map((item, i) => (
+          <li key={item.id} className="card link-card flex flex-col overflow-hidden p-0">
+            <div
+              className={`relative flex h-28 items-end bg-gradient-to-br p-4 ${HOSPITAL_HEADERS[i % HOSPITAL_HEADERS.length]}`}
+            >
+              <span className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                  <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z" />
+                  <circle cx="12" cy="10" r="2.4" />
+                </svg>
+                {item.city}
+              </span>
+              <span className="absolute right-3 top-3 flex gap-1.5">
+                {item.accreditations.map((accreditation) => (
+                  <span key={accreditation} className="chip bg-white/90 text-ink">
+                    {accreditation}
+                  </span>
+                ))}
               </span>
             </div>
 
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {item.tags.map((tag) => (
-                <li key={tag} className="rounded-full bg-brand-tint px-2.5 py-1 text-xs font-semibold text-brand-deep">
-                  {tag}
-                </li>
-              ))}
-            </ul>
+            <div className="flex flex-1 flex-col p-5">
+              <h3 className="text-lg font-extrabold leading-tight text-ink">{item.name}</h3>
 
-            <dl className="mt-5 grid flex-1 grid-cols-2 gap-4 border-t border-line pt-4">
-              <div>
-                <dt className="text-xs font-bold uppercase tracking-wider text-ink-muted">
-                  {t(hospitals.bedsLabel, locale)}
-                </dt>
-                <dd className="text-lg font-extrabold text-ink">{item.beds}</dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold uppercase tracking-wider text-ink-muted">
-                  {t(hospitals.proceduresLabel, locale)}
-                </dt>
-                <dd className="text-lg font-extrabold text-ink">{item.procedures}</dd>
-              </div>
-            </dl>
+              <ul className="mt-3 flex flex-wrap gap-1.5">
+                {item.tags.map((tag) => (
+                  <li key={tag} className="chip bg-brand-tint text-brand-deep">
+                    {tag}
+                  </li>
+                ))}
+              </ul>
 
-            <a href="#quote-form" className="btn btn-secondary mt-5 w-full !py-2.5 text-sm">
-              {t(hospitals.viewLabel, locale)}
-            </a>
+              <dl className="mt-5 grid flex-1 grid-cols-3 gap-3 border-t border-line pt-4">
+                <div>
+                  <dt className="text-[0.68rem] font-bold uppercase tracking-wider text-ink-muted">
+                    {t(hospitals.bedsLabel, locale)}
+                  </dt>
+                  <dd className="font-extrabold text-ink">{item.beds}</dd>
+                </div>
+                <div>
+                  <dt className="text-[0.68rem] font-bold uppercase tracking-wider text-ink-muted">
+                    {t(hospitals.proceduresLabel, locale)}
+                  </dt>
+                  <dd className="font-extrabold text-ink">{item.procedures}</dd>
+                </div>
+                <div>
+                  <dt className="text-[0.68rem] font-bold uppercase tracking-wider text-ink-muted">
+                    {t(hospitals.ratingLabel, locale)}
+                  </dt>
+                  <dd className="font-extrabold text-ink">&#9733; {item.rating}</dd>
+                </div>
+              </dl>
+
+              <Link href={`/${locale}/hospitals`} className="btn btn-tint mt-5 w-full !py-2.5 text-sm">
+                {t(hospitals.viewLabel, locale)}
+              </Link>
+            </div>
           </li>
         ))}
       </ul>
 
-      <div className="mt-8 text-center">
-        <a href="#quote-form" className="text-sm font-bold text-brand-deep hover:underline">
-          {t(hospitals.allLabel, locale)} &rarr;
-        </a>
+      <div className="mt-9 text-center">
+        <Link href={`/${locale}/hospitals`} className="btn btn-ink">
+          {t(hospitals.allLabel, locale)}
+        </Link>
       </div>
     </Section>
   );
@@ -168,27 +198,30 @@ export function Doctors({ content, locale }: { content: SiteContent; locale: Loc
           <li key={item.id} className="card link-card flex flex-col p-6 text-center">
             <span
               aria-hidden="true"
-              className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-deep text-lg font-extrabold text-white"
+              className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-deep text-lg font-extrabold text-white"
             >
               {item.initials}
             </span>
             <h3 className="mt-4 font-extrabold leading-tight text-ink">{item.name}</h3>
-            <p className="mt-0.5 text-sm font-semibold text-brand-deep">{t(item.speciality, locale)}</p>
+            <p className="mt-0.5 text-sm font-bold text-brand-deep">{t(item.speciality, locale)}</p>
             <p className="mt-2 text-xs text-ink-muted">
               {item.affiliation} &middot; {item.experience}
             </p>
-            <p className="mt-3 flex-1 text-sm text-ink-soft">{t(item.highlight, locale)}</p>
-            <a href="#quote-form" className="btn btn-secondary mt-5 w-full !py-2.5 text-sm">
+            <p className="mt-1 flex-1 text-xs text-ink-muted">{t(item.highlight, locale)}</p>
+            <a
+              href={`/${locale}/doctors`}
+              className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-leaf-tint px-3 py-2 text-xs font-bold text-leaf transition hover:bg-[#d8f0de]"
+            >
               {t(doctors.consultLabel, locale)} &middot; {item.fee}
             </a>
           </li>
         ))}
       </ul>
 
-      <div className="mt-8 text-center">
-        <a href="#quote-form" className="text-sm font-bold text-brand-deep hover:underline">
-          {t(doctors.allLabel, locale)} &rarr;
-        </a>
+      <div className="mt-9 text-center">
+        <Link href={`/${locale}/doctors`} className="btn btn-ink">
+          {t(doctors.allLabel, locale)}
+        </Link>
       </div>
     </Section>
   );
@@ -224,16 +257,24 @@ export function Comparison({ content, locale }: { content: SiteContent; locale: 
             </tr>
           </thead>
           <tbody>
-            {comparison.rows.map((row) => (
-              <tr key={row.id} className="even:bg-surface-muted">
-                <th scope="row" className="px-4 py-3.5 text-sm font-semibold text-ink-soft">
+            {comparison.rows.map((row, rowIndex) => (
+              <tr key={row.id} className="border-b border-line last:border-0">
+                <th scope="row" className="bg-surface-muted px-4 py-3.5 text-left text-sm font-semibold text-ink-soft">
                   {t(row.label, locale)}
                 </th>
-                {row.values.map((value, i) => (
-                  <td key={`${row.id}-${i}`} className="px-4 py-3.5 text-sm font-bold text-ink">
-                    {value}
-                  </td>
-                ))}
+                {row.values.map((value, i) => {
+                  const affirmative = /^(yes|да|ha)$/i.test(value.trim());
+                  return (
+                    <td
+                      key={`${row.id}-${i}`}
+                      className={`px-4 py-3.5 text-sm font-bold ${
+                        rowIndex === 0 ? "text-brand-deep" : affirmative ? "text-leaf" : "text-ink"
+                      }`}
+                    >
+                      {affirmative ? `\u2713 ${value}` : value}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
@@ -242,7 +283,7 @@ export function Comparison({ content, locale }: { content: SiteContent; locale: 
 
       <div className="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-ink-muted">{t(comparison.footnote, locale)}</p>
-        <a href="#quote-form" className="btn btn-primary !py-2.5 text-sm">
+        <a href="#quote-form" className="btn btn-accent !py-2.5 text-sm">
           {t(comparison.cta, locale)}
         </a>
       </div>

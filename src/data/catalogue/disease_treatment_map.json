@@ -1,0 +1,554 @@
+[
+  {
+    "_id": "coronary-artery-disease__cabg",
+    "diseaseCode": "coronary-artery-disease",
+    "treatmentCode": "cabg",
+    "intent": "curative"
+  },
+  {
+    "_id": "coronary-artery-disease__angioplasty-stent",
+    "diseaseCode": "coronary-artery-disease",
+    "treatmentCode": "angioplasty-stent",
+    "intent": "curative"
+  },
+  {
+    "_id": "coronary-artery-disease__coronary-angiography",
+    "diseaseCode": "coronary-artery-disease",
+    "treatmentCode": "coronary-angiography",
+    "intent": "supportive"
+  },
+  {
+    "_id": "heart-valve-disease__valve-replacement",
+    "diseaseCode": "heart-valve-disease",
+    "treatmentCode": "valve-replacement",
+    "intent": "curative"
+  },
+  {
+    "_id": "heart-valve-disease__valve-repair",
+    "diseaseCode": "heart-valve-disease",
+    "treatmentCode": "valve-repair",
+    "intent": "curative"
+  },
+  {
+    "_id": "heart-valve-disease__tavi",
+    "diseaseCode": "heart-valve-disease",
+    "treatmentCode": "tavi",
+    "intent": "curative"
+  },
+  {
+    "_id": "cardiac-arrhythmia__pacemaker-implant",
+    "diseaseCode": "cardiac-arrhythmia",
+    "treatmentCode": "pacemaker-implant",
+    "intent": "curative"
+  },
+  {
+    "_id": "cardiac-arrhythmia__cardiac-ablation",
+    "diseaseCode": "cardiac-arrhythmia",
+    "treatmentCode": "cardiac-ablation",
+    "intent": "curative"
+  },
+  {
+    "_id": "cardiac-arrhythmia__icd-implant",
+    "diseaseCode": "cardiac-arrhythmia",
+    "treatmentCode": "icd-implant",
+    "intent": "curative"
+  },
+  {
+    "_id": "congenital-heart-disease__asd-vsd-closure",
+    "diseaseCode": "congenital-heart-disease",
+    "treatmentCode": "asd-vsd-closure",
+    "intent": "curative"
+  },
+  {
+    "_id": "congenital-heart-disease__tetralogy-repair",
+    "diseaseCode": "congenital-heart-disease",
+    "treatmentCode": "tetralogy-repair",
+    "intent": "curative"
+  },
+  {
+    "_id": "heart-failure__heart-transplant",
+    "diseaseCode": "heart-failure",
+    "treatmentCode": "heart-transplant",
+    "intent": "curative"
+  },
+  {
+    "_id": "heart-failure__lvad",
+    "diseaseCode": "heart-failure",
+    "treatmentCode": "lvad",
+    "intent": "curative"
+  },
+  {
+    "_id": "peripheral-artery-disease__peripheral-angioplasty",
+    "diseaseCode": "peripheral-artery-disease",
+    "treatmentCode": "peripheral-angioplasty",
+    "intent": "curative"
+  },
+  {
+    "_id": "peripheral-artery-disease__bypass-graft-limb",
+    "diseaseCode": "peripheral-artery-disease",
+    "treatmentCode": "bypass-graft-limb",
+    "intent": "curative"
+  },
+  {
+    "_id": "aortic-aneurysm__evar",
+    "diseaseCode": "aortic-aneurysm",
+    "treatmentCode": "evar",
+    "intent": "curative"
+  },
+  {
+    "_id": "aortic-aneurysm__open-aneurysm-repair",
+    "diseaseCode": "aortic-aneurysm",
+    "treatmentCode": "open-aneurysm-repair",
+    "intent": "curative"
+  },
+  {
+    "_id": "varicose-veins__endovenous-laser",
+    "diseaseCode": "varicose-veins",
+    "treatmentCode": "endovenous-laser",
+    "intent": "curative"
+  },
+  {
+    "_id": "breast-cancer__mastectomy",
+    "diseaseCode": "breast-cancer",
+    "treatmentCode": "mastectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "breast-cancer__breast-conserving-surgery",
+    "diseaseCode": "breast-cancer",
+    "treatmentCode": "breast-conserving-surgery",
+    "intent": "curative"
+  },
+  {
+    "_id": "breast-cancer__chemotherapy-breast",
+    "diseaseCode": "breast-cancer",
+    "treatmentCode": "chemotherapy-breast",
+    "intent": "supportive"
+  },
+  {
+    "_id": "breast-cancer__radiotherapy-breast",
+    "diseaseCode": "breast-cancer",
+    "treatmentCode": "radiotherapy-breast",
+    "intent": "supportive"
+  },
+  {
+    "_id": "lung-cancer__lobectomy",
+    "diseaseCode": "lung-cancer",
+    "treatmentCode": "lobectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "lung-cancer__chemotherapy-lung",
+    "diseaseCode": "lung-cancer",
+    "treatmentCode": "chemotherapy-lung",
+    "intent": "supportive"
+  },
+  {
+    "_id": "lung-cancer__immunotherapy",
+    "diseaseCode": "lung-cancer",
+    "treatmentCode": "immunotherapy",
+    "intent": "supportive"
+  },
+  {
+    "_id": "colorectal-cancer__colectomy",
+    "diseaseCode": "colorectal-cancer",
+    "treatmentCode": "colectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "colorectal-cancer__robotic-colorectal",
+    "diseaseCode": "colorectal-cancer",
+    "treatmentCode": "robotic-colorectal",
+    "intent": "curative"
+  },
+  {
+    "_id": "head-neck-cancer__head-neck-resection",
+    "diseaseCode": "head-neck-cancer",
+    "treatmentCode": "head-neck-resection",
+    "intent": "curative"
+  },
+  {
+    "_id": "head-neck-cancer__robotic-head-neck",
+    "diseaseCode": "head-neck-cancer",
+    "treatmentCode": "robotic-head-neck",
+    "intent": "curative"
+  },
+  {
+    "_id": "prostate-cancer__radical-prostatectomy",
+    "diseaseCode": "prostate-cancer",
+    "treatmentCode": "radical-prostatectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "prostate-cancer__radiotherapy-prostate",
+    "diseaseCode": "prostate-cancer",
+    "treatmentCode": "radiotherapy-prostate",
+    "intent": "supportive"
+  },
+  {
+    "_id": "cervical-cancer__radical-hysterectomy",
+    "diseaseCode": "cervical-cancer",
+    "treatmentCode": "radical-hysterectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "cervical-cancer__brachytherapy",
+    "diseaseCode": "cervical-cancer",
+    "treatmentCode": "brachytherapy",
+    "intent": "supportive"
+  },
+  {
+    "_id": "liver-cancer__liver-resection",
+    "diseaseCode": "liver-cancer",
+    "treatmentCode": "liver-resection",
+    "intent": "curative"
+  },
+  {
+    "_id": "liver-cancer__tace",
+    "diseaseCode": "liver-cancer",
+    "treatmentCode": "tace",
+    "intent": "curative"
+  },
+  {
+    "_id": "stomach-cancer__gastrectomy",
+    "diseaseCode": "stomach-cancer",
+    "treatmentCode": "gastrectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "brain-tumour__craniotomy-tumour",
+    "diseaseCode": "brain-tumour",
+    "treatmentCode": "craniotomy-tumour",
+    "intent": "curative"
+  },
+  {
+    "_id": "brain-tumour__awake-craniotomy",
+    "diseaseCode": "brain-tumour",
+    "treatmentCode": "awake-craniotomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "brain-tumour__gamma-knife",
+    "diseaseCode": "brain-tumour",
+    "treatmentCode": "gamma-knife",
+    "intent": "supportive"
+  },
+  {
+    "_id": "leukaemia__chemotherapy-leukaemia",
+    "diseaseCode": "leukaemia",
+    "treatmentCode": "chemotherapy-leukaemia",
+    "intent": "supportive"
+  },
+  {
+    "_id": "leukaemia__car-t",
+    "diseaseCode": "leukaemia",
+    "treatmentCode": "car-t",
+    "intent": "supportive"
+  },
+  {
+    "_id": "lymphoma__chemotherapy-lymphoma",
+    "diseaseCode": "lymphoma",
+    "treatmentCode": "chemotherapy-lymphoma",
+    "intent": "supportive"
+  },
+  {
+    "_id": "kidney-failure__kidney-transplant",
+    "diseaseCode": "kidney-failure",
+    "treatmentCode": "kidney-transplant",
+    "intent": "curative"
+  },
+  {
+    "_id": "kidney-failure__haemodialysis",
+    "diseaseCode": "kidney-failure",
+    "treatmentCode": "haemodialysis",
+    "intent": "supportive"
+  },
+  {
+    "_id": "liver-failure__liver-transplant",
+    "diseaseCode": "liver-failure",
+    "treatmentCode": "liver-transplant",
+    "intent": "curative"
+  },
+  {
+    "_id": "bone-marrow-failure__bone-marrow-transplant",
+    "diseaseCode": "bone-marrow-failure",
+    "treatmentCode": "bone-marrow-transplant",
+    "intent": "curative"
+  },
+  {
+    "_id": "thalassaemia__bmt-thalassaemia",
+    "diseaseCode": "thalassaemia",
+    "treatmentCode": "bmt-thalassaemia",
+    "intent": "curative"
+  },
+  {
+    "_id": "corneal-blindness__corneal-transplant",
+    "diseaseCode": "corneal-blindness",
+    "treatmentCode": "corneal-transplant",
+    "intent": "curative"
+  },
+  {
+    "_id": "knee-osteoarthritis__total-knee-replacement",
+    "diseaseCode": "knee-osteoarthritis",
+    "treatmentCode": "total-knee-replacement",
+    "intent": "curative"
+  },
+  {
+    "_id": "knee-osteoarthritis__partial-knee-replacement",
+    "diseaseCode": "knee-osteoarthritis",
+    "treatmentCode": "partial-knee-replacement",
+    "intent": "curative"
+  },
+  {
+    "_id": "knee-osteoarthritis__robotic-knee-replacement",
+    "diseaseCode": "knee-osteoarthritis",
+    "treatmentCode": "robotic-knee-replacement",
+    "intent": "curative"
+  },
+  {
+    "_id": "hip-osteoarthritis__total-hip-replacement",
+    "diseaseCode": "hip-osteoarthritis",
+    "treatmentCode": "total-hip-replacement",
+    "intent": "curative"
+  },
+  {
+    "_id": "hip-osteoarthritis__hip-revision",
+    "diseaseCode": "hip-osteoarthritis",
+    "treatmentCode": "hip-revision",
+    "intent": "curative"
+  },
+  {
+    "_id": "spinal-stenosis__spinal-fusion",
+    "diseaseCode": "spinal-stenosis",
+    "treatmentCode": "spinal-fusion",
+    "intent": "curative"
+  },
+  {
+    "_id": "spinal-stenosis__microdiscectomy",
+    "diseaseCode": "spinal-stenosis",
+    "treatmentCode": "microdiscectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "spinal-stenosis__disc-replacement",
+    "diseaseCode": "spinal-stenosis",
+    "treatmentCode": "disc-replacement",
+    "intent": "curative"
+  },
+  {
+    "_id": "sports-injury__acl-reconstruction",
+    "diseaseCode": "sports-injury",
+    "treatmentCode": "acl-reconstruction",
+    "intent": "curative"
+  },
+  {
+    "_id": "sports-injury__shoulder-arthroscopy",
+    "diseaseCode": "sports-injury",
+    "treatmentCode": "shoulder-arthroscopy",
+    "intent": "curative"
+  },
+  {
+    "_id": "stroke__mechanical-thrombectomy",
+    "diseaseCode": "stroke",
+    "treatmentCode": "mechanical-thrombectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "stroke__stroke-rehabilitation",
+    "diseaseCode": "stroke",
+    "treatmentCode": "stroke-rehabilitation",
+    "intent": "supportive"
+  },
+  {
+    "_id": "epilepsy__epilepsy-surgery",
+    "diseaseCode": "epilepsy",
+    "treatmentCode": "epilepsy-surgery",
+    "intent": "curative"
+  },
+  {
+    "_id": "parkinsons-disease__deep-brain-stimulation",
+    "diseaseCode": "parkinsons-disease",
+    "treatmentCode": "deep-brain-stimulation",
+    "intent": "curative"
+  },
+  {
+    "_id": "cerebral-aneurysm__aneurysm-coiling",
+    "diseaseCode": "cerebral-aneurysm",
+    "treatmentCode": "aneurysm-coiling",
+    "intent": "curative"
+  },
+  {
+    "_id": "cerebral-aneurysm__aneurysm-clipping",
+    "diseaseCode": "cerebral-aneurysm",
+    "treatmentCode": "aneurysm-clipping",
+    "intent": "curative"
+  },
+  {
+    "_id": "hydrocephalus__vp-shunt",
+    "diseaseCode": "hydrocephalus",
+    "treatmentCode": "vp-shunt",
+    "intent": "curative"
+  },
+  {
+    "_id": "kidney-stones__pcnl",
+    "diseaseCode": "kidney-stones",
+    "treatmentCode": "pcnl",
+    "intent": "curative"
+  },
+  {
+    "_id": "kidney-stones__ureteroscopy-laser",
+    "diseaseCode": "kidney-stones",
+    "treatmentCode": "ureteroscopy-laser",
+    "intent": "curative"
+  },
+  {
+    "_id": "benign-prostatic-hyperplasia__turp",
+    "diseaseCode": "benign-prostatic-hyperplasia",
+    "treatmentCode": "turp",
+    "intent": "curative"
+  },
+  {
+    "_id": "benign-prostatic-hyperplasia__holep",
+    "diseaseCode": "benign-prostatic-hyperplasia",
+    "treatmentCode": "holep",
+    "intent": "curative"
+  },
+  {
+    "_id": "obesity__sleeve-gastrectomy",
+    "diseaseCode": "obesity",
+    "treatmentCode": "sleeve-gastrectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "obesity__gastric-bypass",
+    "diseaseCode": "obesity",
+    "treatmentCode": "gastric-bypass",
+    "intent": "curative"
+  },
+  {
+    "_id": "gallstones__laparoscopic-cholecystectomy",
+    "diseaseCode": "gallstones",
+    "treatmentCode": "laparoscopic-cholecystectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "hernia__hernia-repair",
+    "diseaseCode": "hernia",
+    "treatmentCode": "hernia-repair",
+    "intent": "curative"
+  },
+  {
+    "_id": "inflammatory-bowel-disease__ibd-biologics",
+    "diseaseCode": "inflammatory-bowel-disease",
+    "treatmentCode": "ibd-biologics",
+    "intent": "supportive"
+  },
+  {
+    "_id": "female-infertility__ivf-cycle",
+    "diseaseCode": "female-infertility",
+    "treatmentCode": "ivf-cycle",
+    "intent": "supportive"
+  },
+  {
+    "_id": "female-infertility__icsi",
+    "diseaseCode": "female-infertility",
+    "treatmentCode": "icsi",
+    "intent": "supportive"
+  },
+  {
+    "_id": "female-infertility__pgt",
+    "diseaseCode": "female-infertility",
+    "treatmentCode": "pgt",
+    "intent": "supportive"
+  },
+  {
+    "_id": "male-infertility__tese",
+    "diseaseCode": "male-infertility",
+    "treatmentCode": "tese",
+    "intent": "curative"
+  },
+  {
+    "_id": "uterine-fibroids__myomectomy",
+    "diseaseCode": "uterine-fibroids",
+    "treatmentCode": "myomectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "uterine-fibroids__hysterectomy",
+    "diseaseCode": "uterine-fibroids",
+    "treatmentCode": "hysterectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "cataract__phacoemulsification",
+    "diseaseCode": "cataract",
+    "treatmentCode": "phacoemulsification",
+    "intent": "curative"
+  },
+  {
+    "_id": "retinal-disease__vitrectomy",
+    "diseaseCode": "retinal-disease",
+    "treatmentCode": "vitrectomy",
+    "intent": "curative"
+  },
+  {
+    "_id": "hearing-loss__cochlear-implant",
+    "diseaseCode": "hearing-loss",
+    "treatmentCode": "cochlear-implant",
+    "intent": "curative"
+  },
+  {
+    "_id": "chronic-sinusitis__fess",
+    "diseaseCode": "chronic-sinusitis",
+    "treatmentCode": "fess",
+    "intent": "curative"
+  },
+  {
+    "_id": "post-burn-deformity__reconstructive-flap",
+    "diseaseCode": "post-burn-deformity",
+    "treatmentCode": "reconstructive-flap",
+    "intent": "curative"
+  },
+  {
+    "_id": "body-contouring-need__liposuction",
+    "diseaseCode": "body-contouring-need",
+    "treatmentCode": "liposuction",
+    "intent": "curative"
+  },
+  {
+    "_id": "body-contouring-need__abdominoplasty",
+    "diseaseCode": "body-contouring-need",
+    "treatmentCode": "abdominoplasty",
+    "intent": "curative"
+  },
+  {
+    "_id": "hair-loss__hair-transplant",
+    "diseaseCode": "hair-loss",
+    "treatmentCode": "hair-transplant",
+    "intent": "curative"
+  },
+  {
+    "_id": "tooth-loss__dental-implant",
+    "diseaseCode": "tooth-loss",
+    "treatmentCode": "dental-implant",
+    "intent": "curative"
+  },
+  {
+    "_id": "tooth-loss__full-mouth-rehab",
+    "diseaseCode": "tooth-loss",
+    "treatmentCode": "full-mouth-rehab",
+    "intent": "curative"
+  },
+  {
+    "_id": "congenital-anomaly__paediatric-corrective-surgery",
+    "diseaseCode": "congenital-anomaly",
+    "treatmentCode": "paediatric-corrective-surgery",
+    "intent": "curative"
+  },
+  {
+    "_id": "copd__pulmonary-rehabilitation",
+    "diseaseCode": "copd",
+    "treatmentCode": "pulmonary-rehabilitation",
+    "intent": "supportive"
+  }
+]

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AdminShell, Notice } from "@/components/admin/AdminShell";
+import { AdminShell, Notice, SaveButton } from "@/components/admin/AdminShell";
+import { AdminIcon } from "@/components/admin/AdminIcon";
 import { isAuthenticated } from "@/lib/auth";
 import { getContent } from "@/lib/store";
 import { GROUPS } from "@/lib/admin-groups";
@@ -26,49 +27,65 @@ export default async function AdminHome({
   return (
     <AdminShell
       title="Homepage"
-      subtitle="Choose what appears on the homepage, in what order, and publish the text and numbers it shows."
+      subtitle="Choose what appears on the homepage and in what order. Changes go live when you click Save layout."
+      action={<SaveButton form="layout-form">Save layout</SaveButton>}
     >
       {saved ? <Notice>Published. The homepage is live with your changes.</Notice> : null}
       {reset ? <Notice>Reset. The homepage is back to the shipped defaults.</Notice> : null}
 
-      <section className="card p-6">
-        <h2 className="text-xl font-extrabold tracking-tight text-ink">Sections on the homepage</h2>
-        <p className="mt-1 text-sm text-ink-soft">
-          Untick a section to hide it. Lower order numbers appear closer to the top.
-        </p>
+      <form id="layout-form" action={saveSectionsAction} className="space-y-5">
+        <section className="card p-6">
+          <h2 className="font-extrabold text-ink">Section visibility</h2>
+          <p className="mt-1 text-sm text-ink-soft">Show or hide each section of the homepage.</p>
 
-        <form action={saveSectionsAction} className="mt-5">
-          <ul className="divide-y divide-line border-y border-line">
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-3">
             {ordered.map((id) => (
-              <li key={id} className="flex items-center gap-4 py-3">
+              <label key={id} className="flex items-center gap-2.5">
                 <input
-                  id={`enabled-${id}`}
                   type="checkbox"
                   name={`enabled.${id}`}
                   defaultChecked={content.sections[id]?.enabled !== false}
-                  className="h-4 w-4 accent-[#0f5a91]"
+                  className="h-4 w-4 accent-brand"
                 />
-                <label htmlFor={`enabled-${id}`} className="flex-1 text-sm font-semibold text-ink">
+                <span className="text-sm font-semibold text-ink">{SECTION_LABELS[id]}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        <section className="card p-6">
+          <h2 className="font-extrabold text-ink">Order</h2>
+          <p className="mt-1 text-sm text-ink-soft">
+            Lower numbers appear closer to the top of the page.
+          </p>
+
+          <ul className="mt-4 divide-y divide-line border-y border-line">
+            {ordered.map((id) => (
+              <li key={id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
+                <span className="min-w-0 flex-1 basis-48 text-sm font-semibold text-ink">
                   {SECTION_LABELS[id]}
-                </label>
-                <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-muted">
-                  Order
-                  <input
-                    type="number"
-                    name={`order.${id}`}
-                    defaultValue={content.sections[id]?.order ?? 0}
-                    className="w-20 rounded-lg border border-line px-2.5 py-1.5 text-sm text-ink focus:border-brand focus:outline-none"
-                  />
-                </label>
+                </span>
+                {content.sections[id]?.enabled === false ? (
+                  <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-ink-muted">
+                    Hidden
+                  </span>
+                ) : null}
+                <input
+                  type="number"
+                  name={`order.${id}`}
+                  defaultValue={content.sections[id]?.order ?? 0}
+                  aria-label={`Order for ${SECTION_LABELS[id]}`}
+                  className="w-20 shrink-0 rounded-lg border border-line px-2.5 py-1.5 text-sm text-ink focus:border-brand focus:outline-none"
+                />
               </li>
             ))}
           </ul>
+        </section>
 
-          <button type="submit" className="btn btn-primary mt-5">
-            Publish layout
-          </button>
-        </form>
-      </section>
+        <div className="flex justify-end pt-2">
+          <SaveButton form="layout-form">Save layout</SaveButton>
+        </div>
+      </form>
 
       <section className="mt-10">
         <h2 className="text-xl font-extrabold tracking-tight text-ink">Content</h2>
@@ -93,8 +110,8 @@ export default async function AdminHome({
         </ul>
       </section>
 
-      <section className="mt-10 card flex flex-wrap items-center justify-between gap-4 p-6">
-        <div>
+      <section className="card mt-10 flex flex-wrap items-center justify-between gap-4 p-6">
+        <div className="min-w-0">
           <h2 className="font-extrabold text-ink">Published version {content.version}</h2>
           <p className="mt-1 text-sm text-ink-soft">
             Last published{" "}
@@ -102,7 +119,8 @@ export default async function AdminHome({
           </p>
         </div>
         <form action={resetAction}>
-          <button type="submit" className="btn btn-secondary !py-2.5 text-sm">
+          <button type="submit" className="btn btn-secondary inline-flex items-center gap-2 !py-2.5 text-sm">
+            <AdminIcon name="reset" />
             Reset to defaults
           </button>
         </form>

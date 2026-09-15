@@ -10,6 +10,8 @@ export type SectionId =
   | "journey"
   | "specialties"
   | "aiPlanner"
+  | "upload"
+  | "tracker"
   | "guarantee"
   | "costs"
   | "hospitals"
@@ -19,7 +21,8 @@ export type SectionId =
   | "whyIndia"
   | "partners"
   | "stories"
-  | "faq";
+  | "faq"
+  | "closing";
 
 export const SECTION_IDS: SectionId[] = [
   "hero",
@@ -28,6 +31,8 @@ export const SECTION_IDS: SectionId[] = [
   "journey",
   "specialties",
   "aiPlanner",
+  "upload",
+  "tracker",
   "guarantee",
   "costs",
   "hospitals",
@@ -38,6 +43,7 @@ export const SECTION_IDS: SectionId[] = [
   "partners",
   "stories",
   "faq",
+  "closing",
 ];
 
 /** Admin-facing labels for each section of the homepage. */
@@ -48,6 +54,8 @@ export const SECTION_LABELS: Record<SectionId, string> = {
   journey: "Your journey (path)",
   specialties: "Treatment categories",
   aiPlanner: "AI plan & estimate builder",
+  upload: "Upload reports band",
+  tracker: "Live case tracker",
   guarantee: "Price guarantee & translator",
   costs: "Indicative costs",
   hospitals: "Hospital network",
@@ -58,6 +66,7 @@ export const SECTION_LABELS: Record<SectionId, string> = {
   partners: "For doctors & hospitals",
   stories: "Patient stories",
   faq: "Frequently asked questions",
+  closing: "Closing call to action",
 };
 
 export type SectionState = { enabled: boolean; order: number };
@@ -67,10 +76,11 @@ export type JourneyStep = { id: string; icon: string; title: L; body: L };
 export type Specialty = { slug: string; icon: string; title: L; body: L; detail: L };
 export type CostItem = { id: string; icon: string; title: L; amount: string; note: L };
 export type PackageLine = { id: string; icon: string; title: L; note: L; amount: string; included: boolean; optional: boolean };
-export type Hospital = { id: string; name: string; city: string; tags: string[]; beds: string; procedures: string; rating: string };
+export type Hospital = { id: string; name: string; city: string; tags: string[]; accreditations: string[]; beds: string; procedures: string; rating: string };
 export type Doctor = { id: string; initials: string; name: string; speciality: L; affiliation: string; experience: string; highlight: L; fee: string };
 export type ComparisonRow = { id: string; label: L; values: string[] };
 export type Story = { id: string; initials: string; name: string; from: L; treatment: L; quote: L };
+export type TrackerStep = { id: string; label: L; state: "done" | "current" | "todo" };
 export type FaqItem = { id: string; question: L; answer: L };
 
 export type SiteContent = {
@@ -152,6 +162,25 @@ export type SiteContent = {
     lines: PackageLine[];
   };
 
+  upload: {
+    eyebrow: L;
+    title: L;
+    body: L;
+    dropTitle: L;
+    dropNote: L;
+    formats: string[];
+  };
+
+  tracker: {
+    eyebrow: L;
+    title: L;
+    body: L;
+    patientName: L;
+    caseMeta: L;
+    currentLabel: L;
+    steps: TrackerStep[];
+  };
+
   guarantee: {
     eyebrow: L;
     priceTitle: L;
@@ -210,6 +239,13 @@ export type SiteContent = {
   stories: { eyebrow: L; title: L; body: L; items: Story[] };
 
   faq: { eyebrow: L; title: L; body: L; items: FaqItem[] };
+
+  closing: {
+    title: L;
+    body: L;
+    primaryCta: L;
+    secondaryCta: L;
+  };
 
   footer: {
     about: L;

@@ -1,0 +1,380 @@
+[
+  {
+    "_id": "cardiac-care",
+    "name": {
+      "en": "Cardiac care",
+      "ru": "Кардиология",
+      "uz": "Kardiologiya"
+    },
+    "tier": "tier1",
+    "order": 0,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "oncology",
+    "name": {
+      "en": "Oncology & cancer care",
+      "ru": "Онкология",
+      "uz": "Onkologiya"
+    },
+    "tier": "tier1",
+    "order": 1,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "orthopaedics",
+    "name": {
+      "en": "Orthopaedics",
+      "ru": "Ортопедия",
+      "uz": "Ortopediya"
+    },
+    "tier": "tier1",
+    "order": 2,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "neurosciences",
+    "name": {
+      "en": "Neurology & neurosurgery",
+      "ru": "Неврология и нейрохирургия",
+      "uz": "Nevrologiya va neyroxirurgiya"
+    },
+    "tier": "tier1",
+    "order": 3,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "transplant",
+    "name": {
+      "en": "Transplant care",
+      "ru": "Трансплантация",
+      "uz": "Transplantatsiya"
+    },
+    "tier": "tier1",
+    "order": 4,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "complex-surgery",
+    "name": {
+      "en": "Complex surgery",
+      "ru": "Сложная хирургия",
+      "uz": "Murakkab jarrohlik"
+    },
+    "tier": "tier1",
+    "order": 5,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "fertility",
+    "name": {
+      "en": "IVF & fertility",
+      "ru": "ЭКО и репродуктология",
+      "uz": "EKO va reproduktologiya"
+    },
+    "tier": "tier2",
+    "order": 6,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "ophthalmology",
+    "name": {
+      "en": "Ophthalmology",
+      "ru": "Офтальмология",
+      "uz": "Oftalmologiya"
+    },
+    "tier": "tier2",
+    "order": 7,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "urology",
+    "name": {
+      "en": "Urology",
+      "ru": "Урология",
+      "uz": "Urologiya"
+    },
+    "tier": "tier2",
+    "order": 8,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "bariatric",
+    "name": {
+      "en": "Bariatric surgery",
+      "ru": "Бариатрическая хирургия",
+      "uz": "Bariatrik jarrohlik"
+    },
+    "tier": "tier2",
+    "order": 9,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "ent",
+    "name": {
+      "en": "ENT",
+      "ru": "ЛОР",
+      "uz": "LOR"
+    },
+    "tier": "tier2",
+    "order": 10,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cosmetic",
+    "name": {
+      "en": "Cosmetic & reconstructive",
+      "ru": "Пластическая и реконструктивная хирургия",
+      "uz": "Plastik va rekonstruktiv jarrohlik"
+    },
+    "tier": "tier2",
+    "order": 11,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "dental",
+    "name": {
+      "en": "Dental",
+      "ru": "Стоматология",
+      "uz": "Stomatologiya"
+    },
+    "tier": "all",
+    "order": 12,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "gastroenterology",
+    "name": {
+      "en": "Gastroenterology",
+      "ru": "Гастроэнтерология",
+      "uz": "Gastroenterologiya"
+    },
+    "tier": "all",
+    "order": 13,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "nephrology",
+    "name": {
+      "en": "Nephrology",
+      "ru": "Нефрология",
+      "uz": "Nefrologiya"
+    },
+    "tier": "all",
+    "order": 14,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "dermatology",
+    "name": {
+      "en": "Dermatology",
+      "ru": "Дерматология",
+      "uz": "Dermatologiya"
+    },
+    "tier": "all",
+    "order": 15,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "gynaecology",
+    "name": {
+      "en": "Gynaecology",
+      "ru": "Гинекология",
+      "uz": "Ginekologiya"
+    },
+    "tier": "all",
+    "order": 16,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "paediatrics",
+    "name": {
+      "en": "Paediatrics",
+      "ru": "Педиатрия",
+      "uz": "Pediatriya"
+    },
+    "tier": "all",
+    "order": 17,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "pulmonology",
+    "name": {
+      "en": "Pulmonology",
+      "ru": "Пульмонология",
+      "uz": "Pulmonologiya"
+    },
+    "tier": "all",
+    "order": 18,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "haematology",
+    "name": {
+      "en": "Haematology",
+      "ru": "Гематология",
+      "uz": "Gematologiya"
+    },
+    "tier": "all",
+    "order": 19,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "endocrinology",
+    "name": {
+      "en": "Endocrinology",
+      "ru": "Эндокринология",
+      "uz": "Endokrinologiya"
+    },
+    "tier": "all",
+    "order": 20,
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

@@ -1,0 +1,2578 @@
+[
+  {
+    "_id": "band-cabg",
+    "treatmentCode": "cabg",
+    "currency": "USD",
+    "min": 5500,
+    "max": 8500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-angioplasty-stent",
+    "treatmentCode": "angioplasty-stent",
+    "currency": "USD",
+    "min": 4000,
+    "max": 7000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-coronary-angiography",
+    "treatmentCode": "coronary-angiography",
+    "currency": "USD",
+    "min": 500,
+    "max": 900,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-valve-replacement",
+    "treatmentCode": "valve-replacement",
+    "currency": "USD",
+    "min": 6500,
+    "max": 10000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-valve-repair",
+    "treatmentCode": "valve-repair",
+    "currency": "USD",
+    "min": 6000,
+    "max": 9500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-tavi",
+    "treatmentCode": "tavi",
+    "currency": "USD",
+    "min": 22000,
+    "max": 32000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-pacemaker-implant",
+    "treatmentCode": "pacemaker-implant",
+    "currency": "USD",
+    "min": 5000,
+    "max": 9000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-cardiac-ablation",
+    "treatmentCode": "cardiac-ablation",
+    "currency": "USD",
+    "min": 6000,
+    "max": 9500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-icd-implant",
+    "treatmentCode": "icd-implant",
+    "currency": "USD",
+    "min": 12000,
+    "max": 18000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-asd-vsd-closure",
+    "treatmentCode": "asd-vsd-closure",
+    "currency": "USD",
+    "min": 5500,
+    "max": 9000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-tetralogy-repair",
+    "treatmentCode": "tetralogy-repair",
+    "currency": "USD",
+    "min": 7000,
+    "max": 11000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-heart-transplant",
+    "treatmentCode": "heart-transplant",
+    "currency": "USD",
+    "min": 70000,
+    "max": 110000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-lvad",
+    "treatmentCode": "lvad",
+    "currency": "USD",
+    "min": 90000,
+    "max": 130000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-peripheral-angioplasty",
+    "treatmentCode": "peripheral-angioplasty",
+    "currency": "USD",
+    "min": 4000,
+    "max": 7000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-bypass-graft-limb",
+    "treatmentCode": "bypass-graft-limb",
+    "currency": "USD",
+    "min": 6000,
+    "max": 9000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-evar",
+    "treatmentCode": "evar",
+    "currency": "USD",
+    "min": 15000,
+    "max": 22000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-open-aneurysm-repair",
+    "treatmentCode": "open-aneurysm-repair",
+    "currency": "USD",
+    "min": 10000,
+    "max": 16000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-endovenous-laser",
+    "treatmentCode": "endovenous-laser",
+    "currency": "USD",
+    "min": 1800,
+    "max": 3000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-mastectomy",
+    "treatmentCode": "mastectomy",
+    "currency": "USD",
+    "min": 4000,
+    "max": 6500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-breast-conserving-surgery",
+    "treatmentCode": "breast-conserving-surgery",
+    "currency": "USD",
+    "min": 3500,
+    "max": 5500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-chemotherapy-breast",
+    "treatmentCode": "chemotherapy-breast",
+    "currency": "USD",
+    "min": 500,
+    "max": 1500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-radiotherapy-breast",
+    "treatmentCode": "radiotherapy-breast",
+    "currency": "USD",
+    "min": 4000,
+    "max": 7000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-lobectomy",
+    "treatmentCode": "lobectomy",
+    "currency": "USD",
+    "min": 6000,
+    "max": 9500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-chemotherapy-lung",
+    "treatmentCode": "chemotherapy-lung",
+    "currency": "USD",
+    "min": 600,
+    "max": 1600,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-immunotherapy",
+    "treatmentCode": "immunotherapy",
+    "currency": "USD",
+    "min": 3000,
+    "max": 6000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-colectomy",
+    "treatmentCode": "colectomy",
+    "currency": "USD",
+    "min": 5500,
+    "max": 8500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-robotic-colorectal",
+    "treatmentCode": "robotic-colorectal",
+    "currency": "USD",
+    "min": 8000,
+    "max": 12000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-head-neck-resection",
+    "treatmentCode": "head-neck-resection",
+    "currency": "USD",
+    "min": 6000,
+    "max": 10000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-robotic-head-neck",
+    "treatmentCode": "robotic-head-neck",
+    "currency": "USD",
+    "min": 9000,
+    "max": 13000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-radical-prostatectomy",
+    "treatmentCode": "radical-prostatectomy",
+    "currency": "USD",
+    "min": 7000,
+    "max": 11000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-radiotherapy-prostate",
+    "treatmentCode": "radiotherapy-prostate",
+    "currency": "USD",
+    "min": 5000,
+    "max": 8500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-radical-hysterectomy",
+    "treatmentCode": "radical-hysterectomy",
+    "currency": "USD",
+    "min": 4500,
+    "max": 7000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-brachytherapy",
+    "treatmentCode": "brachytherapy",
+    "currency": "USD",
+    "min": 3000,
+    "max": 5000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-liver-resection",
+    "treatmentCode": "liver-resection",
+    "currency": "USD",
+    "min": 8000,
+    "max": 13000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-tace",
+    "treatmentCode": "tace",
+    "currency": "USD",
+    "min": 4000,
+    "max": 6500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-gastrectomy",
+    "treatmentCode": "gastrectomy",
+    "currency": "USD",
+    "min": 6000,
+    "max": 9500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-craniotomy-tumour",
+    "treatmentCode": "craniotomy-tumour",
+    "currency": "USD",
+    "min": 6500,
+    "max": 10000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-awake-craniotomy",
+    "treatmentCode": "awake-craniotomy",
+    "currency": "USD",
+    "min": 8000,
+    "max": 12000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-gamma-knife",
+    "treatmentCode": "gamma-knife",
+    "currency": "USD",
+    "min": 5500,
+    "max": 8500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-chemotherapy-leukaemia",
+    "treatmentCode": "chemotherapy-leukaemia",
+    "currency": "USD",
+    "min": 8000,
+    "max": 15000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-car-t",
+    "treatmentCode": "car-t",
+    "currency": "USD",
+    "min": 40000,
+    "max": 60000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-chemotherapy-lymphoma",
+    "treatmentCode": "chemotherapy-lymphoma",
+    "currency": "USD",
+    "min": 700,
+    "max": 2000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-kidney-transplant",
+    "treatmentCode": "kidney-transplant",
+    "currency": "USD",
+    "min": 13000,
+    "max": 20000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-haemodialysis",
+    "treatmentCode": "haemodialysis",
+    "currency": "USD",
+    "min": 40,
+    "max": 80,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-liver-transplant",
+    "treatmentCode": "liver-transplant",
+    "currency": "USD",
+    "min": 32000,
+    "max": 45000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-bone-marrow-transplant",
+    "treatmentCode": "bone-marrow-transplant",
+    "currency": "USD",
+    "min": 25000,
+    "max": 40000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-bmt-thalassaemia",
+    "treatmentCode": "bmt-thalassaemia",
+    "currency": "USD",
+    "min": 22000,
+    "max": 35000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-corneal-transplant",
+    "treatmentCode": "corneal-transplant",
+    "currency": "USD",
+    "min": 2000,
+    "max": 3500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-total-knee-replacement",
+    "treatmentCode": "total-knee-replacement",
+    "currency": "USD",
+    "min": 4500,
+    "max": 7000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-partial-knee-replacement",
+    "treatmentCode": "partial-knee-replacement",
+    "currency": "USD",
+    "min": 4000,
+    "max": 6000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-robotic-knee-replacement",
+    "treatmentCode": "robotic-knee-replacement",
+    "currency": "USD",
+    "min": 6500,
+    "max": 9500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-total-hip-replacement",
+    "treatmentCode": "total-hip-replacement",
+    "currency": "USD",
+    "min": 5000,
+    "max": 7500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-hip-revision",
+    "treatmentCode": "hip-revision",
+    "currency": "USD",
+    "min": 8000,
+    "max": 12000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-spinal-fusion",
+    "treatmentCode": "spinal-fusion",
+    "currency": "USD",
+    "min": 6000,
+    "max": 9500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-microdiscectomy",
+    "treatmentCode": "microdiscectomy",
+    "currency": "USD",
+    "min": 3500,
+    "max": 5500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-disc-replacement",
+    "treatmentCode": "disc-replacement",
+    "currency": "USD",
+    "min": 6500,
+    "max": 10000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-acl-reconstruction",
+    "treatmentCode": "acl-reconstruction",
+    "currency": "USD",
+    "min": 2800,
+    "max": 4500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-shoulder-arthroscopy",
+    "treatmentCode": "shoulder-arthroscopy",
+    "currency": "USD",
+    "min": 2500,
+    "max": 4000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-mechanical-thrombectomy",
+    "treatmentCode": "mechanical-thrombectomy",
+    "currency": "USD",
+    "min": 9000,
+    "max": 14000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-stroke-rehabilitation",
+    "treatmentCode": "stroke-rehabilitation",
+    "currency": "USD",
+    "min": 3000,
+    "max": 6000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-epilepsy-surgery",
+    "treatmentCode": "epilepsy-surgery",
+    "currency": "USD",
+    "min": 8000,
+    "max": 13000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-deep-brain-stimulation",
+    "treatmentCode": "deep-brain-stimulation",
+    "currency": "USD",
+    "min": 20000,
+    "max": 30000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-aneurysm-coiling",
+    "treatmentCode": "aneurysm-coiling",
+    "currency": "USD",
+    "min": 10000,
+    "max": 16000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-aneurysm-clipping",
+    "treatmentCode": "aneurysm-clipping",
+    "currency": "USD",
+    "min": 7500,
+    "max": 12000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-vp-shunt",
+    "treatmentCode": "vp-shunt",
+    "currency": "USD",
+    "min": 3500,
+    "max": 5500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-pcnl",
+    "treatmentCode": "pcnl",
+    "currency": "USD",
+    "min": 2800,
+    "max": 4500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-ureteroscopy-laser",
+    "treatmentCode": "ureteroscopy-laser",
+    "currency": "USD",
+    "min": 2200,
+    "max": 3500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-turp",
+    "treatmentCode": "turp",
+    "currency": "USD",
+    "min": 2500,
+    "max": 4000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-holep",
+    "treatmentCode": "holep",
+    "currency": "USD",
+    "min": 3200,
+    "max": 5000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-sleeve-gastrectomy",
+    "treatmentCode": "sleeve-gastrectomy",
+    "currency": "USD",
+    "min": 4500,
+    "max": 6500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-gastric-bypass",
+    "treatmentCode": "gastric-bypass",
+    "currency": "USD",
+    "min": 5500,
+    "max": 8000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-laparoscopic-cholecystectomy",
+    "treatmentCode": "laparoscopic-cholecystectomy",
+    "currency": "USD",
+    "min": 2000,
+    "max": 3200,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-hernia-repair",
+    "treatmentCode": "hernia-repair",
+    "currency": "USD",
+    "min": 1800,
+    "max": 3000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-ibd-biologics",
+    "treatmentCode": "ibd-biologics",
+    "currency": "USD",
+    "min": 1200,
+    "max": 2500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-ivf-cycle",
+    "treatmentCode": "ivf-cycle",
+    "currency": "USD",
+    "min": 2500,
+    "max": 4000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-icsi",
+    "treatmentCode": "icsi",
+    "currency": "USD",
+    "min": 3000,
+    "max": 4800,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-pgt",
+    "treatmentCode": "pgt",
+    "currency": "USD",
+    "min": 4000,
+    "max": 6500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-tese",
+    "treatmentCode": "tese",
+    "currency": "USD",
+    "min": 1200,
+    "max": 2200,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-myomectomy",
+    "treatmentCode": "myomectomy",
+    "currency": "USD",
+    "min": 2800,
+    "max": 4500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-hysterectomy",
+    "treatmentCode": "hysterectomy",
+    "currency": "USD",
+    "min": 2800,
+    "max": 4500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-phacoemulsification",
+    "treatmentCode": "phacoemulsification",
+    "currency": "USD",
+    "min": 900,
+    "max": 1800,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-vitrectomy",
+    "treatmentCode": "vitrectomy",
+    "currency": "USD",
+    "min": 1500,
+    "max": 2800,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-cochlear-implant",
+    "treatmentCode": "cochlear-implant",
+    "currency": "USD",
+    "min": 16000,
+    "max": 24000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-fess",
+    "treatmentCode": "fess",
+    "currency": "USD",
+    "min": 1800,
+    "max": 3000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-reconstructive-flap",
+    "treatmentCode": "reconstructive-flap",
+    "currency": "USD",
+    "min": 5000,
+    "max": 9000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-liposuction",
+    "treatmentCode": "liposuction",
+    "currency": "USD",
+    "min": 1800,
+    "max": 3500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-abdominoplasty",
+    "treatmentCode": "abdominoplasty",
+    "currency": "USD",
+    "min": 2500,
+    "max": 4500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-hair-transplant",
+    "treatmentCode": "hair-transplant",
+    "currency": "USD",
+    "min": 1200,
+    "max": 2500,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-dental-implant",
+    "treatmentCode": "dental-implant",
+    "currency": "USD",
+    "min": 600,
+    "max": 1200,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-full-mouth-rehab",
+    "treatmentCode": "full-mouth-rehab",
+    "currency": "USD",
+    "min": 4000,
+    "max": 8000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-paediatric-corrective-surgery",
+    "treatmentCode": "paediatric-corrective-surgery",
+    "currency": "USD",
+    "min": 4000,
+    "max": 8000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "band-pulmonary-rehabilitation",
+    "treatmentCode": "pulmonary-rehabilitation",
+    "currency": "USD",
+    "min": 2500,
+    "max": 5000,
+    "basis": "indicative-research",
+    "inclusions": [
+      "Surgeon, anaesthetist and theatre fees",
+      "Hospital room and nursing for the planned inpatient nights",
+      "Routine investigations and medicines during admission",
+      "One post-operative review before you fly home"
+    ],
+    "exclusions": [
+      "Anything found during treatment that was not in the plan",
+      "Extra inpatient nights beyond the planned stay",
+      "Implants or devices above the grade quoted",
+      "Flights, visa, accommodation and transfers — those are package lines you choose"
+    ],
+    "provenance": {
+      "source": "Published Indian hospital and facilitator pricing",
+      "sourceUrl": null,
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

@@ -38,7 +38,7 @@ export function LanguageSwitcher({ locale, path }: { locale: Locale; path: strin
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm font-semibold text-ink-soft transition hover:bg-brand-tint hover:text-brand-deep"
+        className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
           <circle cx="12" cy="12" r="9" />

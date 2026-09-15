@@ -1,0 +1,128 @@
+[
+  {
+    "_id": "delhi",
+    "name": "Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "nearestAirportIata": "DEL"
+  },
+  {
+    "_id": "gurgaon",
+    "name": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL"
+  },
+  {
+    "_id": "noida",
+    "name": "Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "DEL"
+  },
+  {
+    "_id": "faridabad",
+    "name": "Faridabad",
+    "state": "Haryana",
+    "country": "India",
+    "nearestAirportIata": "DEL"
+  },
+  {
+    "_id": "chennai",
+    "name": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "nearestAirportIata": "MAA"
+  },
+  {
+    "_id": "bangalore",
+    "name": "Bangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "nearestAirportIata": "BLR"
+  },
+  {
+    "_id": "mumbai",
+    "name": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "BOM"
+  },
+  {
+    "_id": "hyderabad",
+    "name": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "nearestAirportIata": "HYD"
+  },
+  {
+    "_id": "ahmedabad",
+    "name": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "AMD"
+  },
+  {
+    "_id": "kolkata",
+    "name": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "nearestAirportIata": "CCU"
+  },
+  {
+    "_id": "lucknow",
+    "name": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "nearestAirportIata": "LKO"
+  },
+  {
+    "_id": "pune",
+    "name": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "nearestAirportIata": "PNQ"
+  },
+  {
+    "_id": "jaipur",
+    "name": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "nearestAirportIata": "JAI"
+  },
+  {
+    "_id": "amritsar",
+    "name": "Amritsar",
+    "state": "Punjab",
+    "country": "India",
+    "nearestAirportIata": "ATQ"
+  },
+  {
+    "_id": "kochi",
+    "name": "Kochi",
+    "state": "Kerala",
+    "country": "India",
+    "nearestAirportIata": "COK"
+  },
+  {
+    "_id": "surat",
+    "name": "Surat",
+    "state": "Gujarat",
+    "country": "India",
+    "nearestAirportIata": "STV"
+  },
+  {
+    "_id": "mohali",
+    "name": "Mohali",
+    "state": "Punjab",
+    "country": "India",
+    "nearestAirportIata": "IXC"
+  },
+  {
+    "_id": "kerala",
+    "name": "Kerala",
+    "state": "Kerala",
+    "country": "India",
+    "nearestAirportIata": "COK"
+  }
+]

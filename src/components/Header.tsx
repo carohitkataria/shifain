@@ -28,26 +28,29 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
-      <div className="border-b border-line/70 bg-surface-muted">
+      {/* Dark utility bar, as in the design. */}
+      <div className="bg-ink text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1.5 sm:px-6">
           <LanguageSwitcher locale={locale} path={path} />
 
           <div className="flex items-center gap-1 text-sm">
             <a
               href={telHref(content.contact.phone)}
-              className="hidden rounded-full px-2.5 py-1.5 font-semibold text-ink-soft transition hover:text-brand-deep sm:inline"
+              className="hidden rounded-full px-2.5 py-1.5 font-semibold text-white/80 transition hover:text-white sm:inline"
             >
               {content.contact.phone}
             </a>
+            <span aria-hidden="true" className="hidden h-3.5 w-px bg-white/20 sm:block" />
             <a
               href={waHref(content.contact.whatsapp)}
-              className="rounded-full px-2.5 py-1.5 font-semibold text-ink-soft transition hover:text-leaf"
+              className="rounded-full px-2.5 py-1.5 font-semibold text-white/80 transition hover:text-white"
             >
               WhatsApp
             </a>
+            <span aria-hidden="true" className="hidden h-3.5 w-px bg-white/20 sm:block" />
             <Link
               href={`/${locale}/portal/patient`}
-              className="rounded-full border border-brand/30 bg-white px-3.5 py-1.5 font-bold text-brand-deep transition hover:border-brand hover:bg-brand-tint"
+              className="rounded-full bg-white/10 px-3.5 py-1.5 font-bold text-white transition hover:bg-white/20"
             >
               {t(content.nav.patientLogin, locale)}
             </Link>

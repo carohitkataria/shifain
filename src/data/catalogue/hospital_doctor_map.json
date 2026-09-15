@@ -1,0 +1,178 @@
+[
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-naresh-trehan",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-naresh-trehan",
+    "specialtyCode": "cardiac-surgery",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-rajiv-parakh",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-rajiv-parakh",
+    "specialtyCode": "vascular-surgery",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-v-p-singh",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-v-p-singh",
+    "specialtyCode": "neurosurgery",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-rajneesh-kachhara",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-rajneesh-kachhara",
+    "specialtyCode": "neurosurgery",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-ratnadip-bose",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-ratnadip-bose",
+    "specialtyCode": "neurosurgery",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-satyakam-baruah",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-satyakam-baruah",
+    "specialtyCode": "neurosurgery",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-rishabh-kedia",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-rishabh-kedia",
+    "specialtyCode": "neurosurgery",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-ashok-k-vaid",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-ashok-k-vaid",
+    "specialtyCode": "medical-oncology",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-vinay-goyal",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-vinay-goyal",
+    "specialtyCode": "neurology",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-gaurav-goel",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-gaurav-goel",
+    "specialtyCode": "neurology",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "medanta-the-medicity-gurgaon__dr-sushant-kumar-bhuyan",
+    "hospitalId": "h-medanta-the-medicity-gurgaon",
+    "doctorId": "d-dr-sushant-kumar-bhuyan",
+    "specialtyCode": "neurology",
+    "attachment": "primary",
+    "current": true,
+    "provenance": {
+      "source": "Vaidam public hospital-doctor pages",
+      "sourceUrl": "https://www.vaidam.com/doctors",
+      "method": "third-party-research",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

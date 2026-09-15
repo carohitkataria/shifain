@@ -1,0 +1,1191 @@
+[
+  {
+    "_id": "coronary-artery-disease",
+    "name": {
+      "en": "Coronary artery disease",
+      "ru": "Ишемическая болезнь сердца",
+      "uz": "Yurak ishemik kasalligi"
+    },
+    "icd10": "I25.1",
+    "primarySpecialtyCode": "cardiology",
+    "specialtyCodes": [
+      "cardiology",
+      "cardiac-surgery"
+    ],
+    "categoryCode": "cardiac-care",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "heart-valve-disease",
+    "name": {
+      "en": "Heart valve disease",
+      "ru": "Порок клапанов сердца",
+      "uz": "Yurak klapan kasalligi"
+    },
+    "icd10": "I35.9",
+    "primarySpecialtyCode": "cardiology",
+    "specialtyCodes": [
+      "cardiology",
+      "cardiac-surgery"
+    ],
+    "categoryCode": "cardiac-care",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cardiac-arrhythmia",
+    "name": {
+      "en": "Cardiac arrhythmia",
+      "ru": "Аритмия сердца",
+      "uz": "Yurak aritmiyasi"
+    },
+    "icd10": "I49.9",
+    "primarySpecialtyCode": "cardiology",
+    "specialtyCodes": [
+      "cardiology"
+    ],
+    "categoryCode": "cardiac-care",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "congenital-heart-disease",
+    "name": {
+      "en": "Congenital heart disease",
+      "ru": "Врождённый порок сердца",
+      "uz": "Tug'ma yurak nuqsoni"
+    },
+    "icd10": "Q24.9",
+    "primarySpecialtyCode": "paediatric-cardiac-surgery",
+    "specialtyCodes": [
+      "paediatric-cardiac-surgery",
+      "cardiology"
+    ],
+    "categoryCode": "cardiac-care",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "heart-failure",
+    "name": {
+      "en": "Heart failure",
+      "ru": "Сердечная недостаточность",
+      "uz": "Yurak yetishmovchiligi"
+    },
+    "icd10": "I50.9",
+    "primarySpecialtyCode": "cardiology",
+    "specialtyCodes": [
+      "cardiology",
+      "cardiac-surgery",
+      "transplant-surgery"
+    ],
+    "categoryCode": "cardiac-care",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "peripheral-artery-disease",
+    "name": {
+      "en": "Peripheral artery disease",
+      "ru": "Заболевание периферических артерий",
+      "uz": "Periferik arteriya kasalligi"
+    },
+    "icd10": "I73.9",
+    "primarySpecialtyCode": "vascular-surgery",
+    "specialtyCodes": [
+      "vascular-surgery"
+    ],
+    "categoryCode": "complex-surgery",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "aortic-aneurysm",
+    "name": {
+      "en": "Aortic aneurysm",
+      "ru": "Аневризма аорты",
+      "uz": "Aorta anevrizmasi"
+    },
+    "icd10": "I71.9",
+    "primarySpecialtyCode": "vascular-surgery",
+    "specialtyCodes": [
+      "vascular-surgery",
+      "cardiac-surgery"
+    ],
+    "categoryCode": "complex-surgery",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "varicose-veins",
+    "name": {
+      "en": "Varicose veins",
+      "ru": "Варикозное расширение вен",
+      "uz": "Varikoz kengayish"
+    },
+    "icd10": "I83.9",
+    "primarySpecialtyCode": "vascular-surgery",
+    "specialtyCodes": [
+      "vascular-surgery"
+    ],
+    "categoryCode": "complex-surgery",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "breast-cancer",
+    "name": {
+      "en": "Breast cancer",
+      "ru": "Рак молочной железы",
+      "uz": "Ko'krak bezi saratoni"
+    },
+    "icd10": "C50.9",
+    "primarySpecialtyCode": "surgical-oncology",
+    "specialtyCodes": [
+      "surgical-oncology",
+      "medical-oncology",
+      "radiation-oncology"
+    ],
+    "categoryCode": "oncology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "lung-cancer",
+    "name": {
+      "en": "Lung cancer",
+      "ru": "Рак лёгкого",
+      "uz": "O'pka saratoni"
+    },
+    "icd10": "C34.9",
+    "primarySpecialtyCode": "surgical-oncology",
+    "specialtyCodes": [
+      "surgical-oncology",
+      "medical-oncology",
+      "radiation-oncology",
+      "pulmonology"
+    ],
+    "categoryCode": "oncology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "colorectal-cancer",
+    "name": {
+      "en": "Colorectal cancer",
+      "ru": "Колоректальный рак",
+      "uz": "Kolorektal saraton"
+    },
+    "icd10": "C18.9",
+    "primarySpecialtyCode": "surgical-oncology",
+    "specialtyCodes": [
+      "surgical-oncology",
+      "medical-oncology",
+      "gi-surgery"
+    ],
+    "categoryCode": "oncology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "head-neck-cancer",
+    "name": {
+      "en": "Head & neck cancer",
+      "ru": "Рак головы и шеи",
+      "uz": "Bosh va bo'yin saratoni"
+    },
+    "icd10": "C76.0",
+    "primarySpecialtyCode": "surgical-oncology",
+    "specialtyCodes": [
+      "surgical-oncology",
+      "ent",
+      "radiation-oncology"
+    ],
+    "categoryCode": "oncology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "prostate-cancer",
+    "name": {
+      "en": "Prostate cancer",
+      "ru": "Рак предстательной железы",
+      "uz": "Prostata saratoni"
+    },
+    "icd10": "C61",
+    "primarySpecialtyCode": "surgical-oncology",
+    "specialtyCodes": [
+      "surgical-oncology",
+      "urology",
+      "radiation-oncology"
+    ],
+    "categoryCode": "oncology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cervical-cancer",
+    "name": {
+      "en": "Cervical cancer",
+      "ru": "Рак шейки матки",
+      "uz": "Bachadon bo'yni saratoni"
+    },
+    "icd10": "C53.9",
+    "primarySpecialtyCode": "surgical-oncology",
+    "specialtyCodes": [
+      "surgical-oncology",
+      "obstetrics-gynaecology",
+      "radiation-oncology"
+    ],
+    "categoryCode": "oncology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "liver-cancer",
+    "name": {
+      "en": "Liver cancer",
+      "ru": "Рак печени",
+      "uz": "Jigar saratoni"
+    },
+    "icd10": "C22.0",
+    "primarySpecialtyCode": "surgical-oncology",
+    "specialtyCodes": [
+      "surgical-oncology",
+      "gi-surgery",
+      "medical-oncology"
+    ],
+    "categoryCode": "oncology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "stomach-cancer",
+    "name": {
+      "en": "Stomach cancer",
+      "ru": "Рак желудка",
+      "uz": "Oshqozon saratoni"
+    },
+    "icd10": "C16.9",
+    "primarySpecialtyCode": "surgical-oncology",
+    "specialtyCodes": [
+      "surgical-oncology",
+      "gi-surgery"
+    ],
+    "categoryCode": "oncology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "brain-tumour",
+    "name": {
+      "en": "Brain tumour",
+      "ru": "Опухоль головного мозга",
+      "uz": "Miya o'smasi"
+    },
+    "icd10": "C71.9",
+    "primarySpecialtyCode": "neurosurgery",
+    "specialtyCodes": [
+      "neurosurgery",
+      "radiation-oncology",
+      "medical-oncology"
+    ],
+    "categoryCode": "neurosciences",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "leukaemia",
+    "name": {
+      "en": "Leukaemia",
+      "ru": "Лейкоз",
+      "uz": "Leykoz"
+    },
+    "icd10": "C95.9",
+    "primarySpecialtyCode": "haematology-bmt",
+    "specialtyCodes": [
+      "haematology-bmt",
+      "medical-oncology"
+    ],
+    "categoryCode": "haematology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "lymphoma",
+    "name": {
+      "en": "Lymphoma",
+      "ru": "Лимфома",
+      "uz": "Limfoma"
+    },
+    "icd10": "C85.9",
+    "primarySpecialtyCode": "haematology-bmt",
+    "specialtyCodes": [
+      "haematology-bmt",
+      "medical-oncology"
+    ],
+    "categoryCode": "haematology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "kidney-failure",
+    "name": {
+      "en": "Kidney failure",
+      "ru": "Почечная недостаточность",
+      "uz": "Buyrak yetishmovchiligi"
+    },
+    "icd10": "N18.6",
+    "primarySpecialtyCode": "nephrology",
+    "specialtyCodes": [
+      "nephrology",
+      "transplant-surgery",
+      "urology"
+    ],
+    "categoryCode": "nephrology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "liver-failure",
+    "name": {
+      "en": "Liver failure / cirrhosis",
+      "ru": "Печёночная недостаточность / цирроз",
+      "uz": "Jigar yetishmovchiligi / sirroz"
+    },
+    "icd10": "K72.9",
+    "primarySpecialtyCode": "gastroenterology",
+    "specialtyCodes": [
+      "gastroenterology",
+      "transplant-surgery",
+      "gi-surgery"
+    ],
+    "categoryCode": "gastroenterology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "bone-marrow-failure",
+    "name": {
+      "en": "Aplastic anaemia & marrow failure",
+      "ru": "Апластическая анемия",
+      "uz": "Aplastik anemiya"
+    },
+    "icd10": "D61.9",
+    "primarySpecialtyCode": "haematology-bmt",
+    "specialtyCodes": [
+      "haematology-bmt"
+    ],
+    "categoryCode": "haematology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "thalassaemia",
+    "name": {
+      "en": "Thalassaemia",
+      "ru": "Талассемия",
+      "uz": "Talassemiya"
+    },
+    "icd10": "D56.9",
+    "primarySpecialtyCode": "haematology-bmt",
+    "specialtyCodes": [
+      "haematology-bmt",
+      "paediatrics"
+    ],
+    "categoryCode": "haematology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "corneal-blindness",
+    "name": {
+      "en": "Corneal blindness",
+      "ru": "Помутнение роговицы",
+      "uz": "Shox parda xiralashuvi"
+    },
+    "icd10": "H17.9",
+    "primarySpecialtyCode": "ophthalmology",
+    "specialtyCodes": [
+      "ophthalmology",
+      "transplant-surgery"
+    ],
+    "categoryCode": "ophthalmology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "knee-osteoarthritis",
+    "name": {
+      "en": "Knee osteoarthritis",
+      "ru": "Остеоартроз коленного сустава",
+      "uz": "Tizza bo'g'imi osteoartrozi"
+    },
+    "icd10": "M17.9",
+    "primarySpecialtyCode": "orthopaedics",
+    "specialtyCodes": [
+      "orthopaedics"
+    ],
+    "categoryCode": "orthopaedics",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hip-osteoarthritis",
+    "name": {
+      "en": "Hip osteoarthritis & avascular necrosis",
+      "ru": "Коксартроз и асептический некроз",
+      "uz": "Koksartroz va aseptik nekroz"
+    },
+    "icd10": "M16.9",
+    "primarySpecialtyCode": "orthopaedics",
+    "specialtyCodes": [
+      "orthopaedics"
+    ],
+    "categoryCode": "orthopaedics",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "spinal-stenosis",
+    "name": {
+      "en": "Spinal stenosis & disc disease",
+      "ru": "Стеноз позвоночного канала и грыжа диска",
+      "uz": "Umurtqa kanali torayishi va disk churrasi"
+    },
+    "icd10": "M48.0",
+    "primarySpecialtyCode": "spine-surgery",
+    "specialtyCodes": [
+      "spine-surgery",
+      "orthopaedics",
+      "neurosurgery"
+    ],
+    "categoryCode": "orthopaedics",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "sports-injury",
+    "name": {
+      "en": "Ligament & sports injury",
+      "ru": "Спортивная травма связок",
+      "uz": "Bog'lam va sport jarohati"
+    },
+    "icd10": "S83.5",
+    "primarySpecialtyCode": "orthopaedics",
+    "specialtyCodes": [
+      "orthopaedics"
+    ],
+    "categoryCode": "orthopaedics",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "stroke",
+    "name": {
+      "en": "Stroke",
+      "ru": "Инсульт",
+      "uz": "Insult"
+    },
+    "icd10": "I63.9",
+    "primarySpecialtyCode": "neurology",
+    "specialtyCodes": [
+      "neurology",
+      "neurosurgery"
+    ],
+    "categoryCode": "neurosciences",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "epilepsy",
+    "name": {
+      "en": "Drug-resistant epilepsy",
+      "ru": "Фармакорезистентная эпилепсия",
+      "uz": "Dorilarga chidamli epilepsiya"
+    },
+    "icd10": "G40.9",
+    "primarySpecialtyCode": "neurology",
+    "specialtyCodes": [
+      "neurology",
+      "neurosurgery"
+    ],
+    "categoryCode": "neurosciences",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "parkinsons-disease",
+    "name": {
+      "en": "Parkinson's disease",
+      "ru": "Болезнь Паркинсона",
+      "uz": "Parkinson kasalligi"
+    },
+    "icd10": "G20",
+    "primarySpecialtyCode": "neurology",
+    "specialtyCodes": [
+      "neurology",
+      "neurosurgery"
+    ],
+    "categoryCode": "neurosciences",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cerebral-aneurysm",
+    "name": {
+      "en": "Cerebral aneurysm",
+      "ru": "Аневризма головного мозга",
+      "uz": "Miya anevrizmasi"
+    },
+    "icd10": "I67.1",
+    "primarySpecialtyCode": "neurosurgery",
+    "specialtyCodes": [
+      "neurosurgery"
+    ],
+    "categoryCode": "neurosciences",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hydrocephalus",
+    "name": {
+      "en": "Hydrocephalus",
+      "ru": "Гидроцефалия",
+      "uz": "Gidrosefaliya"
+    },
+    "icd10": "G91.9",
+    "primarySpecialtyCode": "neurosurgery",
+    "specialtyCodes": [
+      "neurosurgery",
+      "paediatrics"
+    ],
+    "categoryCode": "neurosciences",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "kidney-stones",
+    "name": {
+      "en": "Kidney stones",
+      "ru": "Мочекаменная болезнь",
+      "uz": "Buyrak toshi kasalligi"
+    },
+    "icd10": "N20.0",
+    "primarySpecialtyCode": "urology",
+    "specialtyCodes": [
+      "urology"
+    ],
+    "categoryCode": "urology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "benign-prostatic-hyperplasia",
+    "name": {
+      "en": "Benign prostatic hyperplasia",
+      "ru": "Аденома предстательной железы",
+      "uz": "Prostata adenomasi"
+    },
+    "icd10": "N40",
+    "primarySpecialtyCode": "urology",
+    "specialtyCodes": [
+      "urology"
+    ],
+    "categoryCode": "urology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "obesity",
+    "name": {
+      "en": "Obesity",
+      "ru": "Ожирение",
+      "uz": "Semizlik"
+    },
+    "icd10": "E66.9",
+    "primarySpecialtyCode": "bariatric-surgery",
+    "specialtyCodes": [
+      "bariatric-surgery",
+      "endocrinology"
+    ],
+    "categoryCode": "bariatric",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "gallstones",
+    "name": {
+      "en": "Gallstones",
+      "ru": "Желчнокаменная болезнь",
+      "uz": "O't tosh kasalligi"
+    },
+    "icd10": "K80.2",
+    "primarySpecialtyCode": "gi-surgery",
+    "specialtyCodes": [
+      "gi-surgery",
+      "general-surgery"
+    ],
+    "categoryCode": "complex-surgery",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hernia",
+    "name": {
+      "en": "Hernia",
+      "ru": "Грыжа",
+      "uz": "Churra"
+    },
+    "icd10": "K46.9",
+    "primarySpecialtyCode": "general-surgery",
+    "specialtyCodes": [
+      "general-surgery",
+      "gi-surgery"
+    ],
+    "categoryCode": "complex-surgery",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "inflammatory-bowel-disease",
+    "name": {
+      "en": "Inflammatory bowel disease",
+      "ru": "Воспалительные заболевания кишечника",
+      "uz": "Ichak yallig'lanish kasalliklari"
+    },
+    "icd10": "K51.9",
+    "primarySpecialtyCode": "gastroenterology",
+    "specialtyCodes": [
+      "gastroenterology"
+    ],
+    "categoryCode": "gastroenterology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "female-infertility",
+    "name": {
+      "en": "Female infertility",
+      "ru": "Женское бесплодие",
+      "uz": "Ayollar bepushtligi"
+    },
+    "icd10": "N97.9",
+    "primarySpecialtyCode": "reproductive-medicine",
+    "specialtyCodes": [
+      "reproductive-medicine",
+      "obstetrics-gynaecology"
+    ],
+    "categoryCode": "fertility",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "male-infertility",
+    "name": {
+      "en": "Male infertility",
+      "ru": "Мужское бесплодие",
+      "uz": "Erkaklar bepushtligi"
+    },
+    "icd10": "N46",
+    "primarySpecialtyCode": "reproductive-medicine",
+    "specialtyCodes": [
+      "reproductive-medicine",
+      "urology"
+    ],
+    "categoryCode": "fertility",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "uterine-fibroids",
+    "name": {
+      "en": "Uterine fibroids",
+      "ru": "Миома матки",
+      "uz": "Bachadon mioma"
+    },
+    "icd10": "D25.9",
+    "primarySpecialtyCode": "obstetrics-gynaecology",
+    "specialtyCodes": [
+      "obstetrics-gynaecology"
+    ],
+    "categoryCode": "gynaecology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "cataract",
+    "name": {
+      "en": "Cataract",
+      "ru": "Катаракта",
+      "uz": "Katarakta"
+    },
+    "icd10": "H25.9",
+    "primarySpecialtyCode": "ophthalmology",
+    "specialtyCodes": [
+      "ophthalmology"
+    ],
+    "categoryCode": "ophthalmology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "retinal-disease",
+    "name": {
+      "en": "Retinal detachment & diabetic retinopathy",
+      "ru": "Отслойка сетчатки и диабетическая ретинопатия",
+      "uz": "To'r parda ajralishi va diabetik retinopatiya"
+    },
+    "icd10": "H33.2",
+    "primarySpecialtyCode": "ophthalmology",
+    "specialtyCodes": [
+      "ophthalmology"
+    ],
+    "categoryCode": "ophthalmology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hearing-loss",
+    "name": {
+      "en": "Sensorineural hearing loss",
+      "ru": "Нейросенсорная тугоухость",
+      "uz": "Neyrosensor eshitish pasayishi"
+    },
+    "icd10": "H90.5",
+    "primarySpecialtyCode": "ent",
+    "specialtyCodes": [
+      "ent"
+    ],
+    "categoryCode": "ent",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "chronic-sinusitis",
+    "name": {
+      "en": "Chronic sinusitis",
+      "ru": "Хронический синусит",
+      "uz": "Surunkali sinusit"
+    },
+    "icd10": "J32.9",
+    "primarySpecialtyCode": "ent",
+    "specialtyCodes": [
+      "ent"
+    ],
+    "categoryCode": "ent",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "post-burn-deformity",
+    "name": {
+      "en": "Post-burn & post-trauma deformity",
+      "ru": "Послеожоговые и посттравматические деформации",
+      "uz": "Kuyishdan keyingi deformatsiya"
+    },
+    "icd10": "T95.9",
+    "primarySpecialtyCode": "plastic-surgery",
+    "specialtyCodes": [
+      "plastic-surgery"
+    ],
+    "categoryCode": "cosmetic",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "body-contouring-need",
+    "name": {
+      "en": "Body contouring",
+      "ru": "Коррекция контуров тела",
+      "uz": "Tana konturini tuzatish"
+    },
+    "icd10": null,
+    "primarySpecialtyCode": "plastic-surgery",
+    "specialtyCodes": [
+      "plastic-surgery"
+    ],
+    "categoryCode": "cosmetic",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "hair-loss",
+    "name": {
+      "en": "Androgenetic hair loss",
+      "ru": "Андрогенная алопеция",
+      "uz": "Androgen alopetsiya"
+    },
+    "icd10": "L64.9",
+    "primarySpecialtyCode": "dermatology",
+    "specialtyCodes": [
+      "dermatology",
+      "plastic-surgery"
+    ],
+    "categoryCode": "dermatology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "tooth-loss",
+    "name": {
+      "en": "Tooth loss",
+      "ru": "Адентия",
+      "uz": "Tish yo'qotilishi"
+    },
+    "icd10": "K08.1",
+    "primarySpecialtyCode": "dentistry",
+    "specialtyCodes": [
+      "dentistry"
+    ],
+    "categoryCode": "dental",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "congenital-anomaly",
+    "name": {
+      "en": "Congenital anomaly (paediatric)",
+      "ru": "Врождённая аномалия (детская)",
+      "uz": "Tug'ma anomaliya (bolalar)"
+    },
+    "icd10": "Q89.9",
+    "primarySpecialtyCode": "paediatrics",
+    "specialtyCodes": [
+      "paediatrics",
+      "general-surgery"
+    ],
+    "categoryCode": "paediatrics",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  },
+  {
+    "_id": "copd",
+    "name": {
+      "en": "COPD & chronic lung disease",
+      "ru": "ХОБЛ и хронические болезни лёгких",
+      "uz": "O'pkaning surunkali obstruktiv kasalligi"
+    },
+    "icd10": "J44.9",
+    "primarySpecialtyCode": "pulmonology",
+    "specialtyCodes": [
+      "pulmonology"
+    ],
+    "categoryCode": "pulmonology",
+    "provenance": {
+      "source": "ShifaIn",
+      "sourceUrl": null,
+      "method": "authored",
+      "collectedAt": "2026-09-13T00:00:00.000Z",
+      "verifiedAt": null,
+      "verifiedBy": null
+    }
+  }
+]

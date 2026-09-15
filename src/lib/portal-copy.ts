@@ -2,7 +2,8 @@ import type { L } from "./content-types";
 
 const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
 
-export const PORTAL_ROLES = ["patient", "doctor", "hospital"] as const;
+// The doctor portal is live at /portal/doctor and is served by its own route.
+export const PORTAL_ROLES = ["hospital"] as const;
 export type PortalRole = (typeof PORTAL_ROLES)[number];
 
 export const isPortalRole = (value: string): value is PortalRole =>
@@ -13,26 +14,6 @@ export const isPortalRole = (value: string): value is PortalRole =>
  * visitor the step that does work today rather than a dead sign-in box.
  */
 export const PORTAL_COPY: Record<PortalRole, { title: L; body: L; cta: L; ctaHref: string }> = {
-  patient: {
-    title: l("Patient portal", "Личный кабинет пациента", "Bemor kabineti"),
-    body: l(
-      "The patient portal — where you track your plan, documents and appointments — is opening soon. In the meantime, upload your reports and your AI plan and estimate are generated right away.",
-      "Личный кабинет пациента, где вы отслеживаете план, документы и приёмы, скоро откроется. А пока загрузите документы — план и смета от ИИ будут готовы сразу.",
-      "Reja, hujjatlar va qabullarni kuzatadigan bemor kabineti tez orada ochiladi. Hozircha hujjatlaringizni yuklang — AI reja va hisob darhol tayyorlanadi.",
-    ),
-    cta: l("Upload reports", "Загрузить документы", "Hujjatlarni yuklash"),
-    ctaHref: "#quote-form",
-  },
-  doctor: {
-    title: l("Doctor portal", "Кабинет врача", "Shifokor kabineti"),
-    body: l(
-      "The referring-doctor portal — submit cases, request specialist opinions and follow your patient's journey — is opening soon. Send us the case in the meantime and a coordinator will set you up.",
-      "Кабинет направляющего врача — отправка случаев, запрос мнений специалистов и отслеживание маршрута пациента — скоро откроется. А пока отправьте случай, и координатор всё настроит.",
-      "Yo'llovchi shifokor kabineti — holat yuborish, mutaxassis fikrini so'rash va bemor safarini kuzatish — tez orada ochiladi. Hozircha holatni yuboring, koordinator hammasini sozlaydi.",
-    ),
-    cta: l("Refer a patient", "Направить пациента", "Bemor yo'llash"),
-    ctaHref: "#quote-form",
-  },
   hospital: {
     title: l("Hospital portal", "Кабинет клиники", "Shifoxona kabineti"),
     body: l(

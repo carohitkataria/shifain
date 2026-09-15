@@ -7,9 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:seed": "node scripts/db/seed.mjs",
+    "db:partner": "node scripts/db/partner-user.mjs",
+    "test": "node --experimental-strip-types --no-warnings scripts/test/plan-schema.test.mts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
+    "mongodb": "^7.6.0",
     "next": "^15.5.25",
     "react": "19.1.1",
     "react-dom": "19.1.1",
@@ -25,5 +30,8 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
