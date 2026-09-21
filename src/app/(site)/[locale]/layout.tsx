@@ -3,6 +3,7 @@ import "../../globals.css";
 import { getContent } from "@/lib/store";
 import { t } from "@/lib/localize";
 import { LOCALES, LOCALE_META, isLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
+import { FloatingTools } from "@/components/FloatingTools";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -38,7 +39,10 @@ export default async function SiteLayout({
 
   return (
     <html lang={LOCALE_META[locale].htmlLang} dir={LOCALE_META[locale].dir}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <FloatingTools />
+      </body>
     </html>
   );
 }
