@@ -76,6 +76,12 @@ export function Header({
               {item.label}
             </a>
           ))}
+          <Link
+            href={`/${locale}/plan/wizard`}
+            className="btn btn-accent ml-2 shrink-0 text-sm"
+          >
+            Get my plan
+          </Link>
         </nav>
       </div>
     </header>
