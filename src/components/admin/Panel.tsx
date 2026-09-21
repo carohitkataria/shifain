@@ -22,6 +22,30 @@ export function Stage({ value, tone = "quiet" }: { value: string; tone?: keyof t
   );
 }
 
+/**
+ * A "?" that reveals its help on hover, so guidance is there when wanted
+ * without a paragraph taking up room on every screen.
+ */
+export function Hint({ text }: { text: string }) {
+  return (
+    <span className="group relative ml-1.5 inline-flex shrink-0 align-middle">
+      <span
+        aria-hidden="true"
+        className="flex h-4 w-4 cursor-help items-center justify-center rounded-full bg-surface-muted text-[10px] font-bold text-ink-soft ring-1 ring-line"
+      >
+        ?
+      </span>
+      <span className="sr-only">{text}</span>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute left-0 top-6 z-30 w-60 rounded-lg bg-ink px-3 py-2 text-xs font-medium normal-case leading-relaxed tracking-normal text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100"
+      >
+        {text}
+      </span>
+    </span>
+  );
+}
+
 export function Card({
   title,
   hint,
@@ -33,8 +57,10 @@ export function Card({
 }) {
   return (
     <section className="card p-6">
-      <h2 className="font-extrabold text-ink">{title}</h2>
-      {hint ? <p className="mt-1 text-sm leading-relaxed text-ink-soft">{hint}</p> : null}
+      <h2 className="flex items-center font-extrabold text-ink">
+        {title}
+        {hint ? <Hint text={hint} /> : null}
+      </h2>
       <div className="mt-4">{children}</div>
     </section>
   );

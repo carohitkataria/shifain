@@ -27,7 +27,13 @@ export async function POST(request: NextRequest) {
   const locale = isLocale(localeField) ? localeField : DEFAULT_LOCALE;
   const back = NextResponse.redirect(new URL(`/${locale}#quote-form`, request.url), 303);
 
-  const name = String(form.get("name") ?? "").trim();
+  // Name arrives as title + first + last; older callers may still send `name`.
+  const name = (
+    [form.get("prefix"), form.get("firstName"), form.get("lastName")]
+      .map((v) => String(v ?? "").trim())
+      .filter(Boolean)
+      .join(" ") || String(form.get("name") ?? "").trim()
+  ).trim();
   const country = String(form.get("country") ?? "").trim();
   const dial = String(form.get("dial") ?? "").trim();
   const local = String(form.get("phone") ?? "").trim();

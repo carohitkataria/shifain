@@ -9,6 +9,9 @@ const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
  * languages before anyone edits them.
  */
 export const INTAKE_COPY = {
+  prefixLabel: l("Title", "Обращение", "Murojaat"),
+  firstNameLabel: l("First name", "Имя", "Ism"),
+  lastNameLabel: l("Last name", "Фамилия", "Familiya"),
   dialLabel: l("Code", "Код", "Kod"),
   phoneHint: l(
     "We fill the country code in for you — change it if yours is different.",

@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { LogoMark } from "@/components/Logo";
 import { getContent } from "@/lib/store";
 import { currentPatient } from "@/lib/patient-auth";
+import { isGoogleConfigured } from "@/lib/google-auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { PATIENT_COPY } from "@/lib/patient-copy";
 import { PORTAL_BACK } from "@/lib/portal-copy";
@@ -26,11 +27,11 @@ export default async function PatientLoginPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ error?: string; sent?: string; email?: string }>;
+  searchParams: Promise<{ error?: string; sent?: string; email?: string; code?: string }>;
 }) {
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
-  const { error, sent, email } = await searchParams;
+  const { error, sent, email, code } = await searchParams;
   const content = await getContent();
 
   if (isDatabaseConfigured() && (await currentPatient().catch(() => null))) {
@@ -63,8 +64,13 @@ export default async function PatientLoginPage({
           {sent ? (
             <>
               <p className="mt-4 rounded-lg bg-brand-tint px-3 py-2.5 text-sm leading-relaxed text-ink">
-                {t(sent === "coordinator" ? PATIENT_COPY.codeViaCoordinator : PATIENT_COPY.codeSent, locale)}
+                {t(sent === "code" ? PATIENT_COPY.codeShown : PATIENT_COPY.codeSent, locale)}
               </p>
+              {sent === "code" && code ? (
+                <p className="mt-3 rounded-lg border border-dashed border-brand/50 bg-white px-3 py-3 text-center font-mono text-2xl font-bold tracking-[0.3em] text-brand-deep">
+                  {code}
+                </p>
+              ) : null}
               <form action={verifyEmailCodeAction} className="mt-5 space-y-4">
                 <input type="hidden" name="locale" value={locale} />
                 <input type="hidden" name="email" value={email ?? ""} />
@@ -78,6 +84,7 @@ export default async function PatientLoginPage({
                     inputMode="numeric"
                     autoComplete="one-time-code"
                     maxLength={6}
+                    defaultValue={sent === "code" ? code : undefined}
                     className={`${field} text-center font-mono text-lg tracking-[0.3em]`}
                   />
                 </label>
@@ -94,7 +101,29 @@ export default async function PatientLoginPage({
             </>
           ) : (
             <>
-          <form action={requestEmailCodeAction} className="mt-5 space-y-4">
+          {isGoogleConfigured() ? (
+            <div className="mt-5">
+              <a
+                href={`/api/auth/google?locale=${locale}`}
+                className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-bold text-ink transition hover:bg-surface-muted"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+                  <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.9z" />
+                  <path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.9-3c-1 .7-2.4 1.1-4 1.1-3 0-5.6-2-6.6-4.8h-4v3.1A12 12 0 0 0 12 24z" />
+                  <path fill="#FBBC05" d="M5.4 14.3a7.2 7.2 0 0 1 0-4.6v-3H1.4a12 12 0 0 0 0 10.7z" />
+                  <path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 0 0 12 0 12 12 0 0 0 1.4 6.6l4 3.1C6.4 6.8 9 4.8 12 4.8z" />
+                </svg>
+                Continue with Google
+              </a>
+              <div className="my-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                <span className="h-px flex-1 bg-line" />
+                or
+                <span className="h-px flex-1 bg-line" />
+              </div>
+            </div>
+          ) : null}
+
+          <form action={requestEmailCodeAction} className={isGoogleConfigured() ? "space-y-4" : "mt-5 space-y-4"}>
             <input type="hidden" name="locale" value={locale} />
             <label className="block">
               <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">

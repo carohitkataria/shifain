@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { Section, SectionHeading } from "./Common";
 import { t } from "@/lib/localize";
-import type { SiteContent } from "@/lib/content-types";
+import type { L, SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
+
+const SEE_ALL_TREATMENTS: L = {
+  en: "See all treatments",
+  ru: "Все направления",
+  uz: "Barcha yo'nalishlar",
+};
 
 export function Stats({ content, locale }: { content: SiteContent; locale: Locale }) {
   return (
@@ -60,6 +66,12 @@ export function Specialties({ content, locale }: { content: SiteContent; locale:
           </li>
         ))}
       </ul>
+
+      <div className="mt-9 text-center">
+        <Link href={`/${locale}/treatments`} className="btn btn-ink">
+          {t(SEE_ALL_TREATMENTS, locale)}
+        </Link>
+      </div>
     </Section>
   );
 }

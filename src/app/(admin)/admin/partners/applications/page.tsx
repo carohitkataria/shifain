@@ -32,7 +32,6 @@ export default async function ApplicationsPage({
   return (
     <AdminShell
       title="Partner applications"
-      subtitle="Doctors abroad asking to refer patients to us. Reviewed by hand — a referral relationship is a commercial and a clinical one, not a signup."
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "declined" ? "declined" : saved} /> : null}

@@ -48,7 +48,6 @@ export default async function LeadsPage({
   return (
     <AdminShell
       title="Leads"
-      subtitle="Anyone who got in touch — a call, a WhatsApp message, a partner's introduction — before they became a case. Written down here so nobody is forgotten."
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "deleted" ? "lead removed" : undefined} /> : null}

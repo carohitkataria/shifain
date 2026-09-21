@@ -26,7 +26,6 @@ export default async function DoctorsPage({
   return (
     <AdminShell
       title="Doctors"
-      subtitle="Doctor records gathered while researching partners. A doctor is never shown to a patient until they have agreed to be listed and their hospital is published."
     >
       {!isDatabaseConfigured() && (
         <p className="mb-6 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">

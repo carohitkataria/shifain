@@ -120,7 +120,6 @@ export default async function DatabasePage() {
   return (
     <AdminShell
       title="Database"
-      subtitle="What is in the catalogue right now, collection by collection. Read-only — the schema itself is versioned in the repository and applied by the seed script."
     >
       {!configured && <NotConfigured />}
       {error ? (

@@ -27,7 +27,6 @@ export default async function AdminHome({
   return (
     <AdminShell
       title="Homepage"
-      subtitle="Choose what appears on the homepage and in what order. Changes go live when you click Save layout."
       action={<SaveButton form="layout-form">Save layout</SaveButton>}
     >
       {saved ? <Notice>Published. The homepage is live with your changes.</Notice> : null}

@@ -51,7 +51,6 @@ export default async function SettingsPage({
   return (
     <AdminShell
       title="Site settings"
-      subtitle="The switches that change how the site behaves, without a deploy. Secrets stay in the environment; decisions live here."
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved /> : null}

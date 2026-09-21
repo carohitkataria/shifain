@@ -48,7 +48,6 @@ export default async function ImportPage({
   return (
     <AdminShell
       title="Import a sheet"
-      subtitle="Paste a CSV — from Excel, Google Sheets, a registry download or a hospital's own list. Column names are matched loosely, so a header that says Speciality, Department or specialtyCode all land in the same place."
     >
       {!isDatabaseConfigured() && (
         <p className="mb-6 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">

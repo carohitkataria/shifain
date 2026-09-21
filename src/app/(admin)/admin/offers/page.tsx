@@ -192,7 +192,6 @@ export default async function OffersPage({
   return (
     <AdminShell
       title="Referral offers"
-      subtitle="What a partner earns for sending us a patient. One offer is the default; individual partners can be moved onto another from their profile."
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "deleted" ? "offer removed" : undefined} /> : null}
