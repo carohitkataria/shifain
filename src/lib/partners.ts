@@ -95,7 +95,7 @@ export type Lead = {
   email: string | null;
   country: string | null;
   need: string | null;
-  source: "phone" | "whatsapp" | "email" | "partner" | "walk-in" | "other";
+  source: "phone" | "whatsapp" | "email" | "partner" | "walk-in" | "telegram" | "other";
   partnerUserId: string | null;
   status: LeadStatus;
   caseReference: string | null;
