@@ -429,13 +429,13 @@ body {
 }
 
 .btn-accent {
-  background: var(--color-saffron);
+  background: var(--color-brand-deep);
   color: #fff;
-  box-shadow: 0 8px 20px -10px rgb(240 140 30 / 0.8);
+  box-shadow: 0 8px 20px -10px rgb(109 40 217 / 0.6);
 }
 
 .btn-accent:hover {
-  background: #dd7c14;
+  background: #5b21b6;
 }
 
 .btn-ink {
@@ -649,15 +649,6 @@ body {
 
 .fab-help:hover {
   background: var(--color-brand-deep);
-}
-
-.fab-translate {
-  background: var(--color-surface);
-  color: var(--color-ink);
-}
-
-.fab-translate:hover {
-  border-color: var(--color-brand);
 }
 
 .fab-panel {
