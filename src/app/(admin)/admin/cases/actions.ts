@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import type { CaseStatus, PatientCase } from "@/lib/cases";
+import type { PartnerUser } from "@/lib/partner-auth";
+import { attributeCase, syncReferralWithCase, updateReferral } from "@/lib/referrals";
 
 const STATUSES: CaseStatus[] = [
   "new",
@@ -45,6 +47,7 @@ export async function saveCaseAction(formData: FormData) {
 
   const db = await getDb();
   await db.collection<PatientCase>("cases").updateOne({ _id: id }, { $set: set as never });
+  if (set.status) await syncReferralWithCase(id, set.status as CaseStatus).catch(() => undefined);
 
   revalidatePath("/admin/cases");
   redirect(`${backTo(formData)}${backTo(formData).includes("?") ? "&" : "?"}saved=1`);
@@ -64,9 +67,37 @@ export async function setCaseStatusAction(formData: FormData) {
       { _id: id },
       { $set: { status: status as CaseStatus, updatedAt: new Date().toISOString() } },
     );
+  await syncReferralWithCase(id, status as CaseStatus).catch(() => undefined);
 
   revalidatePath("/admin/cases");
   redirect(backTo(formData));
+}
+
+/**
+ * Credits an existing case to a partner — a patient who rang and said "Dr X
+ * sent me". Only for cases nobody has been credited with yet; moving credit
+ * from one partner to another is a conversation, not a dropdown.
+ */
+export async function attributeCaseAction(formData: FormData) {
+  await guard();
+  const id = String(formData.get("id") ?? "");
+  const partnerId = String(formData.get("partnerId") ?? "");
+  if (!id || !partnerId) redirect(backTo(formData));
+
+  const db = await getDb();
+  const [record, partner] = await Promise.all([
+    db.collection<PatientCase>("cases").findOne({ _id: id }),
+    db.collection<PartnerUser>("partner_users").findOne({ _id: partnerId }),
+  ]);
+  const credited = await db.collection("referrals").findOne({ caseReference: id });
+  if (record && partner && !credited) {
+    await attributeCase({ record, partner, channel: "manual", by: "admin" });
+    if (record.status === "confirmed") await syncReferralWithCase(id, "confirmed").catch(() => undefined);
+  }
+
+  revalidatePath("/admin/cases");
+  revalidatePath("/admin/referrals");
+  redirect(`${backTo(formData)}${backTo(formData).includes("?") ? "&" : "?"}saved=1`);
 }
 
 export async function deleteCaseAction(formData: FormData) {
@@ -75,6 +106,10 @@ export async function deleteCaseAction(formData: FormData) {
   if (!id) redirect("/admin/cases");
 
   const db = await getDb();
+  // The referral row stays for the ledger, closed; a settled one is left alone.
+  await updateReferral(`ref-${id}`, { status: "cancelled", note: "Case deleted", by: "admin" }).catch(
+    () => undefined,
+  );
   await db.collection<PatientCase>("cases").deleteOne({ _id: id });
   // The stored report files go with it; the TTL would have removed them anyway.
   await db.collection("case_reports").deleteMany({ reference: id }).catch(() => undefined);

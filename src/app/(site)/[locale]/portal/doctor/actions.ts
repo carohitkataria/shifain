@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { authenticate, currentPartner, endPartnerSession, startPartnerSession } from "@/lib/partner-auth";
 import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
 import { openCase } from "@/lib/case-flow";
-import { openReferral, type PartnerApplication } from "@/lib/partners";
+import type { PartnerApplication } from "@/lib/partners";
+import { attributeCase } from "@/lib/referrals";
 import { getSettings } from "@/lib/settings";
 import { getDb } from "@/lib/db";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
@@ -57,27 +58,27 @@ export async function referPatientAction(formData: FormData) {
   const dial = String(formData.get("dial") ?? "").trim();
   const local = String(formData.get("phone") ?? "").trim();
   const phone = [dial, local].filter(Boolean).join(" ").trim();
-  if (!name || !phone || !country) redirect(`/${locale}/portal/doctor?error=1`);
+  if (!name || !phone || !country) redirect(`/${locale}/portal/doctor?error=1#refer`);
+  // The patient has to have agreed to being referred and to their records being shared.
+  if (formData.get("consent") !== "on") redirect(`/${locale}/portal/doctor?error=consent#refer`);
 
   const intake = await readIntake(formData);
   if (intake.tooLarge || !hasSomethingToPlanFrom(intake)) {
-    redirect(`/${locale}/portal/doctor?error=1`);
+    redirect(`/${locale}/portal/doctor?error=1#refer`);
   }
+
+  const email = String(formData.get("email") ?? "").trim().toLowerCase() || null;
 
   const record = await openCase({
     locale,
-    patient: { name, phone, country, email: null },
+    patient: { name, phone, country, email },
     intake,
+    source: "partner-portal",
     referredBy: doctor._id,
   });
 
-  // The commercial side of the referral opens with it, but never blocks it.
-  await openReferral({
-    caseReference: record._id,
-    partnerUserId: doctor._id,
-    partnerName: doctor.name,
-    patientName: name,
-  }).catch((error) => console.error("[shifain] could not open referral", record._id, error));
+  // The commercial side opens with the case, but never blocks it.
+  await attributeCase({ record, partner: doctor, channel: "portal", by: doctor._id });
 
   redirect(`/${locale}/plan/${record._id}`);
 }

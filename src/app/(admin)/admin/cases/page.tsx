@@ -6,7 +6,9 @@ import { Saved, adminField, adminLabel } from "@/components/admin/Panel";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
 import type { CaseStatus, PatientCase } from "@/lib/cases";
-import { deleteCaseAction, saveCaseAction, setCaseStatusAction } from "./actions";
+import { listPartners, type Referral } from "@/lib/partners";
+import { SOURCE_LABEL, STAGE_LABEL, partnerIdOf, sourceOf } from "@/lib/referrals";
+import { attributeCaseAction, deleteCaseAction, saveCaseAction, setCaseStatusAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +73,18 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
         .toArray(),
     ),
   ]);
+
+  const [partners, referralRows] = await Promise.all([
+    listPartners(),
+    readOr<Referral[]>([], (db) =>
+      db
+        .collection<Referral>("referrals")
+        .find({ caseReference: { $in: cases.map((item) => item._id) } })
+        .toArray(),
+    ),
+  ]);
+  const partnerName = new Map(partners.map((p) => [p._id, p.name]));
+  const referralOf = new Map(referralRows.map((r) => [r.caseReference, r]));
 
   const countOf = (s: CaseStatus) => counts.find((c) => c._id === s)?.n ?? 0;
   const total = counts.reduce((sum, c) => sum + c.n, 0);
@@ -285,8 +299,63 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
               <p className="mt-3 text-xs text-ink-muted">
                 <span className="font-bold tracking-wide text-ink-soft">{item._id}</span> ·{" "}
                 {new Date(item.createdAt).toUTCString()}
-                {item.referredBy ? " · referred by a partner doctor" : " · from the homepage"}
+ · {SOURCE_LABEL[sourceOf(item)]}
               </p>
+              {(() => {
+                const partnerId = partnerIdOf(item);
+                const referral = referralOf.get(item._id);
+                if (partnerId) {
+                  return (
+                    <p className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                      <span className="rounded-full bg-brand-tint px-2.5 py-0.5 text-xs font-bold text-brand-deep">
+                        Partner referral
+                      </span>
+                      <Link href={`/admin/partners/${partnerId}`} className="font-semibold text-brand hover:underline">
+                        {partnerName.get(partnerId) ?? partnerId}
+                      </Link>
+                      {referral ? (
+                        <Link
+                          href={`/admin/referrals?partner=${partnerId}#${referral._id}`}
+                          className="text-ink-soft hover:underline"
+                        >
+                          · {STAGE_LABEL[referral.status]}
+                          {referral.duplicateOf ? " · possible duplicate" : ""}
+                        </Link>
+                      ) : null}
+                    </p>
+                  );
+                }
+                if (partners.length === 0) return null;
+                return (
+                  <form action={attributeCaseAction} className="mt-2 flex flex-wrap items-center gap-2">
+                    <input type="hidden" name="id" value={item._id} />
+                    <input type="hidden" name="back" value={back} />
+                    <label className="sr-only" htmlFor={`credit-${item._id}`}>
+                      Credit this case to a partner
+                    </label>
+                    <select
+                      id={`credit-${item._id}`}
+                      name="partnerId"
+                      defaultValue=""
+                      className={`${adminField} !w-auto !py-1.5 text-sm`}
+                    >
+                      <option value="" disabled>
+                        Credit to a partner…
+                      </option>
+                      {partners
+                        .filter((p) => p.status === "active")
+                        .map((p) => (
+                          <option key={p._id} value={p._id}>
+                            {p.name}
+                          </option>
+                        ))}
+                    </select>
+                    <button type="submit" className="btn btn-secondary !py-1.5 text-sm">
+                      Credit
+                    </button>
+                  </form>
+                );
+              })()}
               {item.planError ? (
                 <p className="mt-2 rounded-lg bg-saffron/10 px-3 py-2 text-sm text-ink-soft">
                   Planner said: {item.planError}

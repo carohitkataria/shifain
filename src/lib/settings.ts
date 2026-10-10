@@ -20,6 +20,8 @@ export type SiteSettings = {
   partnerApplicationsOpen: boolean;
   /** The currency new offers and referrals start in. */
   defaultCurrency: string;
+  /** How long a partner's referral of a patient blocks another partner's claim. */
+  referralWindowDays: number;
   updatedAt: string | null;
 };
 
@@ -30,6 +32,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   opsEmail: null,
   partnerApplicationsOpen: true,
   defaultCurrency: "USD",
+  referralWindowDays: 180,
   updatedAt: null,
 };
 

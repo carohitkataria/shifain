@@ -13,8 +13,24 @@ import {
   upsertTelegramContact,
   updateContactState,
   linkContactToCase,
+  rememberContactReferral,
   saveMessage,
 } from "./crm-messages";
+import {
+  STAGE_LABEL,
+  describeOffer,
+  ensureReferralCode,
+  linkPartnerTelegram,
+  normaliseCode,
+  partnerByCode,
+  partnerByTelegramChat,
+  pipelineOf,
+  referralLinks,
+  resolveOffer,
+  shortName,
+  verifyTelegramLinkPayload,
+} from "./referrals";
+import { listReferrals, money } from "./partners";
 import { normalisePhone } from "./patient-auth";
 import { casesForPhone, getCase } from "./cases";
 import { createLead } from "./telegram-leads";
@@ -456,13 +472,21 @@ async function handlePatientCommand(
   const [cmd, ...args] = text.split(/\s+/);
 
   switch (cmd.toLowerCase()) {
-    case "/start":
+    case "/start": {
+      // t.me/<bot>?start=ref_CODE arrives as "/start ref_CODE".
+      const payload = args[0] ?? "";
+      if (payload.startsWith("ref_")) {
+        const code = normaliseCode(payload.slice(4));
+        if (code && (await partnerByCode(code).catch(() => null))) {
+          await rememberContactReferral("patient", userId, code).catch(() => undefined);
+        }
+      }
       await updateContactState("patient", userId, "welcome");
       await sendMessage("patient", {
         chatId,
         text:
           "🏥 <b>Welcome to ShifaIn</b>\n\n" +
-          "I'm your AI health assistant. Just tell me what you need — no forms to fill out!\n\n" +
+          "I'm the ShifaIn care assistant, and a coordinator is on hand if you'd rather talk to a person. Just tell me what you need — no forms to fill out.\n\n" +
           "You can:\n" +
           "• <b>Describe your medical need</b> — I'll ask a few questions and create your treatment plan\n" +
           "• <b>Send a voice message</b> — speak in any language, I'll understand\n" +
@@ -472,6 +496,7 @@ async function handlePatientCommand(
         requestContact: true,
       });
       break;
+    }
 
     case "/status": {
       const ref = args[0]?.toUpperCase();
@@ -911,11 +936,29 @@ async function handlePartnerUpdate(update: TgUpdate): Promise<void> {
   });
 }
 
+const NOT_LINKED =
+  "🔗 This chat is not connected to a partner account yet.\n\n" +
+  "Open your ShifaIn partner portal and tap <b>Connect Telegram</b> — your referral updates will arrive here.";
+
 async function handlePartnerCommand(chatId: number, _userId: number, text: string): Promise<void> {
-  const [cmd] = text.split(/\s+/);
+  const [cmd, ...args] = text.split(/\s+/);
 
   switch (cmd.toLowerCase()) {
-    case "/start":
+    case "/start": {
+      const linkedId = args[0] ? verifyTelegramLinkPayload(args[0]) : null;
+      if (linkedId) {
+        const partner = await linkPartnerTelegram(linkedId, chatId);
+        if (partner) {
+          await sendMessage("partner", {
+            chatId,
+            text:
+              `✅ <b>Connected, ${partner.name}.</b>\n\n` +
+              "You'll get an update here each time a patient you referred moves forward.\n\n" +
+              "/cases — your referred patients\n/earnings — commission summary\n/refer — your referral link",
+          });
+          return;
+        }
+      }
       await sendMessage("partner", {
         chatId,
         text:
@@ -929,6 +972,7 @@ async function handlePartnerCommand(chatId: number, _userId: number, text: strin
         requestContact: true,
       });
       break;
+    }
 
     case "/help":
       await sendMessage("partner", {
@@ -944,13 +988,72 @@ async function handlePartnerCommand(chatId: number, _userId: number, text: strin
       });
       break;
 
-    case "/cases":
-    case "/refer":
-    case "/notices":
-    case "/earnings":
+    case "/cases": {
+      const partner = await partnerByTelegramChat(chatId);
+      if (!partner) {
+        await sendMessage("partner", { chatId, text: NOT_LINKED });
+        break;
+      }
+      const rows = await listReferrals({ partnerUserId: partner._id });
+      if (rows.length === 0) {
+        await sendMessage("partner", { chatId, text: "No referrals yet. Send /refer for your link." });
+        break;
+      }
+      const lines = rows
+        .slice(0, 15)
+        .map((row) => `• ${shortName(row.patientName)} — <b>${STAGE_LABEL[row.status]}</b>`);
       await sendMessage("partner", {
         chatId,
-        text: "🔜 This feature will be available soon. Please use the partner portal for now.",
+        text: `📋 <b>Your referrals</b> (${rows.length})\n\n${lines.join("\n")}${rows.length > 15 ? "\n…" : ""}`,
+      });
+      break;
+    }
+
+    case "/earnings": {
+      const partner = await partnerByTelegramChat(chatId);
+      if (!partner) {
+        await sendMessage("partner", { chatId, text: NOT_LINKED });
+        break;
+      }
+      const rows = await listReferrals({ partnerUserId: partner._id });
+      const p = pipelineOf(rows, partner.referralStats?.clicks ?? 0);
+      const currency = rows[0]?.currency ?? "USD";
+      await sendMessage("partner", {
+        chatId,
+        text:
+          `💰 <b>Earnings</b>\n\n` +
+          `Earned: <b>${money(p.earned, currency)}</b>\n` +
+          `Awaiting payout: ${money(p.pending, currency)}\n` +
+          `Paid: ${money(p.paid, currency)}\n\n` +
+          `Referrals: ${p.total} · Treated: ${p.counts.treated}`,
+      });
+      break;
+    }
+
+    case "/refer": {
+      const partner = await partnerByTelegramChat(chatId);
+      if (!partner) {
+        await sendMessage("partner", { chatId, text: NOT_LINKED });
+        break;
+      }
+      const code = await ensureReferralCode(partner);
+      const links = await referralLinks(code);
+      const offer = await resolveOffer(partner, null);
+      await sendMessage("partner", {
+        chatId,
+        text:
+          `🔗 <b>Your referral link</b>\n${links.web}\n\n` +
+          (links.telegram ? `Telegram: ${links.telegram}\n\n` : "") +
+          `Code: <code>${code}</code>\n\n` +
+          `Patients who start from your link are credited to you. ${describeOffer(offer)}`,
+      });
+      break;
+    }
+
+    case "/notices":
+      await sendMessage("partner", {
+        chatId,
+        text: "📢 Announcements are on your partner portal dashboard.",
       });
       break;
 

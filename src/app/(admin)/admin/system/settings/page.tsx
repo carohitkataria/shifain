@@ -117,6 +117,23 @@ export default async function SettingsPage({
                 </span>
               </label>
 
+              <label>
+                <span className={adminLabel}>Referral protection window</span>
+                <input
+                  name="referralWindowDays"
+                  type="number"
+                  min={30}
+                  max={730}
+                  step={1}
+                  defaultValue={settings.referralWindowDays}
+                  className={adminField}
+                />
+                <span className="mt-1 block text-sm text-ink-soft">
+                  Days. If a second partner refers a patient already referred by another partner within
+                  this window, the later referral is flagged as a possible duplicate.
+                </span>
+              </label>
+
               <label className="sm:col-span-2">
                 <span className={adminLabel}>Operations inbox</span>
                 <input

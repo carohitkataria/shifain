@@ -53,6 +53,10 @@ export type IntakeLabels = {
   reportsHint: string;
   submit: string;
   privacy: string;
+  /** Overrides the email label, e.g. "Patient email" in the partner portal. */
+  emailLabel?: string;
+  /** When set, a required consent checkbox is shown above the submit button. */
+  consent?: string;
 };
 
 /**
@@ -157,7 +161,7 @@ export function IntakeForm({
           </div>
         </Field>
 
-        <Field label={t(INTAKE_COPY.emailLabel, locale)} htmlFor="email">
+        <Field label={labels.emailLabel ?? t(INTAKE_COPY.emailLabel, locale)} htmlFor="email">
           <input
             id="email"
             name="email"
@@ -257,6 +261,18 @@ export function IntakeForm({
           </Field>
         ))}
       </div>
+
+      {labels.consent ? (
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-line bg-surface-muted/60 p-3 text-sm leading-relaxed text-ink-soft">
+          <input
+            type="checkbox"
+            name="consent"
+            required
+            className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--color-brand)]"
+          />
+          <span>{labels.consent}</span>
+        </label>
+      ) : null}
 
       <button type="submit" className="btn btn-primary w-full">
         {labels.submit}

@@ -17,6 +17,7 @@ export async function saveSettingsAction(formData: FormData) {
     opsEmail: email || null,
     partnerApplicationsOpen: formData.get("partnerApplicationsOpen") === "on",
     defaultCurrency: (String(formData.get("defaultCurrency") ?? "USD").trim() || "USD").toUpperCase(),
+    referralWindowDays: Math.min(730, Math.max(30, Math.round(Number(formData.get("referralWindowDays")) || 180))),
   });
 
   // Cases, plans and the apply form all read these on the way through.

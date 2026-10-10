@@ -7,7 +7,8 @@ import { getSettings } from "@/lib/settings";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import type { PartnerUser } from "@/lib/partner-auth";
 import { listOffers, money, type Payout, type Referral } from "@/lib/partners";
-import { savePartnerProfileAction, setPartnerCredentialsAction } from "../actions";
+import { regenerateReferralCodeAction, savePartnerProfileAction, setPartnerCredentialsAction } from "../actions";
+import { STAGE_LABEL, ensureReferralCode, referralLinks } from "@/lib/referrals";
 import { createPayoutAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +41,9 @@ export default async function PartnerPage({
     getSettings(),
   ]);
 
+  const code = partner.status === "active" ? await ensureReferralCode(partner).catch(() => null) : null;
+  const links = code ? await referralLinks(code) : null;
+
   const owed = referrals
     .filter((row) => !row.payoutId)
     .reduce((sum, row) => sum + (row.commissionAmount ?? 0), 0);
@@ -56,6 +60,8 @@ export default async function PartnerPage({
 
       {saved === "password" ? (
         <Notice>Password set — hand it to the partner now; it is not shown again.</Notice>
+      ) : saved === "code" ? (
+        <Notice>New referral code issued. The old link no longer credits this partner.</Notice>
       ) : saved === "status" ? (
         <Notice>Account status updated.</Notice>
       ) : saved ? (
@@ -137,6 +143,35 @@ export default async function PartnerPage({
         </div>
       </form>
 
+      <div className="mt-5">
+        <Card
+          title="Referral link"
+          hint="Patients who start from this link or code on the website, website chat or Telegram are credited to this partner automatically."
+        >
+          {links ? (
+            <div className="space-y-3 text-sm">
+              <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="font-mono text-base font-bold text-ink">{links.code}</span>
+                <span className="text-ink-soft">{partner.referralStats?.clicks ?? 0} link visits</span>
+                <span className={partner.telegramChatId ? "font-semibold text-leaf" : "text-ink-muted"}>
+                  {partner.telegramChatId ? "Telegram connected" : "Telegram not connected"}
+                </span>
+              </p>
+              <p className="break-all font-mono text-ink-soft">{links.web}</p>
+              {links.telegram ? <p className="break-all font-mono text-ink-soft">{links.telegram}</p> : null}
+              <form action={regenerateReferralCodeAction}>
+                <input type="hidden" name="id" value={partner._id} />
+                <button type="submit" className="btn btn-secondary !py-2 text-sm">
+                  Issue a new code
+                </button>
+              </form>
+            </div>
+          ) : (
+            <p className="text-sm text-ink-soft">A code is issued once the account is active.</p>
+          )}
+        </Card>
+      </div>
+
       <form action={setPartnerCredentialsAction} className="mt-5">
         <input type="hidden" name="id" value={partner._id} />
         <Card
@@ -199,7 +234,7 @@ export default async function PartnerPage({
                   </span>
                   <span className="mt-0.5 block text-xs text-ink-muted">{referral.caseReference}</span>
                 </span>
-                <Stage value={referral.status} tone={REFERRAL_TONE[referral.status]} />
+                <Stage value={STAGE_LABEL[referral.status]} tone={REFERRAL_TONE[referral.status]} />
                 <span className="shrink-0 text-sm font-semibold text-ink">
                   {referral.commissionAmount
                     ? money(referral.commissionAmount, referral.currency ?? settings.defaultCurrency)

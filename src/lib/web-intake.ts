@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { Binary } from "mongodb";
 import { getDb } from "./db";
 import { openCase } from "./case-flow";
+import { attributeFromCookie } from "./referrals";
 import { MAX_REPORT_BYTES, type ReportUpload } from "./reports";
 import {
   type IntakeField,
@@ -209,8 +210,10 @@ export async function createCaseFromWebIntake(
       })),
       tooLarge: false,
     },
-    referredBy: "web-ai-chat",
+    source: "web-chat",
+    referredBy: null,
   });
+  await attributeFromCookie(record, "web-chat");
 
   const db = await getDb();
   await db.collection<WebIntake>(COLLECTION).updateOne(

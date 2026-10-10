@@ -6,6 +6,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { newReference } from "@/lib/cases";
 import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
 import { openCase } from "@/lib/case-flow";
+import { attributeFromCookie } from "@/lib/referrals";
 
 const ENQUIRY_LOG =
   process.env.SHIFAIN_ENQUIRY_LOG || path.join(process.cwd(), ".data", "enquiries.jsonl");
@@ -65,7 +66,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const record = await openCase({ locale, patient, intake, referredBy: null });
+    const record = await openCase({ locale, patient, intake, source: "website", referredBy: null });
+    await attributeFromCookie(record, "link");
     return NextResponse.redirect(new URL(`/${locale}/plan/${record._id}`, request.url), 303);
   } catch (error) {
     console.error("[shifain] could not open a case", error);

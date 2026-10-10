@@ -1,6 +1,5 @@
 import "server-only";
-import { getDb, readOr } from "./db";
-import { getSettings } from "./settings";
+import { readOr } from "./db";
 import type { PartnerUser } from "./partner-auth";
 
 export type ApplicationStatus = "new" | "reviewing" | "approved" | "declined";
@@ -45,19 +44,38 @@ export type ReferralOffer = {
   createdAt: string;
 };
 
+/** How a referral reached us. */
+export type ReferralChannel = "portal" | "link" | "telegram" | "web-chat" | "manual";
+
+export type ReferralEvent = {
+  status: ReferralStatus;
+  at: string;
+  /** "admin", "system", "case-sync" or the partner's id. */
+  by: string;
+  note: string | null;
+};
+
 export type Referral = {
   _id: string;
   caseReference: string;
   partnerUserId: string;
   partnerName: string | null;
   patientName: string | null;
+  patientCountry?: string | null;
+  statedNeed?: string | null;
   status: ReferralStatus;
+  /** Older rows predate channels; they all came from the portal. */
+  channel?: ReferralChannel;
+  referralCode?: string | null;
   offerId: string | null;
   treatmentValue: number | null;
   currency: string | null;
   commissionAmount: number | null;
   payoutId: string | null;
+  /** Another partner's earlier case for the same patient, if there is one. */
+  duplicateOf?: string | null;
   note: string | null;
+  history?: ReferralEvent[];
   createdAt: string;
   updatedAt: string | null;
 };
@@ -195,41 +213,8 @@ export async function broadcastsFor(partner: PartnerUser): Promise<Broadcast[]> 
   );
 }
 
-/**
- * Opens the commercial side of a referral when a partner sends us a case.
- * Separate from the case itself, and never fatal: a patient is not held up
- * because a commission row would not write.
- */
-export async function openReferral(input: {
-  caseReference: string;
-  partnerUserId: string;
-  partnerName: string | null;
-  patientName: string | null;
-}): Promise<void> {
-  const db = await getDb();
-  const offer = await db
-    .collection<ReferralOffer>("referral_offers")
-    .findOne({ isDefault: true, status: "active" });
-
-  await db.collection<Referral>("referrals").updateOne(
-    { _id: `ref-${input.caseReference}` },
-    {
-      $setOnInsert: {
-        caseReference: input.caseReference,
-        partnerUserId: input.partnerUserId,
-        partnerName: input.partnerName,
-        patientName: input.patientName,
-        status: "new",
-        offerId: offer?._id ?? null,
-        treatmentValue: null,
-        currency: offer?.currency ?? (await getSettings()).defaultCurrency,
-        commissionAmount: null,
-        payoutId: null,
-        note: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: null,
-      },
-    },
-    { upsert: true },
+export async function payoutsFor(partnerUserId: string): Promise<Payout[]> {
+  return readOr<Payout[]>([], (db) =>
+    db.collection<Payout>("payouts").find({ partnerUserId }).sort({ createdAt: -1 }).limit(50).toArray(),
   );
 }

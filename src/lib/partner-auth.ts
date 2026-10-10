@@ -24,6 +24,11 @@ export type PartnerUser = {
   offerId?: string | null;
   payoutMethod?: string | null;
   payoutDetails?: string | null;
+  /** Shareable code behind /r/CODE and the Telegram ?start=ref_CODE link. */
+  referralCode?: string | null;
+  referralStats?: { clicks?: number };
+  /** The partner bot chat their referral updates go to. */
+  telegramChatId?: number | null;
   passwordHash: string;
   status: "invited" | "active" | "suspended";
   createdAt: string;
