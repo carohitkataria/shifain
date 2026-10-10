@@ -730,6 +730,8 @@ async function handlePatientText(
     status: "delivered",
   });
 
+  if (state === "admin_handling") return;
+
   try {
     const autoFill = autoFillFromTelegram(null, contact);
     const intake = await getOrCreateIntake(userId, chatId, autoFill);
@@ -743,6 +745,18 @@ async function handlePatientText(
       pushHistory(chatId, "user", text);
       pushHistory(chatId, "assistant", reply);
       await sendMessage("patient", { chatId, text: reply });
+      await saveMessage({
+        channel: "telegram",
+        direction: "outbound",
+        contactType: "patient",
+        contactId: contact?.contactId ?? null,
+        caseReference: contact?.caseReference ?? null,
+        telegramChatId: chatId,
+        senderName: "ShifaIn AI",
+        text: reply,
+        metadata: { ai: true },
+        status: "delivered",
+      });
       return;
     }
 
@@ -755,11 +769,21 @@ async function handlePatientText(
     await handleMedicalChat(chatId, userId, text);
   } catch (error) {
     console.error("[shifain] conversational intake error:", error);
-    await sendMessage("patient", {
-      chatId,
-      text:
-        "I'm sorry, I had trouble processing that. A coordinator will review your message and get back to you.\n\n" +
-        "For quick actions, type /help.",
+    const fallback =
+      "I'm sorry, I had trouble processing that. A coordinator will review your message and get back to you.\n\n" +
+      "For quick actions, type /help.";
+    await sendMessage("patient", { chatId, text: fallback });
+    await saveMessage({
+      channel: "telegram",
+      direction: "outbound",
+      contactType: contact?.contactType === "patient" ? "patient" : "lead",
+      contactId: contact?.contactId ?? null,
+      caseReference: contact?.caseReference ?? null,
+      telegramChatId: chatId,
+      senderName: "ShifaIn AI",
+      text: fallback,
+      metadata: { ai: true, error: true },
+      status: "delivered",
     });
   }
 }

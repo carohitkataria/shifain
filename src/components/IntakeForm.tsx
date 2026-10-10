@@ -83,8 +83,8 @@ export function IntakeForm({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-4">
-        <div className="col-span-2 grid grid-cols-[4.5rem_1fr_1fr] gap-2">
+      <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2">
+        <div className="col-span-1 grid grid-cols-[4.5rem_1fr_1fr] gap-2 sm:col-span-2">
           <Field label={t(INTAKE_COPY.prefixLabel, locale)} htmlFor="prefix">
             <select id="prefix" name="prefix" defaultValue="" className={`${inputClass} px-2`}>
               {PREFIXES.map((p) => (
@@ -239,8 +239,8 @@ export function IntakeForm({
         </Field>
       </div>
 
-      <div hidden={route !== "questions"} className="grid grid-cols-2 gap-x-3 gap-y-3">
-        <p className="col-span-2 text-xs leading-relaxed text-ink-muted">
+      <div hidden={route !== "questions"} className="grid grid-cols-1 gap-x-3 gap-y-3 sm:grid-cols-2">
+        <p className="col-span-1 text-xs leading-relaxed text-ink-muted sm:col-span-2">
           {t(INTAKE_COPY.questionsNote, locale)}
         </p>
         {INTAKE_QUESTIONS.map((question) => (

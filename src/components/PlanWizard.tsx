@@ -256,7 +256,7 @@ export function PlanWizard({
           </p>
           <div className="card mt-6 p-6">
             <FieldLabel text="Priority" />
-            <div className="mt-2 grid grid-cols-3 gap-3">
+            <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
               {PRIORITIES.map((p) => (
                 <button
                   key={p.key}

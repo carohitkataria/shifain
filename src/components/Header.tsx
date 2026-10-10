@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { MobileMenu } from "./MobileMenu";
 import { t } from "@/lib/localize";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -66,10 +67,12 @@ export function Header({
 
           <Link
             href={`/${locale}/portal/patient`}
-            className="rounded-full bg-brand-deep px-5 py-2 text-sm font-bold text-white transition hover:bg-brand"
+            className="rounded-full bg-brand-deep px-4 py-2 text-[13px] font-bold text-white transition hover:bg-brand sm:px-5 sm:text-sm"
           >
             {t(content.nav.patientLogin, locale)}
           </Link>
+
+          <MobileMenu items={nav} />
         </div>
       </div>
     </header>

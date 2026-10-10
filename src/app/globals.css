@@ -666,6 +666,14 @@ body {
   z-index: 51;
 }
 
+@media (max-width: 420px) {
+  .fab-panel {
+    width: calc(100vw - 32px);
+    right: 16px;
+    bottom: 72px;
+  }
+}
+
 .fab-qa {
   display: block;
   width: 100%;

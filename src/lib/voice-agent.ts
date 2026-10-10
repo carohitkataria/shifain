@@ -3,7 +3,7 @@ import { GoogleGenerativeAI, SchemaType, type FunctionDeclarationsTool } from "@
 import Anthropic from "@anthropic-ai/sdk";
 import type { IntakeField } from "./conversation-intake";
 
-const GEMINI_MODEL = "gemini-2.0-flash";
+const GEMINI_MODEL = "gemini-1.5-flash";
 const CLAUDE_MODEL = "claude-sonnet-4-5-20250514";
 
 const BASE_SYSTEM = `You are ShifaIn's patient assistant on Telegram. You help patients who are seeking medical treatment in India.
@@ -274,7 +274,15 @@ export async function generateIntakeReply(
 ): Promise<IntakeReplyResult> {
   const provider = pickProvider();
   if (provider === "gemini") {
-    return intakeWithGemini(userMessage, history, currentFields, patientLanguage);
+    try {
+      return await intakeWithGemini(userMessage, history, currentFields, patientLanguage);
+    } catch (err) {
+      console.error("[shifain] Gemini intake failed, falling back to Claude:", err);
+      if (process.env.ANTHROPIC_API_KEY) {
+        return intakeWithClaude(userMessage, history, currentFields, patientLanguage);
+      }
+      throw err;
+    }
   }
   return intakeWithClaude(userMessage, history, currentFields, patientLanguage);
 }
@@ -345,7 +353,15 @@ export async function generateReply(
 ): Promise<string> {
   const provider = pickProvider();
   if (provider === "gemini") {
-    return replyWithGemini(userMessage, history, patientLanguage);
+    try {
+      return await replyWithGemini(userMessage, history, patientLanguage);
+    } catch (err) {
+      console.error("[shifain] Gemini reply failed, falling back to Claude:", err);
+      if (process.env.ANTHROPIC_API_KEY) {
+        return replyWithClaude(userMessage, history, patientLanguage);
+      }
+      throw err;
+    }
   }
   return replyWithClaude(userMessage, history, patientLanguage);
 }

@@ -75,7 +75,7 @@ export function LoginCard({
   }, [email, locale, router]);
 
   return (
-    <div className="card w-full max-w-md p-8 shadow-xl shadow-ink/5">
+    <div className="card w-full max-w-md p-5 shadow-xl shadow-ink/5 sm:p-8">
       <h2 className="text-center text-2xl font-extrabold tracking-tight text-ink">
         Sign in to Shifain
       </h2>
@@ -157,7 +157,7 @@ export function LoginCard({
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="h-[54px] w-[46px] rounded-xl2 border-[1.5px] border-line text-center text-xl font-bold focus:border-brand focus:bg-brand-tint focus:outline-none"
+                    className="h-12 w-10 rounded-xl2 border-[1.5px] border-line text-center text-xl font-bold focus:border-brand focus:bg-brand-tint focus:outline-none sm:h-[54px] sm:w-[46px]"
                   />
                 ))}
               </div>
