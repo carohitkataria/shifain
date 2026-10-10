@@ -36,12 +36,13 @@ export default async function SiteLayout({
 }) {
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const { contact } = await getContent();
 
   return (
     <html lang={LOCALE_META[locale].htmlLang} dir={LOCALE_META[locale].dir}>
       <body>
         {children}
-        <FloatingTools />
+        <FloatingTools whatsapp={contact.whatsapp || null} phone={contact.phone || null} />
       </body>
     </html>
   );

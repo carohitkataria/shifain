@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 
-export function MobileMenu({ items }: { items: { href: string; label: string }[] }) {
+export function MobileMenu({
+  items,
+  cta,
+}: {
+  items: { href: string; label: string }[];
+  cta?: { href: string; label: string };
+}) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -15,7 +21,7 @@ export function MobileMenu({ items }: { items: { href: string; label: string }[]
     <>
       <button
         onClick={() => setOpen(!open)}
-        className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-soft transition hover:bg-surface-muted lg:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-ink transition hover:bg-surface-muted xl:hidden"
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
       >
@@ -31,7 +37,7 @@ export function MobileMenu({ items }: { items: { href: string; label: string }[]
       </button>
 
       {open && (
-        <div className="fixed inset-0 top-[57px] z-50 lg:hidden">
+        <div className="fixed inset-0 top-[60px] z-50 xl:hidden">
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <nav className="relative mx-4 mt-2 rounded-2xl border border-line bg-white p-2 shadow-xl">
             {items.map((item) => (
@@ -39,11 +45,20 @@ export function MobileMenu({ items }: { items: { href: string; label: string }[]
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="block rounded-xl px-4 py-3 text-sm font-semibold text-ink transition hover:bg-surface-muted"
+                className="flex min-h-12 items-center rounded-xl px-4 text-[15px] font-semibold text-ink transition hover:bg-surface-muted"
               >
                 {item.label}
               </a>
             ))}
+            {cta ? (
+              <a
+                href={cta.href}
+                onClick={() => setOpen(false)}
+                className="mt-2 flex min-h-12 items-center justify-center rounded-xl bg-brand-deep px-4 text-sm font-bold text-white transition hover:bg-brand sm:hidden"
+              >
+                {cta.label}
+              </a>
+            ) : null}
           </nav>
         </div>
       )}

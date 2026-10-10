@@ -51,29 +51,33 @@ export const defaultContent: SiteContent = {
     ),
     headline: l("World-class medical care", "Медицина мирового уровня", "Jahon darajasidagi tibbiy yordam"),
     headlineAccent: l(
-      "in India — planned by AI, confirmed by doctors",
-      "в Индии — план от ИИ, подтверждённый врачами",
-      "Hindistonda — sun'iy intellekt rejasi, shifokor tasdiqlaydi",
+      "in India — with the price agreed before you fly",
+      "в Индии — с ценой, согласованной до вылета",
+      "Hindistonda — narx uchishdan oldin kelishiladi",
     ),
     body: l(
-      "Upload your reports and get an AI-assisted treatment plan and cost estimate instantly — no waiting. Add or remove flights, hotel stay and transfers to shape your own package. The treating hospital confirms the final plan within 48 hours.",
-      "Загрузите свои медицинские документы и мгновенно получите план лечения и смету, подготовленные с помощью ИИ — без ожидания. Добавляйте или убирайте перелёты, проживание и трансферы, формируя свой пакет. Клиника подтверждает окончательный план в течение 48 часов.",
-      "Tibbiy hujjatlaringizni yuklang va sun'iy intellekt yordamida tayyorlangan davolash rejasi hamda xarajat hisobini darhol oling — kutishsiz. Parvoz, turar joy va transferlarni qo'shing yoki olib tashlang. Shifoxona yakuniy rejani 48 soat ichida tasdiqlaydi.",
+      "Send your reports and get a treatment plan with an itemised cost estimate in minutes. Shape your own package — flights, stay, transfers — and the treating hospital confirms the final plan and price within 48 hours.",
+      "Отправьте медицинские документы и за несколько минут получите план лечения с детальной сметой. Соберите свой пакет — перелёты, проживание, трансферы, — а клиника подтвердит окончательный план и цену в течение 48 часов.",
+      "Tibbiy hujjatlaringizni yuboring va bir necha daqiqada batafsil xarajat hisobi bilan davolash rejasini oling. Parvoz, turar joy va transferlardan o'z paketingizni tuzing — shifoxona yakuniy reja va narxni 48 soat ichida tasdiqlaydi.",
     ),
     primaryCta: l(
-      "Upload reports — get instant plan",
-      "Загрузить документы — получить план",
-      "Hujjat yuklang — rejani oling",
+      "Get my free plan & estimate",
+      "Получить бесплатный план и смету",
+      "Bepul reja va hisobni olish",
     ),
     secondaryCta: l("Talk to a coordinator", "Связаться с координатором", "Koordinator bilan bog'lanish"),
     badges: [
-      { id: "b1", label: l("AI plan in minutes", "План ИИ за минуты", "Bir necha daqiqada AI reja") },
+      { id: "b1", label: l("Plan & estimate in minutes", "План и смета за минуты", "Reja va hisob bir necha daqiqada") },
       { id: "b2", label: l("Guaranteed price", "Гарантированная цена", "Kafolatlangan narx") },
       { id: "b3", label: l("In-app live translator", "Живой переводчик в приложении", "Ilovada jonli tarjimon") },
       { id: "b4", label: l("JCI & NABH hospitals", "Клиники JCI и NABH", "JCI va NABH shifoxonalari") },
     ],
     form: {
-      title: l("Get your AI plan & estimate", "Получите план и смету от ИИ", "AI reja va hisobingizni oling"),
+      title: l(
+        "Get your free treatment plan & cost estimate",
+        "Получите бесплатный план лечения и смету",
+        "Bepul davolash rejasi va xarajat hisobini oling",
+      ),
       nameLabel: l("Full name", "Полное имя", "To'liq ism"),
       namePlaceholder: l("Your name", "Ваше имя", "Ismingiz"),
       phoneLabel: l("Phone / WhatsApp", "Телефон / WhatsApp", "Telefon / WhatsApp"),
@@ -92,7 +96,7 @@ export const defaultContent: SiteContent = {
         "PDF, JPG или PNG — чем больше документов, тем точнее смета",
         "PDF, JPG yoki PNG — qancha ko'p hujjat bo'lsa, hisob shunchalik aniq",
       ),
-      submit: l("Generate my plan & estimate", "Сформировать план и смету", "Reja va hisobni yaratish"),
+      submit: l("Get my free plan", "Получить бесплатный план", "Bepul rejani olish"),
       privacy: l(
         "Your information is kept private · No obligation",
         "Ваши данные конфиденциальны · Без обязательств",
@@ -123,7 +127,7 @@ export const defaultContent: SiteContent = {
       {
         id: "u1",
         icon: "spark",
-        title: l("Instant AI plan & estimate", "Мгновенный план и смета от ИИ", "Tezkor AI reja va hisob"),
+        title: l("Instant plan & estimate", "Мгновенный план и смета", "Tezkor reja va hisob"),
         body: l(
           "A full treatment plan and itemised cost in minutes — not in 48 hours.",
           "Полный план лечения и детальная смета за минуты, а не за 48 часов.",
@@ -205,7 +209,7 @@ export const defaultContent: SiteContent = {
       {
         id: "j2",
         icon: "spark",
-        title: l("Instant AI plan & estimate", "Мгновенный план и смета от ИИ", "Tezkor AI reja va hisob"),
+        title: l("Instant plan & estimate", "Мгновенный план и смета", "Tezkor reja va hisob"),
         body: l(
           "An itemised plan appears in minutes — treatment, stay, travel and total cost.",
           "Детальный план появляется за минуты — лечение, проживание, поездка и общая стоимость.",
@@ -364,12 +368,12 @@ export const defaultContent: SiteContent = {
   },
 
   aiPlanner: {
-    eyebrow: l("AI plan & estimate", "План и смета от ИИ", "AI reja va hisob"),
+    eyebrow: l("Plan & estimate", "План и смета", "Reja va hisob"),
     title: l("Build your package, line by line", "Соберите пакет по пунктам", "Paketingizni bandma-band yarating"),
     body: l(
-      "The AI reads your reports and drafts a complete journey — treatment, hospital stay, flights, accommodation, transfers and interpreter. Keep what you need, remove what you don't: the estimate recalculates as you go.",
-      "ИИ читает ваши документы и составляет полный маршрут — лечение, пребывание в клинике, перелёты, проживание, трансферы и переводчик. Оставьте нужное, уберите лишнее: смета пересчитывается на ходу.",
-      "Sun'iy intellekt hujjatlaringizni o'qib, to'liq safar rejasini tuzadi — davolash, shifoxonada yotish, parvoz, turar joy, transfer va tarjimon. Keraklisini qoldiring, keraksizini olib tashlang: hisob darhol qayta hisoblanadi.",
+      "We read your reports and draft the complete journey — treatment, hospital stay, flights, accommodation, transfers and interpreter. Keep what you need, remove what you don't: the estimate recalculates as you go.",
+      "Мы изучаем ваши документы и составляем весь маршрут — лечение, пребывание в клинике, перелёты, проживание, трансферы и переводчик. Оставьте нужное, уберите лишнее: смета пересчитывается на ходу.",
+      "Hujjatlaringizni o'qib, butun safarni rejalashtiramiz — davolash, shifoxonada yotish, parvoz, turar joy, transfer va tarjimon. Keraklisini qoldiring, keraksizini olib tashlang: hisob darhol qayta hisoblanadi.",
     ),
     disclaimer: l(
       "AI does not replace a doctor. The plan is a starting point; diagnosis, treatment and the final price are confirmed by the treating specialist within 48 hours.",
@@ -462,9 +466,9 @@ export const defaultContent: SiteContent = {
       "Hujjatlaringizni yuklang — qolganini biz bajaramiz",
     ),
     body: l(
-      "Send your medical reports and tell us what you need. The AI drafts your plan and estimate straight away, and a coordinator picks it up from there.",
-      "Отправьте медицинские документы и скажите, что вам нужно. ИИ сразу составит план и смету, а дальше подключится координатор.",
-      "Tibbiy hujjatlaringizni yuboring va nima kerakligini ayting. Sun'iy intellekt darhol reja va hisob tuzadi, so'ngra koordinator ishni davom ettiradi.",
+      "Send your medical reports and tell us what you need. Your plan and estimate are drafted straight away, and your own coordinator takes it from there.",
+      "Отправьте медицинские документы и скажите, что вам нужно. План и смета будут готовы сразу, а дальше всем займётся ваш личный координатор.",
+      "Tibbiy hujjatlaringizni yuboring va nima kerakligini ayting. Reja va hisob darhol tayyorlanadi, keyin shaxsiy koordinatoringiz ishni davom ettiradi.",
     ),
     dropTitle: l(
       "Drag reports here or click to browse",
@@ -492,7 +496,7 @@ export const defaultContent: SiteContent = {
     currentLabel: l("Current", "Сейчас", "Hozir"),
     steps: [
       { id: "tk1", label: l("Enquiry", "Заявка", "So'rov"), state: "done" },
-      { id: "tk2", label: l("AI plan", "План ИИ", "AI reja"), state: "done" },
+      { id: "tk2", label: l("Plan & estimate", "План и смета", "Reja va hisob"), state: "done" },
       { id: "tk3", label: l("Doctor opinion", "Мнение врача", "Shifokor xulosasi"), state: "done" },
       { id: "tk4", label: l("Hospital", "Клиника", "Shifoxona"), state: "done" },
       { id: "tk5", label: l("Visa & travel", "Виза и поездка", "Viza va safar"), state: "current" },
@@ -751,11 +755,11 @@ export const defaultContent: SiteContent = {
     items: [
       {
         id: "f1",
-        question: l("How fast is the AI estimate really?", "Насколько быстро готова смета от ИИ?", "AI hisobi qanchalik tez tayyor bo'ladi?"),
+        question: l("How fast is the estimate really?", "Насколько быстро готова смета?", "Hisob qanchalik tez tayyor bo'ladi?"),
         answer: l(
-          "Minutes. As soon as your reports are uploaded, the AI drafts a plan and an itemised estimate you can edit. The treating hospital then confirms the final plan and price within 48 hours.",
-          "Несколько минут. Как только документы загружены, ИИ формирует план и детальную смету, которую можно менять. Затем клиника подтверждает окончательный план и цену в течение 48 часов.",
-          "Bir necha daqiqa. Hujjatlar yuklangach, sun'iy intellekt reja va tahrirlash mumkin bo'lgan batafsil hisob tuzadi. So'ngra shifoxona 48 soat ichida yakuniy reja va narxni tasdiqlaydi.",
+          "Minutes. As soon as your reports are uploaded, a draft plan and itemised estimate you can edit are ready. The treating hospital then confirms the final plan and price within 48 hours.",
+          "Несколько минут. Как только документы загружены, готовы черновой план и детальная смета, которую можно менять. Затем клиника подтверждает окончательный план и цену в течение 48 часов.",
+          "Bir necha daqiqa. Hujjatlar yuklangach, tahrirlash mumkin bo'lgan dastlabki reja va batafsil hisob tayyor bo'ladi. So'ngra shifoxona 48 soat ichida yakuniy reja va narxni tasdiqlaydi.",
         ),
       },
       {
@@ -813,9 +817,9 @@ export const defaultContent: SiteContent = {
       "Hindistonga salomatlik safaringiz — to'liq xizmat.",
     ),
     body: l(
-      "Upload your reports and get an AI-assisted plan and estimate right away — with support in your language, every step of the way.",
-      "Загрузите документы и сразу получите план и смету с помощью ИИ — с поддержкой на вашем языке на каждом этапе.",
-      "Hujjatlaringizni yuklang va sun'iy intellekt yordamida reja hamda hisobni darhol oling — har bosqichda o'z tilingizda qo'llov bilan.",
+      "Send your reports and get a free plan and estimate right away — with a coordinator who speaks your language, every step of the way.",
+      "Отправьте документы и сразу получите бесплатный план и смету — с координатором, говорящим на вашем языке, на каждом этапе.",
+      "Hujjatlaringizni yuboring va bepul reja hamda hisobni darhol oling — har bosqichda o'z tilingizda gaplashadigan koordinator bilan.",
     ),
     primaryCta: l("Start your medical journey", "Начать медицинский маршрут", "Tibbiy safarni boshlash"),
     secondaryCta: l("Upload medical reports", "Загрузить документы", "Hujjatlarni yuklash"),
@@ -823,9 +827,9 @@ export const defaultContent: SiteContent = {
 
   footer: {
     about: l(
-      "ShifaIn plans and runs medical journeys to India — AI-assisted estimates, accredited hospitals, guaranteed prices and support in your language.",
-      "ShifaIn планирует и сопровождает медицинские поездки в Индию — сметы с помощью ИИ, аккредитованные клиники, гарантированные цены и поддержка на вашем языке.",
-      "ShifaIn Hindistonga tibbiy safarlarni rejalashtiradi va yo'lga qo'yadi — AI yordamidagi hisob, akkreditatsiyalangan shifoxonalar, kafolatlangan narx va o'z tilingizda qo'llov.",
+      "ShifaIn plans and runs medical journeys to India — instant estimates, accredited hospitals, guaranteed prices and support in your language.",
+      "ShifaIn планирует и сопровождает медицинские поездки в Индию — мгновенные сметы, аккредитованные клиники, гарантированные цены и поддержка на вашем языке.",
+      "ShifaIn Hindistonga tibbiy safarlarni rejalashtiradi va yo'lga qo'yadi — tezkor hisob, akkreditatsiyalangan shifoxonalar, kafolatlangan narx va o'z tilingizda qo'llov.",
     ),
     disclaimer: l(
       "ShifaIn is a care-coordination platform, not a hospital or a medical provider. Nothing here is medical advice. Diagnosis, treatment and prognosis are decided by qualified healthcare professionals. Costs shown are indicative until confirmed by the treating hospital.",

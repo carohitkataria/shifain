@@ -46,7 +46,6 @@ export function MessageInbox({
 }) {
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
-  const [showList, setShowList] = useState(!selectedChat);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,10 +53,6 @@ export function MessageInbox({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [thread]);
-
-  useEffect(() => {
-    setShowList(!selectedChat);
-  }, [selectedChat]);
 
   const sendReply = useCallback(async () => {
     if (!reply.trim() || !selectedChat) return;

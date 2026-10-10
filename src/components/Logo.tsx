@@ -58,7 +58,7 @@ export function Logo({ tagline, className = "", markClassName, compact = false }
           shifa<span className="text-brand">in</span>
         </span>
         {tagline ? (
-          <span className="mt-1 max-w-[15rem] text-[0.58rem] font-semibold uppercase leading-tight tracking-[0.12em] text-ink-muted">
+          <span className="mt-1 hidden max-w-[15rem] text-[0.58rem] font-semibold uppercase leading-tight tracking-[0.12em] text-ink-muted md:block">
             {tagline}
           </span>
         ) : null}
