@@ -1,7 +1,9 @@
 import "server-only";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
 
-const MODEL = "claude-sonnet-4-5-20250514";
+const GEMINI_MODEL = "gemini-2.0-flash";
+const CLAUDE_MODEL = "claude-sonnet-4-5-20250514";
 
 const SYSTEM = `You are ShifaIn's patient assistant on Telegram. You help patients who are seeking medical treatment in India.
 
@@ -41,19 +43,46 @@ export type ConversationMessage = {
   content: string;
 };
 
-/**
- * Generates a conversational reply for a patient's message.
- * Maintains conversation history for context within a session.
- */
-export async function generateReply(
+type Provider = "gemini" | "claude";
+
+function pickProvider(): Provider {
+  if (process.env.GEMINI_API_KEY) return "gemini";
+  if (process.env.ANTHROPIC_API_KEY) return "claude";
+  throw new Error("Neither GEMINI_API_KEY nor ANTHROPIC_API_KEY is set.");
+}
+
+async function replyWithGemini(
   userMessage: string,
-  history: ConversationMessage[] = [],
+  history: ConversationMessage[],
   patientLanguage?: string,
 ): Promise<string> {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error("ANTHROPIC_API_KEY is not set.");
-  }
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+  const systemPrompt = patientLanguage
+    ? `${SYSTEM}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
+    : SYSTEM;
+
+  const model = genAI.getGenerativeModel({
+    model: GEMINI_MODEL,
+    systemInstruction: systemPrompt,
+  });
+
+  const chat = model.startChat({
+    history: history.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    })),
+  });
+
+  const result = await chat.sendMessage(userMessage);
+  return result.response.text() || "I'm sorry, I couldn't process that. Please try again or type /help.";
+}
+
+async function replyWithClaude(
+  userMessage: string,
+  history: ConversationMessage[],
+  patientLanguage?: string,
+): Promise<string> {
   const client = new Anthropic();
 
   const systemPrompt = patientLanguage
@@ -69,7 +98,7 @@ export async function generateReply(
   ];
 
   const response = await client.messages.create({
-    model: MODEL,
+    model: CLAUDE_MODEL,
     max_tokens: 400,
     system: systemPrompt,
     messages,
@@ -77,4 +106,20 @@ export async function generateReply(
 
   const text = response.content.find((b) => b.type === "text")?.text;
   return text ?? "I'm sorry, I couldn't process that. Please try again or type /help.";
+}
+
+/**
+ * Generates a conversational reply for a patient's message.
+ * Uses Gemini (free) when GEMINI_API_KEY is set, otherwise Claude.
+ */
+export async function generateReply(
+  userMessage: string,
+  history: ConversationMessage[] = [],
+  patientLanguage?: string,
+): Promise<string> {
+  const provider = pickProvider();
+  if (provider === "gemini") {
+    return replyWithGemini(userMessage, history, patientLanguage);
+  }
+  return replyWithClaude(userMessage, history, patientLanguage);
 }
