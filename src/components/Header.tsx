@@ -27,62 +27,50 @@ export function Header({
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
-      {/* Dark utility bar, as in the design. */}
-      <div className="bg-ink text-white">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1.5 sm:px-6">
-          <LanguageSwitcher locale={locale} path={path} />
-
-          <div className="flex items-center gap-1 text-sm">
-            <a
-              href={telHref(content.contact.phone)}
-              className="hidden rounded-full px-2.5 py-1.5 font-semibold text-white/80 transition hover:text-white sm:inline"
-            >
-              {content.contact.phone}
-            </a>
-            <span aria-hidden="true" className="hidden h-3.5 w-px bg-white/20 sm:block" />
-            <a
-              href={waHref(content.contact.whatsapp)}
-              className="rounded-full px-2.5 py-1.5 font-semibold text-white/80 transition hover:text-white"
-            >
-              WhatsApp
-            </a>
-            <span aria-hidden="true" className="hidden h-3.5 w-px bg-white/20 sm:block" />
-            <Link
-              href={`/${locale}/portal/patient`}
-              className="rounded-full bg-white/10 px-3.5 py-1.5 font-bold text-white transition hover:bg-white/20"
-            >
-              {t(content.nav.patientLogin, locale)}
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-line/60 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3.5 sm:px-6">
         <Link href={`/${locale}`} className="shrink-0">
           <Logo tagline={t(content.brand.wordmarkTagline, locale)} />
         </Link>
 
         <nav
           aria-label="Primary"
-          className="-mx-4 flex flex-1 items-center gap-1 overflow-x-auto px-4 lg:mx-0 lg:justify-end lg:overflow-visible lg:px-0"
+          className="hidden flex-1 items-center justify-center gap-1 lg:flex"
         >
           {nav.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="shrink-0 rounded-full px-3 py-2 text-sm font-semibold text-ink-soft transition hover:bg-brand-tint hover:text-brand-deep"
+              className="rounded-full px-3.5 py-2 text-[13px] font-semibold text-ink-soft transition hover:bg-surface-muted hover:text-ink"
             >
               {item.label}
             </a>
           ))}
-          <Link
-            href={`/${locale}/plan/wizard`}
-            className="btn btn-accent ml-2 shrink-0 text-sm"
-          >
-            Get my plan
-          </Link>
         </nav>
+
+        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+          <LanguageSwitcher locale={locale} path={path} />
+
+          <a
+            href={waHref(content.contact.whatsapp)}
+            className="hidden rounded-full px-3 py-2 text-[13px] font-semibold text-ink-soft transition hover:text-ink sm:inline"
+          >
+            WhatsApp
+          </a>
+          <a
+            href={telHref(content.contact.phone)}
+            className="hidden rounded-full px-3 py-2 text-[13px] font-semibold text-ink-soft transition hover:text-ink md:inline"
+          >
+            {content.contact.phone}
+          </a>
+
+          <Link
+            href={`/${locale}/portal/patient`}
+            className="rounded-full bg-brand-deep px-5 py-2 text-sm font-bold text-white transition hover:bg-brand"
+          >
+            {t(content.nav.patientLogin, locale)}
+          </Link>
+        </div>
       </div>
     </header>
   );

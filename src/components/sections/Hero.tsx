@@ -8,24 +8,19 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
   const { hero, specialties } = content;
 
   return (
-    <section id="quote" className="relative overflow-hidden bg-surface-muted">
-      <div aria-hidden="true" className="pointer-events-none absolute -right-32 -top-40 h-[34rem] w-[34rem] rounded-full bg-brand-tint blur-3xl" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-48 -left-32 h-[30rem] w-[30rem] rounded-full bg-[#efe9fd] blur-3xl" />
-
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:py-20">
-        <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-white px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.1em] text-brand-deep">
-            <Icon name="spark" className="h-4 w-4" />
-            {t(hero.eyebrow, locale)}
-          </p>
-
-          <h1 className="mt-5 text-[clamp(2rem,1.3rem+2.6vw,3.1rem)] font-extrabold leading-[1.08] tracking-[-0.025em] text-ink">
-            {t(hero.headline, locale)} <span className="text-brand-deep">{t(hero.headlineAccent, locale)}</span>
+    <section id="quote" className="bg-white">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:py-24">
+        <div className="flex flex-col justify-center">
+          <h1 className="text-[clamp(2.2rem,1.4rem+3.2vw,3.6rem)] font-extrabold leading-[1.06] tracking-[-0.03em] text-ink">
+            {t(hero.headline, locale)}{" "}
+            <span className="text-brand-deep">{t(hero.headlineAccent, locale)}</span>
           </h1>
 
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">{t(hero.body, locale)}</p>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
+            {t(hero.body, locale)}
+          </p>
 
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <a href="#quote-form" className="btn btn-accent">
               {t(hero.primaryCta, locale)}
               <span aria-hidden="true">&rarr;</span>
@@ -35,7 +30,7 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
             </a>
           </div>
 
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
+          <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-3">
             {hero.badges.map((badge) => (
               <li key={badge.id} className="flex items-center gap-2 text-sm font-semibold text-ink-soft">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-leaf-tint text-leaf">
@@ -47,9 +42,7 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
           </ul>
         </div>
 
-        <div id="quote-form" className="card scroll-mt-28 overflow-hidden p-0 shadow-xl shadow-ink/5">
-          <div className="tricolour-rule" />
-          <div className="p-6 sm:p-7">
+        <div id="quote-form" className="scroll-mt-28 rounded-2xl border border-line/60 bg-white p-6 shadow-lg shadow-ink/[0.04] sm:p-7">
           <div className="flex items-start gap-3">
             <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-brand-tint text-brand-deep">
               <Icon name="spark" className="h-6 w-6" />
@@ -91,7 +84,6 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
               }}
             />
           </form>
-          </div>
         </div>
       </div>
     </section>
