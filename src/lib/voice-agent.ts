@@ -11,16 +11,17 @@ const BASE_SYSTEM = `You are ShifaIn's patient assistant on Telegram. You help p
 WHAT YOU DO
 - Greet patients warmly and understand what medical help they need.
 - Ask clarifying questions about their condition, symptoms, and what treatment they're looking for.
-- Collect key information: their name, country, the medical condition, any previous treatment, and what they hope to achieve.
-- Once you have enough information, let them know a coordinator will follow up with a detailed plan and cost estimate.
+- Collect key information: the medical condition, any previous treatment, and what they hope to achieve.
+- Once you have enough information, let them know the system will collect a few more details to create their case.
 - Answer general questions about the process of getting treatment in India through ShifaIn.
 
 WHAT YOU DO NOT DO
 - You never diagnose. You are not a doctor.
 - You never state a price, a cost, a fee or a discount. Pricing comes from the coordinator.
 - You never promise an outcome, a success rate or a survival figure.
-- You never ask for sensitive medical records over chat. If they need to share reports, direct them to the patient portal.
+- You never ask for sensitive medical records over chat. If they need to share reports, tell them to send photos or PDFs right here.
 - You never give medical advice or suggest treatments. You gather information for the medical team.
+- You NEVER ask for the patient's name, country, or phone number. The system handles that separately.
 
 TONE
 - The patient is often anxious and may be speaking in their second language.
@@ -41,25 +42,22 @@ CONTEXT
 
 const INTAKE_SYSTEM = `${BASE_SYSTEM}
 
-INTAKE CONVERSATION RULES
-You are gathering information to create a medical case. Ask naturally — do NOT list all questions at once.
+MEDICAL CONVERSATION RULES
+You are gathering MEDICAL information only. The system collects personal details (name, country, phone) separately — never ask for those.
+
 Ask ONE question at a time, building on what the patient says. Be conversational, not robotic.
 
-Required information (ask for these naturally through conversation):
-1. Patient's name
-2. Country they are from
-3. What treatment or medical procedure they need
-4. Description of their medical condition
+Gather through conversation:
+1. What treatment or medical procedure they need
+2. Description of their medical condition and symptoms
+3. How long they've had the condition (if relevant)
+4. Any previous treatment they've received (if relevant)
+5. Patient's age (if they mention it naturally)
 
-Optional but helpful (ask if it comes up naturally):
-- How long they've had the condition
-- Any previous treatment they've received
-- Patient's age
-- Phone number
-
-After each message from the patient, call the "extract_patient_info" tool with any new information you learned.
-When you have at least: name, country, treatment, and condition description — call "submit_intake" to create their case.
-Do NOT call submit_intake until you have all four required fields.
+After each message, call "extract_medical_info" with any new medical information you learned.
+When you have at least the treatment needed AND a description of the condition, call "ready_for_profile".
+Do NOT call ready_for_profile until you have both treatment and condition.
+When you call ready_for_profile, your response should be something warm like "Thank you for sharing that. I have a good picture of what you need. Let me just collect a couple more details to set up your case."
 Always respond conversationally to the patient AND call the appropriate tool.`;
 
 export type ConversationMessage = {
@@ -88,15 +86,12 @@ const GEMINI_TOOLS: FunctionDeclarationsTool[] = [
   {
     functionDeclarations: [
       {
-        name: "extract_patient_info",
+        name: "extract_medical_info",
         description:
-          "Extract any patient information mentioned in the conversation so far. Call this after every patient message with whatever new info was provided.",
+          "Extract medical information mentioned in the conversation. Call this after every patient message with whatever new medical info was provided. Do NOT include name, country, or phone — those are collected separately.",
         parameters: {
           type: SchemaType.OBJECT,
           properties: {
-            name: { type: SchemaType.STRING, description: "Patient's full name" },
-            phone: { type: SchemaType.STRING, description: "Patient's phone number" },
-            country: { type: SchemaType.STRING, description: "Patient's country of origin" },
             treatment: { type: SchemaType.STRING, description: "Treatment or procedure they need" },
             condition: { type: SchemaType.STRING, description: "Description of their medical condition" },
             duration: { type: SchemaType.STRING, description: "How long they've had the condition" },
@@ -106,13 +101,13 @@ const GEMINI_TOOLS: FunctionDeclarationsTool[] = [
         },
       },
       {
-        name: "submit_intake",
+        name: "ready_for_profile",
         description:
-          "Call this ONLY when you have collected all required information (name, country, treatment, condition). This creates a case for the patient.",
+          "Call this when you have gathered enough medical information (at least treatment AND condition). This signals the system to collect remaining profile details from the patient.",
         parameters: {
           type: SchemaType.OBJECT,
           properties: {
-            ready: { type: SchemaType.BOOLEAN, description: "Must be true to submit" },
+            ready: { type: SchemaType.BOOLEAN, description: "Must be true" },
           },
           required: ["ready"],
         },
@@ -130,13 +125,13 @@ async function intakeWithGemini(
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
   const fieldsNote = Object.entries(currentFields)
-    .filter(([, v]) => v)
+    .filter(([k, v]) => v && !["name", "phone", "country"].includes(k))
     .map(([k, v]) => `${k}: ${v}`)
     .join(", ");
 
   const systemPrompt = [
     INTAKE_SYSTEM,
-    fieldsNote ? `\nAlready collected: ${fieldsNote}` : "",
+    fieldsNote ? `\nAlready collected medical info: ${fieldsNote}` : "",
     patientLanguage ? `\nThe patient's detected language is: ${patientLanguage}. Respond in that language.` : "",
   ].join("");
 
@@ -160,7 +155,7 @@ async function intakeWithGemini(
   const calls = response.functionCalls();
   if (calls) {
     for (const call of calls) {
-      if (call.name === "extract_patient_info") {
+      if (call.name === "extract_medical_info") {
         const args = call.args as Record<string, string>;
         for (const [k, v] of Object.entries(args)) {
           if (v && k in extracted === false) {
@@ -168,7 +163,7 @@ async function intakeWithGemini(
           }
         }
       }
-      if (call.name === "submit_intake") {
+      if (call.name === "ready_for_profile") {
         extracted.readyToSubmit = true;
       }
     }
@@ -182,15 +177,12 @@ async function intakeWithGemini(
 
 const CLAUDE_TOOLS: Anthropic.Messages.Tool[] = [
   {
-    name: "extract_patient_info",
+    name: "extract_medical_info",
     description:
-      "Extract any patient information mentioned in the conversation so far. Call this after every patient message with whatever new info was provided.",
+      "Extract medical information mentioned in the conversation. Call this after every patient message with whatever new medical info was provided. Do NOT include name, country, or phone — those are collected separately.",
     input_schema: {
       type: "object" as const,
       properties: {
-        name: { type: "string", description: "Patient's full name" },
-        phone: { type: "string", description: "Patient's phone number" },
-        country: { type: "string", description: "Patient's country of origin" },
         treatment: { type: "string", description: "Treatment or procedure they need" },
         condition: { type: "string", description: "Description of their medical condition" },
         duration: { type: "string", description: "How long they've had the condition" },
@@ -200,13 +192,13 @@ const CLAUDE_TOOLS: Anthropic.Messages.Tool[] = [
     },
   },
   {
-    name: "submit_intake",
+    name: "ready_for_profile",
     description:
-      "Call this ONLY when you have collected all required information (name, country, treatment, condition). This creates a case for the patient.",
+      "Call this when you have gathered enough medical information (at least treatment AND condition). This signals the system to collect remaining profile details from the patient.",
     input_schema: {
       type: "object" as const,
       properties: {
-        ready: { type: "boolean", description: "Must be true to submit" },
+        ready: { type: "boolean", description: "Must be true" },
       },
       required: ["ready"],
     },
@@ -222,13 +214,13 @@ async function intakeWithClaude(
   const client = new Anthropic();
 
   const fieldsNote = Object.entries(currentFields)
-    .filter(([, v]) => v)
+    .filter(([k, v]) => v && !["name", "phone", "country"].includes(k))
     .map(([k, v]) => `${k}: ${v}`)
     .join(", ");
 
   const systemPrompt = [
     INTAKE_SYSTEM,
-    fieldsNote ? `\nAlready collected: ${fieldsNote}` : "",
+    fieldsNote ? `\nAlready collected medical info: ${fieldsNote}` : "",
     patientLanguage ? `\nThe patient's detected language is: ${patientLanguage}. Respond in that language.` : "",
   ].join("");
 
@@ -256,13 +248,13 @@ async function intakeWithClaude(
       reply += block.text;
     }
     if (block.type === "tool_use") {
-      if (block.name === "extract_patient_info") {
+      if (block.name === "extract_medical_info") {
         const args = block.input as Record<string, string>;
         for (const [k, v] of Object.entries(args)) {
           if (v) (extracted as Record<string, unknown>)[k] = v;
         }
       }
-      if (block.name === "submit_intake") {
+      if (block.name === "ready_for_profile") {
         extracted.readyToSubmit = true;
       }
     }

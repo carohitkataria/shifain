@@ -24,29 +24,27 @@ import {
   getOrCreateIntake,
   updateIntakeFields,
   pushIntakeMessage,
+  setIntakeState,
   isIntakeReady,
   createCaseFromIntake,
+  nextProfileQuestion,
+  storeIntakeFile,
+  countryFromPhone,
 } from "./conversation-intake";
 
 /**
- * Patient bot conversation flow:
+ * Patient bot conversation flow (hybrid LLM + code):
  *
- *   /start → welcome + language → share phone or type query
- *     ↓ contact shared → link to case → status menu
- *     ↓ text query → save as lead / CRM message → coordinator notified
+ *   /start → welcome message
+ *     ↓ text/voice → AI medical conversation (LLM extracts treatment + condition)
+ *     ↓ LLM signals ready → code-driven profile questions (country, name if needed)
+ *     ↓ profile complete → case auto-created → status menu
+ *     ↓ photo/document → stored as report, attached to intake
+ *     ↓ contact shared → phone + country auto-detected
  *     ↓ /status <ref> → case status lookup
- *     ↓ /help → FAQ shortcuts
- *
- * Partner bot conversation flow:
- *
- *   /start → welcome + login prompt
- *     ↓ share phone → link to partner account
- *     ↓ /refer → new referral prompt
- *     ↓ /cases → list referred cases
- *     ↓ /broadcast → latest notices
  */
 
-// ---------------------------------------------------------------- voice
+// ---------------------------------------------------------------- voice history
 
 const conversationCache = new Map<number, { messages: ConversationMessage[]; ts: number }>();
 const MAX_HISTORY = 10;
@@ -67,6 +65,221 @@ function pushHistory(chatId: number, role: "user" | "assistant", content: string
   if (history.length > MAX_HISTORY) history.splice(0, history.length - MAX_HISTORY);
   conversationCache.set(chatId, { messages: history, ts: Date.now() });
 }
+
+// ---------------------------------------------------------------- auto-fill helpers
+
+function autoFillFromTelegram(
+  msg?: TgUpdate["message"] | null,
+  contact?: { phone?: string | null } | null,
+): { name?: string; phone?: string; country?: string } {
+  const result: { name?: string; phone?: string; country?: string } = {};
+
+  if (msg?.from) {
+    const firstName = msg.from.first_name;
+    const lastName = msg.from.last_name;
+    result.name = lastName ? `${firstName} ${lastName}` : firstName;
+  }
+
+  const phone = contact?.phone;
+  if (phone) {
+    result.phone = phone;
+    const country = countryFromPhone(phone);
+    if (country) result.country = country;
+  }
+
+  return result;
+}
+
+// ---------------------------------------------------------------- medical chat (LLM-powered)
+
+async function handleMedicalChat(
+  chatId: number,
+  userId: number,
+  text: string,
+  patientLanguage?: string,
+): Promise<void> {
+  const contact = await getTelegramContact("patient", userId);
+  const autoFill = autoFillFromTelegram(null, contact);
+  const intake = await getOrCreateIntake(userId, chatId, autoFill);
+
+  await pushIntakeMessage(userId, "user", text);
+
+  const history = intake.messages.map((m) => ({
+    role: m.role,
+    content: m.content,
+  }));
+
+  const { reply, extracted } = await generateIntakeReply(
+    text,
+    history,
+    intake.fields,
+    patientLanguage,
+  );
+
+  const { readyToSubmit, ...fieldUpdates } = extracted;
+  if (Object.values(fieldUpdates).some(Boolean)) {
+    await updateIntakeFields(userId, fieldUpdates);
+  }
+
+  await pushIntakeMessage(userId, "assistant", reply);
+  await sendMessage("patient", { chatId, text: reply });
+
+  await saveMessage({
+    channel: "telegram",
+    direction: "outbound",
+    contactType: "lead",
+    contactId: null,
+    caseReference: null,
+    telegramChatId: chatId,
+    senderName: "ShifaIn AI",
+    text: reply,
+    metadata: { ai: true, extracted: Object.values(fieldUpdates).some(Boolean) ? fieldUpdates : null },
+    status: "delivered",
+  });
+
+  if (readyToSubmit) {
+    await transitionToProfile(chatId, userId);
+  }
+
+  if (!intake.messages.length) {
+    await createLead({
+      name: contact ? `${contact.firstName} ${contact.lastName ?? ""}`.trim() : "Telegram user",
+      phone: contact?.phone ?? null,
+      email: null,
+      country: null,
+      need: text,
+      source: "telegram",
+    });
+  }
+
+  await updateContactState("patient", userId, "intake");
+}
+
+// ---------------------------------------------------------------- profile collection (code-driven, no LLM)
+
+async function transitionToProfile(chatId: number, userId: number): Promise<void> {
+  await setIntakeState(userId, "collecting_profile");
+  const intake = await getOrCreateIntake(userId, chatId);
+
+  if (isIntakeReady(intake.fields)) {
+    await createCaseFromIntake(intake);
+    return;
+  }
+
+  const q = nextProfileQuestion(intake.fields);
+  if (q) {
+    await sendMessage("patient", {
+      chatId,
+      text: q.question,
+      keyboard: q.buttons,
+    });
+  } else if (isIntakeReady(intake.fields)) {
+    await createCaseFromIntake(intake);
+  }
+}
+
+async function handleProfileAnswer(
+  chatId: number,
+  userId: number,
+  answer: string,
+): Promise<void> {
+  const intake = await getOrCreateIntake(userId, chatId);
+  const q = nextProfileQuestion(intake.fields);
+
+  if (!q) {
+    if (isIntakeReady(intake.fields)) {
+      await createCaseFromIntake(intake);
+    }
+    return;
+  }
+
+  await updateIntakeFields(userId, { [q.field]: answer });
+  await pushIntakeMessage(userId, "user", answer);
+
+  const updatedIntake = await getOrCreateIntake(userId, chatId);
+  const next = nextProfileQuestion(updatedIntake.fields);
+
+  if (next) {
+    await sendMessage("patient", {
+      chatId,
+      text: next.question,
+      keyboard: next.buttons,
+    });
+    return;
+  }
+
+  if (isIntakeReady(updatedIntake.fields)) {
+    await createCaseFromIntake(updatedIntake);
+  }
+}
+
+// ---------------------------------------------------------------- file uploads
+
+async function handleFileUpload(
+  chatId: number,
+  userId: number,
+  msg: TgUpdate["message"],
+): Promise<void> {
+  if (!msg) return;
+
+  let fileId: string;
+  let fileName: string;
+  let mimeType: string;
+  let fileSize: number;
+
+  if (msg.document) {
+    fileId = msg.document.file_id;
+    fileName = msg.document.file_name ?? "document";
+    mimeType = msg.document.mime_type ?? "application/octet-stream";
+    fileSize = msg.document.file_size ?? 0;
+  } else if (msg.photo?.length) {
+    const largest = msg.photo[msg.photo.length - 1];
+    fileId = largest.file_id;
+    fileName = "photo.jpg";
+    mimeType = "image/jpeg";
+    fileSize = largest.file_size ?? 0;
+  } else {
+    return;
+  }
+
+  const contact = await getTelegramContact("patient", userId);
+  const autoFill = autoFillFromTelegram(msg, contact);
+  await getOrCreateIntake(userId, chatId, autoFill);
+
+  try {
+    const fileInfo = await getFile("patient", fileId);
+    if (!fileInfo.file_path) {
+      await sendMessage("patient", { chatId, text: "Could not process the file. Please try again." });
+      return;
+    }
+
+    const fileBuffer = await downloadFile("patient", fileInfo.file_path);
+
+    await storeIntakeFile(userId, {
+      fileName,
+      mimeType,
+      fileSize: fileBuffer.byteLength,
+      data: fileBuffer,
+    });
+
+    await sendMessage("patient", {
+      chatId,
+      text: `📎 <b>File received:</b> ${fileName}\n\nYour report has been saved and will be attached to your case. You can send more files, or continue describing your medical needs.`,
+    });
+  } catch (error) {
+    console.error("[shifain] file upload error:", error);
+    await sendMessage("patient", {
+      chatId,
+      text: "I had trouble processing that file. Please try again or send it in a different format.",
+    });
+  }
+
+  if (msg.caption?.trim()) {
+    await handlePatientText(chatId, userId, msg.caption.trim(), "intake");
+  }
+}
+
+// ---------------------------------------------------------------- voice messages
 
 async function handleVoiceMessage(chatId: number, userId: number, fileId: string): Promise<void> {
   if (!isElevenLabsConfigured()) {
@@ -89,7 +302,6 @@ async function handleVoiceMessage(chatId: number, userId: number, fileId: string
   }
 
   const audioBuffer = await downloadFile("patient", fileInfo.file_path);
-
   const transcription = await transcribeAudio(audioBuffer);
   if (!transcription.text.trim()) {
     await sendMessage("patient", { chatId, text: "I couldn't understand the audio. Could you try again or type your message?" });
@@ -111,11 +323,10 @@ async function handleVoiceMessage(chatId: number, userId: number, fileId: string
     status: "delivered",
   });
 
-  // Route voice through conversational intake (same as text, but with TTS reply)
-  const intake = await getOrCreateIntake(userId, chatId);
+  const autoFill = autoFillFromTelegram(null, contact);
+  const intake = await getOrCreateIntake(userId, chatId, autoFill);
 
   if (intake.complete) {
-    // Existing case — simple reply mode
     const history = getHistory(chatId);
     const reply = await generateReply(transcription.text, history, transcription.language_code);
     pushHistory(chatId, "user", transcription.text);
@@ -129,6 +340,12 @@ async function handleVoiceMessage(chatId: number, userId: number, fileId: string
     return;
   }
 
+  if (intake.state === "collecting_profile") {
+    await handleProfileAnswer(chatId, userId, transcription.text);
+    return;
+  }
+
+  // Medical chat via LLM
   await pushIntakeMessage(userId, "user", transcription.text);
   const history = intake.messages.map((m) => ({ role: m.role, content: m.content }));
   const { reply, extracted } = await generateIntakeReply(
@@ -144,7 +361,6 @@ async function handleVoiceMessage(chatId: number, userId: number, fileId: string
   }
   await pushIntakeMessage(userId, "assistant", reply);
 
-  // Send as voice
   try {
     const speechBuffer = await textToSpeech({ text: reply, languageCode: transcription.language_code });
     await sendVoice("patient", chatId, speechBuffer, reply);
@@ -152,16 +368,14 @@ async function handleVoiceMessage(chatId: number, userId: number, fileId: string
     await sendMessage("patient", { chatId, text: reply });
   }
 
-  // Check if ready to create a case
-  const updatedIntake = await getOrCreateIntake(userId, chatId);
-  if (readyToSubmit && isIntakeReady(updatedIntake.fields)) {
-    await createCaseFromIntake(updatedIntake);
+  if (readyToSubmit) {
+    await transitionToProfile(chatId, userId);
   }
 
   if (!intake.messages.length && contact) {
     await createLead({
       name: `${contact.firstName} ${contact.lastName ?? ""}`.trim(),
-      phone: contact.phone ?? null,
+      phone: contact?.phone ?? null,
       email: null,
       country: null,
       need: transcription.text,
@@ -213,6 +427,12 @@ async function handlePatientUpdate(update: TgUpdate): Promise<void> {
     return;
   }
 
+  // Handle file uploads (photos, documents, reports)
+  if (msg.photo || msg.document) {
+    await handleFileUpload(chatId, userId, msg);
+    return;
+  }
+
   const voiceFileId = msg.voice?.file_id ?? msg.audio?.file_id;
   if (voiceFileId) {
     await handleVoiceMessage(chatId, userId, voiceFileId);
@@ -246,6 +466,7 @@ async function handlePatientCommand(
           "You can:\n" +
           "• <b>Describe your medical need</b> — I'll ask a few questions and create your treatment plan\n" +
           "• <b>Send a voice message</b> — speak in any language, I'll understand\n" +
+          "• <b>Send medical reports</b> — photos or PDFs of scans, lab results\n" +
           "• Check your case status with /status\n\n" +
           "Simply start by telling me what treatment you're looking for, and I'll guide you through the rest.",
         requestContact: true,
@@ -343,6 +564,17 @@ async function handlePatientCallback(
 ): Promise<void> {
   await answerCallback("patient", callbackId);
 
+  // Handle profile collection callbacks (e.g. "profile:country:Uzbekistan")
+  if (data.startsWith("profile:")) {
+    const parts = data.split(":");
+    const field = parts[1];
+    const value = parts.slice(2).join(":");
+    if (field === "country" && value) {
+      await handleProfileAnswer(chatId, userId, value);
+    }
+    return;
+  }
+
   const [prefix, value] = data.split(":");
 
   switch (prefix) {
@@ -412,6 +644,30 @@ async function handlePhoneShared(chatId: number, userId: number, phone: string):
     stateData: null,
   });
 
+  // Auto-fill phone and country into any active intake
+  const detectedCountry = countryFromPhone(digits);
+  const intake = await getOrCreateIntake(userId, chatId, {
+    phone: digits,
+    country: detectedCountry ?? undefined,
+  });
+
+  // If intake is waiting for profile info and this fills it, continue
+  if (intake.state === "collecting_profile") {
+    if (isIntakeReady(intake.fields)) {
+      await createCaseFromIntake(intake);
+      return;
+    }
+    const q = nextProfileQuestion(intake.fields);
+    if (q) {
+      await sendMessage("patient", {
+        chatId,
+        text: `📱 Phone saved!${detectedCountry ? ` Country detected: ${detectedCountry}.` : ""}\n\n${q.question}`,
+        keyboard: q.buttons,
+      });
+      return;
+    }
+  }
+
   const cases = await casesForPhone(digits, 5);
 
   if (cases.length > 0) {
@@ -445,16 +701,8 @@ async function handlePhoneShared(chatId: number, userId: number, phone: string):
     await sendMessage("patient", {
       chatId,
       text:
-        "📱 Phone number saved. I don't see an existing case with this number yet.\n\n" +
-        "You can:\n" +
-        "• Type your medical query and we'll create a case for you\n" +
-        "• Use /status with your reference if you have one",
-      keyboard: [
-        [
-          { text: "💬 Ask a question", callback_data: "action:query" },
-          { text: "💰 Get an estimate", callback_data: "action:estimate" },
-        ],
-      ],
+        `📱 Phone number saved.${detectedCountry ? ` Country: ${detectedCountry}.` : ""}\n\n` +
+        "Tell me what medical help you need and I'll create your case — no forms required!",
     });
   }
 }
@@ -482,91 +730,29 @@ async function handlePatientText(
     status: "delivered",
   });
 
-  // Route through the AI conversational intake
-  await handleConversationalIntake(chatId, userId, text);
-}
-
-async function handleConversationalIntake(
-  chatId: number,
-  userId: number,
-  text: string,
-  patientLanguage?: string,
-): Promise<void> {
   try {
-    const intake = await getOrCreateIntake(userId, chatId);
+    const autoFill = autoFillFromTelegram(null, contact);
+    const intake = await getOrCreateIntake(userId, chatId, autoFill);
 
     if (intake.complete) {
-      // Patient already has a case — use simple reply mode
       const history = intake.messages.slice(-8).map((m) => ({
         role: m.role,
         content: m.content,
       }));
-      const reply = await generateReply(text, history, patientLanguage);
+      const reply = await generateReply(text, history);
       pushHistory(chatId, "user", text);
       pushHistory(chatId, "assistant", reply);
       await sendMessage("patient", { chatId, text: reply });
       return;
     }
 
-    await pushIntakeMessage(userId, "user", text);
-
-    const history = intake.messages.map((m) => ({
-      role: m.role,
-      content: m.content,
-    }));
-
-    const { reply, extracted } = await generateIntakeReply(
-      text,
-      history,
-      intake.fields,
-      patientLanguage,
-    );
-
-    const { readyToSubmit, ...fieldUpdates } = extracted;
-    const hasUpdates = Object.values(fieldUpdates).some(Boolean);
-
-    let updatedIntake = intake;
-    if (hasUpdates) {
-      updatedIntake = await updateIntakeFields(userId, fieldUpdates);
+    if (intake.state === "collecting_profile") {
+      await handleProfileAnswer(chatId, userId, text);
+      return;
     }
 
-    await pushIntakeMessage(userId, "assistant", reply);
-    await sendMessage("patient", { chatId, text: reply });
-
-    await saveMessage({
-      channel: "telegram",
-      direction: "outbound",
-      contactType: "lead",
-      contactId: null,
-      caseReference: null,
-      telegramChatId: chatId,
-      senderName: "ShifaIn AI",
-      text: reply,
-      metadata: { ai: true, extracted: hasUpdates ? fieldUpdates : null },
-      status: "delivered",
-    });
-
-    // Check if ready to create a case
-    if (readyToSubmit && isIntakeReady(updatedIntake.fields)) {
-      await createCaseFromIntake(updatedIntake);
-    } else if (readyToSubmit && !isIntakeReady(updatedIntake.fields)) {
-      // LLM thought it was ready but we're still missing fields — it will ask on next turn
-    }
-
-    // Also create a lead for CRM tracking
-    const contact = await getTelegramContact("patient", userId);
-    if (!intake.messages.length) {
-      await createLead({
-        name: contact ? `${contact.firstName} ${contact.lastName ?? ""}`.trim() : "Telegram user",
-        phone: contact?.phone ?? null,
-        email: null,
-        country: null,
-        need: text,
-        source: "telegram",
-      });
-    }
-
-    await updateContactState("patient", userId, "intake");
+    // medical_chat state → LLM handles
+    await handleMedicalChat(chatId, userId, text);
   } catch (error) {
     console.error("[shifain] conversational intake error:", error);
     await sendMessage("patient", {

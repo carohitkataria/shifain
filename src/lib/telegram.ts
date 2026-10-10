@@ -77,6 +77,9 @@ export type TgMessage = {
   contact?: { phone_number: string; first_name: string; user_id?: number };
   voice?: { file_id: string; file_unique_id: string; duration: number; mime_type?: string; file_size?: number };
   audio?: { file_id: string; file_unique_id: string; duration: number; mime_type?: string; file_size?: number };
+  photo?: { file_id: string; file_unique_id: string; width: number; height: number; file_size?: number }[];
+  document?: { file_id: string; file_unique_id: string; file_name?: string; mime_type?: string; file_size?: number };
+  caption?: string;
 };
 
 export type TgUpdate = {
