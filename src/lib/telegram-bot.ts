@@ -19,7 +19,14 @@ import { normalisePhone } from "./patient-auth";
 import { casesForPhone, getCase } from "./cases";
 import { createLead } from "./telegram-leads";
 import { isElevenLabsConfigured, transcribeAudio, textToSpeech } from "./elevenlabs";
-import { generateReply, type ConversationMessage } from "./voice-agent";
+import { generateReply, generateIntakeReply, type ConversationMessage } from "./voice-agent";
+import {
+  getOrCreateIntake,
+  updateIntakeFields,
+  pushIntakeMessage,
+  isIntakeReady,
+  createCaseFromIntake,
+} from "./conversation-intake";
 
 /**
  * Patient bot conversation flow:
@@ -104,39 +111,64 @@ async function handleVoiceMessage(chatId: number, userId: number, fileId: string
     status: "delivered",
   });
 
-  const history = getHistory(chatId);
-  const reply = await generateReply(transcription.text, history, transcription.language_code);
+  // Route voice through conversational intake (same as text, but with TTS reply)
+  const intake = await getOrCreateIntake(userId, chatId);
 
-  pushHistory(chatId, "user", transcription.text);
-  pushHistory(chatId, "assistant", reply);
+  if (intake.complete) {
+    // Existing case — simple reply mode
+    const history = getHistory(chatId);
+    const reply = await generateReply(transcription.text, history, transcription.language_code);
+    pushHistory(chatId, "user", transcription.text);
+    pushHistory(chatId, "assistant", reply);
+    try {
+      const speechBuffer = await textToSpeech({ text: reply, languageCode: transcription.language_code });
+      await sendVoice("patient", chatId, speechBuffer, reply);
+    } catch {
+      await sendMessage("patient", { chatId, text: reply });
+    }
+    return;
+  }
 
+  await pushIntakeMessage(userId, "user", transcription.text);
+  const history = intake.messages.map((m) => ({ role: m.role, content: m.content }));
+  const { reply, extracted } = await generateIntakeReply(
+    transcription.text,
+    history,
+    intake.fields,
+    transcription.language_code,
+  );
+
+  const { readyToSubmit, ...fieldUpdates } = extracted;
+  if (Object.values(fieldUpdates).some(Boolean)) {
+    await updateIntakeFields(userId, fieldUpdates);
+  }
+  await pushIntakeMessage(userId, "assistant", reply);
+
+  // Send as voice
   try {
-    const speechBuffer = await textToSpeech({
-      text: reply,
-      languageCode: transcription.language_code,
-    });
+    const speechBuffer = await textToSpeech({ text: reply, languageCode: transcription.language_code });
     await sendVoice("patient", chatId, speechBuffer, reply);
   } catch {
     await sendMessage("patient", { chatId, text: reply });
   }
 
-  if (contact) {
-    const state = contact.state;
-    if (state === "start" || state === "welcome") {
-      await updateContactState("patient", userId, "ready");
-    }
-    if (state === "awaiting_estimate" || state === "awaiting_query") {
-      await createLead({
-        name: `${contact.firstName} ${contact.lastName ?? ""}`.trim(),
-        phone: contact.phone ?? null,
-        email: null,
-        country: null,
-        need: transcription.text,
-        source: "telegram",
-      });
-      await updateContactState("patient", userId, "ready");
-    }
+  // Check if ready to create a case
+  const updatedIntake = await getOrCreateIntake(userId, chatId);
+  if (readyToSubmit && isIntakeReady(updatedIntake.fields)) {
+    await createCaseFromIntake(updatedIntake);
   }
+
+  if (!intake.messages.length && contact) {
+    await createLead({
+      name: `${contact.firstName} ${contact.lastName ?? ""}`.trim(),
+      phone: contact.phone ?? null,
+      email: null,
+      country: null,
+      need: transcription.text,
+      source: "telegram",
+    });
+  }
+  await updateContactState("patient", userId, "intake");
 }
 
 // ---------------------------------------------------------------- patient bot
@@ -210,12 +242,12 @@ async function handlePatientCommand(
         chatId,
         text:
           "🏥 <b>Welcome to ShifaIn</b>\n\n" +
-          "I can help you with:\n" +
-          "• Check your treatment plan status\n" +
-          "• Ask questions about your care\n" +
-          "• Get cost estimates\n" +
-          "• Connect with your coordinator\n\n" +
-          "Share your phone number so I can find your case, or just type your question.",
+          "I'm your AI health assistant. Just tell me what you need — no forms to fill out!\n\n" +
+          "You can:\n" +
+          "• <b>Describe your medical need</b> — I'll ask a few questions and create your treatment plan\n" +
+          "• <b>Send a voice message</b> — speak in any language, I'll understand\n" +
+          "• Check your case status with /status\n\n" +
+          "Simply start by telling me what treatment you're looking for, and I'll guide you through the rest.",
         requestContact: true,
       });
       break;
@@ -450,31 +482,100 @@ async function handlePatientText(
     status: "delivered",
   });
 
-  if (state === "awaiting_estimate" || state === "awaiting_query") {
-    await createLead({
-      name: contact ? `${contact.firstName} ${contact.lastName ?? ""}`.trim() : "Telegram user",
-      phone: contact?.phone ?? null,
-      email: null,
-      country: null,
-      need: text,
-      source: "telegram",
+  // Route through the AI conversational intake
+  await handleConversationalIntake(chatId, userId, text);
+}
+
+async function handleConversationalIntake(
+  chatId: number,
+  userId: number,
+  text: string,
+  patientLanguage?: string,
+): Promise<void> {
+  try {
+    const intake = await getOrCreateIntake(userId, chatId);
+
+    if (intake.complete) {
+      // Patient already has a case — use simple reply mode
+      const history = intake.messages.slice(-8).map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
+      const reply = await generateReply(text, history, patientLanguage);
+      pushHistory(chatId, "user", text);
+      pushHistory(chatId, "assistant", reply);
+      await sendMessage("patient", { chatId, text: reply });
+      return;
+    }
+
+    await pushIntakeMessage(userId, "user", text);
+
+    const history = intake.messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    const { reply, extracted } = await generateIntakeReply(
+      text,
+      history,
+      intake.fields,
+      patientLanguage,
+    );
+
+    const { readyToSubmit, ...fieldUpdates } = extracted;
+    const hasUpdates = Object.values(fieldUpdates).some(Boolean);
+
+    let updatedIntake = intake;
+    if (hasUpdates) {
+      updatedIntake = await updateIntakeFields(userId, fieldUpdates);
+    }
+
+    await pushIntakeMessage(userId, "assistant", reply);
+    await sendMessage("patient", { chatId, text: reply });
+
+    await saveMessage({
+      channel: "telegram",
+      direction: "outbound",
+      contactType: "lead",
+      contactId: null,
+      caseReference: null,
+      telegramChatId: chatId,
+      senderName: "ShifaIn AI",
+      text: reply,
+      metadata: { ai: true, extracted: hasUpdates ? fieldUpdates : null },
+      status: "delivered",
     });
-    await updateContactState("patient", userId, "ready");
+
+    // Check if ready to create a case
+    if (readyToSubmit && isIntakeReady(updatedIntake.fields)) {
+      await createCaseFromIntake(updatedIntake);
+    } else if (readyToSubmit && !isIntakeReady(updatedIntake.fields)) {
+      // LLM thought it was ready but we're still missing fields — it will ask on next turn
+    }
+
+    // Also create a lead for CRM tracking
+    const contact = await getTelegramContact("patient", userId);
+    if (!intake.messages.length) {
+      await createLead({
+        name: contact ? `${contact.firstName} ${contact.lastName ?? ""}`.trim() : "Telegram user",
+        phone: contact?.phone ?? null,
+        email: null,
+        country: null,
+        need: text,
+        source: "telegram",
+      });
+    }
+
+    await updateContactState("patient", userId, "intake");
+  } catch (error) {
+    console.error("[shifain] conversational intake error:", error);
     await sendMessage("patient", {
       chatId,
       text:
-        "✅ Got it! A coordinator will review your query and get back to you here.\n\n" +
-        "You'll receive a notification when they respond. In the meantime, feel free to ask anything else.",
+        "I'm sorry, I had trouble processing that. A coordinator will review your message and get back to you.\n\n" +
+        "For quick actions, type /help.",
     });
-    return;
   }
-
-  await sendMessage("patient", {
-    chatId,
-    text:
-      "💬 Message received! A coordinator will respond shortly.\n\n" +
-      "For quick actions, type /help.",
-  });
 }
 
 async function lookupCaseStatus(chatId: number, userId: number, reference: string): Promise<void> {
