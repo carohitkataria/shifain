@@ -101,5 +101,6 @@ export function environmentCheck(): EnvCheck[] {
     { name: "TELEGRAM_BOT_TOKEN", set: has("TELEGRAM_BOT_TOKEN"), required: false, what: "Shared Telegram bot token (used when separate patient/partner tokens are not set)." },
     { name: "TELEGRAM_PATIENT_BOT_TOKEN", set: has("TELEGRAM_PATIENT_BOT_TOKEN"), required: false, what: "Patient-facing Telegram bot. Falls back to TELEGRAM_BOT_TOKEN." },
     { name: "TELEGRAM_PARTNER_BOT_TOKEN", set: has("TELEGRAM_PARTNER_BOT_TOKEN"), required: false, what: "Partner/doctor-facing Telegram bot. Falls back to TELEGRAM_BOT_TOKEN." },
+    { name: "ELEVENLABS_API_KEY", set: has("ELEVENLABS_API_KEY"), required: false, what: "ElevenLabs voice AI. Without it, voice messages get a text-only reply." },
   ];
 }

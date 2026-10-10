@@ -75,6 +75,8 @@ export type TgMessage = {
   date: number;
   text?: string;
   contact?: { phone_number: string; first_name: string; user_id?: number };
+  voice?: { file_id: string; file_unique_id: string; duration: number; mime_type?: string; file_size?: number };
+  audio?: { file_id: string; file_unique_id: string; duration: number; mime_type?: string; file_size?: number };
 };
 
 export type TgUpdate = {
@@ -128,6 +130,51 @@ export async function answerCallback(role: BotRole, callbackId: string, text?: s
   const token = tokenFor(role);
   if (!token) return;
   await call(token, "answerCallbackQuery", { callback_query_id: callbackId, text });
+}
+
+// ------------------------------------------------------------------ files
+
+export type TgFile = {
+  file_id: string;
+  file_unique_id: string;
+  file_size?: number;
+  file_path?: string;
+};
+
+export async function getFile(role: BotRole, fileId: string): Promise<TgFile> {
+  const token = tokenFor(role);
+  if (!token) throw new Error(`Telegram ${role} bot is not configured.`);
+  return call<TgFile>(token, "getFile", { file_id: fileId });
+}
+
+export async function downloadFile(role: BotRole, filePath: string): Promise<Buffer> {
+  const token = tokenFor(role);
+  if (!token) throw new Error(`Telegram ${role} bot is not configured.`);
+  const res = await fetch(`${API}/file/bot${token}/${filePath}`);
+  if (!res.ok) throw new Error(`Telegram file download ${res.status}`);
+  const buf = await res.arrayBuffer();
+  return Buffer.from(buf);
+}
+
+export async function sendVoice(role: BotRole, chatId: number, audioBuffer: Buffer, caption?: string): Promise<TgMessage> {
+  const token = tokenFor(role);
+  if (!token) throw new Error(`Telegram ${role} bot is not configured.`);
+
+  const form = new FormData();
+  form.append("chat_id", String(chatId));
+  form.append("voice", new Blob([new Uint8Array(audioBuffer)], { type: "audio/mpeg" }), "reply.mp3");
+  if (caption) {
+    form.append("caption", caption);
+    form.append("parse_mode", "HTML");
+  }
+
+  const res = await fetch(`${API}/bot${token}/sendVoice`, {
+    method: "POST",
+    body: form,
+  });
+  const json = (await res.json()) as { ok: true; result: TgMessage } | { ok: false; description: string };
+  if (!json.ok) throw new Error(`Telegram sendVoice: ${json.description}`);
+  return json.result;
 }
 
 // ------------------------------------------------------------------ webhook

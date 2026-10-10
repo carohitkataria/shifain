@@ -2,6 +2,9 @@ import "server-only";
 import {
   sendMessage,
   answerCallback,
+  getFile,
+  downloadFile,
+  sendVoice,
   type BotRole,
   type TgUpdate,
 } from "./telegram";
@@ -15,6 +18,8 @@ import {
 import { normalisePhone } from "./patient-auth";
 import { casesForPhone, getCase } from "./cases";
 import { createLead } from "./telegram-leads";
+import { isElevenLabsConfigured, transcribeAudio, textToSpeech } from "./elevenlabs";
+import { generateReply, type ConversationMessage } from "./voice-agent";
 
 /**
  * Patient bot conversation flow:
@@ -33,6 +38,106 @@ import { createLead } from "./telegram-leads";
  *     ↓ /cases → list referred cases
  *     ↓ /broadcast → latest notices
  */
+
+// ---------------------------------------------------------------- voice
+
+const conversationCache = new Map<number, { messages: ConversationMessage[]; ts: number }>();
+const MAX_HISTORY = 10;
+const CACHE_TTL = 30 * 60 * 1000;
+
+function getHistory(chatId: number): ConversationMessage[] {
+  const entry = conversationCache.get(chatId);
+  if (!entry || Date.now() - entry.ts > CACHE_TTL) {
+    conversationCache.delete(chatId);
+    return [];
+  }
+  return entry.messages;
+}
+
+function pushHistory(chatId: number, role: "user" | "assistant", content: string): void {
+  const history = getHistory(chatId);
+  history.push({ role, content });
+  if (history.length > MAX_HISTORY) history.splice(0, history.length - MAX_HISTORY);
+  conversationCache.set(chatId, { messages: history, ts: Date.now() });
+}
+
+async function handleVoiceMessage(chatId: number, userId: number, fileId: string): Promise<void> {
+  if (!isElevenLabsConfigured()) {
+    await sendMessage("patient", {
+      chatId,
+      text: "🎤 Voice messages are not yet available. Please type your message instead.",
+    });
+    return;
+  }
+
+  await sendMessage("patient", {
+    chatId,
+    text: "🎧 Processing your voice message...",
+  });
+
+  const fileInfo = await getFile("patient", fileId);
+  if (!fileInfo.file_path) {
+    await sendMessage("patient", { chatId, text: "Could not download the voice file. Please try again." });
+    return;
+  }
+
+  const audioBuffer = await downloadFile("patient", fileInfo.file_path);
+
+  const transcription = await transcribeAudio(audioBuffer);
+  if (!transcription.text.trim()) {
+    await sendMessage("patient", { chatId, text: "I couldn't understand the audio. Could you try again or type your message?" });
+    return;
+  }
+
+  const contact = await getTelegramContact("patient", userId);
+
+  await saveMessage({
+    channel: "telegram",
+    direction: "inbound",
+    contactType: contact?.contactType === "patient" ? "patient" : "lead",
+    contactId: contact?.contactId ?? null,
+    caseReference: contact?.caseReference ?? null,
+    telegramChatId: chatId,
+    senderName: contact ? `${contact.firstName} ${contact.lastName ?? ""}`.trim() : null,
+    text: `[voice] ${transcription.text}`,
+    metadata: { telegramUserId: userId, language: transcription.language_code, voice: true },
+    status: "delivered",
+  });
+
+  const history = getHistory(chatId);
+  const reply = await generateReply(transcription.text, history, transcription.language_code);
+
+  pushHistory(chatId, "user", transcription.text);
+  pushHistory(chatId, "assistant", reply);
+
+  try {
+    const speechBuffer = await textToSpeech({
+      text: reply,
+      languageCode: transcription.language_code,
+    });
+    await sendVoice("patient", chatId, speechBuffer, reply);
+  } catch {
+    await sendMessage("patient", { chatId, text: reply });
+  }
+
+  if (contact) {
+    const state = contact.state;
+    if (state === "start" || state === "welcome") {
+      await updateContactState("patient", userId, "ready");
+    }
+    if (state === "awaiting_estimate" || state === "awaiting_query") {
+      await createLead({
+        name: `${contact.firstName} ${contact.lastName ?? ""}`.trim(),
+        phone: contact.phone ?? null,
+        email: null,
+        country: null,
+        need: transcription.text,
+        source: "telegram",
+      });
+      await updateContactState("patient", userId, "ready");
+    }
+  }
+}
 
 // ---------------------------------------------------------------- patient bot
 
@@ -73,6 +178,12 @@ async function handlePatientUpdate(update: TgUpdate): Promise<void> {
 
   if (msg.contact?.phone_number) {
     await handlePhoneShared(chatId, userId, msg.contact.phone_number);
+    return;
+  }
+
+  const voiceFileId = msg.voice?.file_id ?? msg.audio?.file_id;
+  if (voiceFileId) {
+    await handleVoiceMessage(chatId, userId, voiceFileId);
     return;
   }
 
