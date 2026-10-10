@@ -122,8 +122,6 @@ export type SiteContent = {
     badges: { id: string; label: L }[];
     form: {
       title: L;
-      subtitle: L;
-      freeNote: L;
       nameLabel: L;
       namePlaceholder: L;
       phoneLabel: L;
