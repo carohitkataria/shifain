@@ -161,6 +161,9 @@ async function geminiModels(): Promise<string[]> {
 }
 
 const isModelMissing = (error: unknown) => /\b404\b|not found|no longer available/i.test(String(error));
+/** Google's overload is per model, so a busy model is a reason to try the next one too. */
+const isModelBusy = (error: unknown) =>
+  /\b503\b|\b500\b|overloaded|high demand|unavailable/i.test(String(error));
 
 /** Tries each candidate model in turn, moving on only when Google says the model does not exist. */
 async function withGeminiModel<T>(run: (model: string) => Promise<T>): Promise<T> {
@@ -171,6 +174,10 @@ async function withGeminiModel<T>(run: (model: string) => Promise<T>): Promise<T
       return await run(model);
     } catch (error) {
       lastError = error;
+      if (isModelBusy(error)) {
+        console.error(`[shifain] Gemini model ${model} is busy, trying the next one`);
+        continue;
+      }
       if (!isModelMissing(error)) throw error;
       console.error(`[shifain] Gemini model ${model} unavailable, trying the next one`);
       geminiModelCache = geminiModelCache && {
