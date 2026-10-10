@@ -65,6 +65,44 @@ export type ConversationMessage = {
   content: string;
 };
 
+// ---------------------------------------------------------------- quota pauses
+
+type Provider = "gemini" | "claude";
+const pausedUntil: Record<Provider, number> = { gemini: 0, claude: 0 };
+
+const isQuotaError = (text: string) =>
+  /\b429\b|quota|rate.?limit|resource.?exhausted|too many requests|credit balance|billing/i.test(text);
+
+/**
+ * When a provider says its quota or credit is used up, stop asking it until
+ * the time it gives (Google sends a retry delay), then use it again
+ * automatically. Meanwhile the next provider, or the scripted intake, answers.
+ */
+export function pauseDuration(error: unknown): number | null {
+  const text = String(error instanceof Error ? error.message : error);
+  if (/api key not valid|invalid.?api.?key|authentication|\b401\b|\b403\b/i.test(text)) return 60 * 60 * 1000;
+  if (!isQuotaError(text)) return null;
+  if (/credit balance|billing/i.test(text)) return 30 * 60 * 1000;
+  const seconds =
+    Number(/retry in ([\d.]+)\s*s/i.exec(text)?.[1]) ||
+    Number(/"?retryDelay"?\s*:\s*"?(\d+)s/i.exec(text)?.[1]) ||
+    60;
+  return Math.min(60 * 60, Math.max(10, Math.ceil(seconds))) * 1000;
+}
+
+function noteFailure(provider: Provider, error: unknown): void {
+  const ms = pauseDuration(error);
+  if (ms) {
+    pausedUntil[provider] = Date.now() + ms;
+    console.error(`[shifain] ${provider} paused for ${Math.round(ms / 1000)}s (quota, credit or key); resumes automatically`);
+  }
+}
+
+function available(provider: Provider): boolean {
+  const key = provider === "gemini" ? process.env.GEMINI_API_KEY : process.env.ANTHROPIC_API_KEY;
+  return Boolean(key) && Date.now() >= pausedUntil[provider];
+}
+
 // ---------------------------------------------------------------- Gemini model choice
 
 /**
@@ -112,7 +150,11 @@ async function geminiModels(): Promise<string[]> {
     } catch (error) {
       console.error("[shifain] could not list Gemini models:", error);
     }
-    geminiModelCache = { models: models.length > 0 ? models : ["gemini-flash-latest"], at: Date.now() };
+    // A failed listing is retried in five minutes rather than trusted for six hours.
+    geminiModelCache = {
+      models: models.length > 0 ? models : ["gemini-flash-latest"],
+      at: models.length > 0 ? Date.now() : Date.now() - MODEL_LIST_TTL + 5 * 60 * 1000,
+    };
   }
   const list = geminiModelCache.models;
   return pinned ? [pinned, ...list.filter((m) => m !== pinned)] : list;
@@ -343,20 +385,22 @@ export async function generateIntakeReply(
   currentFields: Partial<IntakeField> = {},
   patientLanguage?: string,
 ): Promise<IntakeReplyResult> {
-  if (process.env.GEMINI_API_KEY) {
+  if (available("gemini")) {
     try {
       return await withGeminiModel((model) =>
         intakeWithGemini(model, userMessage, history, currentFields, patientLanguage),
       );
     } catch (err) {
       console.error("[shifain] Gemini intake failed:", err);
+      noteFailure("gemini", err);
     }
   }
-  if (process.env.ANTHROPIC_API_KEY) {
+  if (available("claude")) {
     try {
       return await intakeWithClaude(userMessage, history, currentFields, patientLanguage);
     } catch (err) {
       console.error("[shifain] Claude intake failed:", err);
+      noteFailure("claude", err);
     }
   }
   console.error("[shifain] no AI provider answered; using the scripted intake");
@@ -501,18 +545,20 @@ export async function generateReply(
   history: ConversationMessage[] = [],
   patientLanguage?: string,
 ): Promise<string> {
-  if (process.env.GEMINI_API_KEY) {
+  if (available("gemini")) {
     try {
       return await withGeminiModel((model) => replyWithGemini(model, userMessage, history, patientLanguage));
     } catch (err) {
       console.error("[shifain] Gemini reply failed:", err);
+      noteFailure("gemini", err);
     }
   }
-  if (process.env.ANTHROPIC_API_KEY) {
+  if (available("claude")) {
     try {
       return await replyWithClaude(userMessage, history, patientLanguage);
     } catch (err) {
       console.error("[shifain] Claude reply failed:", err);
+      noteFailure("claude", err);
     }
   }
   return "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";

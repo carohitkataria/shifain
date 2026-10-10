@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
+import { publicUrl } from "@/lib/origin";
 import {
   REFERRAL_COOKIE,
   REFERRAL_COOKIE_MAX_AGE,
@@ -19,12 +20,8 @@ export async function GET(
   const { locale: raw, code } = await params;
   const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
 
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  const proto = request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol.replace(":", "");
-  const origin = host ? `${proto}://${host}` : request.nextUrl.origin;
-
   const partner = await partnerByCode(code).catch(() => null);
-  const response = NextResponse.redirect(new URL(`/${locale}#quote`, origin), 303);
+  const response = NextResponse.redirect(publicUrl(request, `/${locale}#quote`), 303);
   if (!partner?.referralCode) return response;
 
   await countReferralClick(partner._id).catch(() => undefined);

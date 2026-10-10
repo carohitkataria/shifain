@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { NextResponse, type NextRequest } from "next/server";
+import { publicUrl } from "@/lib/origin";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { newReference } from "@/lib/cases";
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
 
   const localeField = String(form.get("locale") ?? "");
   const locale = isLocale(localeField) ? localeField : DEFAULT_LOCALE;
-  const back = NextResponse.redirect(new URL(`/${locale}#quote-form`, request.url), 303);
+  const back = NextResponse.redirect(publicUrl(request, `/${locale}#quote-form`), 303);
 
   // Name arrives as title + first + last; older callers may still send `name`.
   const name = (
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
       reportCount: intake.meta.length,
     }).catch((error) => console.error("[shifain] could not record enquiry", reference, error));
     return NextResponse.redirect(
-      new URL(`/${locale}/enquiry/received?ref=${reference}`, request.url),
+      publicUrl(request, `/${locale}/enquiry/received?ref=${reference}`),
       303,
     );
   }
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
   try {
     const record = await openCase({ locale, patient, intake, source: "website", referredBy: null });
     await attributeFromCookie(record, "link");
-    return NextResponse.redirect(new URL(`/${locale}/plan/${record._id}`, request.url), 303);
+    return NextResponse.redirect(publicUrl(request, `/${locale}/plan/${record._id}`), 303);
   } catch (error) {
     console.error("[shifain] could not open a case", error);
     const fallback = newReference();
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
       reportCount: intake.meta.length,
     }).catch(() => undefined);
     return NextResponse.redirect(
-      new URL(`/${locale}/enquiry/received?ref=${fallback}`, request.url),
+      publicUrl(request, `/${locale}/enquiry/received?ref=${fallback}`),
       303,
     );
   }

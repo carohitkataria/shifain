@@ -561,12 +561,15 @@ export function PlanRequestForm({
           </button>
         ) : null}
         {step < 2 ? (
-          <button type="button" onClick={goNext} className="btn btn-primary min-h-12 flex-1 whitespace-nowrap !px-4">
+          // Separate keys: reusing one element would turn this click into a submit
+          // the moment the step changes, validating the contact step unasked.
+          <button key="next" type="button" onClick={goNext} className="btn btn-primary min-h-12 flex-1 whitespace-nowrap !px-4">
             {t(W.next, locale)}
             <span aria-hidden="true">&rarr;</span>
           </button>
         ) : (
           <button
+            key="submit"
             type="submit"
             disabled={submitting}
             aria-busy={submitting}

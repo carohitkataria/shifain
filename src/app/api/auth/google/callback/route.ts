@@ -1,15 +1,10 @@
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
+import { publicOrigin, publicUrl } from "@/lib/origin";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { emailFromCode } from "@/lib/google-auth";
 import { startPatientEmailSession } from "@/lib/patient-auth";
 import { OAUTH_COOKIE } from "../route";
-
-function origin(request: NextRequest): string {
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  const proto = request.headers.get("x-forwarded-proto") ?? "https";
-  return host ? `${proto}://${host}` : request.nextUrl.origin;
-}
 
 export async function GET(request: NextRequest) {
   const jar = await cookies();
@@ -18,7 +13,7 @@ export async function GET(request: NextRequest) {
   const locale = isLocale(storedLocale) ? storedLocale : DEFAULT_LOCALE;
   jar.delete({ name: OAUTH_COOKIE, path: "/api/auth/google" });
 
-  const loginUrl = new URL(`/${locale}/portal/patient/login`, request.url);
+  const loginUrl = publicUrl(request, `/${locale}/portal/patient/login`);
   const code = request.nextUrl.searchParams.get("code");
   const state = request.nextUrl.searchParams.get("state");
 
@@ -28,7 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const email = await emailFromCode(code, origin(request)).catch((error) => {
+  const email = await emailFromCode(code, publicOrigin(request)).catch((error) => {
     console.error("[shifain] google sign-in failed", error);
     return null;
   });
@@ -38,5 +33,5 @@ export async function GET(request: NextRequest) {
   }
 
   await startPatientEmailSession(email);
-  return NextResponse.redirect(new URL(`/${locale}/portal/patient`, request.url));
+  return NextResponse.redirect(publicUrl(request, `/${locale}/portal/patient`));
 }
