@@ -134,8 +134,8 @@ export function IntakeForm({
           </select>
         </Field>
 
-        <Field label={labels.phone} htmlFor="phone">
-          <div className="flex gap-2">
+        <Field label={labels.phone} htmlFor="phone" className="overflow-hidden">
+          <div className="flex min-w-0 gap-1.5">
             <input
               name="dial"
               value={dial}
@@ -143,7 +143,7 @@ export function IntakeForm({
               inputMode="tel"
               aria-label={t(INTAKE_COPY.dialLabel, locale)}
               placeholder="+"
-              className={`${inputClass} w-16 shrink-0 px-2 text-center`}
+              className={`${inputClass} w-14 shrink-0 px-1.5 text-center`}
             />
             <input
               id="phone"

@@ -74,16 +74,6 @@ export const defaultContent: SiteContent = {
     ],
     form: {
       title: l("Get your AI plan & estimate", "Получите план и смету от ИИ", "AI reja va hisobingizni oling"),
-      subtitle: l(
-        "Share a few details and your reports. Your plan and cost estimate are generated instantly.",
-        "Укажите несколько данных и приложите документы. План и смета формируются мгновенно.",
-        "Bir nechta ma'lumot va hujjatlaringizni yuboring. Reja va hisob darhol tayyorlanadi.",
-      ),
-      freeNote: l(
-        "Free service · your hospital bill does not increase",
-        "Услуга бесплатна · счёт клиники не увеличивается",
-        "Xizmat bepul · shifoxona hisobi oshmaydi",
-      ),
       nameLabel: l("Full name", "Полное имя", "To'liq ism"),
       namePlaceholder: l("Your name", "Ваше имя", "Ismingiz"),
       phoneLabel: l("Phone / WhatsApp", "Телефон / WhatsApp", "Telefon / WhatsApp"),
