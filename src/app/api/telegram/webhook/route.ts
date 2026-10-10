@@ -1,27 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { handleUpdate } from "@/lib/telegram-bot";
+import { webhookSecret } from "@/lib/telegram";
 import type { TgUpdate, BotRole } from "@/lib/telegram";
-import crypto from "node:crypto";
-
-/**
- * Telegram webhook receiver.
- *
- * POST /api/telegram/webhook?bot=patient
- * POST /api/telegram/webhook?bot=partner
- *
- * The `secret_token` header is verified against a hash of the bot token
- * to reject spoofed requests. Telegram sends this header when we set
- * `secret_token` during webhook registration.
- */
-
-function webhookSecret(role: BotRole): string | null {
-  const token =
-    role === "patient"
-      ? process.env.TELEGRAM_PATIENT_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN
-      : process.env.TELEGRAM_PARTNER_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
-  if (!token) return null;
-  return crypto.createHash("sha256").update(token).digest("hex").slice(0, 32);
-}
 
 export async function POST(request: NextRequest) {
   const role = (request.nextUrl.searchParams.get("bot") ?? "patient") as BotRole;

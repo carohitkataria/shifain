@@ -1,4 +1,5 @@
 import "server-only";
+import crypto from "node:crypto";
 
 /**
  * Telegram Bot API client. Thin wrapper over the HTTPS API — no SDK needed,
@@ -182,11 +183,19 @@ export async function sendVoice(role: BotRole, chatId: number, audioBuffer: Buff
 
 // ------------------------------------------------------------------ webhook
 
+export function webhookSecret(role: BotRole): string | null {
+  const token = tokenFor(role);
+  if (!token) return null;
+  return crypto.createHash("sha256").update(token).digest("hex").slice(0, 32);
+}
+
 export async function setWebhook(role: BotRole, url: string): Promise<void> {
   const token = tokenFor(role);
   if (!token) throw new Error(`Telegram ${role} bot is not configured.`);
+  const secret = webhookSecret(role);
   await call(token, "setWebhook", {
     url,
+    secret_token: secret,
     allowed_updates: ["message", "callback_query"],
     drop_pending_updates: true,
   });
