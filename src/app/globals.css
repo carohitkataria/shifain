@@ -27,7 +27,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -360,8 +360,8 @@ body {
 }
 
 .link-card:hover {
-  border-color: color-mix(in srgb, var(--color-brand) 45%, var(--color-line));
-  box-shadow: 0 12px 28px -18px rgb(13 43 69 / 0.45);
+  border-color: color-mix(in srgb, var(--color-brand) 30%, var(--color-line));
+  box-shadow: 0 8px 24px -12px rgb(13 43 69 / 0.12);
   transform: translateY(-2px);
 }
 
@@ -478,8 +478,8 @@ body {
 }
 
 .faq-item[open] {
-  border-color: color-mix(in srgb, var(--color-brand) 35%, var(--color-line));
-  box-shadow: 0 10px 26px -20px rgb(13 43 69 / 0.5);
+  border-color: color-mix(in srgb, var(--color-brand) 25%, var(--color-line));
+  box-shadow: 0 6px 20px -14px rgb(13 43 69 / 0.12);
 }
 
 .faq-toggle {
