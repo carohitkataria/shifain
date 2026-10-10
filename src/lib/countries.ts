@@ -47,6 +47,7 @@ export const COUNTRIES: Country[] = [
   { code: "GH", name: "Ghana", dial: "233" },
   { code: "GN", name: "Guinea", dial: "224" },
   { code: "GY", name: "Guyana", dial: "592" },
+  { code: "IN", name: "India", dial: "91" },
   { code: "ID", name: "Indonesia", dial: "62" },
   { code: "IQ", name: "Iraq", dial: "964" },
   { code: "JO", name: "Jordan", dial: "962" },

@@ -6,6 +6,7 @@ import { generatePlan } from "./ai/plan";
 import { expiryFromNow, storeReports } from "./reports";
 import { getSettings } from "./settings";
 import { notifyOps } from "./mailer";
+import { sendCaseUpdate } from "./telegram-notify";
 import type { Intake } from "./intake";
 import type { Locale } from "./i18n";
 
@@ -85,6 +86,7 @@ export async function openCase(input: {
       // A day out is offered at all only while the site is offering them.
       if (!settings.offerTourism) plan.leisureSuitable = false;
       await savePlan(record._id, plan);
+      await sendCaseUpdate(record._id, "planned", input.patient.phone).catch(() => undefined);
     } catch (error) {
       console.error("[shifain] could not plan case", record._id, error);
       await savePlanFailure(
