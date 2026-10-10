@@ -3,8 +3,8 @@ import { GoogleGenerativeAI, SchemaType, type FunctionDeclarationsTool } from "@
 import Anthropic from "@anthropic-ai/sdk";
 import type { IntakeField } from "./conversation-intake";
 
-const GEMINI_MODEL = "gemini-1.5-flash";
-const CLAUDE_MODEL = "claude-sonnet-4-5-20250514";
+/** Overridable without a deploy: set ANTHROPIC_MODEL on the host. */
+const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-5-5";
 
 const BASE_SYSTEM = `You are ShifaIn's patient assistant on Telegram. You help patients who are seeking medical treatment in India.
 
@@ -65,12 +65,79 @@ export type ConversationMessage = {
   content: string;
 };
 
-type Provider = "gemini" | "claude";
+// ---------------------------------------------------------------- Gemini model choice
 
-function pickProvider(): Provider {
-  if (process.env.GEMINI_API_KEY) return "gemini";
-  if (process.env.ANTHROPIC_API_KEY) return "claude";
-  throw new Error("Neither GEMINI_API_KEY nor ANTHROPIC_API_KEY is set.");
+/**
+ * Google retires Gemini model names on its own schedule (2.0-flash and
+ * 1.5-flash both went), so the model is not hardcoded. GEMINI_MODEL pins one;
+ * otherwise the key's own model list is read and the best stable Flash model
+ * that supports generateContent is used, re-checked every six hours.
+ */
+const GEMINI_LIST_URL = "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000";
+const MODEL_LIST_TTL = 6 * 60 * 60 * 1000;
+let geminiModelCache: { models: string[]; at: number } | null = null;
+
+type GeminiModelInfo = { name: string; supportedGenerationMethods?: string[] };
+
+const SPECIALISED = /(image|tts|audio|live|embed|vision|robotics|computer|native|aqa|learnlm|gemma)/;
+const UNSTABLE = /(exp|preview|thinking)/;
+
+export function rankGeminiModels(models: GeminiModelInfo[]): string[] {
+  const usable = models
+    .filter((m) => m.supportedGenerationMethods?.includes("generateContent"))
+    .map((m) => m.name.replace(/^models\//, ""))
+    .filter((name) => name.includes("flash") && !SPECIALISED.test(name));
+  const stable = usable.filter((name) => !UNSTABLE.test(name));
+  const pool = stable.length > 0 ? stable : usable;
+
+  const version = (name: string) => Number(/gemini-(\d+(?:\.\d+)?)/.exec(name)?.[1] ?? 0);
+  const score = (name: string) =>
+    (name === "gemini-flash-latest" ? 1000 : 0) + version(name) * 10 - (name.includes("lite") ? 5 : 0) -
+    (/-\d{3}$/.test(name) ? 1 : 0);
+  return [...new Set(pool)].sort((a, b) => score(b) - score(a)).slice(0, 4);
+}
+
+async function geminiModels(): Promise<string[]> {
+  const pinned = process.env.GEMINI_MODEL?.trim();
+  if (!geminiModelCache || Date.now() - geminiModelCache.at > MODEL_LIST_TTL) {
+    let models: string[] = [];
+    try {
+      const res = await fetch(GEMINI_LIST_URL, { headers: { "x-goog-api-key": process.env.GEMINI_API_KEY! } });
+      if (res.ok) {
+        const json = (await res.json()) as { models?: GeminiModelInfo[] };
+        models = rankGeminiModels(json.models ?? []);
+      } else {
+        console.error("[shifain] could not list Gemini models:", res.status);
+      }
+    } catch (error) {
+      console.error("[shifain] could not list Gemini models:", error);
+    }
+    geminiModelCache = { models: models.length > 0 ? models : ["gemini-flash-latest"], at: Date.now() };
+  }
+  const list = geminiModelCache.models;
+  return pinned ? [pinned, ...list.filter((m) => m !== pinned)] : list;
+}
+
+const isModelMissing = (error: unknown) => /\b404\b|not found|no longer available/i.test(String(error));
+
+/** Tries each candidate model in turn, moving on only when Google says the model does not exist. */
+async function withGeminiModel<T>(run: (model: string) => Promise<T>): Promise<T> {
+  const candidates = await geminiModels();
+  let lastError: unknown = new Error("No Gemini model available.");
+  for (const model of candidates) {
+    try {
+      return await run(model);
+    } catch (error) {
+      lastError = error;
+      if (!isModelMissing(error)) throw error;
+      console.error(`[shifain] Gemini model ${model} unavailable, trying the next one`);
+      geminiModelCache = geminiModelCache && {
+        ...geminiModelCache,
+        models: geminiModelCache.models.filter((m) => m !== model),
+      };
+    }
+  }
+  throw lastError;
 }
 
 export type ExtractedInfo = Partial<IntakeField> & { readyToSubmit?: boolean };
@@ -117,6 +184,7 @@ const GEMINI_TOOLS: FunctionDeclarationsTool[] = [
 ];
 
 async function intakeWithGemini(
+  model: string,
   userMessage: string,
   history: ConversationMessage[],
   currentFields: Partial<IntakeField>,
@@ -135,13 +203,11 @@ async function intakeWithGemini(
     patientLanguage ? `\nThe patient's detected language is: ${patientLanguage}. Respond in that language.` : "",
   ].join("");
 
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
+  const chat = genAI.getGenerativeModel({
+    model,
     systemInstruction: systemPrompt,
     tools: GEMINI_TOOLS,
-  });
-
-  const chat = model.startChat({
+  }).startChat({
     history: history.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
@@ -266,30 +332,116 @@ async function intakeWithClaude(
 
 // ---------------------------------------------------------------- public API
 
+/**
+ * Gemini first (free tier), then Claude, then a scripted intake. A patient
+ * describing an illness never gets a dead end because an AI provider is down,
+ * out of credit, or has retired a model.
+ */
 export async function generateIntakeReply(
   userMessage: string,
   history: ConversationMessage[] = [],
   currentFields: Partial<IntakeField> = {},
   patientLanguage?: string,
 ): Promise<IntakeReplyResult> {
-  const provider = pickProvider();
-  if (provider === "gemini") {
+  if (process.env.GEMINI_API_KEY) {
     try {
-      return await intakeWithGemini(userMessage, history, currentFields, patientLanguage);
+      return await withGeminiModel((model) =>
+        intakeWithGemini(model, userMessage, history, currentFields, patientLanguage),
+      );
     } catch (err) {
-      console.error("[shifain] Gemini intake failed, falling back to Claude:", err);
-      if (process.env.ANTHROPIC_API_KEY) {
-        return intakeWithClaude(userMessage, history, currentFields, patientLanguage);
-      }
-      throw err;
+      console.error("[shifain] Gemini intake failed:", err);
     }
   }
-  return intakeWithClaude(userMessage, history, currentFields, patientLanguage);
+  if (process.env.ANTHROPIC_API_KEY) {
+    try {
+      return await intakeWithClaude(userMessage, history, currentFields, patientLanguage);
+    } catch (err) {
+      console.error("[shifain] Claude intake failed:", err);
+    }
+  }
+  console.error("[shifain] no AI provider answered; using the scripted intake");
+  return scriptedIntake(userMessage, currentFields);
+}
+
+// ---------------------------------------------------------------- scripted fallback
+
+const TREATMENT_KEYWORDS: [string, RegExp][] = [
+  ["cardiac-care", /heart|cardi|bypass|cabg|valve|angio|stent|артери|сердц|шунт|yurak/i],
+  ["oncology", /cancer|oncolog|tumou?r|chemo|radiat|biops|leuk|lymphom|рак|онко|опухол|saraton/i],
+  ["orthopaedics", /knee|hip|joint|spine|back pain|ortho|fracture|shoulder|колен|сустав|позвон|тазобедр|tizza|bo'g'im/i],
+  ["neurosurgery", /brain|neuro|nerve|stroke|epilep|parkinson|мозг|нейро|инсульт|miya/i],
+  ["organ-transplant", /transplant|kidney|liver|dialys|трансплант|почк|печен|buyrak|jigar/i],
+  ["fertility-ivf", /ivf|fertil|infertil|pregnan|эко|бесплод|беремен|homilador|bepushtlik/i],
+];
+
+const GREETING = /^(hi|hello|hey|help|salom|assalomu|привет|здравствуйте|помогите|good (morning|afternoon|evening))\b/i;
+
+export function scriptedIntake(userMessage: string, currentFields: Partial<IntakeField>): IntakeReplyResult {
+  const text = userMessage.trim();
+  const words = text.split(/\s+/).filter(Boolean).length;
+  const greetingOnly = GREETING.test(text) && words <= 4;
+  const extracted: ExtractedInfo = {};
+
+  let treatment = currentFields.treatment ?? null;
+  let condition = currentFields.condition ?? null;
+  const knewTreatment = Boolean(treatment);
+
+  if (!treatment) {
+    const match = TREATMENT_KEYWORDS.find(([, pattern]) => pattern.test(text));
+    if (match) {
+      treatment = match[0];
+    } else if (condition && !greetingOnly && words >= 1) {
+      // We already asked which treatment; whatever they answered is the answer.
+      treatment = text.slice(0, 120);
+    }
+    if (treatment) extracted.treatment = treatment;
+  }
+
+  // A short "I need heart surgery" names the treatment; it does not describe the condition.
+  if (!condition && !greetingOnly && (knewTreatment ? words >= 3 : words >= 8)) {
+    condition = text.slice(0, 1000);
+    extracted.condition = condition;
+  }
+
+  if (treatment && condition) {
+    return {
+      reply:
+        "Thank you — that gives our medical team what they need to start, and a coordinator will review it personally. " +
+        "Just a couple of quick details to set up your case.",
+      extracted: { ...extracted, readyToSubmit: true },
+    };
+  }
+
+  if (!treatment && !condition) {
+    return {
+      reply:
+        (greetingOnly ? "Hello, and welcome to ShifaIn. " : "") +
+        "Which treatment are you looking for? For example heart surgery, a knee or hip replacement, cancer care, " +
+        "a transplant or IVF — or simply describe the problem in your own words.",
+      extracted,
+    };
+  }
+
+  if (!condition) {
+    return {
+      reply:
+        "Thank you. Could you describe the condition in a few sentences — the symptoms, how long it has been going on, " +
+        "and what your doctor has said so far? You can also attach your reports here.",
+      extracted,
+    };
+  }
+
+  return {
+    reply:
+      "Thank you for explaining. Which treatment are you hoping for — or, if you are not sure yet, what has your doctor suggested?",
+    extracted,
+  };
 }
 
 // ---------------------------------------------------------------- simple reply (backward compat)
 
 async function replyWithGemini(
+  model: string,
   userMessage: string,
   history: ConversationMessage[],
   patientLanguage?: string,
@@ -300,12 +452,10 @@ async function replyWithGemini(
     ? `${BASE_SYSTEM}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
     : BASE_SYSTEM;
 
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
+  const chat = genAI.getGenerativeModel({
+    model,
     systemInstruction: systemPrompt,
-  });
-
-  const chat = model.startChat({
+  }).startChat({
     history: history.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
@@ -351,17 +501,19 @@ export async function generateReply(
   history: ConversationMessage[] = [],
   patientLanguage?: string,
 ): Promise<string> {
-  const provider = pickProvider();
-  if (provider === "gemini") {
+  if (process.env.GEMINI_API_KEY) {
     try {
-      return await replyWithGemini(userMessage, history, patientLanguage);
+      return await withGeminiModel((model) => replyWithGemini(model, userMessage, history, patientLanguage));
     } catch (err) {
-      console.error("[shifain] Gemini reply failed, falling back to Claude:", err);
-      if (process.env.ANTHROPIC_API_KEY) {
-        return replyWithClaude(userMessage, history, patientLanguage);
-      }
-      throw err;
+      console.error("[shifain] Gemini reply failed:", err);
     }
   }
-  return replyWithClaude(userMessage, history, patientLanguage);
+  if (process.env.ANTHROPIC_API_KEY) {
+    try {
+      return await replyWithClaude(userMessage, history, patientLanguage);
+    } catch (err) {
+      console.error("[shifain] Claude reply failed:", err);
+    }
+  }
+  return "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";
 }
