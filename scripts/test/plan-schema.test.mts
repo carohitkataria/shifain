@@ -8,7 +8,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { schemaFor, PLAN_PACKAGE_OPTIONS } from "../../src/lib/ai/plan-schema.ts";
+import { schemaFor, normalisePlan, toGeminiSchema, PLAN_PACKAGE_OPTIONS } from "../../src/lib/ai/plan-schema.ts";
 import type { Grounding } from "../../src/lib/catalogue.ts";
 
 const DATA = path.join(process.cwd(), "src", "data", "catalogue");
@@ -133,6 +133,93 @@ for (const country of COUNTRIES) {
   assert.match(country.dial, /^[0-9]{1,4}$/, `${country.name} has a bad dialling code`);
   assert.match(country.code, /^[A-Z]{2}$/, `${country.name} has a bad ISO code`);
 }
+
+// Gemini's schema dialect: no type unions, no null in enums, nothing it rejects.
+const gemini = toGeminiSchema(schemaFor(grounding));
+const walk = (node: Record<string, unknown>, at: string): void => {
+  assert.ok(!Array.isArray(node.type), `${at}: type unions are not accepted by Gemini`);
+  assert.ok(!("additionalProperties" in node), `${at}: additionalProperties is not accepted by Gemini`);
+  if (Array.isArray(node.enum)) assert.ok(!node.enum.includes(null), `${at}: null in enum`);
+  for (const [key, child] of Object.entries((node.properties ?? {}) as Record<string, Record<string, unknown>>)) {
+    walk(child, `${at}.${key}`);
+  }
+  if (node.items) walk(node.items as Record<string, unknown>, `${at}[]`);
+};
+walk(gemini, "plan");
+const gProps = gemini.properties as Record<string, Record<string, unknown>>;
+assert.equal(gProps.diseaseCode.nullable, true, "diseaseCode must stay nullable");
+assert.equal((gProps.diseaseCode.enum as string[]).length, diseaseCodes.size);
+
+// Whatever a model returns is held to the catalogue before a patient sees it.
+const cabgRule = grounding.rules.find((rule) => rule.treatmentCode === "cabg")!;
+const good = normalisePlan(
+  {
+    redFlag: { present: false, message: "" },
+    understanding: "Your angiogram shows blocked heart arteries.",
+    reportsRead: ["Angiogram, 4 March"],
+    diseaseCode: cabgRule.diseaseCode,
+    treatments: [{ treatmentCode: "cabg", why: "Several arteries are blocked." }],
+    recommendedTreatmentCode: "cabg",
+    specialtyCode: cabgRule.specialtyCode,
+    destinationCity: grounding.cities[0].name,
+    stay: { inpatientNights: cabgRule.inpatientNights.min, daysInCountry: cabgRule.daysInCountry.min },
+    itinerary: [{ day: "Day 1", title: "Arrival", detail: "Met at the airport." }],
+    suggestedPackage: ["flights", "not-an-option"],
+    leisureSuitable: true,
+    questionsForPatient: [],
+    missingReports: [],
+    confidence: "high",
+  },
+  grounding,
+  1,
+);
+assert.equal(good.confidence, "high", "a clean plan keeps its confidence");
+assert.equal(good.leisureSuitable, false, "cabg is not tour-friendly, so no outing is offered");
+assert.deepEqual(good.suggestedPackage, ["flights"]);
+
+const invented = normalisePlan(
+  {
+    diseaseCode: "made-up-disease",
+    treatments: [{ treatmentCode: "miracle-cure", why: "" }],
+    recommendedTreatmentCode: "miracle-cure",
+    destinationCity: "Atlantis",
+    stay: { inpatientNights: 999, daysInCountry: -3 },
+    redFlag: { present: true, message: "" },
+    reportsRead: ["should be dropped"],
+    confidence: "high",
+  },
+  grounding,
+  0,
+);
+assert.equal(invented.diseaseCode, null);
+assert.equal(invented.recommendedTreatmentCode, null);
+assert.equal(invented.treatments.length, 0);
+assert.equal(invented.destinationCity, null);
+assert.equal(invented.confidence, "low", "corrections lower confidence");
+assert.deepEqual(invented.reportsRead, [], "nothing was uploaded, so nothing was read");
+assert.ok(invented.redFlag.message.length > 0, "a red flag always carries an instruction");
+assert.deepEqual(invented.stay, { inpatientNights: 365, daysInCountry: 0 });
+
+const clamped = normalisePlan(
+  {
+    diseaseCode: cabgRule.diseaseCode,
+    recommendedTreatmentCode: "cabg",
+    treatments: [],
+    stay: { inpatientNights: 1, daysInCountry: 200 },
+    confidence: "medium",
+  },
+  grounding,
+  0,
+);
+assert.deepEqual(clamped.stay, { inpatientNights: cabgRule.inpatientNights.min, daysInCountry: cabgRule.daysInCountry.max });
+assert.equal(clamped.specialtyCode, cabgRule.specialtyCode, "specialty is filled from the matching rule");
+assert.equal(clamped.treatments[0].treatmentCode, "cabg", "the recommendation is always among the options");
+assert.throws(() => normalisePlan("not json", grounding, 0));
+assert.equal(
+  normalisePlan({ ...good, destinationCity: "Atlantis" }, grounding, 1).confidence,
+  "low",
+  "an invented city alone is enough to lower confidence",
+);
 
 console.log(
   `plan schema OK — ${diseaseCodes.size} diseases, ${treatmentCodes.size} treatments, ` +
