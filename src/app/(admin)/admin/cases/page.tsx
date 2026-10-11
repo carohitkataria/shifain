@@ -221,6 +221,30 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
                       )}
                     </p>
                   ) : null}
+                  {item.planEdits?.length ? (
+                    <details className="mt-2 text-sm">
+                      <summary className="cursor-pointer font-semibold text-ink">
+                        Patient changes ({item.planEdits.length}) — latest{" "}
+                        {new Date(item.planEdits[item.planEdits.length - 1].at).toLocaleDateString("en-GB")}
+                      </summary>
+                      <ul className="mt-1.5 space-y-0.5 text-ink-soft">
+                        {item.planEdits
+                          .slice(-8)
+                          .reverse()
+                          .map((change, index) => (
+                            <li key={`${change.at}-${index}`}>
+                              {new Date(change.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}{" "}
+                              · {change.change} <span className="text-ink-muted">({change.via})</span>
+                            </li>
+                          ))}
+                      </ul>
+                      {item.preferences?.notes?.length ? (
+                        <p className="mt-1.5 whitespace-pre-line rounded bg-surface-muted p-2 text-ink">
+                          {item.preferences.notes.map((note) => note.text).join("\n")}
+                        </p>
+                      ) : null}
+                    </details>
+                  ) : null}
                 </div>
 
                 <span

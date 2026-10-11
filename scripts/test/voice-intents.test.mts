@@ -1,0 +1,156 @@
+/**
+ * The command parser, without a database or an AI model: what patients say
+ * in English, Russian and Uzbek maps to the right command, and what they say
+ * about their illness does not.
+ *
+ *   node --experimental-strip-types scripts/test/voice-intents.test.mts
+ */
+import assert from "node:assert/strict";
+import {
+  parseCommand,
+  readCode,
+  readEmail,
+  readPhone,
+  readReference,
+  readCompanions,
+  restOf,
+  yesNo,
+} from "../../src/lib/voice/intents.ts";
+import { guessGender, pickDeviceVoice, rankDeviceVoices } from "../../src/lib/voice/voices.ts";
+import { matchTreatment } from "../../src/lib/voice/treatments.ts";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+const CITIES = ["Delhi", "Gurgaon", "Chennai", "Bangalore", "Mumbai", "Hyderabad"];
+
+const expect: [string, string | null][] = [
+  // account, plan, status
+  ["Create my account", "start_case"],
+  ["I want to make a plan for knee replacement", "start_case"],
+  ["Зарегистрируйте меня", "start_case"],
+  ["Reja tuzib bering", "start_case"],
+  ["What's my case status?", "case_status"],
+  ["Is my plan ready?", "case_status"],
+  ["Какой статус моей заявки", "case_status"],
+  ["Arizam qanday holatda", "case_status"],
+  ["Show my plan", "open_plan"],
+  ["Покажи мой план", "open_plan"],
+  ["I want to edit my plan", "edit_plan"],
+  ["Add visa support to my plan", "add_service"],
+  ["I need an interpreter", "add_service"],
+  ["Remove the hotel from my plan", "remove_service"],
+  ["I don't need flights", "remove_service"],
+  ["Уберите переводчика", "remove_service"],
+  ["Tarjimon kerak emas", "remove_service"],
+  ["I'd prefer Chennai instead", "set_city"],
+  ["I will travel in March", "set_travel"],
+  ["I'm coming with my wife", "set_companions"],
+  ["Regenerate my plan", "replan"],
+  ["I want to add more details", "add_details"],
+  ["Add my email john@example.com", "add_email"],
+  // account access
+  ["Sign me in", "sign_in"],
+  ["Войти", "sign_in"],
+  ["Log out", "sign_out"],
+  // browsing
+  ["How much does a knee replacement cost?", "cost"],
+  ["Сколько стоит шунтирование", "cost"],
+  ["Show me hospitals in Delhi", "hospitals"],
+  ["Find a cardiac surgeon", "doctors"],
+  ["Take me home", "home"],
+  ["Open my dashboard", "portal"],
+  ["I want to upload my reports", "upload_report"],
+  // people and settings
+  ["Can I talk to a real person?", "human"],
+  ["Call me back please", "human"],
+  ["Message you on WhatsApp", "whatsapp"],
+  ["Speak Russian please", "language"],
+  ["Use a female voice", "voice"],
+  ["Please speak slower", "voice"],
+  ["Ayol ovozi bilan gapiring", "voice"],
+  ["Repeat that", "repeat"],
+  ["Cancel", "cancel"],
+  ["What can you do?", "help"],
+  ["I can't breathe and my chest hurts", "emergency"],
+  // conversation, not commands
+  ["My father has had chest pain for three months and the doctor said he needs a bypass", null],
+  ["I lost my voice after the operation", null],
+  ["Do I need a visa?", null],
+  ["У меня болит колено уже два года", null],
+  ["Hello", null],
+  ["My doctor told me I need surgery on my spine", null],
+];
+
+for (const [text, name] of expect) {
+  assert.equal(parseCommand(text, CITIES)?.name ?? null, name, `"${text}" should be ${name}`);
+}
+
+// slots
+assert.equal(parseCommand("Add visa support", CITIES)?.slots.service, "visa-support");
+assert.equal(parseCommand("Remove airport pickup", CITIES)?.slots.service, "airport-transfers");
+assert.equal(parseCommand("I'd prefer Bengaluru instead", CITIES)?.slots.city, "Bangalore");
+assert.equal(parseCommand("Speak Uzbek", CITIES)?.slots.language, "uz");
+assert.equal(parseCommand("Use a male voice", CITIES)?.slots.gender, "male");
+assert.equal(parseCommand("Use a female voice", CITIES)?.slots.gender, "female");
+assert.equal(parseCommand("Talk slower", CITIES)?.slots.rate, "slower");
+assert.equal(parseCommand("I will travel in March", CITIES)?.slots.month, "March");
+assert.equal(restOf("How much does a knee replacement cost in India?"), "knee replacement");
+assert.equal(restOf("Сколько стоит шунтирование в Индии"), "шунтирование");
+
+assert.equal(readEmail("john dot smith at gmail dot com"), "john.smith@gmail.com");
+assert.equal(readEmail("my email is Anna@Mail.ru."), "anna@mail.ru");
+assert.equal(readEmail("анна собака mail точка ru"), undefined); // Cyrillic local part is not an address
+assert.equal(readEmail("anna собака mail точка ru"), "anna@mail.ru");
+assert.equal(readCode("my code is 4 8 1 2 0 9"), "481209");
+assert.equal(readCode("four eight one two oh nine"), "481209");
+assert.equal(readCode("12345"), undefined);
+assert.equal(readPhone("plus nine nine eight 90 123 45 67"), "998901234567");
+assert.equal(readReference("S H dash A B C D dash 1 2 3 4 dash E F G H dash 5 6 7 8"), "SH-ABCD-1234-EFGH-5678");
+assert.equal(readReference("sh-abcd-1234-efgh-5678"), "SH-ABCD-1234-EFGH-5678");
+assert.equal(readReference("abc"), undefined);
+assert.equal(readCompanions("I'm coming alone"), 0);
+assert.equal(readCompanions("two companions"), 2);
+
+assert.equal(yesNo("Yes please"), "yes");
+assert.equal(yesNo("Да"), "yes");
+assert.equal(yesNo("Ha"), "yes");
+assert.equal(yesNo("no thanks"), "no");
+assert.equal(yesNo("Yo'q"), "no");
+assert.equal(yesNo("maybe later in the week"), null);
+
+// device voices
+const voices = [
+  { name: "Microsoft David - English (United States)", lang: "en-US", localService: true },
+  { name: "Microsoft Aria Online (Natural) - English (United States)", lang: "en-US", localService: false },
+  { name: "Google UK English Male", lang: "en-GB", localService: false },
+  { name: "Microsoft Guy Online (Natural) - English (United States)", lang: "en-US", localService: false },
+  { name: "Milena", lang: "ru-RU", localService: true },
+];
+assert.equal(rankDeviceVoices(voices, "en")[0].name.includes("Natural"), true);
+assert.equal(pickDeviceVoice(voices, "en-US", { deviceName: "", gender: "male" })?.name, "Microsoft Guy Online (Natural) - English (United States)");
+assert.equal(pickDeviceVoice(voices, "en-US", { deviceName: "", gender: "female" })?.name, "Microsoft Aria Online (Natural) - English (United States)");
+assert.equal(pickDeviceVoice(voices, "ru", { deviceName: "", gender: "" })?.name, "Milena");
+assert.equal(guessGender("Google UK English Male"), "male");
+
+// spoken treatment names against the real catalogue
+const treatments = JSON.parse(await readFile(path.join(process.cwd(), "src", "data", "catalogue", "treatments.json"), "utf8"));
+const spoken: [string, string | null][] = [
+  ["knee replacement", "total-knee-replacement"],
+  ["heart bypass", "cabg"],
+  ["шунтирование", "cabg"],
+  ["пересадка почки", "kidney-transplant"],
+  ["tizza", "total-knee-replacement"],
+  ["ivf", "ivf-cycle"],
+  ["cataract surgery", "phacoemulsification"],
+  ["hair transplant", "hair-transplant"],
+  ["gastric bypass", "gastric-bypass"],
+  ["liver transplant", "liver-transplant"],
+  ["cochlear implant", "cochlear-implant"],
+  ["mastectomy", "mastectomy"],
+  ["something unrelated", null],
+];
+for (const [phrase, code] of spoken) {
+  assert.equal(matchTreatment(phrase, treatments)?._id ?? null, code, `"${phrase}" should be ${code}`);
+}
+
+console.log(`voice intents: ${expect.length} phrases and slot readers pass`);

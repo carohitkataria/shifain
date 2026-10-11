@@ -39,7 +39,25 @@ export type PatientCase = {
   source?: CaseSource;
   /** The partner user credited with this case, or null. Never a channel name. */
   referredBy: string | null;
+  /** What the patient told us they want, by voice or chat, after the plan was made. */
+  preferences?: PatientPreferences;
+  /** Every change the patient made to their plan, so a coordinator can see what moved and when. */
+  planEdits?: PlanEdit[];
+  /** When the patient asked for the plan to be redone; limits how often that runs. */
+  replans?: string[];
 };
+
+export type PatientPreferences = {
+  city?: string | null;
+  travel?: string | null;
+  companions?: number | null;
+  /** Package lines the patient switched on (true) or off (false); kept across a re-plan. */
+  packages?: Record<string, boolean>;
+  /** Medical details added after the case opened, newest last. */
+  notes?: { at: string; text: string }[];
+};
+
+export type PlanEdit = { at: string; via: "voice" | "chat"; change: string };
 
 /**
  * The reference is also the only thing guarding the plan URL, which carries a
@@ -136,4 +154,62 @@ export async function casesReferredBy(partnerUserId: string, limit = 50): Promis
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();
+}
+
+/** Records a patient's preference on their case, with a line in the edit history. */
+export async function setPreference(
+  reference: string,
+  field: "city" | "travel" | "companions",
+  value: string | number | null,
+  edit: PlanEdit,
+): Promise<void> {
+  const db = await getDb();
+  await db.collection<PatientCase>("cases").updateOne(
+    { _id: reference },
+    {
+      $set: { [`preferences.${field}`]: value, updatedAt: edit.at },
+      $push: { planEdits: edit },
+    },
+  );
+}
+
+/** Adds or removes one package line the patient chose for themselves. */
+export async function editPackage(
+  reference: string,
+  service: string,
+  include: boolean,
+  edit: PlanEdit,
+): Promise<boolean> {
+  const db = await getDb();
+  const result = await db.collection<PatientCase>("cases").updateOne(
+    { _id: reference, plan: { $ne: null } },
+    {
+      ...(include
+        ? { $addToSet: { "plan.suggestedPackage": service } }
+        : { $pull: { "plan.suggestedPackage": service } }),
+      $set: { [`preferences.packages.${service}`]: include, updatedAt: edit.at },
+      $push: { planEdits: edit },
+    } as never,
+  );
+  return result.matchedCount > 0;
+}
+
+/** New medical details from the patient, kept beside the original description. */
+export async function addPatientNote(reference: string, text: string, edit: PlanEdit): Promise<void> {
+  const db = await getDb();
+  await db.collection<PatientCase>("cases").updateOne(
+    { _id: reference },
+    {
+      $push: { "preferences.notes": { at: edit.at, text: text.slice(0, 2000) }, planEdits: edit },
+      $set: { updatedAt: edit.at },
+    } as never,
+  );
+}
+
+export async function setPatientEmail(reference: string, email: string, edit: PlanEdit): Promise<void> {
+  const db = await getDb();
+  await db.collection<PatientCase>("cases").updateOne(
+    { _id: reference },
+    { $set: { "patient.email": email.toLowerCase(), updatedAt: edit.at }, $push: { planEdits: edit } },
+  );
 }

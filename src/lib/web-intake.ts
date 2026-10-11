@@ -26,8 +26,20 @@ export type WebIntake = {
   caseReference: string | null;
   messages: { role: "user" | "assistant"; content: string; ts: string }[];
   uploads: IntakeUploadRef[];
+  /** A command waiting on an answer — "what's your email?" — or null. */
+  command?: PendingCommand | null;
+  /** When the patient asked for a person; a coordinator picks it up from Messages. */
+  humanRequestedAt?: string | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type PendingCommand = {
+  name: string;
+  step: string;
+  data: Record<string, string | number | boolean>;
+  /** A half-finished command is forgotten after a while, so an old question cannot swallow a new message. */
+  expiresAt: string;
 };
 
 type StoredFile = {
@@ -57,15 +69,22 @@ function emptyFields(): IntakeField {
   };
 }
 
+/**
+ * The conversation for this browser. A finished one is returned as it is —
+ * follow-up questions belong with the case they followed — and only
+ * `resetWebIntake` starts over, when the patient asks for a new case.
+ */
 export async function getOrCreateWebIntake(sessionId: string): Promise<WebIntake> {
   const db = await getDb();
 
-  const existing = await db
-    .collection<WebIntake>(COLLECTION)
-    .findOne({ _id: sessionId, complete: false });
-
+  const existing = await db.collection<WebIntake>(COLLECTION).findOne({ _id: sessionId });
   if (existing) return existing;
+  return resetWebIntake(sessionId);
+}
 
+/** A fresh conversation for this browser, keeping nothing of the last. */
+export async function resetWebIntake(sessionId: string): Promise<WebIntake> {
+  const db = await getDb();
   const now = new Date().toISOString();
   const record: WebIntake = {
     _id: sessionId,
@@ -222,4 +241,24 @@ export async function createCaseFromWebIntake(
   );
 
   return record._id;
+}
+
+export async function setPendingCommand(sessionId: string, command: Omit<PendingCommand, "expiresAt"> | null): Promise<void> {
+  const db = await getDb();
+  const value = command ? { ...command, expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString() } : null;
+  await db
+    .collection<WebIntake>(COLLECTION)
+    .updateOne({ _id: sessionId }, { $set: { command: value, updatedAt: new Date().toISOString() } });
+}
+
+export function activeCommand(intake: WebIntake): PendingCommand | null {
+  const command = intake.command;
+  if (!command || Date.parse(command.expiresAt) < Date.now()) return null;
+  return command;
+}
+
+export async function markHumanRequested(sessionId: string): Promise<void> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+  await db.collection<WebIntake>(COLLECTION).updateOne({ _id: sessionId }, { $set: { humanRequestedAt: now, updatedAt: now } });
 }

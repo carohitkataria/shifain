@@ -3,6 +3,7 @@ import { GoogleGenerativeAI, SchemaType, type FunctionDeclarationsTool } from "@
 import Anthropic from "@anthropic-ai/sdk";
 import type { IntakeField } from "./conversation-intake";
 import { noteFailure, available, withGeminiModel } from "./ai/providers";
+import { COMMAND_NAMES, type CommandName } from "./voice/intents";
 
 export { pauseDuration, rankGeminiModels } from "./ai/providers";
 
@@ -73,6 +74,61 @@ export type ExtractedInfo = Partial<IntakeField> & { readyToSubmit?: boolean };
 export type IntakeReplyResult = {
   reply: string;
   extracted: ExtractedInfo;
+  /** Set when the patient asked the app to do something the simple patterns missed. */
+  command?: CommandName;
+};
+
+/**
+ * Most commands are caught by plain patterns before any model is called.
+ * This tool is for the rest — "could you put my treatment somewhere other
+ * than Delhi" — and costs nothing extra: it rides on the call that was
+ * answering the patient anyway.
+ */
+const COMMAND_TOOL_TEXT = {
+  name: "app_command",
+  description:
+    "Call this ONLY when the patient asks the website itself to do something: check their case status, open or change their plan (city, services like visa/hotel/interpreter/flights, travel dates, companions), add medical details, sign in or out, upload a report, get a price, browse hospitals/doctors/treatments, talk to a human, switch language, or change the voice. Do not call it for medical questions or descriptions of symptoms.",
+  commandDescription: "Which action the patient wants.",
+};
+
+const COMMAND_SYSTEM = `
+
+APP ACTIONS
+The patient can also run the website by voice or chat. If they ask the site to do something (see the app_command tool), call app_command with the matching command. The system then does it and answers — you do not need to describe the action yourself.`;
+
+function commandFrom(name: string | undefined, args: Record<string, unknown> | undefined): CommandName | undefined {
+  if (name !== "app_command") return undefined;
+  const value = args?.command;
+  return typeof value === "string" && (COMMAND_NAMES as readonly string[]).includes(value) ? (value as CommandName) : undefined;
+}
+
+const GEMINI_COMMAND_DECLARATION = {
+  name: COMMAND_TOOL_TEXT.name,
+  description: COMMAND_TOOL_TEXT.description,
+  parameters: {
+    type: SchemaType.OBJECT,
+    properties: {
+      command: {
+        type: SchemaType.STRING,
+        format: "enum",
+        enum: [...COMMAND_NAMES],
+        description: COMMAND_TOOL_TEXT.commandDescription,
+      },
+    },
+    required: ["command"],
+  },
+} as FunctionDeclarationsTool["functionDeclarations"] extends (infer T)[] | undefined ? T : never;
+
+const CLAUDE_COMMAND_TOOL: Anthropic.Messages.Tool = {
+  name: COMMAND_TOOL_TEXT.name,
+  description: COMMAND_TOOL_TEXT.description,
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      command: { type: "string", enum: [...COMMAND_NAMES], description: COMMAND_TOOL_TEXT.commandDescription },
+    },
+    required: ["command"],
+  },
 };
 
 // ---------------------------------------------------------------- Gemini
@@ -117,6 +173,7 @@ async function intakeWithGemini(
   history: ConversationMessage[],
   currentFields: Partial<IntakeField>,
   patientLanguage?: string,
+  withCommands = false,
 ): Promise<IntakeReplyResult> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -127,14 +184,19 @@ async function intakeWithGemini(
 
   const systemPrompt = [
     INTAKE_SYSTEM,
+    withCommands ? COMMAND_SYSTEM : "",
     fieldsNote ? `\nAlready collected medical info: ${fieldsNote}` : "",
     patientLanguage ? `\nThe patient's detected language is: ${patientLanguage}. Respond in that language.` : "",
   ].join("");
 
+  const tools: FunctionDeclarationsTool[] = withCommands
+    ? [{ functionDeclarations: [...(GEMINI_TOOLS[0].functionDeclarations ?? []), GEMINI_COMMAND_DECLARATION] }]
+    : GEMINI_TOOLS;
+
   const chat = genAI.getGenerativeModel({
     model,
     systemInstruction: systemPrompt,
-    tools: GEMINI_TOOLS,
+    tools,
   }).startChat({
     history: history.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
@@ -146,9 +208,11 @@ async function intakeWithGemini(
   const response = result.response;
 
   const extracted: ExtractedInfo = {};
+  let command: CommandName | undefined;
   const calls = response.functionCalls();
   if (calls) {
     for (const call of calls) {
+      command ??= commandFrom(call.name, call.args as Record<string, unknown>);
       if (call.name === "extract_medical_info") {
         const args = call.args as Record<string, string>;
         for (const [k, v] of Object.entries(args)) {
@@ -163,8 +227,8 @@ async function intakeWithGemini(
     }
   }
 
-  const reply = response.text() || "I'm here to help. Could you tell me more about your medical needs?";
-  return { reply, extracted };
+  const reply = response.text() || (command ? "" : "I'm here to help. Could you tell me more about your medical needs?");
+  return { reply, extracted, command };
 }
 
 // ---------------------------------------------------------------- Claude
@@ -204,6 +268,7 @@ async function intakeWithClaude(
   history: ConversationMessage[],
   currentFields: Partial<IntakeField>,
   patientLanguage?: string,
+  withCommands = false,
 ): Promise<IntakeReplyResult> {
   const client = new Anthropic();
 
@@ -214,6 +279,7 @@ async function intakeWithClaude(
 
   const systemPrompt = [
     INTAKE_SYSTEM,
+    withCommands ? COMMAND_SYSTEM : "",
     fieldsNote ? `\nAlready collected medical info: ${fieldsNote}` : "",
     patientLanguage ? `\nThe patient's detected language is: ${patientLanguage}. Respond in that language.` : "",
   ].join("");
@@ -231,17 +297,19 @@ async function intakeWithClaude(
     max_tokens: 600,
     system: systemPrompt,
     messages,
-    tools: CLAUDE_TOOLS,
+    tools: withCommands ? [...CLAUDE_TOOLS, CLAUDE_COMMAND_TOOL] : CLAUDE_TOOLS,
   });
 
   const extracted: ExtractedInfo = {};
   let reply = "";
+  let command: CommandName | undefined;
 
   for (const block of response.content) {
     if (block.type === "text") {
       reply += block.text;
     }
     if (block.type === "tool_use") {
+      command ??= commandFrom(block.name, block.input as Record<string, unknown>);
       if (block.name === "extract_medical_info") {
         const args = block.input as Record<string, string>;
         for (const [k, v] of Object.entries(args)) {
@@ -254,8 +322,8 @@ async function intakeWithClaude(
     }
   }
 
-  if (!reply) reply = "I'm here to help. Could you tell me more about your medical needs?";
-  return { reply, extracted };
+  if (!reply && !command) reply = "I'm here to help. Could you tell me more about your medical needs?";
+  return { reply, extracted, command };
 }
 
 // ---------------------------------------------------------------- public API
@@ -270,11 +338,13 @@ export async function generateIntakeReply(
   history: ConversationMessage[] = [],
   currentFields: Partial<IntakeField> = {},
   patientLanguage?: string,
+  options: { commands?: boolean } = {},
 ): Promise<IntakeReplyResult> {
+  const withCommands = options.commands === true;
   if (available("gemini")) {
     try {
       return await withGeminiModel((model) =>
-        intakeWithGemini(model, userMessage, history, currentFields, patientLanguage),
+        intakeWithGemini(model, userMessage, history, currentFields, patientLanguage, withCommands),
       );
     } catch (err) {
       console.error("[shifain] Gemini intake failed:", err);
@@ -283,7 +353,7 @@ export async function generateIntakeReply(
   }
   if (available("claude")) {
     try {
-      return await intakeWithClaude(userMessage, history, currentFields, patientLanguage);
+      return await intakeWithClaude(userMessage, history, currentFields, patientLanguage, withCommands);
     } catch (err) {
       console.error("[shifain] Claude intake failed:", err);
       noteFailure("claude", err);
@@ -370,21 +440,26 @@ export function scriptedIntake(userMessage: string, currentFields: Partial<Intak
 
 // ---------------------------------------------------------------- simple reply (backward compat)
 
+export type ChatReplyResult = { reply: string; command?: CommandName };
+
 async function replyWithGemini(
   model: string,
   userMessage: string,
   history: ConversationMessage[],
   patientLanguage?: string,
-): Promise<string> {
+  withCommands = false,
+): Promise<ChatReplyResult> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+  const base = withCommands ? BASE_SYSTEM + COMMAND_SYSTEM : BASE_SYSTEM;
   const systemPrompt = patientLanguage
-    ? `${BASE_SYSTEM}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
-    : BASE_SYSTEM;
+    ? `${base}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
+    : base;
 
   const chat = genAI.getGenerativeModel({
     model,
     systemInstruction: systemPrompt,
+    ...(withCommands ? { tools: [{ functionDeclarations: [GEMINI_COMMAND_DECLARATION] }] } : {}),
   }).startChat({
     history: history.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
@@ -393,19 +468,25 @@ async function replyWithGemini(
   });
 
   const result = await chat.sendMessage(userMessage);
-  return result.response.text() || "I'm sorry, I couldn't process that. Please try again or type /help.";
+  const command = (result.response.functionCalls() ?? [])
+    .map((call) => commandFrom(call.name, call.args as Record<string, unknown>))
+    .find(Boolean);
+  const reply = result.response.text() || (command ? "" : "I'm sorry, I couldn't process that. Please try again or type /help.");
+  return { reply, command };
 }
 
 async function replyWithClaude(
   userMessage: string,
   history: ConversationMessage[],
   patientLanguage?: string,
-): Promise<string> {
+  withCommands = false,
+): Promise<ChatReplyResult> {
   const client = new Anthropic();
 
+  const base = withCommands ? BASE_SYSTEM + COMMAND_SYSTEM : BASE_SYSTEM;
   const systemPrompt = patientLanguage
-    ? `${BASE_SYSTEM}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
-    : BASE_SYSTEM;
+    ? `${base}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
+    : base;
 
   const messages: Anthropic.MessageParam[] = [
     ...history.map((m) => ({
@@ -420,20 +501,31 @@ async function replyWithClaude(
     max_tokens: 400,
     system: systemPrompt,
     messages,
+    ...(withCommands ? { tools: [CLAUDE_COMMAND_TOOL] } : {}),
   });
 
+  let command: CommandName | undefined;
+  for (const block of response.content) {
+    if (block.type === "tool_use") command ??= commandFrom(block.name, block.input as Record<string, unknown>);
+  }
   const text = response.content.find((b) => b.type === "text")?.text;
-  return text ?? "I'm sorry, I couldn't process that. Please try again or type /help.";
+  return { reply: text ?? (command ? "" : "I'm sorry, I couldn't process that. Please try again or type /help."), command };
 }
 
-export async function generateReply(
+const COORDINATOR_FALLBACK =
+  "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";
+
+/** A follow-up answer that may also name an app command (web chat). */
+export async function generateChatReply(
   userMessage: string,
   history: ConversationMessage[] = [],
   patientLanguage?: string,
-): Promise<string> {
+  options: { commands?: boolean } = {},
+): Promise<ChatReplyResult> {
+  const withCommands = options.commands === true;
   if (available("gemini")) {
     try {
-      return await withGeminiModel((model) => replyWithGemini(model, userMessage, history, patientLanguage));
+      return await withGeminiModel((model) => replyWithGemini(model, userMessage, history, patientLanguage, withCommands));
     } catch (err) {
       console.error("[shifain] Gemini reply failed:", err);
       noteFailure("gemini", err);
@@ -441,11 +533,19 @@ export async function generateReply(
   }
   if (available("claude")) {
     try {
-      return await replyWithClaude(userMessage, history, patientLanguage);
+      return await replyWithClaude(userMessage, history, patientLanguage, withCommands);
     } catch (err) {
       console.error("[shifain] Claude reply failed:", err);
       noteFailure("claude", err);
     }
   }
-  return "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";
+  return { reply: COORDINATOR_FALLBACK };
+}
+
+export async function generateReply(
+  userMessage: string,
+  history: ConversationMessage[] = [],
+  patientLanguage?: string,
+): Promise<string> {
+  return (await generateChatReply(userMessage, history, patientLanguage)).reply || COORDINATOR_FALLBACK;
 }

@@ -1,9 +1,10 @@
 import "server-only";
 import { after } from "next/server";
 import { loadGrounding } from "./catalogue";
-import { createCase, savePlan, savePlanFailure, type CaseSource, type CaseStatus, type PatientCase } from "./cases";
+import { createCase, getCase, savePlan, savePlanFailure, type CaseSource, type CaseStatus, type PatientCase } from "./cases";
+import { getDb } from "./db";
 import { generatePlan } from "./ai/plan";
-import { expiryFromNow, storeReports } from "./reports";
+import { expiryFromNow, listReports, readReport, storeReports } from "./reports";
 import { getSettings } from "./settings";
 import { notifyOps } from "./mailer";
 import { sendCaseUpdate } from "./telegram-notify";
@@ -100,4 +101,88 @@ export async function openCase(input: {
   });
 
   return record;
+}
+
+/** How many times a patient may ask for a fresh plan in a day. Each one is an AI call. */
+export const REPLANS_PER_DAY = 2;
+
+export type ReplanResult = "started" | "busy" | "limit" | "missing" | "off";
+
+/**
+ * Plans a case again with what the patient has added since — new symptoms,
+ * results, a preferred city. Their own package choices are laid back over
+ * the new plan, so asking for an update never undoes "no hotel, please".
+ */
+export async function replanCase(reference: string): Promise<ReplanResult> {
+  const record = await getCase(reference);
+  if (!record) return "missing";
+  if (record.status === "planning") return "busy";
+
+  const settings = await getSettings();
+  if (!settings.plannerEnabled) return "off";
+
+  const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const recent = (record.replans ?? []).filter((at) => Date.parse(at) > dayAgo);
+  if (recent.length >= REPLANS_PER_DAY) return "limit";
+
+  const now = new Date().toISOString();
+  const db = await getDb();
+  const claimed = await db.collection<PatientCase>("cases").updateOne(
+    { _id: reference, status: { $ne: "planning" } },
+    { $set: { status: "planning", planError: null, updatedAt: now }, $push: { replans: now } },
+  );
+  if (claimed.modifiedCount === 0) return "busy";
+
+  after(async () => {
+    try {
+      const prefs = record.preferences ?? {};
+      const added = (prefs.notes ?? []).map((note) => `Update from the patient (${note.at.slice(0, 10)}): ${note.text}`);
+      const wishes = [
+        prefs.city ? `The patient would prefer treatment in ${prefs.city}.` : null,
+        prefs.travel ? `They would like to travel ${prefs.travel}.` : null,
+        typeof prefs.companions === "number" ? `Travelling companions: ${prefs.companions}.` : null,
+      ].filter(Boolean) as string[];
+
+      const reports = [];
+      for (const stored of await listReports(reference).catch(() => [])) {
+        if (!/^(application\/pdf|image\/(png|jpeg|gif|webp))$/.test(stored.mediaType)) continue;
+        const file = await readReport(reference, stored._id).catch(() => null);
+        if (file) reports.push({ filename: file.filename, mediaType: file.mediaType, data: file.body.toString("base64") });
+      }
+
+      const plan = await generatePlan(
+        {
+          statedNeed: record.statedNeed ?? "",
+          country: record.patient.country,
+          locale: record.locale as Locale,
+          reports,
+          description: [record.description, ...added, ...wishes].filter(Boolean).join("\n\n") || null,
+          answers: record.answers,
+        },
+        await loadGrounding(),
+      );
+      if (!settings.offerTourism) plan.leisureSuitable = false;
+      for (const [service, include] of Object.entries(prefs.packages ?? {})) {
+        const has = plan.suggestedPackage.includes(service as never);
+        if (include && !has) plan.suggestedPackage.push(service as never);
+        if (!include && has) plan.suggestedPackage = plan.suggestedPackage.filter((item) => item !== service);
+      }
+      await savePlan(reference, plan);
+      await sendCaseUpdate(reference, "planned", record.patient.phone).catch(() => undefined);
+    } catch (error) {
+      console.error("[shifain] could not re-plan case", reference, error);
+      // The earlier plan is still on the case; put it back in front of the patient.
+      await db
+        .collection<PatientCase>("cases")
+        .updateOne(
+          { _id: reference },
+          record.plan
+            ? { $set: { status: record.status, updatedAt: new Date().toISOString() } }
+            : { $set: { status: "plan-failed", planError: "The planner did not complete." } },
+        )
+        .catch(() => undefined);
+    }
+  });
+
+  return "started";
 }

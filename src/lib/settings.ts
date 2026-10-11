@@ -22,6 +22,18 @@ export type SiteSettings = {
   defaultCurrency: string;
   /** How long a partner's referral of a patient blocks another partner's claim. */
   referralWindowDays: number;
+  /**
+   * "natural" speaks replies with ElevenLabs (paid per character, cached);
+   * "device" uses the patient's phone or browser voice only (free).
+   */
+  voiceEngine: "natural" | "device";
+  /** The ElevenLabs voice patients hear unless they pick another. */
+  voiceId: string | null;
+  /**
+   * Hear patients through ElevenLabs even when their browser can transcribe
+   * for free. Off by default; the browser's recogniser costs nothing.
+   */
+  serverListening: boolean;
   updatedAt: string | null;
 };
 
@@ -33,6 +45,9 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   partnerApplicationsOpen: true,
   defaultCurrency: "USD",
   referralWindowDays: 180,
+  voiceEngine: "natural",
+  voiceId: null,
+  serverListening: false,
   updatedAt: null,
 };
 
@@ -104,7 +119,7 @@ export function environmentCheck(): EnvCheck[] {
     { name: "TELEGRAM_BOT_TOKEN", set: has("TELEGRAM_BOT_TOKEN"), required: false, what: "Shared Telegram bot token (used when separate patient/partner tokens are not set)." },
     { name: "TELEGRAM_PATIENT_BOT_TOKEN", set: has("TELEGRAM_PATIENT_BOT_TOKEN"), required: false, what: "Patient-facing Telegram bot. Falls back to TELEGRAM_BOT_TOKEN." },
     { name: "TELEGRAM_PARTNER_BOT_TOKEN", set: has("TELEGRAM_PARTNER_BOT_TOKEN"), required: false, what: "Partner/doctor-facing Telegram bot. Falls back to TELEGRAM_BOT_TOKEN." },
-    { name: "ELEVENLABS_API_KEY", set: has("ELEVENLABS_API_KEY"), required: false, what: "ElevenLabs voice AI. Without it, voice messages get a text-only reply." },
+    { name: "ELEVENLABS_API_KEY", set: has("ELEVENLABS_API_KEY"), required: false, what: "Natural voices and server transcription. Without it the assistant speaks with the patient's device voice, for free." },
     { name: "GEMINI_API_KEY", set: has("GEMINI_API_KEY"), required: false, what: "Google Gemini for the voice conversation engine (free tier). Used when ANTHROPIC_API_KEY is not set." },
   ];
 }

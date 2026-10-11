@@ -1,14 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { pickDeviceVoice, type VoicePrefs } from "@/lib/voice/voices";
 
 /**
  * Hands-free voice conversation, like ChatGPT's talk mode: listen until the
  * patient pauses, send what they said, read the answer aloud, listen again.
  *
- * Hearing: the server (ElevenLabs, any language) when it is configured,
- * otherwise the browser's own speech recognition. Speaking: the server's
- * audio when it sends some, otherwise the browser's speech synthesis.
+ * Hearing: the browser's own speech recognition, which is free; the server
+ * (ElevenLabs, any language, paid) only when the browser has none or the
+ * admin asked for it. Speaking: the server's natural voice when it sends
+ * audio, otherwise the best voice this device has, as the patient chose.
  * Half-duplex on purpose — the microphone is off while the answer plays, so
  * the speaker is never heard as the patient. Tapping the orb interrupts.
  */
@@ -55,12 +57,20 @@ const PHASE_TEXT: Record<Phase, string> = {
 
 export function VoiceDock({
   serverVoice,
+  serverListening = false,
+  prefs,
+  onOpenPicker,
   onSpokenText,
   onSpokenAudio,
   onClose,
 }: {
-  /** Whether the server can transcribe audio and speak replies. */
+  /** Whether the server can transcribe audio. */
   serverVoice: boolean;
+  /** The admin wants every turn transcribed by the server, even where the browser could. */
+  serverListening?: boolean;
+  /** How the patient wants replies to sound. */
+  prefs: VoicePrefs;
+  onOpenPicker: () => void;
   /** Browser-heard text: add it to the chat and return the reply. */
   onSpokenText: (text: string, lang: string) => Promise<VoiceTurnResult>;
   /** Recorded audio for the server to hear: add the transcript to the chat and return the reply. */
@@ -88,7 +98,12 @@ export function VoiceDock({
   const turn = useRef(0);
   /** Turns in a row with nothing heard; voice pauses rather than listening forever. */
   const quietTurns = useRef(0);
-  const useServer = serverVoice && typeof MediaRecorder !== "undefined";
+  const useServer =
+    serverVoice && typeof MediaRecorder !== "undefined" && (serverListening || recognitionCtor() === null);
+  const prefsRef = useRef(prefs);
+  useEffect(() => {
+    prefsRef.current = prefs;
+  }, [prefs]);
 
   const fail = useCallback((message: string) => {
     setError(message);
@@ -146,8 +161,10 @@ export function VoiceDock({
       }
       if (typeof speechSynthesis !== "undefined") {
         const utterance = new SpeechSynthesisUtterance(result.reply);
-        utterance.lang = lang;
-        utterance.rate = 1;
+        const voice = pickDeviceVoice(speechSynthesis.getVoices(), lang, prefsRef.current);
+        if (voice) utterance.voice = voice;
+        utterance.lang = voice?.lang ?? lang;
+        utterance.rate = prefsRef.current.rate;
         utterance.onend = next;
         utterance.onerror = next;
         speechSynthesis.cancel();
@@ -363,6 +380,12 @@ export function VoiceDock({
           {phase === "error" ? error : live || (phase === "listening" ? (useServer ? "Speak in any language" : "Speak now") : "\u00a0")}
         </p>
       </div>
+
+      <button type="button" onClick={onOpenPicker} className="voice-settings" aria-label="Choose the assistant's voice">
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
+        </svg>
+      </button>
 
       <button type="button" onClick={onClose} className="voice-end" aria-label="End voice conversation">
         End
