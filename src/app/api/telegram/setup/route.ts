@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { publicOrigin } from "@/lib/origin";
 import { setWebhook, deleteWebhook, getWebhookInfo, getMe, isTelegramConfigured, type BotRole } from "@/lib/telegram";
 import { isAuthenticated } from "@/lib/auth";
 
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, message: `${role} webhook removed` });
   }
 
-  const baseUrl = process.env.BASE_URL || request.nextUrl.origin;
+  const baseUrl = publicOrigin(request);
   const webhookUrl = `${baseUrl}/api/telegram/webhook?bot=${role}`;
 
   await setWebhook(role, webhookUrl);

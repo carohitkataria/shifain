@@ -40,6 +40,8 @@ export type TelegramContact = {
   botRole: "patient" | "partner";
   state: string;
   stateData: Record<string, unknown> | null;
+  /** The partner code from a t.me/<bot>?start=ref_CODE link, kept until a case opens. */
+  referralCode?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -158,6 +160,19 @@ export async function updateContactState(
   await db.collection<TelegramContact>("telegram_contacts").updateOne(
     { _id: `tg-${botRole}-${telegramUserId}` },
     { $set: { state, stateData: stateData ?? null, updatedAt: new Date().toISOString() } },
+  );
+}
+
+/** Remembers the partner whose Telegram link brought this patient. First link wins. */
+export async function rememberContactReferral(
+  botRole: "patient" | "partner",
+  telegramUserId: number,
+  referralCode: string,
+): Promise<void> {
+  const db = await getDb();
+  await db.collection<TelegramContact>("telegram_contacts").updateOne(
+    { _id: `tg-${botRole}-${telegramUserId}`, referralCode: { $in: [null, undefined] as never } },
+    { $set: { referralCode, updatedAt: new Date().toISOString() } },
   );
 }
 

@@ -31,9 +31,9 @@ export const PORTAL_BACK = l("Back to homepage", "На главную", "Bosh sa
 export const ENQUIRY_RECEIVED = {
   title: l("Your reports are in", "Документы получены", "Hujjatlaringiz qabul qilindi"),
   body: l(
-    "We are generating your AI-assisted plan and cost estimate now — it lands on your WhatsApp within minutes. The treating hospital confirms the final plan and the guaranteed price within 48 hours.",
-    "Сейчас формируем ваш план и смету с помощью ИИ — они придут в WhatsApp в течение нескольких минут. Клиника подтвердит окончательный план и гарантированную цену в течение 48 часов.",
-    "Hozir sun'iy intellekt yordamida reja va hisobingizni tayyorlayapmiz — bir necha daqiqada WhatsApp'ga keladi. Shifoxona yakuniy reja va kafolatlangan narxni 48 soat ichida tasdiqlaydi.",
+    "We are preparing your plan and cost estimate now — it lands on your WhatsApp within minutes. The treating hospital confirms the final plan and the guaranteed price within 48 hours.",
+    "Сейчас готовим ваш план и смету — они придут в WhatsApp в течение нескольких минут. Клиника подтвердит окончательный план и гарантированную цену в течение 48 часов.",
+    "Hozir reja va hisobingizni tayyorlayapmiz — bir necha daqiqada WhatsApp'ga keladi. Shifoxona yakuniy reja va kafolatlangan narxni 48 soat ichida tasdiqlaydi.",
   ),
   reference: l("Your reference", "Ваш номер обращения", "Murojaat raqamingiz"),
 };

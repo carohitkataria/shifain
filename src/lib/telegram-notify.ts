@@ -1,7 +1,7 @@
 import "server-only";
 import { sendMessage, isTelegramConfigured, type BotRole } from "./telegram";
 import { saveMessage, type TelegramContact } from "./crm-messages";
-import { readOr } from "./db";
+import { readOr, getDb } from "./db";
 
 /**
  * Outbound notifications — the system reaching out to patients and partners
@@ -145,9 +145,16 @@ export async function sendCoordinatorReply(
       telegramChatId,
       senderName: "Coordinator",
       text,
-      metadata: null,
+      metadata: { coordinator: true },
       status: "delivered",
     });
+
+    const db = await getDb();
+    await db.collection<TelegramContact>("telegram_contacts").updateOne(
+      { telegramChatId, botRole },
+      { $set: { state: "admin_handling", updatedAt: new Date().toISOString() } },
+    );
+
     return true;
   } catch {
     return false;

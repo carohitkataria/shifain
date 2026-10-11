@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { MobileMenu } from "./MobileMenu";
 import { t } from "@/lib/localize";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -28,48 +29,53 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-40 border-b border-line/60 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3.5 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6 sm:py-3.5 xl:gap-4">
         <Link href={`/${locale}`} className="shrink-0">
-          <Logo tagline={t(content.brand.wordmarkTagline, locale)} />
+          <Logo tagline={t(content.brand.wordmarkTagline, locale)} markClassName="h-9 w-9 sm:h-11 sm:w-11" />
         </Link>
 
         <nav
           aria-label="Primary"
-          className="hidden flex-1 items-center justify-center gap-1 lg:flex"
+          className="hidden flex-1 items-center justify-center gap-0.5 xl:flex"
         >
           {nav.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="rounded-full px-3.5 py-2 text-[13px] font-semibold text-ink-soft transition hover:bg-surface-muted hover:text-ink"
+              className="whitespace-nowrap rounded-full px-2.5 py-2 text-[13px] font-semibold text-ink-soft transition hover:bg-surface-muted hover:text-ink"
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+        <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2 xl:ml-0">
           <LanguageSwitcher locale={locale} path={path} />
 
           <a
             href={waHref(content.contact.whatsapp)}
-            className="hidden rounded-full px-3 py-2 text-[13px] font-semibold text-ink-soft transition hover:text-ink sm:inline"
+            className="hidden rounded-full px-3 py-2 text-[13px] font-semibold text-ink-soft transition hover:text-ink md:inline"
           >
             WhatsApp
           </a>
           <a
             href={telHref(content.contact.phone)}
-            className="hidden rounded-full px-3 py-2 text-[13px] font-semibold text-ink-soft transition hover:text-ink md:inline"
+            className="hidden rounded-full px-3 py-2 text-[13px] font-semibold text-ink-soft transition hover:text-ink 2xl:inline"
           >
             {content.contact.phone}
           </a>
 
           <Link
             href={`/${locale}/portal/patient`}
-            className="rounded-full bg-brand-deep px-5 py-2 text-sm font-bold text-white transition hover:bg-brand"
+            className="hidden whitespace-nowrap rounded-full bg-brand-deep px-5 py-2 text-sm font-bold text-white transition hover:bg-brand sm:inline-flex"
           >
             {t(content.nav.patientLogin, locale)}
           </Link>
+
+          <MobileMenu
+            items={nav}
+            cta={{ href: `/${locale}/portal/patient`, label: t(content.nav.patientLogin, locale) }}
+          />
         </div>
       </div>
     </header>

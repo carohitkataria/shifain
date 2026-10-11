@@ -84,6 +84,90 @@ export const INTAKE_COPY = {
   },
 };
 
+/** The homepage plan request: three short steps, contact details last. */
+export const WIZARD_COPY = {
+  subtitle: l(
+    "Three quick steps. A coordinator who speaks your language follows up.",
+    "Три коротких шага. Затем с вами свяжется координатор, говорящий на вашем языке.",
+    "Uchta qisqa qadam. Keyin o'z tilingizda gaplashadigan koordinator bog'lanadi.",
+  ),
+  step: l("Step", "Шаг", "Qadam"),
+  stepNames: [
+    l("Treatment", "Лечение", "Davolash"),
+    l("Condition", "Состояние", "Holat"),
+    l("Contact", "Контакты", "Aloqa"),
+  ],
+  titles: [
+    l("What do you need help with?", "С чем вам нужна помощь?", "Sizga qanday yordam kerak?"),
+    l("Tell us about the condition", "Расскажите о состоянии", "Holat haqida aytib bering"),
+    l("Where should we send your plan?", "Куда отправить ваш план?", "Rejangizni qayerga yuboraylik?"),
+  ],
+  somethingElse: l("Something else", "Другое", "Boshqa"),
+  otherLabel: l("What treatment are you looking for?", "Какое лечение вы ищете?", "Qanday davolanish kerak?"),
+  otherPlaceholder: l(
+    "e.g. kidney stones, cataract, a second opinion",
+    "например: камни в почках, катаракта, второе мнение",
+    "masalan: buyrak toshi, katarakta, ikkinchi fikr",
+  ),
+  notSure: l("Not sure yet", "Пока не знаю", "Hali bilmayman"),
+  needError: l(
+    "Choose a treatment, or pick “Not sure yet”.",
+    "Выберите лечение или «Пока не знаю».",
+    "Davolashni tanlang yoki «Hali bilmayman»ni tanlang.",
+  ),
+  otherError: l("Tell us in a few words what you need.", "Опишите в двух словах, что нужно.", "Nima kerakligini qisqacha yozing."),
+  recommended: l("Most accurate", "Самый точный", "Eng aniq"),
+  routeHints: {
+    reports: l(
+      "PDF or photos of scans, reports, prescriptions",
+      "PDF или фото снимков, заключений, рецептов",
+      "Suratlar, xulosalar, retseptlar — PDF yoki rasm",
+    ),
+    description: l("In your own words, in any language", "Своими словами, на любом языке", "O'z so'zlaringiz bilan, istalgan tilda"),
+    questions: l("A few short questions, no documents", "Несколько коротких вопросов, без документов", "Bir nechta qisqa savol, hujjatsiz"),
+  },
+  addFiles: l("Add reports", "Добавить документы", "Hujjat qo'shish"),
+  addMore: l("Add more", "Добавить ещё", "Yana qo'shish"),
+  fileHint: l(
+    "PDF, JPG or PNG · up to 10 files, 25 MB in total",
+    "PDF, JPG или PNG · до 10 файлов, всего 25 МБ",
+    "PDF, JPG yoki PNG · 10 tagacha fayl, jami 25 MB",
+  ),
+  remove: l("Remove", "Удалить", "O'chirish"),
+  tooMany: l(
+    "That is more than 10 files or 25 MB — please send the most recent ones.",
+    "Это больше 10 файлов или 25 МБ — отправьте самые свежие.",
+    "Bu 10 tadan ko'p fayl yoki 25 MB dan ortiq — eng so'nggilarini yuboring.",
+  ),
+  conditionError: l(
+    "Add at least one report, a short description, or answer one question.",
+    "Добавьте хотя бы один документ, короткое описание или ответьте на один вопрос.",
+    "Kamida bitta hujjat, qisqa tavsif yoki bitta savolga javob qo'shing.",
+  ),
+  moreQuestions: l("More questions (optional)", "Ещё вопросы (необязательно)", "Qo'shimcha savollar (ixtiyoriy)"),
+  contactNote: l(
+    "Your coordinator will message you on WhatsApp or call this number — nobody else sees it.",
+    "Координатор напишет в WhatsApp или позвонит на этот номер — больше его никто не увидит.",
+    "Koordinator WhatsApp orqali yozadi yoki shu raqamga qo'ng'iroq qiladi — boshqa hech kim ko'rmaydi.",
+  ),
+  nameError: l("Please enter a first name.", "Введите имя.", "Ismni kiriting."),
+  countryError: l("Choose the country you live in.", "Выберите страну проживания.", "Yashash mamlakatingizni tanlang."),
+  phoneError: l(
+    "Enter a phone number we can reach you on.",
+    "Укажите номер, по которому с вами можно связаться.",
+    "Siz bilan bog'lanish mumkin bo'lgan raqamni kiriting.",
+  ),
+  emailError: l("That email address does not look right.", "Адрес почты выглядит неверно.", "Pochta manzili noto'g'ri ko'rinadi."),
+  next: l("Continue", "Далее", "Davom etish"),
+  back: l("Back", "Назад", "Orqaga"),
+  submitting: l("Preparing your plan…", "Готовим ваш план…", "Rejangiz tayyorlanmoqda…"),
+  trust: [
+    l("Free, no obligation", "Бесплатно и без обязательств", "Bepul, majburiyatsiz"),
+    l("Draft in minutes, hospital-confirmed in 48\u00a0h", "Черновик за минуты, подтверждение клиники за 48\u00a0ч", "Reja daqiqalarda, shifoxona tasdig'i 48 soatda"),
+    l("Reports deleted after 30 days", "Документы удаляются через 30 дней", "Hujjatlar 30 kundan keyin o'chiriladi"),
+  ],
+};
+
 export const TOUR_COPY = {
   title: l("While you are here", "Пока вы в Индии", "Siz Hindistonda ekansiz"),
   body: l(

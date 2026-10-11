@@ -8,12 +8,14 @@ export function AdminShell({
   title,
   subtitle,
   action,
+  fullWidth,
   children,
 }: {
   title: string;
   subtitle?: string;
   /** The page's primary save button, sat beside the title. */
   action?: React.ReactNode;
+  fullWidth?: boolean;
   children: React.ReactNode;
 }) {
   const brand = (
@@ -62,7 +64,7 @@ export function AdminShell({
           </div>
         </header>
 
-        <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+        <main className={`mx-auto px-4 py-10 sm:px-6 ${fullWidth ? "max-w-7xl" : "max-w-4xl"}`}>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0 flex-1 basis-64">
               <h1 className="text-3xl font-extrabold tracking-tight text-ink">{title}</h1>

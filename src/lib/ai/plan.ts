@@ -1,7 +1,9 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
 import type { Grounding } from "../catalogue";
-import { schemaFor, type Plan } from "./plan-schema";
+import { normalisePlan, schemaFor, toGeminiSchema, type Plan } from "./plan-schema";
+import { available, noteFailure, withGeminiModel } from "./providers";
 import { INTAKE_QUESTIONS, type IntakeAnswers } from "./plan-questions";
 
 export { PLAN_PACKAGE_OPTIONS, type Plan, type PlanPackageOption } from "./plan-schema";
@@ -13,6 +15,12 @@ export { INTAKE_QUESTIONS, type IntakeAnswers } from "./plan-questions";
  * reading of a report is far higher than the cost of the tokens.
  */
 const MODEL = "claude-opus-5";
+
+/**
+ * Gemini plans first because its free tier costs nothing; Claude is the
+ * fallback. GEMINI_PLAN_MODEL pins a stronger Gemini model for planning only.
+ */
+const GEMINI_PLAN_MODEL = process.env.GEMINI_PLAN_MODEL?.trim() || undefined;
 
 const MAX_REPORT_BYTES = 20 * 1024 * 1024;
 
@@ -127,60 +135,83 @@ function reportBlocks(reports: PlanReport[]): Anthropic.ContentBlockParam[] {
 
 export class PlanUnavailableError extends Error {}
 
-/**
- * Reads the uploaded reports and returns the plan, or throws. The caller
- * records the failure on the case so a coordinator picks it up by hand —
- * a patient who has uploaded their reports is never dropped.
- */
-export async function generatePlan(input: PlanInput, grounding: Grounding): Promise<Plan> {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new PlanUnavailableError("ANTHROPIC_API_KEY is not set.");
-  }
-  if (grounding.diseases.length === 0) {
-    throw new PlanUnavailableError("The catalogue is empty, so there is nothing to plan against.");
-  }
-
-  const usable = input.reports.filter((r) => r.data.length > 0);
-  const totalBytes = usable.reduce((sum, r) => sum + Math.floor((r.data.length * 3) / 4), 0);
-  if (totalBytes > MAX_REPORT_BYTES) {
-    throw new PlanUnavailableError("The uploaded reports are too large to read in one request.");
-  }
-
-  const client = new Anthropic();
-
+function patientPrompt(input: PlanInput, usable: PlanReport[]): string {
   const answered = Object.entries(input.answers ?? {}).filter(([, value]) => value?.trim());
   const questionText = new Map(INTAKE_QUESTIONS.map((q) => [q.id, q.question]));
+  return [
+    `The patient is travelling from ${input.country}.`,
+    input.statedNeed ? `What they are seeking: "${input.statedNeed}".` : "",
+    usable.length > 0 ? `They uploaded ${usable.length} file(s): ${usable.map((r) => r.filename).join(", ")}.` : "",
+    input.description?.trim()
+      ? `They described the problem themselves:\n"""\n${input.description.trim()}\n"""`
+      : "",
+    answered.length > 0
+      ? `They answered the standard questions:\n${answered
+          .map(([id, value]) => `  ${questionText.get(id as never) ?? id}\n    ${value!.trim()}`)
+          .join("\n")}`
+      : "",
+    usable.length === 0 && !input.description?.trim() && answered.length === 0
+      ? "They gave nothing beyond what they are seeking — say plainly in missingReports and questionsForPatient what you need, and keep confidence low."
+      : "",
+    usable.length === 0 ? "No reports were shared, so reportsRead must be empty and confidence must not be high." : "",
+    "",
+    "Produce the plan.",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
 
+const stripFence = (raw: string) => raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+
+async function planWithGemini(
+  model: string,
+  input: PlanInput,
+  usable: PlanReport[],
+  grounding: Grounding,
+): Promise<unknown> {
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+  const schema = schemaFor(grounding);
+  const parts: Part[] = [
+    ...usable
+      .filter((r) => r.mediaType === "application/pdf" || r.mediaType.startsWith("image/"))
+      .map((r): Part => ({ inlineData: { mimeType: r.mediaType, data: r.data } })),
+    { text: patientPrompt(input, usable) },
+  ];
+
+  const run = async (withSchema: boolean) => {
+    const generator = genAI.getGenerativeModel({
+      model,
+      systemInstruction: withSchema
+        ? `${SYSTEM}\n\n${catalogueText(grounding)}`
+        : `${SYSTEM}\n\n${catalogueText(grounding)}\n\nReturn only JSON that matches this JSON Schema exactly:\n${JSON.stringify(schema)}`,
+      generationConfig: {
+        responseMimeType: "application/json",
+        ...(withSchema ? { responseSchema: toGeminiSchema(schema) as never } : {}),
+        temperature: 0.2,
+        maxOutputTokens: 16384,
+      },
+    });
+    const result = await generator.generateContent({ contents: [{ role: "user", parts }] });
+    const blocked = result.response.promptFeedback?.blockReason;
+    if (blocked) throw new PlanUnavailableError(`Gemini declined the request (${blocked}).`);
+    return JSON.parse(stripFence(result.response.text()));
+  };
+
+  try {
+    return await run(true);
+  } catch (error) {
+    // Some models reject parts of a structured schema; plain JSON mode with
+    // the schema in the instructions still works, and the plan is normalised.
+    if (/\b400\b|invalid argument|schema/i.test(String(error))) return run(false);
+    throw error;
+  }
+}
+
+async function planWithClaude(input: PlanInput, usable: PlanReport[], grounding: Grounding): Promise<unknown> {
+  const client = new Anthropic();
   const content: Anthropic.ContentBlockParam[] = [
     ...reportBlocks(usable),
-    {
-      type: "text",
-      text: [
-        `The patient is travelling from ${input.country}.`,
-        input.statedNeed ? `What they are seeking: "${input.statedNeed}".` : "",
-        usable.length > 0
-          ? `They uploaded ${usable.length} file(s): ${usable.map((r) => r.filename).join(", ")}.`
-          : "",
-        input.description?.trim()
-          ? `They described the problem themselves:\n"""\n${input.description.trim()}\n"""`
-          : "",
-        answered.length > 0
-          ? `They answered the standard questions:\n${answered
-              .map(([id, value]) => `  ${questionText.get(id as never) ?? id}\n    ${value!.trim()}`)
-              .join("\n")}`
-          : "",
-        usable.length === 0 && !input.description?.trim() && answered.length === 0
-          ? "They gave nothing beyond what they are seeking — say plainly in missingReports and questionsForPatient what you need, and keep confidence low."
-          : "",
-        usable.length === 0
-          ? "No reports were shared, so reportsRead must be empty and confidence must not be high."
-          : "",
-        "",
-        "Produce the plan.",
-      ]
-        .filter(Boolean)
-        .join("\n\n"),
-    },
+    { type: "text", text: patientPrompt(input, usable) },
   ];
 
   const stream = client.messages.stream({
@@ -207,6 +238,54 @@ export async function generatePlan(input: PlanInput, grounding: Grounding): Prom
 
   const text = response.content.find((block) => block.type === "text")?.text;
   if (!text) throw new PlanUnavailableError("The planner returned nothing to read.");
+  return JSON.parse(text);
+}
 
-  return JSON.parse(text) as Plan;
+/**
+ * Reads the uploaded reports and returns the plan, or throws. The caller
+ * records the failure on the case so a coordinator picks it up by hand —
+ * a patient who has uploaded their reports is never dropped.
+ */
+export async function generatePlan(input: PlanInput, grounding: Grounding): Promise<Plan> {
+  if (!process.env.GEMINI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+    throw new PlanUnavailableError("Neither GEMINI_API_KEY nor ANTHROPIC_API_KEY is set.");
+  }
+  if (grounding.diseases.length === 0) {
+    throw new PlanUnavailableError("The catalogue is empty, so there is nothing to plan against.");
+  }
+
+  const usable = input.reports.filter((r) => r.data.length > 0);
+  const totalBytes = usable.reduce((sum, r) => sum + Math.floor((r.data.length * 3) / 4), 0);
+  if (totalBytes > MAX_REPORT_BYTES) {
+    throw new PlanUnavailableError("The uploaded reports are too large to read in one request.");
+  }
+
+  const failures: string[] = [];
+
+  if (available("gemini")) {
+    try {
+      const raw = await withGeminiModel((model) => planWithGemini(model, input, usable, grounding), GEMINI_PLAN_MODEL);
+      return normalisePlan(raw, grounding, usable.length);
+    } catch (error) {
+      console.error("[shifain] Gemini planning failed:", error);
+      noteFailure("gemini", error);
+      failures.push("Gemini");
+    }
+  }
+
+  if (available("claude")) {
+    try {
+      return normalisePlan(await planWithClaude(input, usable, grounding), grounding, usable.length);
+    } catch (error) {
+      console.error("[shifain] Claude planning failed:", error);
+      noteFailure("claude", error);
+      failures.push("Claude");
+    }
+  }
+
+  throw new PlanUnavailableError(
+    failures.length > 0
+      ? `Automatic planning was unavailable (${failures.join(", ")} did not answer). A coordinator will plan this case by hand.`
+      : "Automatic planning is resting after hitting its usage limit. A coordinator will plan this case by hand.",
+  );
 }

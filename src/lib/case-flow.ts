@@ -1,7 +1,7 @@
 import "server-only";
 import { after } from "next/server";
 import { loadGrounding } from "./catalogue";
-import { createCase, savePlan, savePlanFailure, type CaseStatus, type PatientCase } from "./cases";
+import { createCase, savePlan, savePlanFailure, type CaseSource, type CaseStatus, type PatientCase } from "./cases";
 import { generatePlan } from "./ai/plan";
 import { expiryFromNow, storeReports } from "./reports";
 import { getSettings } from "./settings";
@@ -22,6 +22,8 @@ export async function openCase(input: {
   locale: Locale;
   patient: { name: string; phone: string; country: string; email: string | null };
   intake: Intake;
+  source: CaseSource;
+  /** A partner user id, only when the partner is known at intake time. */
   referredBy: string | null;
   status?: CaseStatus;
 }): Promise<PatientCase> {
@@ -41,6 +43,7 @@ export async function openCase(input: {
       intake.uploads.length > 0
         ? expiryFromNow(settings.reportRetentionDays).toISOString()
         : null,
+    source: input.source,
     referredBy: input.referredBy,
   });
 
@@ -50,7 +53,7 @@ export async function openCase(input: {
       `A new case opened from ${input.patient.country}.`,
       `Reference: ${record._id}`,
       `Route: ${intake.route}`,
-      input.referredBy ? `Referred by: ${input.referredBy}` : "Came in through the website.",
+      `Came in through: ${input.source}${input.referredBy ? ` (partner ${input.referredBy})` : ""}`,
       "",
       "Open it in the console under Patient cases. Nothing clinical is in this email.",
     ]);

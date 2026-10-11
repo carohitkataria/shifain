@@ -155,3 +155,156 @@ export function schemaFor(grounding: Grounding): Record<string, unknown> {
     },
   };
 }
+
+// ---------------------------------------------------------------- Gemini schema
+
+type JsonNode = Record<string, unknown>;
+
+/**
+ * Gemini's responseSchema takes an OpenAPI subset: no type unions, no null in
+ * enums, no additionalProperties. Nullable fields become `nullable: true`.
+ * The plan is normalised afterwards anyway, so nothing here is load-bearing
+ * for safety — it only steers the model towards the right shape.
+ */
+export function toGeminiSchema(node: JsonNode): JsonNode {
+  const out: JsonNode = {};
+  let type = node.type;
+  if (Array.isArray(type)) {
+    const concrete = type.filter((t) => t !== "null");
+    if (concrete.length < type.length) out.nullable = true;
+    type = concrete[0];
+  }
+  if (type) out.type = type;
+  if (typeof node.description === "string") out.description = node.description;
+  if (Array.isArray(node.enum)) {
+    const values = node.enum.filter((v) => v !== null);
+    if (values.length < node.enum.length) out.nullable = true;
+    out.enum = values;
+    if (type === "string") out.format = "enum";
+  }
+  if (node.properties && typeof node.properties === "object") {
+    const props = node.properties as Record<string, JsonNode>;
+    out.properties = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, toGeminiSchema(v)]));
+    out.propertyOrdering = Object.keys(props);
+  }
+  if (Array.isArray(node.required)) out.required = node.required;
+  if (node.items && typeof node.items === "object") out.items = toGeminiSchema(node.items as JsonNode);
+  return out;
+}
+
+// ---------------------------------------------------------------- normalising
+
+const text = (value: unknown, max = 2000) => (typeof value === "string" ? value.trim().slice(0, max) : "");
+const texts = (value: unknown, max = 20) =>
+  Array.isArray(value) ? value.map((v) => text(v, 500)).filter(Boolean).slice(0, max) : [];
+const count = (value: unknown) => {
+  const n = Math.round(Number(value));
+  return Number.isFinite(n) && n >= 0 ? Math.min(n, 365) : 0;
+};
+
+/**
+ * Holds any model's answer to the catalogue, whichever provider wrote it. A
+ * code that is not ours is dropped rather than shown to a patient, stay
+ * lengths are kept inside the matching rule, and anything that had to be
+ * corrected lowers confidence so a coordinator looks more closely.
+ */
+export function normalisePlan(raw: unknown, grounding: Grounding, reportsUploaded: number): Plan {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    throw new Error("The planner did not return a plan object.");
+  }
+  const r = raw as Record<string, unknown>;
+  const diseases = new Set(grounding.diseases.map((d) => d._id));
+  const treatmentById = new Map(grounding.treatments.map((t) => [t._id, t]));
+  const specialties = new Set(grounding.rules.map((rule) => rule.specialtyCode));
+  const cities = new Set(grounding.cities.map((c) => c.name));
+  let corrected = false;
+
+  const pick = (value: unknown, valid: Set<string> | Map<string, unknown>): string | null => {
+    if (value === null || value === undefined || value === "") return null;
+    if (typeof value === "string" && valid.has(value)) return value;
+    corrected = true;
+    return null;
+  };
+
+  const diseaseCode = pick(r.diseaseCode, diseases);
+  const treatments = (Array.isArray(r.treatments) ? r.treatments : [])
+    .map((t) => (t && typeof t === "object" ? (t as Record<string, unknown>) : {}))
+    .filter((t) => {
+      const ok = typeof t.treatmentCode === "string" && treatmentById.has(t.treatmentCode);
+      if (!ok) corrected = true;
+      return ok;
+    })
+    .map((t) => ({ treatmentCode: t.treatmentCode as string, why: text(t.why, 400) }))
+    .slice(0, 6);
+
+  const recommendedTreatmentCode = pick(r.recommendedTreatmentCode, treatmentById);
+  if (recommendedTreatmentCode && !treatments.some((t) => t.treatmentCode === recommendedTreatmentCode)) {
+    treatments.unshift({ treatmentCode: recommendedTreatmentCode, why: "" });
+  }
+
+  const rule =
+    grounding.rules.find((x) => x.diseaseCode === diseaseCode && x.treatmentCode === recommendedTreatmentCode) ??
+    grounding.rules.find((x) => x.treatmentCode === recommendedTreatmentCode);
+
+  let specialtyCode = pick(r.specialtyCode, specialties);
+  if (!specialtyCode && rule) specialtyCode = rule.specialtyCode;
+
+  const stayRaw = (r.stay && typeof r.stay === "object" ? r.stay : {}) as Record<string, unknown>;
+  let inpatientNights = count(stayRaw.inpatientNights);
+  let daysInCountry = count(stayRaw.daysInCountry);
+  if (rule) {
+    const clamp = (n: number, range: { min: number; max: number }) => Math.min(range.max, Math.max(range.min, n));
+    const nights = clamp(inpatientNights, rule.inpatientNights);
+    const days = clamp(daysInCountry, rule.daysInCountry);
+    if (nights !== inpatientNights || days !== daysInCountry) corrected = true;
+    inpatientNights = nights;
+    daysInCountry = days;
+  }
+
+  const flagRaw = (r.redFlag && typeof r.redFlag === "object" ? r.redFlag : {}) as Record<string, unknown>;
+  const flagPresent = flagRaw.present === true;
+  const redFlag = {
+    present: flagPresent,
+    message: flagPresent
+      ? text(flagRaw.message, 600) ||
+        "Something in your reports needs urgent attention. Please seek emergency care where you are now, before planning any travel."
+      : "",
+  };
+
+  const destinationCity = pick(r.destinationCity, cities);
+  const recommended = recommendedTreatmentCode ? treatmentById.get(recommendedTreatmentCode) : undefined;
+  // Every correction above must be counted before confidence is settled.
+  let confidence: Plan["confidence"] =
+    r.confidence === "high" || r.confidence === "medium" || r.confidence === "low" ? r.confidence : "low";
+  if (reportsUploaded === 0 && confidence === "high") confidence = "medium";
+  if (corrected || !diseaseCode) confidence = "low";
+
+  const packageOptions = new Set<string>(PLAN_PACKAGE_OPTIONS);
+  const suggestedPackage = [...new Set(texts(r.suggestedPackage))].filter((o): o is PlanPackageOption =>
+    packageOptions.has(o),
+  );
+
+  return {
+    redFlag,
+    understanding:
+      text(r.understanding, 1200) ||
+      "We have your details. A coordinator and the treating doctor will review them and confirm the plan with you.",
+    reportsRead: reportsUploaded > 0 ? texts(r.reportsRead) : [],
+    diseaseCode,
+    treatments,
+    recommendedTreatmentCode,
+    specialtyCode,
+    destinationCity,
+    stay: { inpatientNights, daysInCountry },
+    itinerary: (Array.isArray(r.itinerary) ? r.itinerary : [])
+      .map((i) => (i && typeof i === "object" ? (i as Record<string, unknown>) : {}))
+      .map((i) => ({ day: text(i.day, 60), title: text(i.title, 120), detail: text(i.detail, 600) }))
+      .filter((i) => i.title || i.detail)
+      .slice(0, 20),
+    suggestedPackage,
+    leisureSuitable: r.leisureSuitable === true && Boolean(recommended?.tourFriendly) && !flagPresent,
+    questionsForPatient: texts(r.questionsForPatient, 10),
+    missingReports: texts(r.missingReports, 10),
+    confidence,
+  };
+}

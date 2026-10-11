@@ -4,7 +4,8 @@ import { Binary } from "mongodb";
 import { getDb } from "./db";
 import { openCase } from "./case-flow";
 import { sendMessage } from "./telegram";
-import { linkContactToCase, updateContactState } from "./crm-messages";
+import { getTelegramContact, linkContactToCase, updateContactState } from "./crm-messages";
+import { attributeCase, partnerByCode } from "./referrals";
 import { storeReports, MAX_REPORT_BYTES, type ReportUpload } from "./reports";
 import type { Locale } from "./i18n";
 
@@ -380,8 +381,13 @@ export async function createCaseFromIntake(
       })),
       tooLarge: false,
     },
-    referredBy: "telegram-ai-intake",
+    source: "telegram",
+    referredBy: null,
   });
+
+  const contact = await getTelegramContact("patient", intake.telegramUserId);
+  const partner = await partnerByCode(contact?.referralCode).catch(() => null);
+  if (partner) await attributeCase({ record, partner, channel: "telegram", by: "system" });
 
   await completeIntake(intake.telegramUserId, record._id);
   await linkContactToCase("patient", intake.telegramUserId, record._id, null);

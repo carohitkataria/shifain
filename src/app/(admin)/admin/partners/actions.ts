@@ -7,7 +7,9 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { hashPassword, type PartnerUser } from "@/lib/partner-auth";
-import { commissionFor, type Broadcast, type Lead, type PartnerApplication, type Payout, type Referral, type ReferralOffer } from "@/lib/partners";
+import type { Broadcast, Lead, PartnerApplication, Payout, Referral, ReferralOffer, ReferralStatus } from "@/lib/partners";
+import { attributeCase, ensureReferralCode, partnerIdOf, regenerateReferralCode, updateReferral } from "@/lib/referrals";
+import type { PatientCase } from "@/lib/cases";
 import { getSettings } from "@/lib/settings";
 import { notifyOps } from "@/lib/mailer";
 import { FLASH_COOKIE, FLASH_MAX_AGE_SECONDS, FLASH_PATH } from "../access/flash";
@@ -84,6 +86,9 @@ export async function decideApplicationAction(formData: FormData) {
     },
     { upsert: true },
   );
+
+  const approved = await users.findOne({ email });
+  if (approved) await ensureReferralCode(approved).catch(() => undefined);
 
   await applications.updateOne(
     { _id: id },
@@ -233,6 +238,8 @@ export async function deleteOfferAction(formData: FormData) {
 
 // ---------------------------------------------------------------- referrals
 
+const REFERRAL_STATUSES: ReferralStatus[] = ["new", "qualified", "travelled", "treated", "cancelled"];
+
 /** Recomputes what is owed whenever the facts behind it change. */
 export async function saveReferralAction(formData: FormData) {
   await guard();
@@ -240,45 +247,31 @@ export async function saveReferralAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   if (!id) redirect("/admin/referrals");
 
-  const db = await getDb();
-  const referrals = db.collection<Referral>("referrals");
-  const current = await referrals.findOne({ _id: id });
-  if (!current) redirect("/admin/referrals");
+  const back = String(formData.get("back") ?? "");
+  const target = back.startsWith("/admin/") ? back : "/admin/referrals";
 
-  // A referral already inside a payout is settled; its numbers stop moving.
-  if (current.payoutId) redirect("/admin/referrals?error=settled");
-
-  const offerId = text(formData.get("offerId"));
-  const offer = offerId
-    ? await db.collection<ReferralOffer>("referral_offers").findOne({ _id: offerId })
-    : null;
-
-  const next: Referral = {
-    ...current,
-    status: String(formData.get("status") ?? current.status) as never,
-    offerId,
+  const result = await updateReferral(id, {
+    status: REFERRAL_STATUSES.includes(String(formData.get("status")) as ReferralStatus)
+      ? (String(formData.get("status")) as ReferralStatus)
+      : undefined,
+    offerId: text(formData.get("offerId")),
     treatmentValue: num(formData.get("treatmentValue")),
-    currency: text(formData.get("currency")) ?? offer?.currency ?? (await getSettings()).defaultCurrency,
+    currency: text(formData.get("currency"))?.toUpperCase() ?? null,
     note: text(formData.get("note")),
-  };
-
-  await referrals.updateOne(
-    { _id: id },
-    {
-      $set: {
-        status: next.status,
-        offerId,
-        treatmentValue: next.treatmentValue,
-        currency: next.currency,
-        commissionAmount: commissionFor(next, offer),
-        note: next.note,
-        updatedAt: new Date().toISOString(),
-      },
-    },
-  );
+    by: "admin",
+  });
+  if (result === "settled") redirect(`${target}${target.includes("?") ? "&" : "?"}error=settled`);
 
   revalidatePath("/admin/referrals");
-  redirect("/admin/referrals?saved=1");
+  redirect(`${target}${target.includes("?") ? "&" : "?"}saved=1`);
+}
+
+export async function regenerateReferralCodeAction(formData: FormData) {
+  await guard();
+  const id = String(formData.get("id") ?? "");
+  if (id) await regenerateReferralCode(id);
+  revalidatePath(`/admin/partners/${id}`);
+  redirect(`/admin/partners/${id}?saved=code`);
 }
 
 // ------------------------------------------------------------------ payouts
@@ -433,6 +426,19 @@ export async function saveLeadAction(formData: FormData) {
     },
     { upsert: true },
   );
+
+  // A partner's lead that became a case credits the partner with that case.
+  const partnerUserId = text(formData.get("partnerUserId"));
+  const caseReference = text(formData.get("caseReference"));
+  if (partnerUserId && caseReference) {
+    const [record, partner] = await Promise.all([
+      db.collection<PatientCase>("cases").findOne({ _id: caseReference }),
+      db.collection<PartnerUser>("partner_users").findOne({ _id: partnerUserId }),
+    ]);
+    if (record && partner && !partnerIdOf(record)) {
+      await attributeCase({ record, partner, channel: "manual", by: "admin" });
+    }
+  }
 
   // Only a brand-new lead is worth a notice, and only the fact of it: whoever
   // is on the rota may not be the person who typed it in.

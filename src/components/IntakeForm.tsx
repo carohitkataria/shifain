@@ -53,6 +53,10 @@ export type IntakeLabels = {
   reportsHint: string;
   submit: string;
   privacy: string;
+  /** Overrides the email label, e.g. "Patient email" in the partner portal. */
+  emailLabel?: string;
+  /** When set, a required consent checkbox is shown above the submit button. */
+  consent?: string;
 };
 
 /**
@@ -83,8 +87,8 @@ export function IntakeForm({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-4">
-        <div className="col-span-2 grid grid-cols-[4.5rem_1fr_1fr] gap-2">
+      <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2">
+        <div className="col-span-1 grid grid-cols-[4.5rem_1fr_1fr] gap-2 sm:col-span-2">
           <Field label={t(INTAKE_COPY.prefixLabel, locale)} htmlFor="prefix">
             <select id="prefix" name="prefix" defaultValue="" className={`${inputClass} px-2`}>
               {PREFIXES.map((p) => (
@@ -157,7 +161,7 @@ export function IntakeForm({
           </div>
         </Field>
 
-        <Field label={t(INTAKE_COPY.emailLabel, locale)} htmlFor="email">
+        <Field label={labels.emailLabel ?? t(INTAKE_COPY.emailLabel, locale)} htmlFor="email">
           <input
             id="email"
             name="email"
@@ -239,8 +243,8 @@ export function IntakeForm({
         </Field>
       </div>
 
-      <div hidden={route !== "questions"} className="grid grid-cols-2 gap-x-3 gap-y-3">
-        <p className="col-span-2 text-xs leading-relaxed text-ink-muted">
+      <div hidden={route !== "questions"} className="grid grid-cols-1 gap-x-3 gap-y-3 sm:grid-cols-2">
+        <p className="col-span-1 text-xs leading-relaxed text-ink-muted sm:col-span-2">
           {t(INTAKE_COPY.questionsNote, locale)}
         </p>
         {INTAKE_QUESTIONS.map((question) => (
@@ -257,6 +261,18 @@ export function IntakeForm({
           </Field>
         ))}
       </div>
+
+      {labels.consent ? (
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-line bg-surface-muted/60 p-3 text-sm leading-relaxed text-ink-soft">
+          <input
+            type="checkbox"
+            name="consent"
+            required
+            className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--color-brand)]"
+          />
+          <span>{labels.consent}</span>
+        </label>
+      ) : null}
 
       <button type="submit" className="btn btn-primary w-full">
         {labels.submit}

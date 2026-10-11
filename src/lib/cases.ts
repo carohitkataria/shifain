@@ -16,6 +16,9 @@ export type CaseReport = {
 /** How the patient told us about their problem. */
 export type IntakeRoute = "reports" | "description" | "questions";
 
+/** Where the case came in. Separate from `referredBy`, which only holds a partner id. */
+export type CaseSource = "website" | "web-chat" | "telegram" | "partner-portal" | "coordinator";
+
 export type PatientCase = {
   _id: string;
   status: CaseStatus;
@@ -32,6 +35,9 @@ export type PatientCase = {
   reportsExpireAt: string | null;
   plan: Plan | null;
   planError: string | null;
+  /** Older cases predate this; see `sourceOf` in referrals. */
+  source?: CaseSource;
+  /** The partner user credited with this case, or null. Never a channel name. */
   referredBy: string | null;
 };
 
@@ -66,6 +72,7 @@ export async function createCase(
     reportsExpireAt: input.reportsExpireAt,
     plan: null,
     planError: null,
+    source: input.source,
     referredBy: input.referredBy,
   };
   const db = await getDb();

@@ -26,7 +26,7 @@ export default async function MessagesPage({
   }
 
   return (
-    <AdminShell title="Messages" subtitle="Conversations across all channels">
+    <AdminShell title="Messages" subtitle="Conversations across all channels" fullWidth>
       {!isDatabaseConfigured() && <NotConfigured />}
 
       <MessageInbox conversations={conversations} thread={thread} selectedChat={selectedChat} />

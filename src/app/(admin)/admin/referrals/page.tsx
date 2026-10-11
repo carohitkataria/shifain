@@ -4,13 +4,15 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { Empty, NotConfigured, Saved, Stage, Warn, adminField, adminLabel } from "@/components/admin/Panel";
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listOffers, listPartners, listReferrals, money, type ReferralStatus } from "@/lib/partners";
+import { listOffers, listPartners, listReferrals, money, type ReferralChannel, type ReferralStatus } from "@/lib/partners";
+import { CHANNEL_LABEL, STAGE_LABEL } from "@/lib/referrals";
 import { getSettings } from "@/lib/settings";
 import { saveReferralAction } from "../partners/actions";
 
 export const dynamic = "force-dynamic";
 
 const STATUSES: ReferralStatus[] = ["new", "qualified", "travelled", "treated", "cancelled"];
+const CHANNELS = Object.keys(CHANNEL_LABEL) as ReferralChannel[];
 
 const TONE: Record<ReferralStatus, "busy" | "warn" | "good" | "quiet" | "bad"> = {
   new: "quiet",
@@ -32,14 +34,18 @@ const NEXT: Record<ReferralStatus, string> = {
 export default async function ReferralsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; error?: string; status?: string; partner?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string; status?: string; partner?: string; channel?: string }>;
 }) {
   if (!(await isAuthenticated())) redirect("/admin/login");
-  const { saved, error, status, partner } = await searchParams;
+  const { saved, error, status, partner, channel } = await searchParams;
 
   const filter: Record<string, unknown> = {};
   if (status && STATUSES.includes(status as ReferralStatus)) filter.status = status;
   if (partner) filter.partnerUserId = partner;
+  if (channel && CHANNELS.includes(channel as ReferralChannel)) {
+    // Rows from before channels existed all came through the portal.
+    filter.channel = channel === "portal" ? { $in: ["portal", null] } : channel;
+  }
 
   const [referrals, offers, partners, settings] = await Promise.all([
     listReferrals(filter),
@@ -55,15 +61,19 @@ export default async function ReferralsPage({
 
   const query = (next: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
-    const merged = { status, partner, ...next };
+    const merged = { status, partner, channel, ...next };
     for (const [key, value] of Object.entries(merged)) if (value) params.set(key, value);
     const search = params.toString();
     return search ? `/admin/referrals?${search}` : "/admin/referrals";
   };
 
+  const back = query({});
+  const duplicates = referrals.filter((row) => row.duplicateOf && row.status !== "cancelled").length;
+
   return (
     <AdminShell
       title="Referrals"
+      subtitle="Every patient a partner sent, how they arrived, and what it earns"
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved /> : null}
@@ -106,10 +116,39 @@ export default async function ReferralsPage({
               status === value ? "bg-brand text-white" : "bg-surface-muted text-ink-soft"
             }`}
           >
-            {value}
+            {STAGE_LABEL[value]}
           </Link>
         ))}
       </div>
+
+      <div className="-mt-3 mb-6 flex flex-wrap items-center gap-2">
+        <span className="text-sm font-bold text-ink-soft">Arrived via:</span>
+        <Link
+          href={query({ channel: undefined })}
+          className={`rounded-full px-3 py-1 text-xs font-semibold ${channel ? "bg-surface-muted text-ink-soft" : "bg-ink text-white"}`}
+        >
+          any
+        </Link>
+        {CHANNELS.map((value) => (
+          <Link
+            key={value}
+            href={query({ channel: value })}
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              channel === value ? "bg-ink text-white" : "bg-surface-muted text-ink-soft"
+            }`}
+          >
+            {CHANNEL_LABEL[value]}
+          </Link>
+        ))}
+      </div>
+
+      {duplicates > 0 ? (
+        <Warn>
+          {duplicates} referral{duplicates === 1 ? " is" : "s are"} flagged as a possible duplicate — the
+          same patient was referred earlier by another partner. Decide who earns it before it reaches a
+          payout.
+        </Warn>
+      ) : null}
 
       {referrals.length === 0 ? (
         <Empty>
@@ -119,7 +158,7 @@ export default async function ReferralsPage({
       ) : (
         <ul className="space-y-3">
           {referrals.map((referral) => (
-            <li key={referral._id} className="card p-5">
+            <li key={referral._id} id={referral._id} className="card scroll-mt-24 p-5">
               <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
                 <div className="min-w-0 flex-1 basis-56">
                   <p className="font-extrabold text-ink">
@@ -129,8 +168,31 @@ export default async function ReferralsPage({
                     </span>
                   </p>
                   <p className="mt-0.5 text-sm text-ink-soft">
-                    From {referral.partnerName ?? referral.partnerUserId} ·{" "}
-                    {NEXT[referral.status] ?? ""}
+                    From{" "}
+                    <Link href={`/admin/partners/${referral.partnerUserId}`} className="font-semibold text-brand hover:underline">
+                      {referral.partnerName ?? referral.partnerUserId}
+                    </Link>{" "}
+                    · {NEXT[referral.status] ?? ""}
+                  </p>
+                  <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+                    <span className="rounded-full bg-surface-muted px-2 py-0.5 font-semibold text-ink-soft">
+                      {CHANNEL_LABEL[referral.channel ?? "portal"]}
+                    </span>
+                    {referral.statedNeed ? (
+                      <span className="rounded-full bg-surface-muted px-2 py-0.5 font-semibold text-ink-soft">
+                        {referral.statedNeed}
+                      </span>
+                    ) : null}
+                    {referral.patientCountry ? (
+                      <span className="rounded-full bg-surface-muted px-2 py-0.5 font-semibold text-ink-soft">
+                        {referral.patientCountry}
+                      </span>
+                    ) : null}
+                    {referral.duplicateOf ? (
+                      <span className="rounded-full bg-saffron-tint px-2 py-0.5 font-bold text-saffron">
+                        Possible duplicate of {referral.duplicateOf.slice(0, 12)}…
+                      </span>
+                    ) : null}
                   </p>
                 </div>
 
@@ -143,7 +205,7 @@ export default async function ReferralsPage({
                   </span>
                 </div>
 
-                <Stage value={referral.status} tone={TONE[referral.status] ?? "quiet"} />
+                <Stage value={STAGE_LABEL[referral.status]} tone={TONE[referral.status] ?? "quiet"} />
               </div>
 
               <details className="mt-3">
@@ -155,6 +217,20 @@ export default async function ReferralsPage({
                   className="mt-4 grid gap-4 border-t border-line pt-4 sm:grid-cols-2"
                 >
                   <input type="hidden" name="id" value={referral._id} />
+                  <input type="hidden" name="back" value={back} />
+
+                  {referral.history?.length ? (
+                    <ol className="space-y-1.5 border-l-2 border-line pl-4 text-sm sm:col-span-2">
+                      {referral.history.map((event, index) => (
+                        <li key={`${event.at}-${index}`} className="text-ink-soft">
+                          <span className="font-semibold text-ink">{STAGE_LABEL[event.status]}</span> ·{" "}
+                          {new Date(event.at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })} ·{" "}
+                          {event.by === "admin" ? "coordinator" : event.by === "case-sync" ? "case confirmed" : event.by === "system" ? "automatic" : "partner"}
+                          {event.note ? ` — ${event.note}` : ""}
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
 
                   <label>
                     <span className={adminLabel}>Stage</span>
@@ -166,7 +242,7 @@ export default async function ReferralsPage({
                     >
                       {STATUSES.map((value) => (
                         <option key={value} value={value}>
-                          {value}
+                          {STAGE_LABEL[value]}
                         </option>
                       ))}
                     </select>

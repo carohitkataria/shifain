@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
   const hasLocale = LOCALES.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
   );
-  if (hasLocale) return applyIndexingPolicy(NextResponse.next(), pathname);
+  if (hasLocale) return rememberReferral(request, applyIndexingPolicy(NextResponse.next(), pathname));
 
   const cookie = request.cookies.get(LOCALE_COOKIE)?.value;
   const country =
@@ -57,7 +57,28 @@ export function middleware(request: NextRequest) {
     ? new URL(`${proto}://${host}${path}${request.nextUrl.search}`)
     : new URL(`${path}${request.nextUrl.search}`, request.nextUrl.origin);
 
-  return applyIndexingPolicy(NextResponse.redirect(target), path);
+  return rememberReferral(request, applyIndexingPolicy(NextResponse.redirect(target), path));
+}
+
+const REF_COOKIE = "shifain_ref";
+const REF_PATTERN = /^[A-Z0-9][A-Z0-9-]{3,23}$/;
+
+/**
+ * A partner's link can be any page with ?ref=CODE. The first partner to send
+ * a visitor keeps the credit: an existing code is never overwritten. The code
+ * is only checked for shape here; it is resolved to a partner at intake.
+ */
+function rememberReferral(request: NextRequest, response: NextResponse): NextResponse {
+  const code = request.nextUrl.searchParams.get("ref")?.trim().toUpperCase();
+  if (!code || !REF_PATTERN.test(code) || request.cookies.get(REF_COOKIE)) return response;
+  response.cookies.set(REF_COOKIE, code, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 60,
+  });
+  return response;
 }
 
 export const config = {

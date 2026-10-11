@@ -2,9 +2,12 @@ import "server-only";
 import { GoogleGenerativeAI, SchemaType, type FunctionDeclarationsTool } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
 import type { IntakeField } from "./conversation-intake";
+import { noteFailure, available, withGeminiModel } from "./ai/providers";
 
-const GEMINI_MODEL = "gemini-2.0-flash";
-const CLAUDE_MODEL = "claude-sonnet-4-5-20250514";
+export { pauseDuration, rankGeminiModels } from "./ai/providers";
+
+/** Overridable without a deploy: set ANTHROPIC_MODEL on the host. */
+const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-5-5";
 
 const BASE_SYSTEM = `You are ShifaIn's patient assistant on Telegram. You help patients who are seeking medical treatment in India.
 
@@ -65,14 +68,6 @@ export type ConversationMessage = {
   content: string;
 };
 
-type Provider = "gemini" | "claude";
-
-function pickProvider(): Provider {
-  if (process.env.GEMINI_API_KEY) return "gemini";
-  if (process.env.ANTHROPIC_API_KEY) return "claude";
-  throw new Error("Neither GEMINI_API_KEY nor ANTHROPIC_API_KEY is set.");
-}
-
 export type ExtractedInfo = Partial<IntakeField> & { readyToSubmit?: boolean };
 
 export type IntakeReplyResult = {
@@ -117,6 +112,7 @@ const GEMINI_TOOLS: FunctionDeclarationsTool[] = [
 ];
 
 async function intakeWithGemini(
+  model: string,
   userMessage: string,
   history: ConversationMessage[],
   currentFields: Partial<IntakeField>,
@@ -135,13 +131,11 @@ async function intakeWithGemini(
     patientLanguage ? `\nThe patient's detected language is: ${patientLanguage}. Respond in that language.` : "",
   ].join("");
 
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
+  const chat = genAI.getGenerativeModel({
+    model,
     systemInstruction: systemPrompt,
     tools: GEMINI_TOOLS,
-  });
-
-  const chat = model.startChat({
+  }).startChat({
     history: history.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
@@ -266,22 +260,118 @@ async function intakeWithClaude(
 
 // ---------------------------------------------------------------- public API
 
+/**
+ * Gemini first (free tier), then Claude, then a scripted intake. A patient
+ * describing an illness never gets a dead end because an AI provider is down,
+ * out of credit, or has retired a model.
+ */
 export async function generateIntakeReply(
   userMessage: string,
   history: ConversationMessage[] = [],
   currentFields: Partial<IntakeField> = {},
   patientLanguage?: string,
 ): Promise<IntakeReplyResult> {
-  const provider = pickProvider();
-  if (provider === "gemini") {
-    return intakeWithGemini(userMessage, history, currentFields, patientLanguage);
+  if (available("gemini")) {
+    try {
+      return await withGeminiModel((model) =>
+        intakeWithGemini(model, userMessage, history, currentFields, patientLanguage),
+      );
+    } catch (err) {
+      console.error("[shifain] Gemini intake failed:", err);
+      noteFailure("gemini", err);
+    }
   }
-  return intakeWithClaude(userMessage, history, currentFields, patientLanguage);
+  if (available("claude")) {
+    try {
+      return await intakeWithClaude(userMessage, history, currentFields, patientLanguage);
+    } catch (err) {
+      console.error("[shifain] Claude intake failed:", err);
+      noteFailure("claude", err);
+    }
+  }
+  console.error("[shifain] no AI provider answered; using the scripted intake");
+  return scriptedIntake(userMessage, currentFields);
+}
+
+// ---------------------------------------------------------------- scripted fallback
+
+const TREATMENT_KEYWORDS: [string, RegExp][] = [
+  ["cardiac-care", /heart|cardi|bypass|cabg|valve|angio|stent|артери|сердц|шунт|yurak/i],
+  ["oncology", /cancer|oncolog|tumou?r|chemo|radiat|biops|leuk|lymphom|рак|онко|опухол|saraton/i],
+  ["orthopaedics", /knee|hip|joint|spine|back pain|ortho|fracture|shoulder|колен|сустав|позвон|тазобедр|tizza|bo'g'im/i],
+  ["neurosurgery", /brain|neuro|nerve|stroke|epilep|parkinson|мозг|нейро|инсульт|miya/i],
+  ["organ-transplant", /transplant|kidney|liver|dialys|трансплант|почк|печен|buyrak|jigar/i],
+  ["fertility-ivf", /ivf|fertil|infertil|pregnan|эко|бесплод|беремен|homilador|bepushtlik/i],
+];
+
+const GREETING = /^(hi|hello|hey|help|salom|assalomu|привет|здравствуйте|помогите|good (morning|afternoon|evening))\b/i;
+
+export function scriptedIntake(userMessage: string, currentFields: Partial<IntakeField>): IntakeReplyResult {
+  const text = userMessage.trim();
+  const words = text.split(/\s+/).filter(Boolean).length;
+  const greetingOnly = GREETING.test(text) && words <= 4;
+  const extracted: ExtractedInfo = {};
+
+  let treatment = currentFields.treatment ?? null;
+  let condition = currentFields.condition ?? null;
+  const knewTreatment = Boolean(treatment);
+
+  if (!treatment) {
+    const match = TREATMENT_KEYWORDS.find(([, pattern]) => pattern.test(text));
+    if (match) {
+      treatment = match[0];
+    } else if (condition && !greetingOnly && words >= 1) {
+      // We already asked which treatment; whatever they answered is the answer.
+      treatment = text.slice(0, 120);
+    }
+    if (treatment) extracted.treatment = treatment;
+  }
+
+  // A short "I need heart surgery" names the treatment; it does not describe the condition.
+  if (!condition && !greetingOnly && (knewTreatment ? words >= 3 : words >= 8)) {
+    condition = text.slice(0, 1000);
+    extracted.condition = condition;
+  }
+
+  if (treatment && condition) {
+    return {
+      reply:
+        "Thank you — that gives our medical team what they need to start, and a coordinator will review it personally. " +
+        "Just a couple of quick details to set up your case.",
+      extracted: { ...extracted, readyToSubmit: true },
+    };
+  }
+
+  if (!treatment && !condition) {
+    return {
+      reply:
+        (greetingOnly ? "Hello, and welcome to ShifaIn. " : "") +
+        "Which treatment are you looking for? For example heart surgery, a knee or hip replacement, cancer care, " +
+        "a transplant or IVF — or simply describe the problem in your own words.",
+      extracted,
+    };
+  }
+
+  if (!condition) {
+    return {
+      reply:
+        "Thank you. Could you describe the condition in a few sentences — the symptoms, how long it has been going on, " +
+        "and what your doctor has said so far? You can also attach your reports here.",
+      extracted,
+    };
+  }
+
+  return {
+    reply:
+      "Thank you for explaining. Which treatment are you hoping for — or, if you are not sure yet, what has your doctor suggested?",
+    extracted,
+  };
 }
 
 // ---------------------------------------------------------------- simple reply (backward compat)
 
 async function replyWithGemini(
+  model: string,
   userMessage: string,
   history: ConversationMessage[],
   patientLanguage?: string,
@@ -292,12 +382,10 @@ async function replyWithGemini(
     ? `${BASE_SYSTEM}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
     : BASE_SYSTEM;
 
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
+  const chat = genAI.getGenerativeModel({
+    model,
     systemInstruction: systemPrompt,
-  });
-
-  const chat = model.startChat({
+  }).startChat({
     history: history.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
@@ -343,9 +431,21 @@ export async function generateReply(
   history: ConversationMessage[] = [],
   patientLanguage?: string,
 ): Promise<string> {
-  const provider = pickProvider();
-  if (provider === "gemini") {
-    return replyWithGemini(userMessage, history, patientLanguage);
+  if (available("gemini")) {
+    try {
+      return await withGeminiModel((model) => replyWithGemini(model, userMessage, history, patientLanguage));
+    } catch (err) {
+      console.error("[shifain] Gemini reply failed:", err);
+      noteFailure("gemini", err);
+    }
   }
-  return replyWithClaude(userMessage, history, patientLanguage);
+  if (available("claude")) {
+    try {
+      return await replyWithClaude(userMessage, history, patientLanguage);
+    } catch (err) {
+      console.error("[shifain] Claude reply failed:", err);
+      noteFailure("claude", err);
+    }
+  }
+  return "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";
 }
