@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { VoiceDock, type VoiceTurnResult } from "./VoiceDock";
 
 const FAQ_ITEMS = [
   {
@@ -17,7 +18,9 @@ const FAQ_ITEMS = [
   },
 ];
 
-type ChatMsg = { role: "user" | "assistant"; content: string };
+const STARTERS = ["Knee replacement", "Heart surgery", "Cancer treatment", "IVF"];
+
+type ChatMsg = { role: "user" | "assistant"; content: string; voice?: boolean };
 
 type ProfileQuestion = {
   field: string;
@@ -64,9 +67,21 @@ const IconWhatsapp = () => (
     <path d="M9 9.5c.3 1.8 1.7 3.6 3.6 4.4l1.3-1.1 1.8.9c-.3 1-1.2 1.6-2.2 1.5A6 6 0 0 1 8 9.7c0-1 .6-1.8 1.5-2.1l.9 1.8z" />
   </svg>
 );
-const IconChevron = ({ open }: { open: boolean }) => (
-  <svg {...svg} className={`h-4 w-4 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}>
-    <path d="M6 9l6 6 6-6" />
+const IconPlan = () => (
+  <svg {...svg}>
+    <path d="M9 4h6l1 2h3v14H5V6h3z" />
+    <path d="M9 12h6M9 16h4" />
+  </svg>
+);
+const IconQuestion = () => (
+  <svg {...svg}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6M12 17h.01" />
+  </svg>
+);
+const IconChevron = ({ open }: { open?: boolean }) => (
+  <svg {...svg} className={`h-4 w-4 shrink-0 text-ink-muted transition-transform duration-200 ${open ? "rotate-90" : ""}`}>
+    <path d="M9 6l6 6-6 6" />
   </svg>
 );
 const IconClip = () => (
@@ -74,386 +89,70 @@ const IconClip = () => (
     <path d="M21 11.5l-8.6 8.6a5 5 0 0 1-7.1-7.1l8.6-8.6a3.4 3.4 0 0 1 4.8 4.8l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.9-7.9" />
   </svg>
 );
-const IconMic = () => (
-  <svg {...svg}>
-    <rect x="9" y="3" width="6" height="11" rx="3" />
-    <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
-  </svg>
-);
-const IconStop = () => (
-  <svg {...svg}>
-    <rect x="6" y="6" width="12" height="12" rx="2" />
-  </svg>
-);
 const IconSend = () => (
   <svg {...svg}>
-    <path d="M5 12h14M13 6l6 6-6 6" />
+    <path d="M12 19V5M6 11l6-6 6 6" />
+  </svg>
+);
+const IconWave = () => (
+  <svg {...svg}>
+    <path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4" />
   </svg>
 );
 
-// ------------------------------------------------------------------ menu
-
-function HelpMenu({
-  onChat,
-  onClose,
-  whatsapp,
-  phone,
-}: {
-  onChat: () => void;
-  onClose: () => void;
-  whatsapp: string | null;
-  phone: string | null;
-}) {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const firstRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    firstRef.current?.focus();
-  }, []);
-
-  const scrollTo = (id: string) => {
-    onClose();
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  return (
-    <>
-      <div className="help-head">
-        <div>
-          <h2 className="text-[17px] font-extrabold text-ink">How can we help?</h2>
-          <p className="mt-0.5 text-[13px] text-ink-soft">A real person replies, in your language.</p>
-        </div>
-        <button type="button" onClick={onClose} className="help-icon-btn" aria-label="Close help">
-          <IconClose />
-        </button>
-      </div>
-
-      <div className="help-body">
-        <button ref={firstRef} type="button" onClick={onChat} className="help-primary">
-          <span className="help-primary-icon">
-            <IconChat />
-          </span>
-          <span className="min-w-0 flex-1 text-left">
-            <span className="block text-[15px] font-bold">Chat with us</span>
-            <span className="block text-[13px] text-white/80">
-              Describe your condition, send reports or a voice note
-            </span>
-          </span>
-          <span aria-hidden="true" className="text-lg">
-            &rarr;
-          </span>
-        </button>
-
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {whatsapp ? (
-            <a
-              href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="help-option"
-            >
-              <IconWhatsapp />
-              WhatsApp
-            </a>
-          ) : null}
-          {phone ? (
-            <a href={`tel:${phone.replace(/[^\d+]/g, "")}`} className="help-option">
-              <IconPhone />
-              Call us
-            </a>
-          ) : null}
-          <button type="button" onClick={() => scrollTo("quote")} className="help-option col-span-2">
-            Get my free treatment plan
-          </button>
-        </div>
-
-        <p className="mb-2 mt-5 text-xs font-bold uppercase tracking-wider text-ink-soft">Common questions</p>
-        <ul className="space-y-1.5">
-          {FAQ_ITEMS.map((item, i) => (
-            <li key={item.q}>
-              <button
-                type="button"
-                className="fab-qa flex items-center justify-between gap-3"
-                aria-expanded={openFaq === i}
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-              >
-                <span>{item.q}</span>
-                <IconChevron open={openFaq === i} />
-              </button>
-              {openFaq === i ? (
-                <p className="mt-1 rounded-lg bg-brand-tint px-3 py-2 text-[13px] leading-relaxed text-ink-soft">
-                  {item.a}
-                </p>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-        <button
-          type="button"
-          onClick={() => scrollTo("faq")}
-          className="mt-3 min-h-11 w-full text-center text-sm font-bold text-brand hover:underline"
-        >
-          See all questions
-        </button>
-      </div>
-    </>
-  );
-}
-
-// ------------------------------------------------------------------ chat
-
-function ChatView({ onBack, onClose }: { onBack: () => void; onClose: () => void }) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [messages, setMessages] = useState<ChatMsg[]>([]);
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [state, setState] = useState<string>("medical_chat");
-  const [profileQuestion, setProfileQuestion] = useState<ProfileQuestion | null>(null);
-  const [caseRef, setCaseRef] = useState<string | null>(null);
-  const [recording, setRecording] = useState(false);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, sending]);
-
-  const applyReply = useCallback((data: Record<string, unknown>) => {
-    if (typeof data.reply === "string") {
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply as string }]);
-    }
-    if (typeof data.state === "string") setState(data.state);
-    setProfileQuestion((data.profileQuestion as ProfileQuestion) ?? null);
-    if (typeof data.caseReference === "string") setCaseRef(data.caseReference);
-    if (typeof data.audioBase64 === "string") {
-      new Audio(`data:audio/mpeg;base64,${data.audioBase64}`).play().catch(() => {});
-    }
-  }, []);
-
-  const post = useCallback(
-    async (body: BodyInit, headers?: HeadersInit, failure = "Sorry, something went wrong. Please try again.") => {
-      setSending(true);
-      try {
-        const res = await fetch("/api/chat", { method: "POST", body, headers });
-        applyReply(await res.json());
-      } catch {
-        setMessages((prev) => [...prev, { role: "assistant", content: failure }]);
-      } finally {
-        setSending(false);
-      }
-    },
-    [applyReply],
-  );
-
-  const sendText = useCallback(
-    (text: string) => {
-      const message = text.trim();
-      if (!message || sending) return;
-      setMessages((prev) => [...prev, { role: "user", content: message }]);
-      setInput("");
-      void post(JSON.stringify({ message }), { "Content-Type": "application/json" });
-    },
-    [post, sending],
-  );
-
-  const startRecording = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-      chunksRef.current = [];
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-      recorder.onstop = () => {
-        stream.getTracks().forEach((track) => track.stop());
-        const form = new FormData();
-        form.append("audio", new Blob(chunksRef.current, { type: "audio/webm" }), "voice.webm");
-        setMessages((prev) => [...prev, { role: "user", content: "Voice message" }]);
-        void post(form, undefined, "Sorry, I couldn't process the voice message.");
-      };
-      recorderRef.current = recorder;
-      recorder.start();
-      setRecording(true);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "I couldn't reach your microphone. You can type your message instead." },
-      ]);
-    }
-  }, [post]);
-
-  const stopRecording = useCallback(() => {
-    recorderRef.current?.stop();
-    recorderRef.current = null;
-    setRecording(false);
-  }, []);
-
-  const handleFile = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const form = new FormData();
-      form.append("file", file);
-      setMessages((prev) => [...prev, { role: "user", content: `Attached: ${file.name}` }]);
-      void post(form, undefined, "Sorry, the file upload failed.").finally(() => {
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      });
-    },
-    [post],
-  );
-
-  return (
-    <>
-      <div className="chat-header">
-        <button type="button" onClick={onBack} className="chat-head-btn" aria-label="Back to help options">
-          <IconBack />
-        </button>
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate text-[15px] font-bold text-white">ShifaIn care team</h2>
-          <p className="flex items-center gap-1.5 text-[12px] text-white/75">
-            <span className="h-2 w-2 rounded-full bg-[#4ade80]" aria-hidden="true" />
-            Replies instantly · coordinators on hand
-          </p>
-        </div>
-        <button type="button" onClick={onClose} className="chat-head-btn" aria-label="Close chat">
-          <IconClose />
-        </button>
-      </div>
-
-      <div className="chat-messages" aria-live="polite">
-        {messages.length === 0 ? (
-          <div className="chat-welcome">
-            <p className="text-[15px] font-semibold text-ink">Hello — how can we help?</p>
-            <p className="text-[13px] leading-relaxed text-ink-soft">
-              Tell us what treatment you are looking for or what the doctor said. You can write in any
-              language, send a voice note, or attach your reports.
-            </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {["Knee replacement", "Heart surgery", "Cancer treatment", "IVF"].map((topic) => (
-                <button
-                  key={topic}
-                  type="button"
-                  className="chat-profile-btn"
-                  onClick={() => sendText(`I'm looking for ${topic.toLowerCase()}`)}
-                >
-                  {topic}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
-        {messages.map((msg, i) => (
-          <div key={i} className={`chat-bubble ${msg.role === "user" ? "chat-user" : "chat-bot"}`}>
-            {msg.content}
-          </div>
-        ))}
-        {sending ? (
-          <div className="chat-bubble chat-bot chat-typing" aria-label="Typing">
-            <span />
-            <span />
-            <span />
-          </div>
-        ) : null}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {profileQuestion?.buttons && state === "collecting_profile" ? (
-        <div className="chat-buttons">
-          {profileQuestion.buttons.flat().map((btn) => (
-            <button
-              key={btn.callback_data}
-              type="button"
-              className="chat-profile-btn"
-              onClick={() => sendText(btn.text.replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}]\s*/u, ""))}
-              disabled={sending}
-            >
-              {btn.text}
-            </button>
-          ))}
-        </div>
-      ) : null}
-
-      {caseRef && state === "complete" ? (
-        <div className="chat-case-ref">
-          Case reference: <strong>{caseRef}</strong>
-        </div>
-      ) : null}
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          sendText(input);
-        }}
-        className="chat-input-bar"
-      >
-        <input type="file" ref={fileInputRef} className="hidden" accept="image/*,.pdf" onChange={handleFile} />
-        <button
-          type="button"
-          className="chat-icon-btn"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={sending}
-          aria-label="Attach medical reports"
-        >
-          <IconClip />
-        </button>
-        <label htmlFor="chat-input" className="sr-only">
-          Message
-        </label>
-        <input
-          id="chat-input"
-          ref={inputRef}
-          type="text"
-          className="chat-text-input"
-          placeholder={state === "complete" ? "Ask a follow-up…" : "Type your message…"}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          disabled={sending}
-          autoComplete="off"
-        />
-        <button
-          type="button"
-          className={`chat-icon-btn ${recording ? "chat-recording" : ""}`}
-          onClick={recording ? stopRecording : startRecording}
-          disabled={sending && !recording}
-          aria-label={recording ? "Stop recording" : "Record a voice message"}
-        >
-          {recording ? <IconStop /> : <IconMic />}
-        </button>
-        <button type="submit" className="chat-send-btn" disabled={sending || !input.trim()} aria-label="Send">
-          <IconSend />
-        </button>
-      </form>
-    </>
-  );
-}
-
-// ------------------------------------------------------------------ shell
+/** Turns the API's reply into chat state; shared by typed, uploaded and spoken turns. */
+type ChatReply = {
+  reply?: string;
+  state?: string;
+  profileQuestion?: ProfileQuestion;
+  caseReference?: string;
+  audioBase64?: string;
+  transcript?: string;
+  heardNothing?: boolean;
+  error?: string;
+};
 
 export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: string | null; phone?: string | null }) {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>("menu");
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [state, setState] = useState("medical_chat");
+  const [profileQuestion, setProfileQuestion] = useState<ProfileQuestion | null>(null);
+  const [caseRef, setCaseRef] = useState<string | null>(null);
+  const [voiceOn, setVoiceOn] = useState(false);
+  const [serverVoice, setServerVoice] = useState(false);
+
   const panelRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => {
+    setVoiceOn(false);
     setOpen(false);
     fabRef.current?.focus();
   }, []);
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
+    fetch("/api/chat")
+      .then((res) => res.json())
+      .then((data: { voiceServer?: boolean }) => setServerVoice(Boolean(data.voiceServer)))
+      .catch(() => undefined);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     const onPointer = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node;
       if (panelRef.current?.contains(target) || fabRef.current?.contains(target)) return;
+      if (voiceOn) return; // a stray tap must not end a spoken conversation
       close();
     };
     document.addEventListener("keydown", onKey);
@@ -464,9 +163,8 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       document.removeEventListener("mousedown", onPointer);
       document.removeEventListener("touchstart", onPointer);
     };
-  }, [open, close]);
+  }, [open, close, voiceOn]);
 
-  // Lets any page open the chat directly, e.g. a "Chat with us" link.
   useEffect(() => {
     const openChat = () => {
       setView("chat");
@@ -475,6 +173,102 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
     window.addEventListener("shifain:open-chat", openChat);
     return () => window.removeEventListener("shifain:open-chat", openChat);
   }, []);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, sending]);
+
+  const apply = useCallback((data: ChatReply, voice = false) => {
+    if (typeof data.reply === "string" && data.reply) {
+      setMessages((prev) => [...prev, { role: "assistant", content: data.reply!, voice }]);
+    }
+    if (data.state && data.state !== "error") setState(data.state);
+    setProfileQuestion(data.profileQuestion ?? null);
+    if (data.caseReference) setCaseRef(data.caseReference);
+  }, []);
+
+  const post = useCallback(async (body: BodyInit, headers?: HeadersInit): Promise<ChatReply> => {
+    setSending(true);
+    try {
+      const res = await fetch("/api/chat", { method: "POST", body, headers });
+      const data = (await res.json()) as ChatReply;
+      if (!res.ok && !data.reply) return { error: data.error ?? "Something went wrong. Please try again." };
+      return data;
+    } catch {
+      return { error: "You seem to be offline. Please try again." };
+    } finally {
+      setSending(false);
+    }
+  }, []);
+
+  const sendText = useCallback(
+    async (text: string) => {
+      const message = text.trim();
+      if (!message || sending) return;
+      setView("chat");
+      setMessages((prev) => [...prev, { role: "user", content: message }]);
+      setInput("");
+      const data = await post(JSON.stringify({ message }), { "Content-Type": "application/json" });
+      if (data.error) setMessages((prev) => [...prev, { role: "assistant", content: data.error! }]);
+      else apply(data);
+    },
+    [apply, post, sending],
+  );
+
+  // Voice turns: the dock hears, we show both sides in the chat and hand the reply back to be spoken.
+  const voiceText = useCallback(
+    async (text: string, lang: string): Promise<VoiceTurnResult> => {
+      setMessages((prev) => [...prev, { role: "user", content: text, voice: true }]);
+      const data = await post(JSON.stringify({ message: text, voice: true, lang }), {
+        "Content-Type": "application/json",
+      });
+      if (data.error) return { error: data.error };
+      apply(data, true);
+      return data;
+    },
+    [apply, post],
+  );
+
+  const voiceAudio = useCallback(
+    async (audio: Blob): Promise<VoiceTurnResult> => {
+      const form = new FormData();
+      form.append("audio", audio, "voice.webm");
+      form.append("voice", "1");
+      const data = await post(form);
+      if (data.error) return { error: data.error };
+      if (data.heardNothing) return { heardNothing: true };
+      if (data.transcript) setMessages((prev) => [...prev, { role: "user", content: data.transcript!, voice: true }]);
+      apply(data, true);
+      return data;
+    },
+    [apply, post],
+  );
+
+  const startVoice = () => {
+    setView("chat");
+    setVoiceOn(true);
+  };
+
+  const handleFile = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setView("chat");
+      setMessages((prev) => [...prev, { role: "user", content: `Attached: ${file.name}` }]);
+      const form = new FormData();
+      form.append("file", file);
+      const data = await post(form);
+      if (data.error) setMessages((prev) => [...prev, { role: "assistant", content: data.error! }]);
+      else apply(data);
+      if (fileRef.current) fileRef.current.value = "";
+    },
+    [apply, post],
+  );
+
+  const scrollTo = (id: string) => {
+    close();
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <>
@@ -486,13 +280,239 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
           role="dialog"
           aria-modal="false"
           aria-label={view === "chat" ? "Chat with ShifaIn" : "Help"}
-          className={`help-panel ${view === "chat" ? "help-panel-chat" : ""}`}
+          className="help-panel help-panel-chat"
         >
+          {/* Header */}
           {view === "menu" ? (
-            <HelpMenu onChat={() => setView("chat")} onClose={close} whatsapp={whatsapp} phone={phone} />
+            <div className="help-head">
+              <div className="min-w-0">
+                <h2 className="text-[17px] font-extrabold text-ink">How can we help?</h2>
+                <p className="mt-0.5 text-[13px] text-ink-soft">Ask below, or pick a topic.</p>
+              </div>
+              <button type="button" onClick={close} className="help-icon-btn" aria-label="Close help">
+                <IconClose />
+              </button>
+            </div>
           ) : (
-            <ChatView onBack={() => setView("menu")} onClose={close} />
+            <div className="chat-header">
+              <button type="button" onClick={() => { setVoiceOn(false); setView("menu"); }} className="chat-head-btn" aria-label="Back to help topics">
+                <IconBack />
+              </button>
+              <div className="min-w-0 flex-1">
+                <h2 className="truncate text-[15px] font-bold text-white">ShifaIn care team</h2>
+                <p className="flex items-center gap-1.5 text-[12px] text-white/75">
+                  <span className="h-2 w-2 rounded-full bg-[#4ade80]" aria-hidden="true" />
+                  Instant answers · coordinators on hand
+                </p>
+              </div>
+              <button type="button" onClick={close} className="chat-head-btn" aria-label="Close chat">
+                <IconClose />
+              </button>
+            </div>
           )}
+
+          {/* Body */}
+          {view === "menu" ? (
+            <div className="help-body flex-1">
+              <button type="button" onClick={() => scrollTo("quote")} className="help-primary">
+                <span className="help-primary-icon">
+                  <IconPlan />
+                </span>
+                <span className="min-w-0 flex-1 text-left">
+                  <span className="block text-[15px] font-bold">Get your free treatment plan</span>
+                  <span className="block text-[13px] text-white/80">Three quick steps · hospital-confirmed in 48 h</span>
+                </span>
+                <span aria-hidden="true" className="text-lg">
+                  &rarr;
+                </span>
+              </button>
+
+              <div className="my-4 flex items-center gap-3 text-[13px] text-ink-muted">
+                <span>or explore</span>
+                <span className="h-px flex-1 bg-line" />
+              </div>
+
+              <ul className="space-y-2">
+                {messages.length > 0 ? (
+                  <li>
+                    <button type="button" className="help-row" onClick={() => setView("chat")}>
+                      <span className="help-row-icon"><IconChat /></span>
+                      <span className="flex-1">Continue your conversation</span>
+                      <IconChevron />
+                    </button>
+                  </li>
+                ) : null}
+                {FAQ_ITEMS.map((item, i) => (
+                  <li key={item.q}>
+                    <button
+                      type="button"
+                      className="help-row"
+                      aria-expanded={openFaq === i}
+                      onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    >
+                      <span className="help-row-icon"><IconQuestion /></span>
+                      <span className="flex-1">{item.q}</span>
+                      <IconChevron open={openFaq === i} />
+                    </button>
+                    {openFaq === i ? (
+                      <p className="mx-1 mt-1.5 rounded-lg bg-brand-tint px-3 py-2 text-[13px] leading-relaxed text-ink-soft">
+                        {item.a}
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+                {whatsapp ? (
+                  <li>
+                    <a
+                      className="help-row"
+                      href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="help-row-icon"><IconWhatsapp /></span>
+                      <span className="flex-1">Message us on WhatsApp</span>
+                      <IconChevron />
+                    </a>
+                  </li>
+                ) : null}
+                {phone ? (
+                  <li>
+                    <a className="help-row" href={`tel:${phone.replace(/[^\d+]/g, "")}`}>
+                      <span className="help-row-icon"><IconPhone /></span>
+                      <span className="flex-1">Call a coordinator</span>
+                      <IconChevron />
+                    </a>
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          ) : (
+            <div className="chat-messages" aria-live="polite">
+              {messages.length === 0 ? (
+                <div className="chat-welcome">
+                  <p className="text-[15px] font-semibold text-ink">Hello — how can we help?</p>
+                  <p className="text-[13px] leading-relaxed text-ink-soft">
+                    Tell us what treatment you are looking for or what the doctor said. Type in any language, attach
+                    your reports, or tap <b>Talk</b> to speak.
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {STARTERS.map((topic) => (
+                      <button
+                        key={topic}
+                        type="button"
+                        className="chat-profile-btn"
+                        onClick={() => sendText(`I'm looking for ${topic.toLowerCase()}`)}
+                      >
+                        {topic}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {messages.map((msg, i) => (
+                <div key={i} className={`chat-bubble ${msg.role === "user" ? "chat-user" : "chat-bot"}`}>
+                  {msg.voice ? (
+                    <span className="mb-0.5 flex items-center gap-1 text-[11px] font-semibold opacity-70">
+                      <span className="inline-block h-3.5 w-3.5"><IconWave /></span>
+                      {msg.role === "user" ? "You said" : "Spoken reply"}
+                    </span>
+                  ) : null}
+                  {msg.content}
+                </div>
+              ))}
+              {sending ? (
+                <div className="chat-bubble chat-bot chat-typing" aria-label="Typing">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              ) : null}
+              {profileQuestion?.buttons && state === "collecting_profile" && !voiceOn ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {profileQuestion.buttons.flat().map((btn) => (
+                    <button
+                      key={btn.callback_data}
+                      type="button"
+                      className="chat-profile-btn"
+                      onClick={() => sendText(btn.text.replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}]\s*/u, ""))}
+                      disabled={sending}
+                    >
+                      {btn.text}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              {caseRef && state === "complete" ? (
+                <div className="chat-case-ref">
+                  Case reference: <strong>{caseRef}</strong>
+                </div>
+              ) : null}
+              <div ref={endRef} />
+            </div>
+          )}
+
+          {/* Composer — always at the bottom, like a messenger */}
+          <div className="help-footer">
+            {voiceOn ? (
+              <VoiceDock
+                serverVoice={serverVoice}
+                onSpokenText={voiceText}
+                onSpokenAudio={voiceAudio}
+                onClose={() => setVoiceOn(false)}
+              />
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  sendText(input);
+                }}
+                className="help-composer"
+              >
+                <input type="file" ref={fileRef} className="hidden" accept="image/*,.pdf" onChange={handleFile} />
+                <button
+                  type="button"
+                  className="chat-icon-btn"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={sending}
+                  aria-label="Attach medical reports"
+                >
+                  <IconClip />
+                </button>
+                <label htmlFor="help-input" className="sr-only">
+                  Message
+                </label>
+                <input
+                  id="help-input"
+                  ref={inputRef}
+                  type="text"
+                  className="help-input"
+                  placeholder={state === "complete" ? "Ask a follow-up…" : "Ask about treatment, cost, visa…"}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  autoComplete="off"
+                  enterKeyHint="send"
+                />
+                {input.trim() ? (
+                  <button key="send" type="submit" className="help-send" disabled={sending} aria-label="Send">
+                    <IconSend />
+                  </button>
+                ) : (
+                  <button
+                    key="talk"
+                    type="button"
+                    className="help-talk"
+                    onClick={startVoice}
+                    disabled={sending}
+                    aria-label="Talk — start a voice conversation"
+                  >
+                    <IconWave />
+                    <span>Talk</span>
+                  </button>
+                )}
+              </form>
+            )}
+            <p className="help-disclaimer">AI can make mistakes. A coordinator checks every plan before you travel.</p>
+          </div>
         </div>
       ) : null}
 
