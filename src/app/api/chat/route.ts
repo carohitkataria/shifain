@@ -35,6 +35,17 @@ async function getSessionId(): Promise<string> {
 }
 
 /**
+ * What the browser can lean on for voice: with ElevenLabs configured the
+ * server hears any language and answers aloud; without it the browser's own
+ * speech recognition and synthesis are used.
+ */
+export async function GET() {
+  return NextResponse.json({ voiceServer: isElevenLabsConfigured() });
+}
+
+const LANG = /^[a-z]{2,3}$/;
+
+/**
  * POST /api/chat
  *
  * Body (JSON): { message: string }
@@ -55,6 +66,9 @@ export async function POST(request: NextRequest) {
 
   let userMessage = "";
   let detectedLanguage: string | undefined;
+  /** Voice conversation: answer aloud when the server can. */
+  let wantsVoice = false;
+  let heardFromAudio = false;
   let uploadedFile: { fileName: string; mimeType: string; data: Buffer } | null = null;
 
   if (contentType.includes("multipart/form-data")) {
@@ -62,12 +76,17 @@ export async function POST(request: NextRequest) {
     const audio = form.get("audio") as File | null;
     const file = form.get("file") as File | null;
     const text = form.get("message") as string | null;
+    wantsVoice = form.get("voice") === "1";
 
     if (audio && isElevenLabsConfigured()) {
       const buffer = Buffer.from(await audio.arrayBuffer());
       const transcription = await transcribeAudio(buffer, audio.name || "voice.webm");
-      userMessage = transcription.text;
+      userMessage = transcription.text.trim();
       detectedLanguage = transcription.language_code;
+      heardFromAudio = true;
+      if (!userMessage) {
+        return NextResponse.json({ heardNothing: true, transcript: "" });
+      }
     } else if (text) {
       userMessage = text.trim();
     }
@@ -82,7 +101,28 @@ export async function POST(request: NextRequest) {
   } else {
     const body = await request.json().catch(() => ({}));
     userMessage = String(body.message ?? "").trim();
+    wantsVoice = body.voice === true;
+    const lang = String(body.lang ?? "").toLowerCase().split("-")[0];
+    if (LANG.test(lang)) detectedLanguage = lang;
   }
+
+  // Every answer carries what was heard, so a spoken turn shows as text.
+  const respond = (payload: Record<string, unknown>, init?: ResponseInit) =>
+    NextResponse.json(heardFromAudio ? { transcript: userMessage, ...payload } : payload, init);
+
+  /** Speech for a reply, when this turn is spoken and the server can speak. */
+  const withSpeech = async (payload: Record<string, unknown>) => {
+    const reply = typeof payload.reply === "string" ? payload.reply : "";
+    if ((wantsVoice || heardFromAudio) && reply && isElevenLabsConfigured()) {
+      try {
+        const speech = await textToSpeech({ text: reply.slice(0, 1200), languageCode: detectedLanguage });
+        return { ...payload, audioBase64: speech.toString("base64") };
+      } catch {
+        /* the browser reads it out instead */
+      }
+    }
+    return payload;
+  };
 
   if (!userMessage && !uploadedFile) {
     return NextResponse.json({ error: "No message provided." }, { status: 400 });
@@ -119,14 +159,7 @@ export async function POST(request: NextRequest) {
       await pushWebIntakeMessage(sessionId, "user", userMessage);
       await pushWebIntakeMessage(sessionId, "assistant", reply);
 
-      const result: Record<string, unknown> = { reply, state: "complete", caseReference: intake.caseReference };
-      if (detectedLanguage && isElevenLabsConfigured()) {
-        try {
-          const speech = await textToSpeech({ text: reply, languageCode: detectedLanguage });
-          result.audioBase64 = speech.toString("base64");
-        } catch { /* voice is optional */ }
-      }
-      return NextResponse.json(result);
+      return respond(await withSpeech({ reply, state: "complete", caseReference: intake.caseReference }));
     }
 
     // Profile collection — code-driven
@@ -141,20 +174,24 @@ export async function POST(request: NextRequest) {
       const next = nextProfileQuestion(updatedIntake.fields);
 
       if (next) {
-        return NextResponse.json({
-          reply: next.question.replace(/<[^>]*>/g, ""),
-          state: "collecting_profile",
-          profileQuestion: next,
-        });
+        return respond(
+          await withSpeech({
+            reply: next.question.replace(/<[^>]*>/g, ""),
+            state: "collecting_profile",
+            profileQuestion: next,
+          }),
+        );
       }
 
       if (isIntakeReady(updatedIntake.fields)) {
         const caseRef = await createCaseFromWebIntake(updatedIntake);
-        return NextResponse.json({
-          reply: `Your case has been created! Reference: ${caseRef}. Our medical team will review your details and you'll receive a treatment plan within 24-48 hours.`,
-          state: "complete",
-          caseReference: caseRef,
-        });
+        return respond(
+          await withSpeech({
+            reply: `Your case has been created! Reference: ${caseRef}. Our medical team will review your details and you'll receive a treatment plan within 24-48 hours.`,
+            state: "complete",
+            caseReference: caseRef,
+          }),
+        );
       }
     }
 
@@ -176,13 +213,6 @@ export async function POST(request: NextRequest) {
 
     const result: Record<string, unknown> = { reply, state: "medical_chat" };
 
-    if (detectedLanguage && isElevenLabsConfigured()) {
-      try {
-        const speech = await textToSpeech({ text: reply, languageCode: detectedLanguage });
-        result.audioBase64 = speech.toString("base64");
-      } catch { /* voice is optional */ }
-    }
-
     if (readyToSubmit) {
       await setWebIntakeState(sessionId, "collecting_profile");
       const updatedIntake = await getOrCreateWebIntake(sessionId);
@@ -201,10 +231,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(result);
+    return respond(await withSpeech(result));
   } catch (error) {
     console.error("[shifain] chat error:", error);
-    return NextResponse.json(
+    return respond(
       { reply: "I'm sorry, I had trouble processing that. Please try again.", state: "error" },
       { status: 500 },
     );
