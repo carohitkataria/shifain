@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { LogoMark } from "@/components/Logo";
+import { LogoStacked } from "@/components/Logo";
 import { isAuthenticated } from "@/lib/auth";
 import { loginAction } from "../actions";
 
@@ -16,7 +16,7 @@ export default async function LoginPage({
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="card w-full max-w-sm p-7 shadow-xl shadow-ink/5">
-        <LogoMark className="h-12 w-12" title="ShifaIn" />
+        <LogoStacked className="h-20" />
         <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">Homepage control panel</h1>
         <p className="mt-1.5 text-sm text-ink-soft">Sign in to publish homepage content.</p>
 

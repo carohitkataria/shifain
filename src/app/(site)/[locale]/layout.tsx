@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "../../globals.css";
 import { getContent } from "@/lib/store";
 import { t } from "@/lib/localize";
@@ -8,6 +8,8 @@ import { FloatingTools } from "@/components/FloatingTools";
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
+
+export const viewport: Viewport = { themeColor: "#3570b5" };
 
 export async function generateMetadata({
   params,
@@ -19,8 +21,19 @@ export async function generateMetadata({
   const content = await getContent();
 
   return {
+    // Absolute links for the logo in link previews (WhatsApp, Telegram, Facebook).
+    metadataBase: new URL(process.env.BASE_URL?.trim() || "https://shifain.com"),
     title: `${content.brand.name} — ${t(content.brand.tagline, locale)}`,
     description: t(content.hero.body, locale),
+    openGraph: {
+      type: "website",
+      siteName: content.brand.name,
+      title: `${content.brand.name} — ${t(content.brand.tagline, locale)}`,
+      description: t(content.hero.body, locale),
+      locale: LOCALE_META[locale].htmlLang,
+      images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "ShifaIn" }],
+    },
+    twitter: { card: "summary_large_image", images: ["/brand/og-image.png"] },
     alternates: {
       languages: Object.fromEntries(LOCALES.map((l) => [LOCALE_META[l].htmlLang, `/${l}`])),
     },

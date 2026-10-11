@@ -40,7 +40,7 @@ export default async function DoctorLoginPage({
 
       <main className="flex min-h-[60vh] items-center justify-center bg-surface-muted px-4 py-16">
         <div className="card w-full max-w-md p-8 shadow-xl shadow-ink/5">
-          <LogoMark className="h-12 w-12" title="ShifaIn" />
+          <LogoMark className="h-14" />
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">
             {t(DOCTOR_COPY.signInTitle, locale)}
           </h1>

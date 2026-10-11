@@ -28,7 +28,7 @@ export default async function PortalPage({
 
       <main className="flex min-h-[60vh] items-center justify-center bg-surface-muted px-4 py-20">
         <div className="card max-w-lg p-8 text-center shadow-xl shadow-ink/5">
-          <LogoMark className="mx-auto h-14 w-14" title="ShifaIn" />
+          <LogoMark className="mx-auto h-16" />
           <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-ink">{t(copy.title, locale)}</h1>
           <p className="mt-3 leading-relaxed text-ink-soft">{t(copy.body, locale)}</p>
 

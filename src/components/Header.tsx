@@ -31,7 +31,11 @@ export function Header({
     <header className="sticky top-0 z-40 border-b border-line/60 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6 sm:py-3.5 xl:gap-4">
         <Link href={`/${locale}`} className="shrink-0">
-          <Logo tagline={t(content.brand.wordmarkTagline, locale)} markClassName="h-9 w-9 sm:h-11 sm:w-11" />
+          <Logo
+            tagline={t(content.brand.wordmarkTagline, locale)}
+            markClassName="h-9 sm:h-11"
+            wordmarkClassName="h-5 sm:h-7"
+          />
         </Link>
 
         <nav
