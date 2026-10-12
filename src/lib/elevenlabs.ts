@@ -1,4 +1,8 @@
 import "server-only";
+import crypto from "node:crypto";
+import { Binary } from "mongodb";
+import { getDb, isDatabaseConfigured } from "./db";
+import { DEFAULT_NATURAL_VOICE } from "./voice/voices";
 
 const API = "https://api.elevenlabs.io/v1";
 
@@ -54,14 +58,21 @@ export async function transcribeAudio(
 
 // ------------------------------------------------------------------ TTS
 
-const DEFAULT_VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
-const DEFAULT_MODEL = "eleven_turbo_v2_5";
+/**
+ * Flash is ElevenLabs' cheapest and fastest model (half the credits of the
+ * multilingual one) and still natural; ELEVENLABS_MODEL overrides it.
+ */
+const DEFAULT_MODEL = process.env.ELEVENLABS_MODEL?.trim() || "eleven_flash_v2_5";
+/** 64 kbps is plenty for a voice and half the bytes of 128. */
+const OUTPUT_FORMAT = "mp3_44100_64";
 
 export type TTSOptions = {
   text: string;
   voiceId?: string;
   modelId?: string;
   languageCode?: string;
+  /** 0.7 (slower) to 1.2 (faster). */
+  speed?: number;
 };
 
 /**
@@ -73,19 +84,20 @@ export async function textToSpeech(opts: TTSOptions): Promise<Buffer> {
   const key = apiKey();
   if (!key) throw new Error("ELEVENLABS_API_KEY is not set.");
 
-  const voiceId = opts.voiceId ?? DEFAULT_VOICE_ID;
+  const voiceId = opts.voiceId ?? DEFAULT_NATURAL_VOICE;
+  const speed = Math.min(1.2, Math.max(0.7, opts.speed ?? 1));
 
   const body: Record<string, unknown> = {
     text: opts.text,
     model_id: opts.modelId ?? DEFAULT_MODEL,
-    output_format: "mp3_44100_128",
+    voice_settings: { stability: 0.5, similarity_boost: 0.75, speed },
   };
 
   if (opts.languageCode) {
     body.language_code = opts.languageCode;
   }
 
-  const res = await fetch(`${API}/text-to-speech/${voiceId}`, {
+  const res = await fetch(`${API}/text-to-speech/${voiceId}?output_format=${OUTPUT_FORMAT}`, {
     method: "POST",
     headers: {
       "xi-api-key": key,
@@ -102,4 +114,55 @@ export async function textToSpeech(opts: TTSOptions): Promise<Buffer> {
 
   const arrayBuffer = await res.arrayBuffer();
   return Buffer.from(arrayBuffer);
+}
+
+// ------------------------------------------------------------------ cache
+
+const CACHE = "speech_cache";
+const CACHE_DAYS = 30;
+let cacheIndex: Promise<unknown> | null = null;
+
+/**
+ * Speech for a reply, from the cache when this exact sentence was spoken in
+ * this voice before. Command answers repeat a lot ("You're signed in",
+ * "Which city would you prefer?"), so most of them cost nothing after the
+ * first time. Falls back to a fresh call if the database is unavailable.
+ */
+export async function cachedSpeech(opts: TTSOptions): Promise<Buffer> {
+  if (!isDatabaseConfigured()) return textToSpeech(opts);
+  const key = crypto
+    .createHash("sha256")
+    .update([opts.voiceId ?? DEFAULT_NATURAL_VOICE, opts.modelId ?? DEFAULT_MODEL, opts.languageCode ?? "", opts.speed ?? 1, opts.text].join("|"))
+    .digest("base64url");
+
+  try {
+    const db = await getDb();
+    const hit = await db.collection<{ _id: string; audio: Binary }>(CACHE).findOne({ _id: key });
+    if (hit?.audio) return Buffer.from(hit.audio.buffer);
+  } catch {
+    /* a cache miss, not a failure */
+  }
+
+  const audio = await textToSpeech(opts);
+  try {
+    const db = await getDb();
+    cacheIndex ??= db
+      .collection(CACHE)
+      .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0, name: "expiresAt_ttl" })
+      .catch(() => (cacheIndex = null));
+    await db.collection(CACHE).updateOne(
+      { _id: key as never },
+      {
+        $set: {
+          audio: new Binary(audio),
+          bytes: audio.byteLength,
+          expiresAt: new Date(Date.now() + CACHE_DAYS * 24 * 60 * 60 * 1000),
+        },
+      },
+      { upsert: true },
+    );
+  } catch {
+    /* the patient still hears it */
+  }
+  return audio;
 }

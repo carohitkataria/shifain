@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoMark } from "../Logo";
+import { LogoMark, Wordmark } from "../Logo";
 import { AdminNav } from "./AdminNav";
 import { AdminIcon } from "./AdminIcon";
 import { logoutAction } from "@/app/(admin)/admin/actions";
@@ -20,9 +20,9 @@ export function AdminShell({
 }) {
   const brand = (
     <Link href="/admin" className="flex items-center gap-3">
-      <LogoMark className="h-10 w-10 shrink-0" title="ShifaIn" />
+      <LogoMark className="h-10 shrink-0" />
       <span className="min-w-0 leading-tight">
-        <span className="block truncate text-base font-extrabold tracking-tight text-ink">ShifaIn</span>
+        <Wordmark className="h-[18px]" title="ShifaIn" />
         <span className="block text-[0.7rem] font-bold uppercase tracking-[0.14em] text-brand">
           Owner console
         </span>

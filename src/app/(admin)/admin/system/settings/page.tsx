@@ -5,6 +5,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { RETENTION_DAYS } from "@/lib/reports";
 import { environmentCheck, getSettings } from "@/lib/settings";
+import { NATURAL_VOICES, naturalVoice } from "@/lib/voice/voices";
 import { saveSettingsAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -84,6 +85,57 @@ export default async function SettingsPage({
                 on={settings.partnerApplicationsOpen}
               />
             </div>
+
+            <fieldset className="rounded-lg border border-line p-4">
+              <legend className="px-1 font-bold text-ink">Assistant voice</legend>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label>
+                  <span className={adminLabel}>Speak replies with</span>
+                  <select name="voiceEngine" defaultValue={settings.voiceEngine} className={adminField}>
+                    <option value="natural">Natural voices (ElevenLabs, paid per character, cached)</option>
+                    <option value="device">The patient&apos;s own device voice (free)</option>
+                  </select>
+                  <span className="mt-1 block text-sm text-ink-soft">
+                    Natural voices need ELEVENLABS_API_KEY. Repeated answers are cached for 30 days, so they are
+                    only paid for once. Patients can still switch to their device voice themselves.
+                  </span>
+                </label>
+                <label>
+                  <span className={adminLabel}>Default voice</span>
+                  <select
+                    name="voiceId"
+                    defaultValue={naturalVoice(settings.voiceId) ? (settings.voiceId ?? "") : settings.voiceId ? "custom" : ""}
+                    className={adminField}
+                  >
+                    <option value="">Sarah — warm, reassuring (recommended)</option>
+                    {NATURAL_VOICES.slice(1).map((voice) => (
+                      <option key={voice.id} value={voice.id}>
+                        {voice.name} — {voice.gender}, {voice.note.toLowerCase()}
+                      </option>
+                    ))}
+                    <option value="custom">Another voice from my ElevenLabs library…</option>
+                  </select>
+                  <input
+                    name="voiceIdCustom"
+                    defaultValue={settings.voiceId && !naturalVoice(settings.voiceId) ? settings.voiceId : ""}
+                    placeholder="ElevenLabs voice ID, e.g. PuHhr7DLJRLgr8fSArz5"
+                    className={`${adminField} mt-2`}
+                  />
+                  <span className="mt-1 block text-sm text-ink-soft">
+                    For another voice, add it to your ElevenLabs library first, then paste its ID and choose
+                    &ldquo;Another voice&rdquo;.
+                  </span>
+                </label>
+              </div>
+              <div className="mt-3">
+                <Switch
+                  name="serverListening"
+                  label="Always transcribe on the server"
+                  hint="Off: patients' browsers transcribe speech for free, and the server (ElevenLabs) only listens when a browser can't. On: every spoken turn is transcribed by ElevenLabs — better for rare languages, but paid per minute."
+                  on={settings.serverListening}
+                />
+              </div>
+            </fieldset>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label>

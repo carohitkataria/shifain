@@ -106,6 +106,17 @@ export default async function PlanPage({
     : null;
 
   const estimate = estimateFor(plan.recommendedTreatmentCode, bands);
+
+  // What the patient asked for after the plan was drafted, by voice or chat.
+  const prefs = record.preferences ?? {};
+  const wishes = [
+    prefs.city ? [t(PLAN_COPY.wishCity, locale), prefs.city] : null,
+    prefs.travel ? [t(PLAN_COPY.wishTravel, locale), prefs.travel] : null,
+    typeof prefs.companions === "number"
+      ? [t(PLAN_COPY.wishCompanions, locale), prefs.companions === 0 ? t(PLAN_COPY.wishNone, locale) : String(prefs.companions)]
+      : null,
+    prefs.notes?.length ? [t(PLAN_COPY.wishNotes, locale), prefs.notes.map((note) => note.text).join("\n")] : null,
+  ].filter((entry): entry is [string, string] => entry !== null);
   const suggested = new Set(plan.suggestedPackage);
 
   /**
@@ -240,6 +251,19 @@ export default async function PlanPage({
           </div>
         </Section>
 
+        {wishes.length > 0 && (
+          <Section title={t(PLAN_COPY.wishes, locale)}>
+            <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-[auto_1fr]">
+              {wishes.map(([label, value]) => (
+                <div key={label} className="contents">
+                  <dt className="text-sm font-semibold text-ink-soft">{label}</dt>
+                  <dd className="whitespace-pre-line text-ink">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </Section>
+        )}
+
         {plan.itinerary.length > 0 && (
           <Section title={t(PLAN_COPY.itinerary, locale)}>
             <ol className="space-y-4 border-l-2 border-line pl-5">
@@ -309,7 +333,11 @@ export default async function PlanPage({
           </Section>
         )}
 
-        <p className="mt-8 border-t border-line pt-5 text-sm leading-relaxed text-ink-soft">
+        <p className="mt-8 rounded-xl bg-brand-tint px-4 py-3 text-sm leading-relaxed text-ink">
+          {t(PLAN_COPY.voiceHint, locale)}
+        </p>
+
+        <p className="mt-6 border-t border-line pt-5 text-sm leading-relaxed text-ink-soft">
           {t(PLAN_COPY.disclaimer, locale)}
         </p>
       </div>

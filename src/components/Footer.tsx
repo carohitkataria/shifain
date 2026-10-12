@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoMark } from "./Logo";
+import { Logo } from "./Logo";
 import { t } from "@/lib/localize";
 import { localeHref } from "@/lib/href";
 import type { SiteContent } from "@/lib/content-types";
@@ -14,12 +14,7 @@ export function Footer({ content, locale }: { content: SiteContent; locale: Loca
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <div className="grid gap-10 lg:grid-cols-[1.5fr_repeat(3,1fr)]">
             <div>
-              <span className="flex items-center gap-2.5">
-                <LogoMark className="h-10 w-10" title="ShifaIn" />
-                <span className="text-xl font-extrabold tracking-tight text-white">
-                  shifa<span className="text-[#a78bfa]">in</span>
-                </span>
-              </span>
+              <Logo tone="dark" markClassName="h-11" wordmarkClassName="h-6" />
 
               <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/65">
                 {t(content.footer.about, locale)}

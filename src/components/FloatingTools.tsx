@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { VoiceDock, type VoiceTurnResult } from "./VoiceDock";
+import { VoicePicker } from "./VoicePicker";
+import { DEFAULT_NATURAL_VOICE, parseVoicePrefs, voiceForGender, type VoicePrefs } from "@/lib/voice/voices";
 
 const FAQ_ITEMS = [
   {
@@ -20,7 +23,38 @@ const FAQ_ITEMS = [
 
 const STARTERS = ["Knee replacement", "Heart surgery", "Cancer treatment", "IVF"];
 
-type ChatMsg = { role: "user" | "assistant"; content: string; voice?: boolean };
+/** Things the patient can simply say; shown so they know the chat can act, not just answer. */
+const COMMAND_HINTS = ["What's my case status?", "Show my plan", "Add visa support", "How much is a knee replacement?", "Talk to a coordinator", "What can you do?"];
+
+type ReplyLink = { kind: "whatsapp" | "phone" | "attach" | "page"; label: string; href?: string };
+
+type ChatMsg = { role: "user" | "assistant"; content: string; voice?: boolean; links?: ReplyLink[] };
+
+type ClientAction =
+  | { type: "navigate"; href: string }
+  | { type: "locale"; locale: string }
+  | { type: "voice"; naturalId?: string; gender?: "female" | "male"; rate?: "slower" | "faster" | "normal"; openPicker?: boolean };
+
+const PREFS_KEY = "shifain_voice";
+const CHAT_KEY = "shifain_chat_view";
+
+/** Browser storage may be missing or blocked; the chat works without it. */
+const store = {
+  get(area: "local" | "session", key: string): string | null {
+    try {
+      return (area === "local" ? localStorage : sessionStorage).getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  set(area: "local" | "session", key: string, value: string) {
+    try {
+      (area === "local" ? localStorage : sessionStorage).setItem(key, value);
+    } catch {
+      /* not saved; nothing breaks */
+    }
+  },
+};
 
 type ProfileQuestion = {
   field: string;
@@ -49,6 +83,11 @@ const IconChat = () => (
 const IconClose = () => (
   <svg {...svg}>
     <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
+const IconVoice = () => (
+  <svg {...svg}>
+    <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
   </svg>
 );
 const IconBack = () => (
@@ -110,6 +149,8 @@ type ChatReply = {
   transcript?: string;
   heardNothing?: boolean;
   error?: string;
+  action?: ClientAction;
+  links?: ReplyLink[];
 };
 
 export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: string | null; phone?: string | null }) {
@@ -125,6 +166,12 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
   const [caseRef, setCaseRef] = useState<string | null>(null);
   const [voiceOn, setVoiceOn] = useState(false);
   const [serverVoice, setServerVoice] = useState(false);
+  const [serverListening, setServerListening] = useState(false);
+  const [naturalVoices, setNaturalVoices] = useState(false);
+  const [voicePrefs, setVoicePrefs] = useState<VoicePrefs>(() => parseVoicePrefs(null));
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const panelRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
@@ -138,17 +185,53 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
     fabRef.current?.focus();
   }, []);
 
+  // The conversation survives moving between pages (and a language switch,
+  // which remounts this component), so "show my hospitals" never loses it.
+  useEffect(() => {
+    const saved = store.get("session", CHAT_KEY);
+    if (!saved) return;
+    try {
+      const value = JSON.parse(saved) as { messages?: ChatMsg[]; open?: boolean; caseRef?: string | null; state?: string };
+      if (Array.isArray(value.messages)) setMessages(value.messages.slice(-60));
+      if (value.caseRef) setCaseRef(value.caseRef);
+      if (value.state) setState(value.state);
+      if (value.open) {
+        setView("chat");
+        setOpen(true);
+      }
+    } catch {
+      /* start fresh */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (messages.length === 0) return;
+    store.set("session", CHAT_KEY, JSON.stringify({ messages: messages.slice(-60), open: open && view === "chat", caseRef, state }));
+  }, [messages, open, view, caseRef, state]);
+
   useEffect(() => {
     if (!open) return;
     fetch("/api/chat")
       .then((res) => res.json())
-      .then((data: { voiceServer?: boolean }) => setServerVoice(Boolean(data.voiceServer)))
+      .then((data: { voiceServer?: boolean; serverListening?: boolean; naturalVoices?: boolean; defaultVoiceId?: string }) => {
+        setServerVoice(Boolean(data.voiceServer));
+        setServerListening(Boolean(data.serverListening));
+        setNaturalVoices(Boolean(data.naturalVoices));
+        const prefs = parseVoicePrefs(store.get("local", PREFS_KEY), data.defaultVoiceId ?? DEFAULT_NATURAL_VOICE);
+        // Without server voices the device speaks, whatever was saved.
+        setVoicePrefs(data.naturalVoices ? prefs : { ...prefs, engine: "device" });
+      })
       .catch(() => undefined);
   }, [open]);
 
+  const changeVoice = useCallback((next: VoicePrefs) => {
+    setVoicePrefs(next);
+    store.set("local", PREFS_KEY, JSON.stringify(next));
+  }, []);
+
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && !pickerOpen && close();
     const onPointer = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node;
       if (panelRef.current?.contains(target) || fabRef.current?.contains(target)) return;
@@ -163,7 +246,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       document.removeEventListener("mousedown", onPointer);
       document.removeEventListener("touchstart", onPointer);
     };
-  }, [open, close, voiceOn]);
+  }, [open, close, voiceOn, pickerOpen]);
 
   useEffect(() => {
     const openChat = () => {
@@ -178,14 +261,58 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, sending]);
 
-  const apply = useCallback((data: ChatReply, voice = false) => {
-    if (typeof data.reply === "string" && data.reply) {
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply!, voice }]);
-    }
-    if (data.state && data.state !== "error") setState(data.state);
-    setProfileQuestion(data.profileQuestion ?? null);
-    if (data.caseReference) setCaseRef(data.caseReference);
-  }, []);
+  /** Carries out what the server asked the page to do after a command. */
+  const act = useCallback(
+    (action: ClientAction | undefined) => {
+      if (!action) return;
+      if (action.type === "navigate" && action.href.startsWith("/")) {
+        router.push(action.href);
+      } else if (action.type === "locale") {
+        const rest = pathname.replace(/^\/(en|ru|uz)(?=\/|$)/, "");
+        router.push(`/${action.locale}${rest || ""}`);
+      } else if (action.type === "voice") {
+        if (action.openPicker) {
+          setPickerOpen(true);
+          return;
+        }
+        setVoicePrefs((prev) => {
+          const next: VoicePrefs = { ...prev };
+          if (action.gender) {
+            next.gender = action.gender;
+            next.naturalId = action.naturalId ?? voiceForGender(action.gender).id;
+            next.deviceName = "";
+          }
+          if (action.rate) next.rate = action.rate === "slower" ? 0.85 : action.rate === "faster" ? 1.15 : 1;
+          store.set("local", PREFS_KEY, JSON.stringify(next));
+          return next;
+        });
+      }
+    },
+    [pathname, router],
+  );
+
+  const apply = useCallback(
+    (data: ChatReply, voice = false) => {
+      if (typeof data.reply === "string" && data.reply) {
+        setMessages((prev) => [...prev, { role: "assistant", content: data.reply!, voice, links: data.links }]);
+      }
+      if (data.state && data.state !== "error") setState(data.state);
+      setProfileQuestion(data.profileQuestion ?? null);
+      if (data.caseReference) setCaseRef(data.caseReference);
+      act(data.action);
+    },
+    [act],
+  );
+
+  /** Sent with every turn: the page's language and the voice to answer in. */
+  const turnContext = useCallback(
+    () => ({
+      locale: (document.documentElement.lang || "en").split("-")[0],
+      voiceId: voicePrefs.engine === "natural" ? voicePrefs.naturalId : "device",
+      rate: voicePrefs.rate,
+    }),
+    [voicePrefs],
+  );
 
   const post = useCallback(async (body: BodyInit, headers?: HeadersInit): Promise<ChatReply> => {
     setSending(true);
@@ -208,25 +335,25 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       setView("chat");
       setMessages((prev) => [...prev, { role: "user", content: message }]);
       setInput("");
-      const data = await post(JSON.stringify({ message }), { "Content-Type": "application/json" });
+      const data = await post(JSON.stringify({ message, ...turnContext() }), { "Content-Type": "application/json" });
       if (data.error) setMessages((prev) => [...prev, { role: "assistant", content: data.error! }]);
       else apply(data);
     },
-    [apply, post, sending],
+    [apply, post, sending, turnContext],
   );
 
   // Voice turns: the dock hears, we show both sides in the chat and hand the reply back to be spoken.
   const voiceText = useCallback(
     async (text: string, lang: string): Promise<VoiceTurnResult> => {
       setMessages((prev) => [...prev, { role: "user", content: text, voice: true }]);
-      const data = await post(JSON.stringify({ message: text, voice: true, lang }), {
+      const data = await post(JSON.stringify({ message: text, voice: true, lang, ...turnContext() }), {
         "Content-Type": "application/json",
       });
       if (data.error) return { error: data.error };
       apply(data, true);
       return data;
     },
-    [apply, post],
+    [apply, post, turnContext],
   );
 
   const voiceAudio = useCallback(
@@ -234,6 +361,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       const form = new FormData();
       form.append("audio", audio, "voice.webm");
       form.append("voice", "1");
+      for (const [key, value] of Object.entries(turnContext())) form.append(key, String(value));
       const data = await post(form);
       if (data.error) return { error: data.error };
       if (data.heardNothing) return { heardNothing: true };
@@ -241,7 +369,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       apply(data, true);
       return data;
     },
-    [apply, post],
+    [apply, post, turnContext],
   );
 
   const startVoice = () => {
@@ -257,12 +385,13 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       setMessages((prev) => [...prev, { role: "user", content: `Attached: ${file.name}` }]);
       const form = new FormData();
       form.append("file", file);
+      form.append("locale", turnContext().locale);
       const data = await post(form);
       if (data.error) setMessages((prev) => [...prev, { role: "assistant", content: data.error! }]);
       else apply(data);
       if (fileRef.current) fileRef.current.value = "";
     },
-    [apply, post],
+    [apply, post, turnContext],
   );
 
   const scrollTo = (id: string) => {
@@ -305,6 +434,9 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
                   Instant answers · coordinators on hand
                 </p>
               </div>
+              <button type="button" onClick={() => setPickerOpen(true)} className="chat-head-btn" aria-label="Choose the assistant's voice">
+                <IconVoice />
+              </button>
               <button type="button" onClick={close} className="chat-head-btn" aria-label="Close chat">
                 <IconClose />
               </button>
@@ -395,7 +527,16 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
                     Tell us what treatment you are looking for or what the doctor said. Type in any language, attach
                     your reports, or tap <b>Talk</b> to speak.
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
+                  <p className="mt-2 text-[12px] font-bold uppercase tracking-[0.08em] text-ink-muted">Or just say</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {COMMAND_HINTS.map((hint) => (
+                      <button key={hint} type="button" className="chat-profile-btn" onClick={() => sendText(hint)}>
+                        “{hint}”
+                      </button>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-[12px] font-bold uppercase tracking-[0.08em] text-ink-muted">Popular treatments</p>
+                  <div className="flex flex-wrap gap-1.5">
                     {STARTERS.map((topic) => (
                       <button
                         key={topic}
@@ -410,14 +551,38 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
                 </div>
               ) : null}
               {messages.map((msg, i) => (
-                <div key={i} className={`chat-bubble ${msg.role === "user" ? "chat-user" : "chat-bot"}`}>
-                  {msg.voice ? (
-                    <span className="mb-0.5 flex items-center gap-1 text-[11px] font-semibold opacity-70">
-                      <span className="inline-block h-3.5 w-3.5"><IconWave /></span>
-                      {msg.role === "user" ? "You said" : "Spoken reply"}
-                    </span>
+                <div key={i} className="contents">
+                  <div className={`chat-bubble ${msg.role === "user" ? "chat-user" : "chat-bot"}`}>
+                    {msg.voice ? (
+                      <span className="mb-0.5 flex items-center gap-1 text-[11px] font-semibold opacity-70">
+                        <span className="inline-block h-3.5 w-3.5"><IconWave /></span>
+                        {msg.role === "user" ? "You said" : "Spoken reply"}
+                      </span>
+                    ) : null}
+                    {msg.content}
+                  </div>
+                  {msg.links?.length ? (
+                    <div className="chat-links">
+                      {msg.links.map((link) =>
+                        link.kind === "attach" ? (
+                          <button key={link.label} type="button" className="chat-link" onClick={() => fileRef.current?.click()}>
+                            <IconClip />
+                            {link.label}
+                          </button>
+                        ) : (
+                          <a
+                            key={link.label}
+                            className="chat-link"
+                            href={link.href}
+                            {...(link.kind === "whatsapp" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                          >
+                            {link.kind === "whatsapp" ? <IconWhatsapp /> : link.kind === "phone" ? <IconPhone /> : null}
+                            {link.label}
+                          </a>
+                        ),
+                      )}
+                    </div>
                   ) : null}
-                  {msg.content}
                 </div>
               ))}
               {sending ? (
@@ -456,6 +621,9 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
             {voiceOn ? (
               <VoiceDock
                 serverVoice={serverVoice}
+                serverListening={serverListening}
+                prefs={voicePrefs}
+                onOpenPicker={() => setPickerOpen(true)}
                 onSpokenText={voiceText}
                 onSpokenAudio={voiceAudio}
                 onClose={() => setVoiceOn(false)}
@@ -513,6 +681,15 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
             )}
             <p className="help-disclaimer">AI can make mistakes. A coordinator checks every plan before you travel.</p>
           </div>
+
+          {pickerOpen ? (
+            <VoicePicker
+              prefs={voicePrefs}
+              naturalAvailable={naturalVoices}
+              onChange={changeVoice}
+              onClose={() => setPickerOpen(false)}
+            />
+          ) : null}
         </div>
       ) : null}
 

@@ -99,6 +99,17 @@ export const PACKAGE_LINES: Record<
 };
 
 export const PLAN_COPY = {
+  wishes: l("What you asked for", "Ваши пожелания", "Sizning istaklaringiz"),
+  wishCity: l("Preferred city", "Предпочитаемый город", "Afzal shahar"),
+  wishTravel: l("Travel", "Поездка", "Safar"),
+  wishCompanions: l("Travelling with you", "Сопровождающие", "Hamrohlar"),
+  wishNotes: l("Details you added", "Добавленные детали", "Qo'shilgan ma'lumotlar"),
+  wishNone: l("on your own", "один", "yolg'iz"),
+  voiceHint: l(
+    "Want to change something? Open Need help, tap Talk and say it — “add visa support”, “I'd prefer Chennai”, “I'll travel in March”.",
+    "Хотите что-то изменить? Откройте «Нужна помощь», нажмите «Говорить» и скажите — «добавь визовую поддержку», «лучше Ченнаи», «поеду в марте».",
+    "Biror narsani o'zgartirmoqchimisiz? «Yordam kerak»ni oching, «Gapirish»ni bosing va ayting — «viza yordamini qo'sh», «Chennai afzal», «martda boraman».",
+  ),
   working: {
     title: l("Reading your reports", "Читаем ваши документы", "Hujjatlaringiz o'qilmoqda"),
     body: l(
