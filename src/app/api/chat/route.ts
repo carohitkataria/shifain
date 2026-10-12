@@ -1,29 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "node:crypto";
-import { generateIntakeReply, generateChatReply } from "@/lib/voice-agent";
 import { isElevenLabsConfigured, transcribeAudio, cachedSpeech } from "@/lib/elevenlabs";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listCities } from "@/lib/catalogue";
 import { getSettings } from "@/lib/settings";
-import { startPatientSession } from "@/lib/patient-auth";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
-import {
-  getOrCreateWebIntake,
-  updateWebIntakeFields,
-  pushWebIntakeMessage,
-  setWebIntakeState,
-  isIntakeReady,
-  createCaseFromWebIntake,
-  nextProfileQuestion,
-  storeWebIntakeFile,
-  activeCommand,
-  setPendingCommand,
-  type WebIntake,
-} from "@/lib/web-intake";
-import { parseCommand, slotsFor } from "@/lib/voice/intents";
-import { continueCommand, runCommand, type CommandOutcome } from "@/lib/voice/commands";
-import { say, sayLang } from "@/lib/voice/command-copy";
+import { getOrCreateWebIntake, storeWebIntakeFile, findWebIntake } from "@/lib/web-intake";
+import { handleWebTurn } from "@/lib/assistant/web-turn";
 import { DEFAULT_NATURAL_VOICE, VOICE_ID_PATTERN, naturalVoice } from "@/lib/voice/voices";
 
 const SESSION_COOKIE = "shifain_chat";
@@ -51,7 +34,19 @@ async function getSessionId(): Promise<string> {
  * device's own voice. Hearing: the browser's free recogniser, with the
  * server as the fallback (or always, if the admin chose that).
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Polling for a coordinator's replies: GET /api/chat?after=<ISO time>
+  const after = request.nextUrl.searchParams.get("after");
+  if (after !== null) {
+    const id = (await cookies()).get(SESSION_COOKIE)?.value;
+    const intake = id && isDatabaseConfigured() ? await findWebIntake(id).catch(() => null) : null;
+    const since = Date.parse(after) || 0;
+    const messages = (intake?.messages ?? [])
+      .filter((message) => message.role === "coordinator" && Date.parse(message.ts) > since)
+      .map((message) => ({ content: message.content, ts: message.ts }));
+    return NextResponse.json({ messages, handoff: Boolean(intake?.handoff) }, { headers: { "Cache-Control": "no-store" } });
+  }
+
   const settings = await getSettings();
   const configured = isElevenLabsConfigured();
   return NextResponse.json({
@@ -147,7 +142,6 @@ export async function POST(request: NextRequest) {
     if (LANG.test(lang)) detectedLanguage = lang;
   }
 
-  const lang = sayLang(detectedLanguage ?? locale);
 
   // Every answer carries what was heard, so a spoken turn shows as text.
   const respond = (payload: Record<string, unknown>, init?: ResponseInit) =>
@@ -196,82 +190,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    let intake = await getOrCreateWebIntake(sessionId);
-    // Read before this message is stored, so the AI is not shown it twice.
-    const history = intake.messages.slice(-12).map((m) => ({ role: m.role, content: m.content }));
-    await pushWebIntakeMessage(sessionId, "user", userMessage);
-
-    // 1. Commands — plain patterns, no AI.
-    const cities = (await listCities().catch(() => [])).map((city) => city.name);
-    const ctx = { sessionId, intake, text: userMessage, lang, locale };
-    const commandOutcome = await commandTurn(ctx, cities);
-    if (commandOutcome) return respond(await withSpeech(await finish(sessionId, commandOutcome, intake)));
-
-    // 2. Profile questions — code-driven.
-    if (intake.state === "collecting_profile" && !intake.complete) {
-      const q = nextProfileQuestion(intake.fields);
-      if (q) await updateWebIntakeFields(sessionId, { [q.field]: userMessage });
-
-      intake = await getOrCreateWebIntake(sessionId);
-      const next = nextProfileQuestion(intake.fields);
-      if (next) {
-        const reply = next.question.replace(/<[^>]*>/g, "");
-        await pushWebIntakeMessage(sessionId, "assistant", reply);
-        return respond(await withSpeech({ reply, state: "collecting_profile", profileQuestion: next }));
-      }
-      if (isIntakeReady(intake.fields)) {
-        return respond(await withSpeech(await openCaseFor(sessionId, intake, "", lang)));
-      }
-    }
-
-    // 3. Follow-ups once a case exists — the AI answers, and may name a command.
-    if (intake.complete) {
-      const { reply, command } = await generateChatReply(userMessage, history, detectedLanguage, { commands: true });
-      if (command) {
-        const outcome = await runCommand({ ...ctx, intake }, { name: command, slots: slotsFor(command, userMessage, cities) });
-        return respond(await withSpeech(await finish(sessionId, outcome, intake)));
-      }
-      await pushWebIntakeMessage(sessionId, "assistant", reply);
-      return respond(await withSpeech({ reply, state: "complete", caseReference: intake.caseReference }));
-    }
-
-    // 4. The medical conversation — the AI, with a scripted fallback.
-    const { reply, extracted, command } = await generateIntakeReply(
-      userMessage,
-      history,
-      intake.fields,
-      detectedLanguage,
-      { commands: true },
-    );
-    // The AI recognised an app command the patterns missed; doing it beats talking about it.
-    if (command) {
-      const outcome = await runCommand({ ...ctx, intake }, { name: command, slots: slotsFor(command, userMessage, cities) });
-      return respond(await withSpeech(await finish(sessionId, outcome, intake)));
-    }
-
-    const { readyToSubmit, ...fieldUpdates } = extracted;
-    if (Object.values(fieldUpdates).some(Boolean)) {
-      await updateWebIntakeFields(sessionId, fieldUpdates);
-    }
-    await pushWebIntakeMessage(sessionId, "assistant", reply);
-
-    const result: Record<string, unknown> = { reply, state: "medical_chat" };
-
-    if (readyToSubmit) {
-      await setWebIntakeState(sessionId, "collecting_profile");
-      const updatedIntake = await getOrCreateWebIntake(sessionId);
-
-      if (isIntakeReady(updatedIntake.fields)) {
-        return respond(await withSpeech(await openCaseFor(sessionId, updatedIntake, reply, lang)));
-      }
-      const q = nextProfileQuestion(updatedIntake.fields);
-      if (q) {
-        result.state = "collecting_profile";
-        result.profileQuestion = q;
-      }
-    }
-
-    return respond(await withSpeech(result));
+    const turn = await handleWebTurn({ sessionId, text: userMessage, detectedLanguage, locale });
+    return respond(await withSpeech({ ...turn, via: undefined }));
   } catch (error) {
     console.error("[shifain] chat error:", error);
     return respond(
@@ -279,63 +199,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
-
-/**
- * A command, or the answer to one the patient is in the middle of. Returns
- * null when the message is conversation rather than a command.
- */
-async function commandTurn(
-  ctx: Parameters<typeof runCommand>[0],
-  cities: string[],
-): Promise<CommandOutcome | null> {
-  const parsed = parseCommand(ctx.text, cities);
-  if (parsed?.name === "cancel" || parsed?.name === "emergency") return runCommand(ctx, parsed);
-
-  const pending = activeCommand(ctx.intake);
-  if (pending) {
-    // Free text is the answer here ("tell me what's new"), whatever it says.
-    if (pending.step === "details") return continueCommand(ctx, pending);
-    // A new command takes over from a half-finished one.
-    if (parsed && parsed.name !== pending.name) return runCommand(ctx, parsed);
-    const answer = await continueCommand(ctx, pending);
-    if (answer) return answer;
-    await setPendingCommand(ctx.sessionId, null);
-  }
-  return parsed ? runCommand(ctx, parsed) : null;
-}
-
-async function finish(sessionId: string, outcome: CommandOutcome, intake: WebIntake): Promise<Record<string, unknown>> {
-  await pushWebIntakeMessage(sessionId, "assistant", outcome.reply);
-  return {
-    reply: outcome.reply,
-    state: outcome.state ?? (intake.complete ? "complete" : intake.state),
-    caseReference: outcome.caseReference ?? intake.caseReference ?? undefined,
-    action: outcome.action,
-    links: outcome.links,
-    command: true,
-  };
-}
-
-/**
- * Opens the case and signs the patient in on this device: they just gave us
- * the phone number the portal checks, so asking again would only be friction.
- */
-async function openCaseFor(
-  sessionId: string,
-  intake: WebIntake,
-  lead: string,
-  lang: ReturnType<typeof sayLang>,
-): Promise<Record<string, unknown>> {
-  const caseRef = await createCaseFromWebIntake(intake);
-  if (intake.fields.phone) await startPatientSession(intake.fields.phone).catch(() => undefined);
-  const reply = [
-    lead,
-    `Your case has been created! Reference: ${caseRef}. Our medical team will review your details and you'll receive a treatment plan within 24-48 hours.`,
-    intake.fields.phone ? say("caseCreatedSignedIn", lang) : "",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
-  await pushWebIntakeMessage(sessionId, "assistant", reply);
-  return { reply, state: "complete", caseReference: caseRef };
 }

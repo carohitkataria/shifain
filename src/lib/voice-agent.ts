@@ -1,75 +1,41 @@
 import "server-only";
-import { GoogleGenerativeAI, SchemaType, type FunctionDeclarationsTool } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
 import type { IntakeField } from "./conversation-intake";
 import { noteFailure, available, withGeminiModel } from "./ai/providers";
 import { COMMAND_NAMES, type CommandName } from "./voice/intents";
+import { getAssistantConfig } from "./assistant/config";
+import { knowledgeForPrompt } from "./assistant/knowledge";
 
 export { pauseDuration, rankGeminiModels } from "./ai/providers";
 
 /** Overridable without a deploy: set ANTHROPIC_MODEL on the host. */
 const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-5-5";
 
-const BASE_SYSTEM = `You are ShifaIn's patient assistant on Telegram. You help patients who are seeking medical treatment in India.
+/**
+ * The assistant's character and limits. What the team adds in the console
+ * (Assistant → Instructions and Knowledge) is appended to this on every turn.
+ */
+const BASE_SYSTEM = `You are ShifaIn's care assistant. ShifaIn arranges planned medical treatment in India for international patients: finding the right hospital and doctor, a treatment plan with an itemised estimate, visa letters, travel, stay, interpreters and support until they are home.
 
-WHAT YOU DO
-- Greet patients warmly and understand what medical help they need.
-- Ask clarifying questions about their condition, symptoms, and what treatment they're looking for.
-- Collect key information: the medical condition, any previous treatment, and what they hope to achieve.
-- Once you have enough information, let them know the system will collect a few more details to create their case.
-- Answer general questions about the process of getting treatment in India through ShifaIn.
+HOW YOU TALK
+- Answer what the patient actually asked first — briefly, honestly, in general terms — then ask at most ONE question that moves things forward.
+- At most three short sentences. Replies are often read aloud: no markdown, no lists, no emoji.
+- Warm and plain. Many patients are anxious and speaking a second language; avoid jargon or explain it.
+- Reply in the patient's language.
 
-WHAT YOU DO NOT DO
-- You never diagnose. You are not a doctor.
-- You never state a price, a cost, a fee or a discount. Pricing comes from the coordinator.
-- You never promise an outcome, a success rate or a survival figure.
-- You never ask for sensitive medical records over chat. If they need to share reports, tell them to send photos or PDFs right here.
-- You never give medical advice or suggest treatments. You gather information for the medical team.
-- You NEVER ask for the patient's name, country, or phone number. The system handles that separately.
-
-TONE
-- The patient is often anxious and may be speaking in their second language.
-- Write plainly: short sentences, no medical jargon you do not immediately explain.
-- Be warm but honest. Do not give false reassurance.
-- Keep responses concise — 2-4 sentences max for voice responses, since these will be spoken aloud.
-
-LANGUAGE
-- Always respond in the same language the patient is speaking.
-- If the patient speaks Hindi, respond in Hindi. If Uzbek, respond in Uzbek. If Russian, respond in Russian.
-- For voice interactions, keep responses short and natural-sounding.
-
-CONTEXT
-- ShifaIn arranges medical treatment in India for international patients.
-- The service includes: finding the right hospital and doctor, treatment planning, travel coordination, and ongoing support.
-- Common treatments: cardiac surgery, orthopaedics, oncology, fertility (IVF), dental, cosmetic surgery, organ transplants, and more.
-- Major hospital cities: Delhi, Mumbai, Chennai, Bangalore, Hyderabad.`;
-
-const INTAKE_SYSTEM = `${BASE_SYSTEM}
-
-MEDICAL CONVERSATION RULES
-You are gathering MEDICAL information only. The system collects personal details (name, country, phone) separately — never ask for those.
-
-Ask ONE question at a time, building on what the patient says. Be conversational, not robotic.
-
-Gather through conversation:
-1. What treatment or medical procedure they need
-2. Description of their medical condition and symptoms
-3. How long they've had the condition (if relevant)
-4. Any previous treatment they've received (if relevant)
-5. Patient's age (if they mention it naturally)
-
-After each message, call "extract_medical_info" with any new medical information you learned.
-When you have at least the treatment needed AND a description of the condition, call "ready_for_profile".
-Do NOT call ready_for_profile until you have both treatment and condition.
-When you call ready_for_profile, your response should be something warm like "Thank you for sharing that. I have a good picture of what you need. Let me just collect a couple more details to set up your case."
-Always respond conversationally to the patient AND call the appropriate tool.`;
+WHAT YOU NEVER DO
+- Never diagnose, prescribe or promise an outcome, success rate or survival figure.
+- Never quote a price yourself. Say their free plan includes an itemised estimate, which the treating hospital confirms.
+- Never invent hospitals, doctors or facts. Prefer the KNOWLEDGE below over general knowledge.
+- If something sounds like an emergency happening now (severe chest pain, trouble breathing, heavy bleeding, collapse), tell them to call their local emergency number or go to the nearest emergency department.`;
 
 export type ConversationMessage = {
   role: "user" | "assistant";
   content: string;
 };
 
-export type ExtractedInfo = Partial<IntakeField> & { readyToSubmit?: boolean };
+export type ExtractedInfo = Partial<IntakeField> & { email?: string | null; readyToSubmit?: boolean };
 
 export type IntakeReplyResult = {
   reply: string;
@@ -78,260 +44,217 @@ export type IntakeReplyResult = {
   command?: CommandName;
 };
 
-/**
- * Most commands are caught by plain patterns before any model is called.
- * This tool is for the rest — "could you put my treatment somewhere other
- * than Delhi" — and costs nothing extra: it rides on the call that was
- * answering the patient anyway.
- */
-const COMMAND_TOOL_TEXT = {
-  name: "app_command",
-  description:
-    "Call this ONLY when the patient asks the website itself to do something: check their case status, open or change their plan (city, services like visa/hotel/interpreter/flights, travel dates, companions), add medical details, sign in or out, upload a report, get a price, browse hospitals/doctors/treatments, talk to a human, switch language, or change the voice. Do not call it for medical questions or descriptions of symptoms.",
-  commandDescription: "Which action the patient wants.",
+/** Where the conversation is, which decides what the assistant should be doing. */
+export type TurnStage =
+  | { kind: "medical"; fields: Partial<IntakeField> }
+  | { kind: "followup"; caseSummary: string };
+
+type TurnInput = {
+  message: string;
+  history: ConversationMessage[];
+  language?: string;
+  stage: TurnStage;
+  /** Let the assistant name an app command (website chat). */
+  commands: boolean;
 };
 
-const COMMAND_SYSTEM = `
+type TurnResult = { reply: string; extracted: ExtractedInfo; command?: CommandName };
 
-APP ACTIONS
-The patient can also run the website by voice or chat. If they ask the site to do something (see the app_command tool), call app_command with the matching command. The system then does it and answers — you do not need to describe the action yourself.`;
+const FIELD_KEYS = ["treatment", "condition", "duration", "previousTreatment", "age", "name", "phone", "email", "country"] as const;
 
-function commandFrom(name: string | undefined, args: Record<string, unknown> | undefined): CommandName | undefined {
-  if (name !== "app_command") return undefined;
-  const value = args?.command;
-  return typeof value === "string" && (COMMAND_NAMES as readonly string[]).includes(value) ? (value as CommandName) : undefined;
+const FIELD_HELP: Record<(typeof FIELD_KEYS)[number], string> = {
+  treatment:
+    "The treatment or specialty they need, in a few English words, e.g. 'heart bypass surgery', 'knee replacement'. If they only describe symptoms, name the specialty to see, e.g. 'cardiology evaluation for chest pain'.",
+  condition: "One or two English sentences summarising their symptoms or diagnosis, and for how long.",
+  duration: "How long they have had it, if said.",
+  previousTreatment: "Treatment they have already had, if said.",
+  age: "The patient's age, if said.",
+  name: "Their full name, only if they said it.",
+  phone: "Their phone number with country code, only if they said it.",
+  email: "Their email, only if they said it.",
+  country: "The country they live in, only if they said it.",
+};
+
+function stageText(stage: TurnStage, commands: boolean): string {
+  if (stage.kind === "followup") {
+    return `WHERE WE ARE
+${stage.caseSummary}
+Help with follow-up questions about their treatment, the process, travel and next steps.${
+      commands ? " If they want to start a separate, new case, set command to start_case." : ""
+    }`;
+  }
+  const known = Object.entries(stage.fields)
+    .filter(([key, value]) => value && FIELD_KEYS.includes(key as never))
+    .map(([key, value]) => `${key}: ${value}`)
+    .join("; ");
+  const missing = (["treatment", "condition"] as const).filter((key) => !stage.fields[key]);
+  return `WHERE WE ARE
+You are understanding what care they need, so a free treatment plan can be prepared.
+Known so far: ${known || "nothing yet"}.
+${
+  missing.length
+    ? `Still needed: ${missing.join(" and ")}. Ask for it naturally, one question at a time. If they describe symptoms without naming a treatment, infer the specialty yourself rather than asking them to name a procedure.`
+    : "You have what is needed."
+}
+As soon as both treatment and condition are known, set ready to true and, in your reply, thank them and say you will take a few quick details to prepare their free plan. Do not ask for their name, phone, email or country yourself — the system asks for those next.`;
 }
 
-const GEMINI_COMMAND_DECLARATION = {
-  name: COMMAND_TOOL_TEXT.name,
-  description: COMMAND_TOOL_TEXT.description,
-  parameters: {
-    type: SchemaType.OBJECT,
-    properties: {
-      command: {
-        type: SchemaType.STRING,
-        format: "enum",
-        enum: [...COMMAND_NAMES],
-        description: COMMAND_TOOL_TEXT.commandDescription,
-      },
-    },
-    required: ["command"],
-  },
-} as FunctionDeclarationsTool["functionDeclarations"] extends (infer T)[] | undefined ? T : never;
+const COMMAND_TEXT = `APP ACTIONS
+The patient can also run this website by voice or chat. If they ask the website itself to do something — check their case status, open or change their plan (city, services such as visa/hotel/interpreter/flights, travel dates, companions), add medical details, sign in or out, upload a report, get a price, browse hospitals/doctors/treatments, talk to a person, switch language, change the voice, or create an account / start a case — set command to the matching action; the system does it. Otherwise command is "none".
+Commands: ${COMMAND_NAMES.join(", ")}.`;
 
-const CLAUDE_COMMAND_TOOL: Anthropic.Messages.Tool = {
-  name: COMMAND_TOOL_TEXT.name,
-  description: COMMAND_TOOL_TEXT.description,
-  input_schema: {
-    type: "object" as const,
-    properties: {
-      command: { type: "string", enum: [...COMMAND_NAMES], description: COMMAND_TOOL_TEXT.commandDescription },
-    },
-    required: ["command"],
-  },
-};
+async function systemFor(input: TurnInput): Promise<string> {
+  const config = await getAssistantConfig();
+  const knowledge = knowledgeForPrompt(input.message, config.entries);
+  return [
+    BASE_SYSTEM,
+    stageText(input.stage, input.commands),
+    input.commands ? COMMAND_TEXT : "",
+    `WHAT TO RETURN
+reply: what you say to the patient.
+ready: see WHERE WE ARE (false when following up).
+command: an app action or "none".
+Fields — fill only with what the patient said in this conversation, otherwise leave empty:
+${FIELD_KEYS.map((key) => `${key}: ${FIELD_HELP[key]}`).join("\n")}`,
+    config.instructions.trim() ? `INSTRUCTIONS FROM THE SHIFAIN TEAM (follow these)\n${config.instructions.trim()}` : "",
+    knowledge ? `KNOWLEDGE (facts from the ShifaIn team)\n${knowledge}` : "",
+    input.language ? `The patient's language code is "${input.language}". Reply in that language.` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+/** Both APIs want a conversation that starts with the patient and alternates. */
+function normaliseHistory(history: ConversationMessage[], message: string): ConversationMessage[] {
+  const turns: ConversationMessage[] = [];
+  for (const item of [...history.slice(-16), { role: "user" as const, content: message }]) {
+    const content = item.content?.trim();
+    if (!content) continue;
+    if (turns.length === 0 && item.role !== "user") continue;
+    const last = turns[turns.length - 1];
+    if (last && last.role === item.role) last.content += `\n${content}`;
+    else turns.push({ role: item.role, content });
+  }
+  return turns;
+}
+
+function readResult(raw: Record<string, unknown>, commands: boolean): TurnResult {
+  const extracted: ExtractedInfo = {};
+  for (const key of FIELD_KEYS) {
+    const value = raw[key];
+    if (typeof value === "string" && value.trim() && !/^(null|none|unknown|n\/a)$/i.test(value.trim())) {
+      (extracted as Record<string, string>)[key] = value.trim().slice(0, 1000);
+    }
+  }
+  if (raw.ready === true) extracted.readyToSubmit = true;
+  const name = raw.command;
+  const command =
+    commands && typeof name === "string" && name !== "none" && (COMMAND_NAMES as readonly string[]).includes(name)
+      ? (name as CommandName)
+      : undefined;
+  const reply = typeof raw.reply === "string" ? raw.reply.trim() : "";
+  return { reply, extracted, command };
+}
 
 // ---------------------------------------------------------------- Gemini
 
-const GEMINI_TOOLS: FunctionDeclarationsTool[] = [
-  {
-    functionDeclarations: [
-      {
-        name: "extract_medical_info",
-        description:
-          "Extract medical information mentioned in the conversation. Call this after every patient message with whatever new medical info was provided. Do NOT include name, country, or phone — those are collected separately.",
-        parameters: {
-          type: SchemaType.OBJECT,
-          properties: {
-            treatment: { type: SchemaType.STRING, description: "Treatment or procedure they need" },
-            condition: { type: SchemaType.STRING, description: "Description of their medical condition" },
-            duration: { type: SchemaType.STRING, description: "How long they've had the condition" },
-            previousTreatment: { type: SchemaType.STRING, description: "Any previous treatment received" },
-            age: { type: SchemaType.STRING, description: "Patient's age" },
-          },
-        },
-      },
-      {
-        name: "ready_for_profile",
-        description:
-          "Call this when you have gathered enough medical information (at least treatment AND condition). This signals the system to collect remaining profile details from the patient.",
-        parameters: {
-          type: SchemaType.OBJECT,
-          properties: {
-            ready: { type: SchemaType.BOOLEAN, description: "Must be true" },
-          },
-          required: ["ready"],
-        },
-      },
-    ],
+const GEMINI_SCHEMA: ResponseSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    reply: { type: SchemaType.STRING },
+    ready: { type: SchemaType.BOOLEAN },
+    command: { type: SchemaType.STRING, format: "enum", enum: [...COMMAND_NAMES, "none"] },
+    ...Object.fromEntries(FIELD_KEYS.map((key) => [key, { type: SchemaType.STRING, nullable: true }])),
   },
-];
+  required: ["reply", "ready", "command"],
+};
 
-async function intakeWithGemini(
-  model: string,
-  userMessage: string,
-  history: ConversationMessage[],
-  currentFields: Partial<IntakeField>,
-  patientLanguage?: string,
-  withCommands = false,
-): Promise<IntakeReplyResult> {
+async function turnWithGemini(model: string, input: TurnInput, system: string): Promise<TurnResult> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
-  const fieldsNote = Object.entries(currentFields)
-    .filter(([k, v]) => v && !["name", "phone", "country"].includes(k))
-    .map(([k, v]) => `${k}: ${v}`)
-    .join(", ");
-
-  const systemPrompt = [
-    INTAKE_SYSTEM,
-    withCommands ? COMMAND_SYSTEM : "",
-    fieldsNote ? `\nAlready collected medical info: ${fieldsNote}` : "",
-    patientLanguage ? `\nThe patient's detected language is: ${patientLanguage}. Respond in that language.` : "",
-  ].join("");
-
-  const tools: FunctionDeclarationsTool[] = withCommands
-    ? [{ functionDeclarations: [...(GEMINI_TOOLS[0].functionDeclarations ?? []), GEMINI_COMMAND_DECLARATION] }]
-    : GEMINI_TOOLS;
-
-  const chat = genAI.getGenerativeModel({
-    model,
-    systemInstruction: systemPrompt,
-    tools,
-  }).startChat({
-    history: history.map((m) => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
-    })),
-  });
-
-  const result = await chat.sendMessage(userMessage);
-  const response = result.response;
-
-  const extracted: ExtractedInfo = {};
-  let command: CommandName | undefined;
-  const calls = response.functionCalls();
-  if (calls) {
-    for (const call of calls) {
-      command ??= commandFrom(call.name, call.args as Record<string, unknown>);
-      if (call.name === "extract_medical_info") {
-        const args = call.args as Record<string, string>;
-        for (const [k, v] of Object.entries(args)) {
-          if (v && k in extracted === false) {
-            (extracted as Record<string, unknown>)[k] = v;
-          }
-        }
-      }
-      if (call.name === "ready_for_profile") {
-        extracted.readyToSubmit = true;
-      }
-    }
-  }
-
-  const reply = response.text() || (command ? "" : "I'm here to help. Could you tell me more about your medical needs?");
-  return { reply, extracted, command };
+  const result = await genAI
+    .getGenerativeModel({
+      model,
+      systemInstruction: system,
+      generationConfig: { responseMimeType: "application/json", responseSchema: GEMINI_SCHEMA, temperature: 0.4 },
+    })
+    .generateContent({
+      contents: normaliseHistory(input.history, input.message).map((turn) => ({
+        role: turn.role === "assistant" ? "model" : "user",
+        parts: [{ text: turn.content }],
+      })),
+    });
+  return readResult(JSON.parse(result.response.text()) as Record<string, unknown>, input.commands);
 }
 
 // ---------------------------------------------------------------- Claude
 
-const CLAUDE_TOOLS: Anthropic.Messages.Tool[] = [
-  {
-    name: "extract_medical_info",
-    description:
-      "Extract medical information mentioned in the conversation. Call this after every patient message with whatever new medical info was provided. Do NOT include name, country, or phone — those are collected separately.",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        treatment: { type: "string", description: "Treatment or procedure they need" },
-        condition: { type: "string", description: "Description of their medical condition" },
-        duration: { type: "string", description: "How long they've had the condition" },
-        previousTreatment: { type: "string", description: "Any previous treatment received" },
-        age: { type: "string", description: "Patient's age" },
-      },
+const CLAUDE_RESPOND: Anthropic.Messages.Tool = {
+  name: "respond",
+  description: "Your reply to the patient, with anything you learned from them.",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      reply: { type: "string" },
+      ready: { type: "boolean" },
+      command: { type: "string", enum: [...COMMAND_NAMES, "none"] },
+      ...Object.fromEntries(FIELD_KEYS.map((key) => [key, { type: ["string", "null"] }])),
     },
+    required: ["reply", "ready", "command"],
   },
-  {
-    name: "ready_for_profile",
-    description:
-      "Call this when you have gathered enough medical information (at least treatment AND condition). This signals the system to collect remaining profile details from the patient.",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        ready: { type: "boolean", description: "Must be true" },
-      },
-      required: ["ready"],
-    },
-  },
-];
+};
 
-async function intakeWithClaude(
-  userMessage: string,
-  history: ConversationMessage[],
-  currentFields: Partial<IntakeField>,
-  patientLanguage?: string,
-  withCommands = false,
-): Promise<IntakeReplyResult> {
+async function turnWithClaude(input: TurnInput, system: string): Promise<TurnResult> {
   const client = new Anthropic();
-
-  const fieldsNote = Object.entries(currentFields)
-    .filter(([k, v]) => v && !["name", "phone", "country"].includes(k))
-    .map(([k, v]) => `${k}: ${v}`)
-    .join(", ");
-
-  const systemPrompt = [
-    INTAKE_SYSTEM,
-    withCommands ? COMMAND_SYSTEM : "",
-    fieldsNote ? `\nAlready collected medical info: ${fieldsNote}` : "",
-    patientLanguage ? `\nThe patient's detected language is: ${patientLanguage}. Respond in that language.` : "",
-  ].join("");
-
-  const messages: Anthropic.MessageParam[] = [
-    ...history.map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    })),
-    { role: "user", content: userMessage },
-  ];
-
   const response = await client.messages.create({
     model: CLAUDE_MODEL,
-    max_tokens: 600,
-    system: systemPrompt,
-    messages,
-    tools: withCommands ? [...CLAUDE_TOOLS, CLAUDE_COMMAND_TOOL] : CLAUDE_TOOLS,
+    max_tokens: 700,
+    system,
+    messages: normaliseHistory(input.history, input.message).map((turn) => ({ role: turn.role, content: turn.content })),
+    tools: [CLAUDE_RESPOND],
+    tool_choice: { type: "tool", name: "respond" },
   });
+  const block = response.content.find((item) => item.type === "tool_use");
+  if (!block || block.type !== "tool_use") throw new Error("Claude returned no reply");
+  return readResult(block.input as Record<string, unknown>, input.commands);
+}
 
-  const extracted: ExtractedInfo = {};
-  let reply = "";
-  let command: CommandName | undefined;
+// ---------------------------------------------------------------- one turn
 
-  for (const block of response.content) {
-    if (block.type === "text") {
-      reply += block.text;
-    }
-    if (block.type === "tool_use") {
-      command ??= commandFrom(block.name, block.input as Record<string, unknown>);
-      if (block.name === "extract_medical_info") {
-        const args = block.input as Record<string, string>;
-        for (const [k, v] of Object.entries(args)) {
-          if (v) (extracted as Record<string, unknown>)[k] = v;
-        }
-      }
-      if (block.name === "ready_for_profile") {
-        extracted.readyToSubmit = true;
-      }
+/**
+ * One reply from the assistant: Gemini first (free tier), then Claude. Each
+ * returns a structured answer — the words to say, the details it learned and
+ * any app action — so there is always something to say back. Returns null
+ * when no AI is available; callers fall back to their scripted path.
+ */
+export async function assistantTurn(input: TurnInput): Promise<TurnResult | null> {
+  const system = await systemFor(input);
+  if (available("gemini")) {
+    try {
+      const result = await withGeminiModel((model) => turnWithGemini(model, input, system));
+      if (result.reply || result.command) return result;
+    } catch (err) {
+      console.error("[shifain] Gemini turn failed:", err);
+      noteFailure("gemini", err);
     }
   }
-
-  if (!reply && !command) reply = "I'm here to help. Could you tell me more about your medical needs?";
-  return { reply, extracted, command };
+  if (available("claude")) {
+    try {
+      const result = await turnWithClaude(input, system);
+      if (result.reply || result.command) return result;
+    } catch (err) {
+      console.error("[shifain] Claude turn failed:", err);
+      noteFailure("claude", err);
+    }
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------- public API
 
 /**
- * Gemini first (free tier), then Claude, then a scripted intake. A patient
- * describing an illness never gets a dead end because an AI provider is down,
- * out of credit, or has retired a model.
+ * The medical conversation (website and Telegram): the AI, then a scripted
+ * intake. A patient describing an illness never gets a dead end because an
+ * AI provider is down, out of credit, or has retired a model.
  */
 export async function generateIntakeReply(
   userMessage: string,
@@ -340,27 +263,46 @@ export async function generateIntakeReply(
   patientLanguage?: string,
   options: { commands?: boolean } = {},
 ): Promise<IntakeReplyResult> {
-  const withCommands = options.commands === true;
-  if (available("gemini")) {
-    try {
-      return await withGeminiModel((model) =>
-        intakeWithGemini(model, userMessage, history, currentFields, patientLanguage, withCommands),
-      );
-    } catch (err) {
-      console.error("[shifain] Gemini intake failed:", err);
-      noteFailure("gemini", err);
-    }
-  }
-  if (available("claude")) {
-    try {
-      return await intakeWithClaude(userMessage, history, currentFields, patientLanguage, withCommands);
-    } catch (err) {
-      console.error("[shifain] Claude intake failed:", err);
-      noteFailure("claude", err);
-    }
-  }
+  const result = await assistantTurn({
+    message: userMessage,
+    history,
+    language: patientLanguage,
+    stage: { kind: "medical", fields: currentFields },
+    commands: options.commands === true,
+  });
+  if (result) return result;
   console.error("[shifain] no AI provider answered; using the scripted intake");
   return scriptedIntake(userMessage, currentFields);
+}
+
+export type ChatReplyResult = { reply: string; command?: CommandName };
+
+const COORDINATOR_FALLBACK =
+  "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";
+
+/** A follow-up answer once a case exists; may also name an app command (website chat). */
+export async function generateChatReply(
+  userMessage: string,
+  history: ConversationMessage[] = [],
+  patientLanguage?: string,
+  options: { commands?: boolean; caseSummary?: string } = {},
+): Promise<ChatReplyResult> {
+  const result = await assistantTurn({
+    message: userMessage,
+    history,
+    language: patientLanguage,
+    stage: { kind: "followup", caseSummary: options.caseSummary ?? "The patient already has a case open with ShifaIn." },
+    commands: options.commands === true,
+  });
+  return result ? { reply: result.reply, command: result.command } : { reply: COORDINATOR_FALLBACK };
+}
+
+export async function generateReply(
+  userMessage: string,
+  history: ConversationMessage[] = [],
+  patientLanguage?: string,
+): Promise<string> {
+  return (await generateChatReply(userMessage, history, patientLanguage)).reply || COORDINATOR_FALLBACK;
 }
 
 // ---------------------------------------------------------------- scripted fallback
@@ -436,116 +378,4 @@ export function scriptedIntake(userMessage: string, currentFields: Partial<Intak
       "Thank you for explaining. Which treatment are you hoping for — or, if you are not sure yet, what has your doctor suggested?",
     extracted,
   };
-}
-
-// ---------------------------------------------------------------- simple reply (backward compat)
-
-export type ChatReplyResult = { reply: string; command?: CommandName };
-
-async function replyWithGemini(
-  model: string,
-  userMessage: string,
-  history: ConversationMessage[],
-  patientLanguage?: string,
-  withCommands = false,
-): Promise<ChatReplyResult> {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
-  const base = withCommands ? BASE_SYSTEM + COMMAND_SYSTEM : BASE_SYSTEM;
-  const systemPrompt = patientLanguage
-    ? `${base}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
-    : base;
-
-  const chat = genAI.getGenerativeModel({
-    model,
-    systemInstruction: systemPrompt,
-    ...(withCommands ? { tools: [{ functionDeclarations: [GEMINI_COMMAND_DECLARATION] }] } : {}),
-  }).startChat({
-    history: history.map((m) => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
-    })),
-  });
-
-  const result = await chat.sendMessage(userMessage);
-  const command = (result.response.functionCalls() ?? [])
-    .map((call) => commandFrom(call.name, call.args as Record<string, unknown>))
-    .find(Boolean);
-  const reply = result.response.text() || (command ? "" : "I'm sorry, I couldn't process that. Please try again or type /help.");
-  return { reply, command };
-}
-
-async function replyWithClaude(
-  userMessage: string,
-  history: ConversationMessage[],
-  patientLanguage?: string,
-  withCommands = false,
-): Promise<ChatReplyResult> {
-  const client = new Anthropic();
-
-  const base = withCommands ? BASE_SYSTEM + COMMAND_SYSTEM : BASE_SYSTEM;
-  const systemPrompt = patientLanguage
-    ? `${base}\n\nThe patient's detected language is: ${patientLanguage}. Respond in that language.`
-    : base;
-
-  const messages: Anthropic.MessageParam[] = [
-    ...history.map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    })),
-    { role: "user", content: userMessage },
-  ];
-
-  const response = await client.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 400,
-    system: systemPrompt,
-    messages,
-    ...(withCommands ? { tools: [CLAUDE_COMMAND_TOOL] } : {}),
-  });
-
-  let command: CommandName | undefined;
-  for (const block of response.content) {
-    if (block.type === "tool_use") command ??= commandFrom(block.name, block.input as Record<string, unknown>);
-  }
-  const text = response.content.find((b) => b.type === "text")?.text;
-  return { reply: text ?? (command ? "" : "I'm sorry, I couldn't process that. Please try again or type /help."), command };
-}
-
-const COORDINATOR_FALLBACK =
-  "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";
-
-/** A follow-up answer that may also name an app command (web chat). */
-export async function generateChatReply(
-  userMessage: string,
-  history: ConversationMessage[] = [],
-  patientLanguage?: string,
-  options: { commands?: boolean } = {},
-): Promise<ChatReplyResult> {
-  const withCommands = options.commands === true;
-  if (available("gemini")) {
-    try {
-      return await withGeminiModel((model) => replyWithGemini(model, userMessage, history, patientLanguage, withCommands));
-    } catch (err) {
-      console.error("[shifain] Gemini reply failed:", err);
-      noteFailure("gemini", err);
-    }
-  }
-  if (available("claude")) {
-    try {
-      return await replyWithClaude(userMessage, history, patientLanguage, withCommands);
-    } catch (err) {
-      console.error("[shifain] Claude reply failed:", err);
-      noteFailure("claude", err);
-    }
-  }
-  return { reply: COORDINATOR_FALLBACK };
-}
-
-export async function generateReply(
-  userMessage: string,
-  history: ConversationMessage[] = [],
-  patientLanguage?: string,
-): Promise<string> {
-  return (await generateChatReply(userMessage, history, patientLanguage)).reply || COORDINATOR_FALLBACK;
 }

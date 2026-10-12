@@ -267,7 +267,7 @@ const has = (pattern: RegExp) => (value: string) => pattern.test(value);
 const short = (pattern: RegExp, maxWords = 6) => (value: string) => wordCount(value) <= maxWords && pattern.test(value);
 
 /** Phrases that mean "show me / take me to / find". */
-const SHOW = /\b(show|open|see|view|find|search|list|browse|look (for|at|up)|go to|take me to|recommend|which|best|top)\b|покажи|открой|найди|подбери|посмотреть|перейди|какие|лучш|ko'rsat|och|top|qidir|qaysi|eng yaxshi/;
+const SHOW = /\b(show|open|see|view|find|search|list|browse|look (for|at|up)|go to|take me to)\b|покажи|открой|найди|подбери|посмотреть|перейди|ko'rsat|\boch\b|qidir/;
 
 /**
  * Order matters: the first rule that fits wins, so the narrow ones

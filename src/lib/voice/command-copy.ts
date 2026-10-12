@@ -32,6 +32,16 @@ export const SAY = {
     ru: "Понял — {treatment}. Расскажите немного о состоянии: симптомы, как давно это длится и что сказал врач. Можно прикрепить анализы.",
     uz: "Tushundim — {treatment}. Holat haqida biroz aytib bering: belgilar, qancha vaqtdan beri va shifokor nima dedi. Tahlillarni ham biriktirishingiz mumkin.",
   },
+  startHaveEnough: {
+    en: "Of course — I have what I need about your condition. Just a few quick details for your free plan.",
+    ru: "Конечно — о вашем состоянии информации достаточно. Осталось несколько данных для бесплатного плана.",
+    uz: "Albatta — holatingiz haqida ma'lumot yetarli. Bepul reja uchun bir nechta ma'lumot qoldi.",
+  },
+  startNeedTreatment: {
+    en: "Of course. Has a doctor suggested a particular treatment or operation? If not, that's fine — just say so and our doctors will advise.",
+    ru: "Конечно. Врач уже предлагал конкретное лечение или операцию? Если нет — ничего страшного, просто скажите, и наши врачи подскажут.",
+    uz: "Albatta. Shifokor biror davolash yoki operatsiyani taklif qilganmi? Bo'lmasa, mayli — shunday deng, shifokorlarimiz maslahat beradi.",
+  },
   alreadyHaveCase: {
     en: "You already have a case with us, {reference}. Do you want to start a new, separate one?",
     ru: "У вас уже есть заявка {reference}. Открыть новую, отдельную?",

@@ -28,7 +28,14 @@ const COMMAND_HINTS = ["What's my case status?", "Show my plan", "Add visa suppo
 
 type ReplyLink = { kind: "whatsapp" | "phone" | "attach" | "page"; label: string; href?: string };
 
-type ChatMsg = { role: "user" | "assistant"; content: string; voice?: boolean; links?: ReplyLink[] };
+type ChatMsg = {
+  role: "user" | "assistant";
+  content: string;
+  voice?: boolean;
+  links?: ReplyLink[];
+  /** A person on the ShifaIn team wrote this, not the assistant. */
+  coordinator?: boolean;
+};
 
 type ClientAction =
   | { type: "navigate"; href: string }
@@ -56,11 +63,6 @@ const store = {
   },
 };
 
-type ProfileQuestion = {
-  field: string;
-  question: string;
-  buttons?: { text: string; callback_data: string }[][];
-};
 
 type View = "menu" | "chat";
 
@@ -143,7 +145,9 @@ const IconWave = () => (
 type ChatReply = {
   reply?: string;
   state?: string;
-  profileQuestion?: ProfileQuestion;
+  /** Quick replies to offer under the answer. */
+  suggestions?: string[];
+  handoff?: boolean;
   caseReference?: string;
   audioBase64?: string;
   transcript?: string;
@@ -162,7 +166,10 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [state, setState] = useState("medical_chat");
-  const [profileQuestion, setProfileQuestion] = useState<ProfileQuestion | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [unread, setUnread] = useState(0);
+  /** The newest coordinator message this browser has seen, for polling. */
+  const seenUntil = useRef<string>(new Date().toISOString());
   const [caseRef, setCaseRef] = useState<string | null>(null);
   const [voiceOn, setVoiceOn] = useState(false);
   const [serverVoice, setServerVoice] = useState(false);
@@ -208,6 +215,34 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
     if (messages.length === 0) return;
     store.set("session", CHAT_KEY, JSON.stringify({ messages: messages.slice(-60), open: open && view === "chat", caseRef, state }));
   }, [messages, open, view, caseRef, state]);
+
+  // A coordinator can reply from the console; their messages arrive here.
+  useEffect(() => {
+    if (messages.length === 0) return;
+    let stopped = false;
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/chat?after=${encodeURIComponent(seenUntil.current)}`, { cache: "no-store" });
+        const data = (await res.json()) as { messages?: { content: string; ts: string }[] };
+        const incoming = data.messages ?? [];
+        if (stopped || incoming.length === 0) return;
+        seenUntil.current = incoming[incoming.length - 1].ts;
+        setMessages((prev) => [...prev, ...incoming.map((item) => ({ role: "assistant" as const, content: item.content, coordinator: true }))]);
+        setUnread((count) => count + incoming.length);
+      } catch {
+        /* try again on the next tick */
+      }
+    };
+    const timer = window.setInterval(poll, open ? 6000 : 20000);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+    };
+  }, [messages.length > 0, open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (open && view === "chat") setUnread(0);
+  }, [open, view, messages.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -297,7 +332,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
         setMessages((prev) => [...prev, { role: "assistant", content: data.reply!, voice, links: data.links }]);
       }
       if (data.state && data.state !== "error") setState(data.state);
-      setProfileQuestion(data.profileQuestion ?? null);
+      setSuggestions(Array.isArray(data.suggestions) ? data.suggestions.slice(0, 6) : []);
       if (data.caseReference) setCaseRef(data.caseReference);
       act(data.action);
     },
@@ -552,7 +587,10 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
               ) : null}
               {messages.map((msg, i) => (
                 <div key={i} className="contents">
-                  <div className={`chat-bubble ${msg.role === "user" ? "chat-user" : "chat-bot"}`}>
+                  <div className={`chat-bubble ${msg.role === "user" ? "chat-user" : "chat-bot"} ${msg.coordinator ? "chat-coordinator" : ""}`}>
+                    {msg.coordinator ? (
+                      <span className="mb-0.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-leaf">Coordinator</span>
+                    ) : null}
                     {msg.voice ? (
                       <span className="mb-0.5 flex items-center gap-1 text-[11px] font-semibold opacity-70">
                         <span className="inline-block h-3.5 w-3.5"><IconWave /></span>
@@ -592,17 +630,11 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
                   <span />
                 </div>
               ) : null}
-              {profileQuestion?.buttons && state === "collecting_profile" && !voiceOn ? (
+              {suggestions.length > 0 && !voiceOn && !sending ? (
                 <div className="flex flex-wrap gap-1.5">
-                  {profileQuestion.buttons.flat().map((btn) => (
-                    <button
-                      key={btn.callback_data}
-                      type="button"
-                      className="chat-profile-btn"
-                      onClick={() => sendText(btn.text.replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}]\s*/u, ""))}
-                      disabled={sending}
-                    >
-                      {btn.text}
+                  {suggestions.map((text) => (
+                    <button key={text} type="button" className="chat-profile-btn" onClick={() => sendText(text)}>
+                      {text}
                     </button>
                   ))}
                 </div>
@@ -703,6 +735,11 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       >
         {open ? <IconClose /> : <IconChat />}
         <span className={open ? "sr-only" : "help-fab-label"}>Need help?</span>
+        {unread > 0 && !open ? (
+          <span className="help-fab-badge" aria-label={`${unread} new message${unread === 1 ? "" : "s"}`}>
+            {unread}
+          </span>
+        ) : null}
       </button>
     </>
   );

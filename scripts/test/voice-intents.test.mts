@@ -78,6 +78,7 @@ const expect: [string, string | null][] = [
   ["Do I need a visa?", null],
   ["У меня болит колено уже два года", null],
   ["Hello", null],
+  ["What is the best hospital for me?", null], // a question for the assistant, not a page to open
   ["My doctor told me I need surgery on my spine", null],
 ];
 
