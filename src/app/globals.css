@@ -15,6 +15,16 @@
   --color-surface: #ffffff;
   --color-surface-muted: #f8f6fe;
 
+  /* Homepage hero, from the approved design. */
+  --color-navy: #0a1a47;
+  --color-slate: #3f4a69;
+  --color-violet: #722be4;
+  --color-violet-soft: #f4ecff;
+  --color-violet-line: #ddd0fb;
+  --color-hero: #f3f6fe;
+  --color-hero-end: #eceef9;
+  --color-hero-band: #f3f1ff;
+
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 
@@ -1414,4 +1424,57 @@ body {
   font-weight: 800;
   line-height: 20px;
   text-align: center;
+}
+
+/* Homepage hero (approved design) ------------------------------------- */
+
+.hero-field {
+  background: linear-gradient(90deg, var(--color-hero) 0%, #f1f3fc 45%, var(--color-hero-end) 100%);
+}
+
+/* The picture melts into the page on its left and bottom edges. */
+.hero-art {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16%), linear-gradient(to bottom, #000 80%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent 0, #000 16%), linear-gradient(to bottom, #000 80%, transparent 100%);
+  mask-composite: intersect;
+}
+
+@media (max-width: 1023px) {
+  .hero-art {
+    -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+  }
+}
+
+/* The card on the picture is sized with the picture. */
+.hero-figure {
+  container-type: inline-size;
+}
+
+.hero-chat-card {
+  box-shadow: 0 0 0 6px rgb(124 58 237 / 0.06), 0 18px 40px -18px rgb(114 43 228 / 0.35);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-rise {
+    animation: hero-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 80ms);
+  }
+  .hero-float {
+    animation: hero-float 7s ease-in-out infinite;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@keyframes hero-float {
+  50% {
+    transform: translateY(-1.2cqw);
+  }
 }

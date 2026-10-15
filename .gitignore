@@ -13,3 +13,4 @@ tsconfig.tsbuildinfo
 __pycache__
 *.pyc
 .coverage
+.taste-skill/

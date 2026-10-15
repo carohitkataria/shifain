@@ -18,11 +18,7 @@ export const defaultContent: SiteContent = {
       "Глобальные медицинские маршруты в Индию",
       "Hindistonga global salomatlik safarlari",
     ),
-    wordmarkTagline: l(
-      "Global health journeys to India",
-      "Медицинские маршруты в Индию",
-      "Hindistonga salomatlik safarlari",
-    ),
+    wordmarkTagline: l("Trusted medical journey", "Надёжный путь к лечению", "Ishonchli tibbiy sayohat"),
   },
 
   contact: {
@@ -39,26 +35,26 @@ export const defaultContent: SiteContent = {
     packages: l("Packages", "Пакеты", "Paketlar"),
     stories: l("Stories", "Истории", "Hikoyalar"),
     patientLogin: l("Patient login", "Вход для пациентов", "Bemor kirishi"),
+    ourProcess: l("Our Process", "Как мы работаем", "Jarayonimiz"),
+    whyIndia: l("Why India", "Почему Индия", "Nega Hindiston"),
+    aboutUs: l("About Us", "О нас", "Biz haqimizda"),
+    loginSignup: l("Login / Sign Up", "Вход / Регистрация", "Kirish / Ro'yxatdan o'tish"),
   },
 
   sections: allSectionsOn(),
 
   hero: {
     eyebrow: l(
-      "Care in India for patients from any country",
-      "Лечение в Индии для пациентов из любой страны",
-      "Har qanday davlat bemorlari uchun Hindistonda davolanish",
+      "Your trusted partner for medical treatment in India",
+      "Ваш надёжный партнёр для лечения в Индии",
+      "Hindistonda davolanish uchun ishonchli hamkoringiz",
     ),
-    headline: l("World-class medical care", "Медицина мирового уровня", "Jahon darajasidagi tibbiy yordam"),
-    headlineAccent: l(
-      "in India — with the price agreed before you fly",
-      "в Индии — с ценой, согласованной до вылета",
-      "Hindistonda — narx uchishdan oldin kelishiladi",
-    ),
+    headline: l("Plan Your Medical Treatment in India —", "Спланируйте лечение в Индии —", "Hindistonda davolanishni rejalashtiring —"),
+    headlineAccent: l("with Confidence", "с уверенностью", "ishonch bilan"),
     body: l(
-      "Send your reports and get a treatment plan with an itemised cost estimate in minutes. Shape your own package — flights, stay, transfers — and the treating hospital confirms the final plan and price within 48 hours.",
-      "Отправьте медицинские документы и за несколько минут получите план лечения с детальной сметой. Соберите свой пакет — перелёты, проживание, трансферы, — а клиника подтвердит окончательный план и цену в течение 48 часов.",
-      "Tibbiy hujjatlaringizni yuboring va bir necha daqiqada batafsil xarajat hisobi bilan davolash rejasini oling. Parvoz, turar joy va transferlardan o'z paketingizni tuzing — shifoxona yakuniy reja va narxni 48 soat ichida tasdiqlaydi.",
+      "Get expert guidance, compare top hospitals, plan your treatment and travel — all in one place. Ask Shifain, anytime.",
+      "Получите экспертную помощь, сравните лучшие клиники, спланируйте лечение и поездку — всё в одном месте. Спросите Shifain в любое время.",
+      "Mutaxassis maslahatini oling, eng yaxshi shifoxonalarni solishtiring, davolanish va safarni rejalashtiring — barchasi bir joyda. Shifain'dan istalgan vaqtda so'rang.",
     ),
     primaryCta: l(
       "Get my free plan & estimate",
@@ -67,10 +63,35 @@ export const defaultContent: SiteContent = {
     ),
     secondaryCta: l("Talk to a coordinator", "Связаться с координатором", "Koordinator bilan bog'lanish"),
     badges: [
-      { id: "b1", label: l("Plan & estimate in minutes", "План и смета за минуты", "Reja va hisob bir necha daqiqada") },
-      { id: "b2", label: l("Guaranteed price", "Гарантированная цена", "Kafolatlangan narx") },
-      { id: "b3", label: l("In-app live translator", "Живой переводчик в приложении", "Ilovada jonli tarjimon") },
-      { id: "b4", label: l("JCI & NABH hospitals", "Клиники JCI и NABH", "JCI va NABH shifoxonalari") },
+      { id: "b1", label: l("Trusted Hospitals in India", "Проверенные клиники Индии", "Hindistonning ishonchli shifoxonalari") },
+      { id: "b2", label: l("End-to-End Travel Support", "Помощь с поездкой от начала до конца", "Safar bo'yicha to'liq yordam") },
+      { id: "b3", label: l("Personalized Care Assistance", "Персональная поддержка", "Shaxsiy g'amxo'rlik yordami") },
+    ],
+    chatTitle: l("Chat with Shifain", "Чат с Shifain", "Shifain bilan suhbat"),
+    chatBody: l(
+      "Ask anything about treatments, hospitals, or your travel plan",
+      "Спросите о лечении, клиниках или плане поездки",
+      "Davolash, shifoxonalar yoki safar rejangiz haqida so'rang",
+    ),
+    orLabel: l("or", "или", "yoki"),
+    voiceCta: l("Speak to Shifain", "Поговорить с Shifain", "Shifain bilan gaplashish"),
+    voiceBadge: l("New", "Новое", "Yangi"),
+    loginCta: l("Login to get personalized plan", "Войдите, чтобы получить личный план", "Shaxsiy reja uchun kiring"),
+    cardTitle: l("Plan · Travel · Treat", "План · Поездка · Лечение", "Reja · Safar · Davolash"),
+    cardBody: l(
+      "Your complete medical journey, made simple.",
+      "Весь путь к лечению — просто и понятно.",
+      "To'liq tibbiy safaringiz — oson va sodda.",
+    ),
+    imageAlt: l(
+      "A smiling patient looking up, with a hospital, the Taj Mahal and a plane flying to India",
+      "Улыбающаяся пациентка, клиника, Тадж-Махал и самолёт, летящий в Индию",
+      "Jilmayib turgan bemor, shifoxona, Toj Mahal va Hindistonga uchayotgan samolyot",
+    ),
+    values: [
+      { id: "v1", label: l("Trusted by patients from across the world", "Нам доверяют пациенты со всего мира", "Bizga butun dunyo bemorlari ishonadi") },
+      { id: "v2", label: l("Access India's world-class healthcare", "Доступ к медицине мирового уровня в Индии", "Hindistonning jahon darajasidagi tibbiyoti") },
+      { id: "v3", label: l("A healthier tomorrow, together", "Здоровое завтра — вместе", "Sog'lom ertaga — birgalikda") },
     ],
     form: {
       title: l(

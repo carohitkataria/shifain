@@ -108,6 +108,10 @@ export type SiteContent = {
     packages: L;
     stories: L;
     patientLogin: L;
+    ourProcess: L;
+    whyIndia: L;
+    aboutUs: L;
+    loginSignup: L;
   };
 
   sections: Record<SectionId, SectionState>;
@@ -120,6 +124,19 @@ export type SiteContent = {
     primaryCta: L;
     secondaryCta: L;
     badges: { id: string; label: L }[];
+    /** The big "Chat with Shifain" card. */
+    chatTitle: L;
+    chatBody: L;
+    orLabel: L;
+    voiceCta: L;
+    voiceBadge: L;
+    loginCta: L;
+    /** The card on the hero picture. */
+    cardTitle: L;
+    cardBody: L;
+    imageAlt: L;
+    /** The band under the hero. */
+    values: { id: string; label: L }[];
     form: {
       title: L;
       nameLabel: L;
