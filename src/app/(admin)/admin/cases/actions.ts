@@ -7,6 +7,7 @@ import { getDb } from "@/lib/db";
 import type { CaseStatus, PatientCase } from "@/lib/cases";
 import type { PartnerUser } from "@/lib/partner-auth";
 import { attributeCase, syncReferralWithCase, updateReferral } from "@/lib/referrals";
+import { answerAppointment } from "@/lib/patient-portal";
 
 const STATUSES: CaseStatus[] = [
   "new",
@@ -116,4 +117,17 @@ export async function deleteCaseAction(formData: FormData) {
 
   revalidatePath("/admin/cases");
   redirect(`${backTo(formData)}${backTo(formData).includes("?") ? "&" : "?"}saved=deleted`);
+}
+
+/** A coordinator confirms (with the agreed time) or declines a call the patient asked for in the portal. */
+export async function answerAppointmentAction(formData: FormData) {
+  await guard();
+  const id = String(formData.get("id") ?? "");
+  const appointment = String(formData.get("appointment") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  if (id && appointment && (decision === "confirmed" || decision === "declined")) {
+    await answerAppointment(id, appointment, decision, text(formData.get("slot")));
+    revalidatePath("/admin/cases");
+  }
+  redirect(backTo(formData));
 }

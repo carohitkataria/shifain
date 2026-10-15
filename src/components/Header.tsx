@@ -17,10 +17,13 @@ export function Header({
   content,
   locale,
   path = "",
+  account,
 }: {
   content: SiteContent;
   locale: Locale;
   path?: string;
+  /** Set on pages a signed-in patient sees: the button then leads to their space, not to sign-in. */
+  account?: string;
 }) {
   const home = `/${locale}`;
   const nav = [
@@ -31,7 +34,7 @@ export function Header({
     { href: `${home}#stories`, label: t(content.nav.stories, locale) },
     { href: `${home}#about`, label: t(content.nav.aboutUs, locale) },
   ];
-  const login = { href: `${home}/portal/patient`, label: t(content.nav.loginSignup, locale) };
+  const login = { href: `${home}/portal/patient`, label: account ?? t(content.nav.loginSignup, locale) };
 
   return (
     <header className="sticky top-0 z-40 bg-hero/95 backdrop-blur">

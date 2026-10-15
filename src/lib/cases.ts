@@ -57,7 +57,7 @@ export type PatientPreferences = {
   notes?: { at: string; text: string }[];
 };
 
-export type PlanEdit = { at: string; via: "voice" | "chat"; change: string };
+export type PlanEdit = { at: string; via: "voice" | "chat" | "portal"; change: string };
 
 /**
  * The reference is also the only thing guarding the plan URL, which carries a

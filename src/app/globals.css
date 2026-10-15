@@ -62,26 +62,27 @@ body {
 /* ---------------------------------------------------------------------------
    Typography helpers
 --------------------------------------------------------------------------- */
+/* The line above a section heading: a short sentence in the brand violet, not a tracked capital label. */
 .eyebrow {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-brand);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-violet);
 }
 
 .section-title {
-  font-size: clamp(1.75rem, 1.1rem + 2.4vw, 2.75rem);
-  line-height: 1.12;
+  font-size: clamp(2rem, 1.15rem + 2.7vw, 3.4rem);
+  line-height: 1.08;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--color-ink);
+  letter-spacing: -0.025em;
+  color: var(--color-navy);
+  text-wrap: balance;
 }
 
 .section-body {
-  color: var(--color-ink-soft);
-  font-size: 1.0625rem;
+  color: #2c3a5e;
+  font-size: clamp(1.05rem, 0.98rem + 0.25vw, 1.2rem);
   line-height: 1.6;
+  text-wrap: pretty;
 }
 
 /* ---------------------------------------------------------------------------
@@ -567,62 +568,6 @@ body {
 /* ---------------------------------------------------------------------------
    Dashboard timeline
 --------------------------------------------------------------------------- */
-.dash-timeline {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.dash-timeline li {
-  position: relative;
-  padding: 0 0 16px 24px;
-  font-size: 14px;
-}
-
-.dash-timeline li::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 4px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--color-line);
-}
-
-.dash-timeline li.done::before {
-  background: var(--color-brand);
-}
-
-.dash-timeline li.cur::before {
-  background: var(--color-saffron);
-  box-shadow: 0 0 0 4px var(--color-saffron-tint);
-}
-
-.dash-timeline li::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 14px;
-  bottom: 0;
-  width: 1px;
-  background: var(--color-line);
-}
-
-.dash-timeline li:last-child::after {
-  display: none;
-}
-
-.dash-timeline li b {
-  display: block;
-  font-weight: 600;
-}
-
-.dash-timeline li span {
-  color: var(--color-ink-soft);
-  font-size: 13px;
-}
-
 /* ---------------------------------------------------------------------------
    Help button, help panel and chat
    One entry point: the panel opens on options, chat is the first of them.

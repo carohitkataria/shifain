@@ -8,7 +8,8 @@ import { isAuthenticated } from "@/lib/auth";
 import type { CaseStatus, PatientCase } from "@/lib/cases";
 import { listPartners, type Referral } from "@/lib/partners";
 import { SOURCE_LABEL, STAGE_LABEL, partnerIdOf, sourceOf } from "@/lib/referrals";
-import { attributeCaseAction, deleteCaseAction, saveCaseAction, setCaseStatusAction } from "./actions";
+import { answerAppointmentAction, attributeCaseAction, deleteCaseAction, saveCaseAction, setCaseStatusAction } from "./actions";
+import type { Appointment } from "@/lib/patient-portal";
 
 export const dynamic = "force-dynamic";
 
@@ -225,6 +226,41 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
                       )}
                     </p>
                   ) : null}
+                  {((item as PatientCase & { appointments?: Appointment[] }).appointments ?? [])
+                    .filter((call) => call.status === "requested")
+                    .map((call) => (
+                      <div key={call.id} className="mt-2 flex flex-wrap items-center gap-2 rounded-lg bg-saffron-tint p-2 text-sm">
+                        <span className="font-semibold text-ink">
+                          Call request: {call.kind} · {call.date} {call.window} ({call.timezone}) · {call.language}
+                          {call.note ? ` · “${call.note}”` : ""}
+                        </span>
+                        <form action={answerAppointmentAction} className="flex flex-wrap items-center gap-2">
+                          <input type="hidden" name="id" value={item._id} />
+                          <input type="hidden" name="appointment" value={call.id} />
+                          <input type="hidden" name="decision" value="confirmed" />
+                          <input type="hidden" name="back" value={back} />
+                          <input
+                            name="slot"
+                            required
+                            aria-label="Agreed time and how to join"
+                            placeholder="Agreed time & link, e.g. 21 Oct 10:30 Tashkent, Zoom"
+                            className={`${adminField} !w-72 !py-1.5 text-sm`}
+                          />
+                          <button type="submit" className="btn btn-primary !py-1.5 text-sm">
+                            Confirm
+                          </button>
+                        </form>
+                        <form action={answerAppointmentAction}>
+                          <input type="hidden" name="id" value={item._id} />
+                          <input type="hidden" name="appointment" value={call.id} />
+                          <input type="hidden" name="decision" value="declined" />
+                          <input type="hidden" name="back" value={back} />
+                          <button type="submit" className="btn btn-secondary !py-1.5 text-sm">
+                            Decline
+                          </button>
+                        </form>
+                      </div>
+                    ))}
                   {item.planEdits?.length ? (
                     <details className="mt-2 text-sm">
                       <summary className="cursor-pointer font-semibold text-ink">
