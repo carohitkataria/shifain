@@ -2,15 +2,23 @@ import "server-only";
 import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
 import type { IntakeField } from "./conversation-intake";
-import { noteFailure, available, withGeminiModel } from "./ai/providers";
+import { noteFailure, available, withGeminiModel, geminiBaseUrl, noteSuccess, noteError } from "./ai/providers";
 import { COMMAND_NAMES, type CommandName } from "./voice/intents";
 import { getAssistantConfig } from "./assistant/config";
 import { knowledgeForPrompt } from "./assistant/knowledge";
 
 export { pauseDuration, rankGeminiModels } from "./ai/providers";
 
-/** Overridable without a deploy: set ANTHROPIC_MODEL on the host. */
-const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-5-5";
+/**
+ * Chat replies are short, so the fastest and cheapest Claude model is plenty.
+ * Overridable without a deploy: ANTHROPIC_CHAT_MODEL (or ANTHROPIC_MODEL).
+ */
+const CLAUDE_MODEL = process.env.ANTHROPIC_CHAT_MODEL?.trim() || process.env.ANTHROPIC_MODEL?.trim() || "claude-haiku-5-5";
+
+/** A patient is waiting: past this, the next provider (or the scripted reply) answers. */
+const CLAUDE_TIMEOUT_MS = 12_000;
+/** Replies are at most a few sentences; this caps what a turn can cost. */
+const MAX_REPLY_TOKENS = 450;
 
 /**
  * The assistant's character and limits. What the team adds in the console
@@ -42,6 +50,8 @@ export type IntakeReplyResult = {
   extracted: ExtractedInfo;
   /** Set when the patient asked the app to do something the simple patterns missed. */
   command?: CommandName;
+  /** "scripted" when no AI answered and the fallback did. */
+  source?: "ai" | "scripted";
 };
 
 /** Where the conversation is, which decides what the assistant should be doing. */
@@ -169,14 +179,22 @@ const GEMINI_SCHEMA: ResponseSchema = {
   required: ["reply", "ready", "command"],
 };
 
-async function turnWithGemini(model: string, input: TurnInput, system: string): Promise<TurnResult> {
+async function turnWithGemini(model: string, input: TurnInput, system: string, timeoutMs: number): Promise<TurnResult> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const result = await genAI
-    .getGenerativeModel({
-      model,
-      systemInstruction: system,
-      generationConfig: { responseMimeType: "application/json", responseSchema: GEMINI_SCHEMA, temperature: 0.4 },
-    })
+    .getGenerativeModel(
+      {
+        model,
+        systemInstruction: system,
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: GEMINI_SCHEMA,
+          temperature: 0.4,
+          maxOutputTokens: MAX_REPLY_TOKENS,
+        },
+      },
+      { timeout: timeoutMs, baseUrl: geminiBaseUrl() },
+    )
     .generateContent({
       contents: normaliseHistory(input.history, input.message).map((turn) => ({
         role: turn.role === "assistant" ? "model" : "user",
@@ -205,14 +223,17 @@ const CLAUDE_RESPOND: Anthropic.Messages.Tool = {
 
 async function turnWithClaude(input: TurnInput, system: string): Promise<TurnResult> {
   const client = new Anthropic();
-  const response = await client.messages.create({
+  const response = await client.messages.create(
+    {
     model: CLAUDE_MODEL,
-    max_tokens: 700,
+    max_tokens: MAX_REPLY_TOKENS,
     system,
     messages: normaliseHistory(input.history, input.message).map((turn) => ({ role: turn.role, content: turn.content })),
     tools: [CLAUDE_RESPOND],
     tool_choice: { type: "tool", name: "respond" },
-  });
+    },
+    { timeout: CLAUDE_TIMEOUT_MS, maxRetries: 0 },
+  );
   const block = response.content.find((item) => item.type === "tool_use");
   if (!block || block.type !== "tool_use") throw new Error("Claude returned no reply");
   return readResult(block.input as Record<string, unknown>, input.commands);
@@ -230,7 +251,7 @@ export async function assistantTurn(input: TurnInput): Promise<TurnResult | null
   const system = await systemFor(input);
   if (available("gemini")) {
     try {
-      const result = await withGeminiModel((model) => turnWithGemini(model, input, system));
+      const result = await withGeminiModel((model, timeoutMs) => turnWithGemini(model, input, system, timeoutMs), { tier: "chat" });
       if (result.reply || result.command) return result;
     } catch (err) {
       console.error("[shifain] Gemini turn failed:", err);
@@ -240,9 +261,11 @@ export async function assistantTurn(input: TurnInput): Promise<TurnResult | null
   if (available("claude")) {
     try {
       const result = await turnWithClaude(input, system);
+      noteSuccess("claude", CLAUDE_MODEL);
       if (result.reply || result.command) return result;
     } catch (err) {
       console.error("[shifain] Claude turn failed:", err);
+      noteError("claude", CLAUDE_MODEL, err);
       noteFailure("claude", err);
     }
   }
@@ -270,12 +293,12 @@ export async function generateIntakeReply(
     stage: { kind: "medical", fields: currentFields },
     commands: options.commands === true,
   });
-  if (result) return result;
+  if (result) return { ...result, source: "ai" };
   console.error("[shifain] no AI provider answered; using the scripted intake");
-  return scriptedIntake(userMessage, currentFields);
+  return { ...scriptedIntake(userMessage, currentFields), source: "scripted" };
 }
 
-export type ChatReplyResult = { reply: string; command?: CommandName };
+export type ChatReplyResult = { reply: string; command?: CommandName; source?: "ai" | "scripted" };
 
 const COORDINATOR_FALLBACK =
   "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";
@@ -294,7 +317,9 @@ export async function generateChatReply(
     stage: { kind: "followup", caseSummary: options.caseSummary ?? "The patient already has a case open with ShifaIn." },
     commands: options.commands === true,
   });
-  return result ? { reply: result.reply, command: result.command } : { reply: COORDINATOR_FALLBACK };
+  return result
+    ? { reply: result.reply, command: result.command, source: "ai" }
+    : { reply: COORDINATOR_FALLBACK, source: "scripted" };
 }
 
 export async function generateReply(

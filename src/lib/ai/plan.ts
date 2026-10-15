@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
 import type { Grounding } from "../catalogue";
 import { normalisePlan, schemaFor, toGeminiSchema, type Plan } from "./plan-schema";
-import { available, noteFailure, withGeminiModel } from "./providers";
+import { available, geminiBaseUrl, noteFailure, withGeminiModel } from "./providers";
 import { INTAKE_QUESTIONS, type IntakeAnswers } from "./plan-questions";
 
 export { PLAN_PACKAGE_OPTIONS, type Plan, type PlanPackageOption } from "./plan-schema";
@@ -168,6 +168,7 @@ async function planWithGemini(
   input: PlanInput,
   usable: PlanReport[],
   grounding: Grounding,
+  timeoutMs: number,
 ): Promise<unknown> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const schema = schemaFor(grounding);
@@ -190,7 +191,7 @@ async function planWithGemini(
         temperature: 0.2,
         maxOutputTokens: 16384,
       },
-    });
+    }, { timeout: timeoutMs, baseUrl: geminiBaseUrl() });
     const result = await generator.generateContent({ contents: [{ role: "user", parts }] });
     const blocked = result.response.promptFeedback?.blockReason;
     if (blocked) throw new PlanUnavailableError(`Gemini declined the request (${blocked}).`);
@@ -264,7 +265,10 @@ export async function generatePlan(input: PlanInput, grounding: Grounding): Prom
 
   if (available("gemini")) {
     try {
-      const raw = await withGeminiModel((model) => planWithGemini(model, input, usable, grounding), GEMINI_PLAN_MODEL);
+      const raw = await withGeminiModel(
+        (model, timeoutMs) => planWithGemini(model, input, usable, grounding, timeoutMs),
+        { preferred: GEMINI_PLAN_MODEL, tier: "plan" },
+      );
       return normalisePlan(raw, grounding, usable.length);
     } catch (error) {
       console.error("[shifain] Gemini planning failed:", error);

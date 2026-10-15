@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "db:seed": "node scripts/db/seed.mjs",
     "db:partner": "node scripts/db/partner-user.mjs",
-    "test": "node --import ./scripts/test/resolve-ts.mjs --experimental-strip-types --no-warnings scripts/test/plan-schema.test.mts && node --import ./scripts/test/resolve-ts.mjs --experimental-strip-types --no-warnings scripts/test/voice-intents.test.mts && node --import ./scripts/test/resolve-ts.mjs --experimental-strip-types --no-warnings scripts/test/assistant.test.mts"
+    "test": "node --conditions=react-server --import ./scripts/test/resolve-ts.mjs --experimental-strip-types --no-warnings scripts/test/plan-schema.test.mts && node --conditions=react-server --import ./scripts/test/resolve-ts.mjs --experimental-strip-types --no-warnings scripts/test/voice-intents.test.mts && node --conditions=react-server --import ./scripts/test/resolve-ts.mjs --experimental-strip-types --no-warnings scripts/test/assistant.test.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.125.0",

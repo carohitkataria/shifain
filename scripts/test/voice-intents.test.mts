@@ -78,6 +78,21 @@ const expect: [string, string | null][] = [
   ["Do I need a visa?", null],
   ["У меня болит колено уже два года", null],
   ["Hello", null],
+  // the welcome's quick replies
+  ["Get a free treatment plan", "start_case"],
+  ["How much does treatment cost?", "cost"],
+  ["Check my case", "case_status"],
+  ["Talk to a person", "human"],
+  ["Start a new case", "start_case"],
+  ["Case status", "case_status"],
+  ["Нужен план лечения", "start_case"],
+  ["Статус моей заявки", "case_status"],
+  ["Связаться с человеком", "human"],
+  ["Открыть новую заявку", "start_case"],
+  ["Bepul reja kerak", "start_case"],
+  ["Arizam holati", "case_status"],
+  ["Odam bilan gaplashish", "human"],
+  ["Yangi ariza och", "start_case"],
   ["What is the best hospital for me?", null], // a question for the assistant, not a page to open
   ["My doctor told me I need surgery on my spine", null],
 ];

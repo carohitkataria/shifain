@@ -100,19 +100,33 @@ export async function findWebIntake(sessionId: string): Promise<WebIntake | null
   return db.collection<WebIntake>(COLLECTION).findOne({ _id: sessionId });
 }
 
-/** A fresh conversation for this browser, keeping nothing of the last. */
-export async function resetWebIntake(sessionId: string): Promise<WebIntake> {
+/**
+ * A fresh case for this browser. With `carryOver` (a patient starting a
+ * second case) their contact details, language and the chat so far stay, so
+ * they are not asked their name again and the coordinator still sees the
+ * whole conversation.
+ */
+export async function resetWebIntake(sessionId: string, carryOver?: WebIntake): Promise<WebIntake> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const fields = emptyFields();
+  if (carryOver) {
+    fields.name = carryOver.fields.name;
+    fields.phone = carryOver.fields.phone;
+    fields.country = carryOver.fields.country;
+  }
   const record: WebIntake = {
     _id: sessionId,
     sessionId,
-    fields: emptyFields(),
+    fields,
     state: "medical_chat",
     complete: false,
     caseReference: null,
-    messages: [],
+    messages: carryOver?.messages.slice(-40) ?? [],
     uploads: [],
+    ...(carryOver
+      ? { email: carryOver.email ?? null, emailSkipped: carryOver.emailSkipped, locale: carryOver.locale, language: carryOver.language }
+      : {}),
     createdAt: now,
     updatedAt: now,
   };

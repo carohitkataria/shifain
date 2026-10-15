@@ -343,11 +343,11 @@ const RULES: Rule[] = [
   { name: "my_cases", test: has(/\b(my|all my|list my|show my) (cases|requests|enquiries|applications)\b|мои (заявки|дела|обращения)|arizalarim/) },
   {
     name: "case_status",
-    test: has(/\bstatus\b|\b(where|how) is my (case|plan|request|application|enquiry)\b|\bany (news|update)s?\b|\bwhat'?s (happening|the latest) with my\b|\b(is|has) my (plan|case) (ready|done|finished)\b|статус|что с (моей|моим) (заявк|дел|план)|как (продвигается|дела с)|готов ли (мой )?план|holat|arizam qanday|reja tayyor/),
+    test: has(/\bstatus\b|\bcheck (on )?my (case|plan|request|application)\b|\b(where|how) is my (case|plan|request|application|enquiry)\b|\bany (news|update)s?\b|\bwhat'?s (happening|the latest) with my\b|\b(is|has) my (plan|case) (ready|done|finished)\b|статус|что с (моей|моим) (заявк|дел|план)|как (продвигается|дела с)|готов ли (мой )?план|holat|arizam qanday|reja tayyor/),
   },
   {
     name: "start_case",
-    test: has(/\b(create|open|make|set ?up|start|register|begin)\b (an |a |my |new )*(account|profile|case|enquiry|request)\b|\bsign ?up\b|\bregister me\b|\b(make|create|get|build|prepare|want|need|start)\b (me )?(a |an |my |new |free )*(treatment )?(plan|estimate|quote)\b|(созда|завест|откр)\S* (аккаунт|профиль|кабинет|заявк)|зарегистр|(состав|сдела|получ)\S* план|нужен план|(hisob|profil|ariza) (och|yarat)|ro'yxatdan o't|reja (tuz|kerak|oling|olish)/),
+    test: has(/\b(create|open|make|set ?up|start|register|begin)\b (an |a |my |new )*(account|profile|case|enquiry|request)\b|\bsign ?up\b|\bregister me\b|\b(make|create|get|build|prepare|want|need|start)\b (me )?(a |an |my |new |free )*(treatment )?(plan|estimate|quote)\b|(созда|завест|откр)\S* (нов\S* )?(аккаунт|профиль|кабинет|заявк)|зарегистр|(состав|сдела|получ)\S* план|нужен план|(hisob|profil|ariza) (och|yarat)|ro'yxatdan o't|reja (tuz|kerak|oling|olish)/),
   },
   {
     name: "cost",
