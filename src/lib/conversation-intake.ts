@@ -18,6 +18,8 @@ export type IntakeField = {
   duration: string | null;
   previousTreatment: string | null;
   age: string | null;
+  /** Where they would like treatment (a city or hospital), if they said. */
+  destination?: string | null;
 };
 
 export type IntakeState = "medical_chat" | "collecting_profile" | "complete";

@@ -48,3 +48,26 @@ export function matchTreatment<T extends NamedTreatment>(phrase: string, treatme
   return best?.item ?? null;
 }
 
+
+/** "I want / need / am looking for …" — asking for something, not asking about it. */
+const WANTS = /\b(want|need|looking for|interested in|have to|get|do|make|instead|switch|change)\b|хочу|нужн|интересует|вместо|kerak|xohlayman|istayman|o'rniga/i;
+
+/**
+ * The catalogue treatment the patient is now asking for, when it differs
+ * from the one they asked for before ("actually I want a knee replacement").
+ * Null when they name none, the same one, or are only asking a question.
+ */
+export function newTreatmentRequest<T extends NamedTreatment>(text: string, current: string | null | undefined, treatments: T[]): T | null {
+  if (/\?\s*$/.test(text) || !WANTS.test(text)) return null;
+  const named = matchTreatment(text, treatments);
+  if (!named) return null;
+  const before = current ? (treatments.find((item) => item._id === current) ?? matchTreatment(current, treatments)) : null;
+  return before?._id === named._id ? null : named;
+}
+
+/** Two descriptions of a treatment that clearly name different catalogue treatments. */
+export function differentTreatments<T extends NamedTreatment>(a: string, b: string, treatments: T[]): boolean {
+  const first = matchTreatment(a, treatments);
+  const second = matchTreatment(b, treatments);
+  return Boolean(first && second && first._id !== second._id);
+}

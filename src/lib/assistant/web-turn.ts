@@ -22,8 +22,8 @@ import { STATUS_WORDS, sayLang, type SayLang } from "../voice/command-copy";
 import { getAssistantConfig } from "./config";
 import { countAnswer, rememberQuestion, type AnswerPath } from "./stats";
 import { listTreatments } from "../catalogue";
-import { matchTreatment } from "../voice/treatments";
-import { markHumanRequested } from "../web-intake";
+import { differentTreatments, newTreatmentRequest } from "../voice/treatments";
+import { markHumanRequested, switchWebIntakeTreatment } from "../web-intake";
 import { instantAnswer } from "./knowledge";
 import {
   guessLanguage,
@@ -187,6 +187,14 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
   const command = await commandTurn(ctx, cities);
   if (command) return done(await afterCommand(input, command, lang));
 
+  // The patient changed their mind ("actually I need a knee replacement"): the
+  // new treatment replaces the old before anything else is asked.
+  const treatments = await listTreatments().catch(() => []);
+  if (!intake.complete && intake.fields.treatment) {
+    const switched = newTreatmentRequest(text, intake.fields.treatment, treatments);
+    if (switched) intake = await switchWebIntakeTreatment(sessionId, switched.name.en ?? switched._id);
+  }
+
   // 3. Contact details, once the medical picture is clear.
   if (intake.state === "collecting_profile" && !intake.complete) {
     const step = nextProfileStep(profileOf(intake));
@@ -226,11 +234,10 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
 
   // A returning patient naming a different treatment ("I want a knee replacement")
   // is offered a new case rather than a reply about the old one.
-  if (intake.complete && !/\?\s*$/.test(text)) {
-    const treatments = await listTreatments().catch(() => []);
-    const named = matchTreatment(text, treatments);
-    const current = (await getCase(intake.caseReference ?? "").catch(() => null))?.plan?.recommendedTreatmentCode;
-    if (named && named._id !== current && /\b(want|need|looking for|interested|have to|get|do|make)\b|хочу|нужн|нужна|интересует|kerak|xohlayman|istayman/i.test(text)) {
+  if (intake.complete) {
+    const record = await getCase(intake.caseReference ?? "").catch(() => null);
+    const current = record?.plan?.recommendedTreatmentCode ?? record?.statedNeed;
+    if (newTreatmentRequest(text, current, treatments)) {
       const outcome = await runCommand(ctx, { name: "start_case", slots: { rest: text } });
       return done(await afterCommand(input, outcome, lang));
     }
@@ -268,6 +275,15 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
   }
 
   const { readyToSubmit, email, ...fields } = turn.extracted;
+  // A different treatment named mid-conversation replaces the old one, and
+  // the old symptoms are not carried over to it.
+  const before = intake.fields;
+  if (fields.treatment && before.treatment && differentTreatments(fields.treatment, before.treatment, treatments)) {
+    await switchWebIntakeTreatment(sessionId, fields.treatment);
+    if (fields.condition === before.condition) fields.condition = undefined;
+    if (fields.duration === before.duration) fields.duration = undefined;
+    if (fields.previousTreatment === before.previousTreatment) fields.previousTreatment = undefined;
+  }
   // Details volunteered early ("I'm Anna, +998…") are kept, after the same checks as when asked.
   const volunteered = {
     name: fields.name ? readProfileAnswer("name", fields.name).value : undefined,
@@ -280,6 +296,7 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
     duration: fields.duration,
     previousTreatment: fields.previousTreatment,
     age: fields.age,
+    destination: fields.destination,
     ...volunteered,
   });
   if (email && readProfileAnswer("email", email).value) await setWebIntakeProfileExtras(sessionId, { email });
@@ -383,12 +400,24 @@ async function askNextOrOpen(input: TurnInput, intake: WebIntake, lang: SayLang,
   };
 }
 
+/** What the AI may say about the case: only what the backend holds, never a guess. */
 async function caseSummary(intake: WebIntake): Promise<string> {
   const record = intake.caseReference ? await getCase(intake.caseReference).catch(() => null) : null;
-  if (!record) return "The patient already has a case open with ShifaIn.";
+  if (!record) {
+    return "The patient has a case with ShifaIn, but its details could not be loaded just now. Do not state a status, plan or reference; if they ask, say their coordinator will confirm.";
+  }
+  const plan =
+    record.status === "planning"
+      ? "Their plan is still being prepared — it is not ready."
+      : record.plan
+        ? "A draft plan was prepared automatically; a coordinator has not confirmed it with a hospital yet."
+        : "There is no plan yet — do not say one is ready.";
   return [
-    `Their case (reference ending ${record._id.slice(-4)}) is open. Status: ${STATUS_WORDS[record.status]?.en ?? record.status}.`,
-    record.statedNeed ? `They asked about: ${record.statedNeed}.` : "",
+    `Their case reference ends ${record._id.slice(-4)}. Status from the system: ${STATUS_WORDS[record.status]?.en ?? record.status}.`,
+    record.status === "confirmed" ? "The hospital has confirmed." : plan,
+    record.statedNeed
+      ? `The case is about: ${record.statedNeed}. If their latest message is about a different treatment, follow that instead of assuming this one.`
+      : "",
     record.plan?.understanding ? `Plan summary: ${record.plan.understanding}` : "",
     "A coordinator contacts them within 24 hours. For changes to the plan or account, set the matching command.",
   ]

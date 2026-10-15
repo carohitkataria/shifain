@@ -173,6 +173,29 @@ export async function updateWebIntakeFields(
   return (await db.collection<WebIntake>(COLLECTION).findOne({ _id: sessionId }))!;
 }
 
+/**
+ * The patient now wants a different treatment: the new one replaces the old,
+ * and what they said about the old one is dropped so the plan is not built
+ * on the wrong symptoms. Contact details already given stay.
+ */
+export async function switchWebIntakeTreatment(sessionId: string, treatment: string): Promise<WebIntake> {
+  const db = await getDb();
+  await db.collection<WebIntake>(COLLECTION).updateOne(
+    { _id: sessionId },
+    {
+      $set: {
+        "fields.treatment": treatment,
+        "fields.condition": null,
+        "fields.duration": null,
+        "fields.previousTreatment": null,
+        state: "medical_chat" as IntakeState,
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  );
+  return (await db.collection<WebIntake>(COLLECTION).findOne({ _id: sessionId }))!;
+}
+
 export async function pushWebIntakeMessage(
   sessionId: string,
   role: WebMessage["role"],
@@ -237,6 +260,7 @@ export async function createCaseFromWebIntake(
     fields.duration ? `Duration: ${fields.duration}` : null,
     fields.previousTreatment ? `Previous treatment: ${fields.previousTreatment}` : null,
     fields.age ? `Patient age: ${fields.age}` : null,
+    fields.destination ? `Preferred destination: ${fields.destination}` : null,
   ]
     .filter(Boolean)
     .join("\n");
