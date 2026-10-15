@@ -24,8 +24,17 @@ export type WebIntake = {
   state: IntakeState;
   complete: boolean;
   caseReference: string | null;
-  messages: { role: "user" | "assistant"; content: string; ts: string }[];
+  messages: WebMessage[];
   uploads: IntakeUploadRef[];
+  /** Asked for after the phone number; optional, so the patient can sign in by email later. */
+  email?: string | null;
+  emailSkipped?: boolean;
+  /** The page language the conversation started in. */
+  locale?: string;
+  /** The language the patient writes or speaks in, once clear. */
+  language?: string;
+  /** A coordinator has taken over: the AI stays quiet until they hand it back. */
+  handoff?: boolean;
   /** A command waiting on an answer — "what's your email?" — or null. */
   command?: PendingCommand | null;
   /** When the patient asked for a person; a coordinator picks it up from Messages. */
@@ -33,6 +42,9 @@ export type WebIntake = {
   createdAt: string;
   updatedAt: string;
 };
+
+/** "coordinator" is a person on the ShifaIn team replying from the console. */
+export type WebMessage = { role: "user" | "assistant" | "coordinator"; content: string; ts: string };
 
 export type PendingCommand = {
   name: string;
@@ -82,6 +94,12 @@ export async function getOrCreateWebIntake(sessionId: string): Promise<WebIntake
   return resetWebIntake(sessionId);
 }
 
+/** The conversation for this browser, without creating one. */
+export async function findWebIntake(sessionId: string): Promise<WebIntake | null> {
+  const db = await getDb();
+  return db.collection<WebIntake>(COLLECTION).findOne({ _id: sessionId });
+}
+
 /** A fresh conversation for this browser, keeping nothing of the last. */
 export async function resetWebIntake(sessionId: string): Promise<WebIntake> {
   const db = await getDb();
@@ -107,6 +125,27 @@ export async function resetWebIntake(sessionId: string): Promise<WebIntake> {
   return record;
 }
 
+/** The contact details a case needs, gathered after the medical picture. */
+export function profileOf(intake: WebIntake) {
+  return {
+    name: intake.fields.name,
+    phone: intake.fields.phone,
+    country: intake.fields.country,
+    email: intake.email ?? null,
+    emailSkipped: intake.emailSkipped ?? false,
+  };
+}
+
+export async function setWebIntakeProfileExtras(
+  sessionId: string,
+  extras: { email?: string | null; emailSkipped?: boolean; locale?: string; language?: string; handoff?: boolean },
+): Promise<void> {
+  const db = await getDb();
+  await db
+    .collection<WebIntake>(COLLECTION)
+    .updateOne({ _id: sessionId }, { $set: { ...extras, updatedAt: new Date().toISOString() } });
+}
+
 export async function updateWebIntakeFields(
   sessionId: string,
   fields: Partial<IntakeField>,
@@ -122,7 +161,7 @@ export async function updateWebIntakeFields(
 
 export async function pushWebIntakeMessage(
   sessionId: string,
-  role: "user" | "assistant",
+  role: WebMessage["role"],
   content: string,
 ): Promise<void> {
   const db = await getDb();
@@ -209,9 +248,9 @@ export async function createCaseFromWebIntake(
     locale,
     patient: {
       name: fields.name || "Website patient",
-      phone: fields.phone || "",
+      phone: fields.phone ? `+${fields.phone.replace(/\D/g, "")}` : "",
       country: fields.country || "Unknown",
-      email: null,
+      email: intake.email ?? null,
     },
     intake: {
       route: uploads.length > 0 ? "reports" : "description",
@@ -261,4 +300,60 @@ export async function markHumanRequested(sessionId: string): Promise<void> {
   const db = await getDb();
   const now = new Date().toISOString();
   await db.collection<WebIntake>(COLLECTION).updateOne({ _id: sessionId }, { $set: { humanRequestedAt: now, updatedAt: now } });
+}
+
+// ---------------------------------------------------------------- console inbox
+
+export type WebChatSummary = {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  country: string | null;
+  treatment: string | null;
+  caseReference: string | null;
+  state: IntakeState;
+  handoff: boolean;
+  humanRequestedAt: string | null;
+  lastMessage: WebMessage | null;
+  messageCount: number;
+  updatedAt: string;
+};
+
+/** Website conversations for the console, newest first. Test chats from the console are left out. */
+export async function listWebChats(limit = 60): Promise<WebChatSummary[]> {
+  const db = await getDb();
+  const rows = await db
+    .collection<WebIntake>(COLLECTION)
+    .find({ _id: { $not: /^admin-test-/ }, "messages.0": { $exists: true } } as never)
+    .sort({ updatedAt: -1 })
+    .limit(limit)
+    .toArray();
+  return rows.map((row) => ({
+    id: row._id,
+    name: row.fields.name,
+    phone: row.fields.phone,
+    country: row.fields.country,
+    treatment: row.fields.treatment,
+    caseReference: row.caseReference,
+    state: row.state,
+    handoff: Boolean(row.handoff),
+    humanRequestedAt: row.humanRequestedAt ?? null,
+    lastMessage: row.messages[row.messages.length - 1] ?? null,
+    messageCount: row.messages.length,
+    updatedAt: row.updatedAt,
+  }));
+}
+
+/** A coordinator writes into a website chat; the assistant stays quiet until handed back. */
+export async function coordinatorReply(sessionId: string, text: string): Promise<boolean> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+  const result = await db.collection<WebIntake>(COLLECTION).updateOne(
+    { _id: sessionId },
+    {
+      $push: { messages: { role: "coordinator", content: text.slice(0, 4000), ts: now } },
+      $set: { handoff: true, updatedAt: now },
+    },
+  );
+  return result.matchedCount > 0;
 }

@@ -39,6 +39,8 @@ type Query = {
   to?: string;
   sort?: string;
   saved?: string;
+  /** A case reference, e.g. from a chat in Messages. */
+  q?: string;
 };
 
 export default async function CasesPage({ searchParams }: { searchParams: Promise<Query> }) {
@@ -52,6 +54,8 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
   const sort = sp.sort === "oldest" ? 1 : -1;
 
   const filter: Filter<PatientCase> = {};
+  const reference = (sp.q ?? "").trim().toUpperCase();
+  if (/^SH-[A-Z0-9-]{4,24}$/.test(reference)) filter._id = reference;
   if (status) filter.status = status;
   if (country) filter["patient.country"] = country;
   if (from || to) {

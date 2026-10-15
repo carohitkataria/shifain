@@ -55,6 +55,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/referrals", label: "Referrals", icon: "route" },
       { href: "/admin/cases", label: "Inquiries", icon: "folder" },
       { href: "/admin/messages", label: "Messages", icon: "chat" },
+      { href: "/admin/assistant", label: "AI assistant", icon: "help" },
       { href: "/admin/telegram", label: "Telegram", icon: "chat" },
     ],
   },

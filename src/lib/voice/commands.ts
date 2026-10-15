@@ -28,6 +28,8 @@ import { notifyOps } from "../mailer";
 import type { Locale } from "../i18n";
 import {
   markHumanRequested,
+  profileOf,
+  setWebIntakeState,
   resetWebIntake,
   setPendingCommand,
   updateWebIntakeFields,
@@ -54,6 +56,7 @@ import {
 import { PAGE_WORDS, SERVICE_WORDS, STATUS_WORDS, say, type SayKey, type SayLang } from "./command-copy";
 import { voiceForGender } from "./voices";
 import { matchTreatment } from "./treatments";
+import { nextProfileStep, profileQuestion, profileSuggestions } from "../assistant/profile";
 
 /** Something the browser does after the reply: open a page, switch language, change voice. */
 export type ClientAction =
@@ -71,6 +74,10 @@ export type CommandOutcome = {
   /** The chat goes on as an intake, e.g. after "make me a plan". */
   state?: string;
   caseReference?: string;
+  /** Quick replies to show under the message. */
+  suggestions?: string[];
+  /** Everything a case needs is known: the caller opens it now. */
+  openCase?: boolean;
 };
 
 type Ctx = {
@@ -198,7 +205,8 @@ export async function runCommand(ctx: Ctx, command: ParsedCommand): Promise<Comm
     case "human": {
       await markHumanRequested(ctx.sessionId);
       const settings = await getSettings();
-      await notifyOps(settings.opsEmail, "A patient asked for a coordinator", [
+      // The console's test chat never pages a real coordinator.
+      if (!ctx.sessionId.startsWith("admin-test-")) await notifyOps(settings.opsEmail, "A patient asked for a coordinator", [
         "Someone in the website chat asked to talk to a person.",
         ctx.intake.caseReference ? `Their case: ${ctx.intake.caseReference}` : "They have no case yet.",
         "Nothing clinical is in this email.",
@@ -500,14 +508,36 @@ async function mayAct(ctx: Ctx, reference: string): Promise<boolean> {
   return cases.some((item) => item._id === reference);
 }
 
+/**
+ * "Create my account" / "make me a plan": picks up from what the patient has
+ * already said in this conversation rather than starting over. With the
+ * medical picture clear it goes straight to the few contact details.
+ */
 async function beginCase(ctx: Ctx, phrase: string): Promise<CommandOutcome> {
   await setPendingCommand(ctx.sessionId, null);
   const treatments = await listTreatments().catch(() => []);
   const match = matchTreatment(restOf(phrase), treatments);
-  if (match) {
+  if (match && !ctx.intake.fields.treatment) {
     await updateWebIntakeFields(ctx.sessionId, { treatment: treatmentLabel(match, "en") });
+  }
+  const treatment = ctx.intake.fields.treatment ?? (match ? treatmentLabel(match, "en") : null);
+
+  if (treatment && ctx.intake.fields.condition) {
+    await setWebIntakeState(ctx.sessionId, "collecting_profile");
+    const step = nextProfileStep(profileOf(ctx.intake));
+    if (step) {
+      return {
+        reply: `${say("startHaveEnough", ctx.lang)} ${profileQuestion(step, ctx.lang)}`,
+        state: "collecting_profile",
+        suggestions: profileSuggestions(step, ctx.lang),
+      };
+    }
+    return { reply: say("startHaveEnough", ctx.lang), state: "collecting_profile", openCase: true };
+  }
+  if (match) {
     return { reply: say("startWithTreatment", ctx.lang, { treatment: treatmentLabel(match, ctx.lang) }), state: "medical_chat" };
   }
+  if (ctx.intake.fields.condition) return { reply: say("startNeedTreatment", ctx.lang), state: "medical_chat" };
   return { reply: say("startAsk", ctx.lang), state: "medical_chat" };
 }
 
