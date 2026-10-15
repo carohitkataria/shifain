@@ -79,7 +79,8 @@ export type PackageLine = { id: string; icon: string; title: L; note: L; amount:
 export type Hospital = { id: string; name: string; city: string; tags: string[]; accreditations: string[]; beds: string; procedures: string; rating: string };
 export type Doctor = { id: string; initials: string; name: string; speciality: L; affiliation: string; experience: string; highlight: L; fee: string };
 export type ComparisonRow = { id: string; label: L; values: string[] };
-export type Story = { id: string; initials: string; name: string; from: L; treatment: L; quote: L };
+/** `verified`: the patient agreed to share it. Only verified stories are shown on the site. */
+export type Story = { id: string; initials: string; name: string; from: L; treatment: L; quote: L; verified?: boolean };
 export type TrackerStep = { id: string; label: L; state: "done" | "current" | "todo" };
 export type FaqItem = { id: string; question: L; answer: L };
 
@@ -108,6 +109,10 @@ export type SiteContent = {
     packages: L;
     stories: L;
     patientLogin: L;
+    ourProcess: L;
+    whyIndia: L;
+    aboutUs: L;
+    loginSignup: L;
   };
 
   sections: Record<SectionId, SectionState>;
@@ -120,6 +125,19 @@ export type SiteContent = {
     primaryCta: L;
     secondaryCta: L;
     badges: { id: string; label: L }[];
+    /** The big "Chat with Shifain" card. */
+    chatTitle: L;
+    chatBody: L;
+    orLabel: L;
+    voiceCta: L;
+    voiceBadge: L;
+    loginCta: L;
+    /** The card on the hero picture. */
+    cardTitle: L;
+    cardBody: L;
+    imageAlt: L;
+    /** The band under the hero. */
+    values: { id: string; label: L }[];
     form: {
       title: L;
       nameLabel: L;

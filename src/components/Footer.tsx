@@ -8,7 +8,7 @@ import type { Locale } from "@/lib/i18n";
 /** Dark footer with the tricolour rule above it, as in the design. */
 export function Footer({ content, locale }: { content: SiteContent; locale: Locale }) {
   return (
-    <footer>
+    <footer id="about" className="scroll-mt-24">
       <div className="tricolour-rule" />
       <div className="bg-ink">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">

@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { Icon } from "../Icon";
+import { listCities, listSpecialties, listTreatments, publishedDoctors, publishedHospitals } from "@/lib/catalogue";
+import { PORTAL_LANGUAGES } from "@/lib/patient-portal";
 import { Section, SectionHeading } from "./Common";
 import { t } from "@/lib/localize";
 import type { L, SiteContent } from "@/lib/content-types";
@@ -10,22 +13,38 @@ const SEE_ALL_TREATMENTS: L = {
   uz: "Barcha yo'nalishlar",
 };
 
-export function Stats({ content, locale }: { content: SiteContent; locale: Locale }) {
+const STAT_LABELS: Record<"treatments" | "specialties" | "cities" | "languages", L> = {
+  treatments: { en: "treatments in our catalogue", ru: "видов лечения в каталоге", uz: "katalogdagi davolash turlari" },
+  specialties: { en: "medical specialties", ru: "медицинских направлений", uz: "tibbiy yo'nalishlar" },
+  cities: { en: "cities in India", ru: "городов Индии", uz: "Hindiston shaharlari" },
+  languages: { en: "languages in the live translator", ru: "языков в живом переводчике", uz: "jonli tarjimondagi tillar" },
+};
+
+/** Figures counted from the catalogue on every render, so they are never more than the truth. */
+export async function Stats({ locale }: { content: SiteContent; locale: Locale }) {
+  const [treatments, specialties, cities] = await Promise.all([
+    listTreatments().catch(() => []),
+    listSpecialties().catch(() => []),
+    listCities().catch(() => []),
+  ]);
+  const figures = [
+    { id: "treatments", value: treatments.length },
+    { id: "specialties", value: specialties.length },
+    { id: "cities", value: cities.length },
+    { id: "languages", value: PORTAL_LANGUAGES.length },
+  ].filter((item) => item.value > 0) as { id: keyof typeof STAT_LABELS; value: number }[];
+  if (figures.length === 0) return null;
+
   return (
-    <section>
-      <div className="dark-band">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-8 px-4 py-10 sm:px-6 lg:grid-cols-4">
-          {content.stats.items.map((item) => (
-            <div key={item.id} className="text-center">
-              <p className="text-[clamp(1.6rem,1.2rem+1.2vw,2.25rem)] font-extrabold tracking-tight text-white">
-                {item.value}
-              </p>
-              <p className="mt-1 text-sm font-semibold text-white/70">{t(item.label, locale)}</p>
-            </div>
-          ))}
-        </div>
+    <section className="bg-navy">
+      <div className="mx-auto grid max-w-[88rem] grid-cols-2 gap-x-6 gap-y-10 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:px-12">
+        {figures.map((item) => (
+          <div key={item.id}>
+            <p className="text-[clamp(2.4rem,1.6rem+2.4vw,4rem)] font-extrabold leading-none tracking-[-0.03em] text-white">{item.value}</p>
+            <p className="mt-2 max-w-[14rem] text-base font-medium leading-snug text-white/75">{t(STAT_LABELS[item.id], locale)}</p>
+          </div>
+        ))}
       </div>
-      <div className="tricolour-rule" />
     </section>
   );
 }
@@ -48,11 +67,8 @@ export function Specialties({ content, locale }: { content: SiteContent; locale:
               href={`/${locale}/treatments/${item.slug}`}
               className="card link-card group flex h-full flex-col p-6 focus:outline-none"
             >
-              <span
-                aria-hidden="true"
-                className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-muted text-2xl"
-              >
-                {item.icon}
+              <span aria-hidden="true" className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-soft text-violet">
+                <Icon name={item.icon} className="h-6 w-6" />
               </span>
               <h3 className="mt-4 text-xl font-extrabold tracking-tight text-ink">{t(item.title, locale)}</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">{t(item.body, locale)}</p>
@@ -85,11 +101,8 @@ export function Costs({ content, locale }: { content: SiteContent; locale: Local
       <ul className="mt-11 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {costs.items.map((item) => (
           <li key={item.id} className="card flex flex-col p-4 text-center">
-            <span
-              aria-hidden="true"
-              className="flex h-20 items-center justify-center rounded-xl bg-brand-tint text-3xl"
-            >
-              {item.icon}
+            <span aria-hidden="true" className="flex h-20 items-center justify-center rounded-2xl bg-violet-soft text-violet">
+              <Icon name={item.icon} className="h-9 w-9" />
             </span>
             <h3 className="mt-4 font-extrabold leading-tight text-ink">{t(item.title, locale)}</h3>
             <p className="mt-2 text-xs text-ink-muted">{t(costs.fromLabel, locale)}</p>
@@ -107,134 +120,131 @@ export function Costs({ content, locale }: { content: SiteContent; locale: Local
   );
 }
 
-/** Accreditation gradients echo the design's three coloured card headers. */
-const HOSPITAL_HEADERS = [
-  "from-brand to-brand-deep",
-  "from-ink to-[#1d4f7c]",
-  "from-leaf to-[#1e7a33]",
-];
+const NETWORK_COPY: Record<"hospitalsEmpty" | "doctorsEmpty" | "years" | "specialties" | "planCta", L> = {
+  hospitalsEmpty: {
+    en: "We list a hospital here only once it has signed with us. Until then, your plan describes the kind of accredited centre that suits you, and your coordinator names the options with you.",
+    ru: "Мы показываем клинику здесь только после подписания договора с ней. До тех пор план описывает подходящий тип аккредитованного центра, а координатор называет варианты вместе с вами.",
+    uz: "Shifoxonani bu yerda faqat u biz bilan shartnoma imzolagandan keyin ko'rsatamiz. Shungacha reja sizga mos akkreditatsiyalangan markaz turini tasvirlaydi, koordinator esa variantlarni siz bilan birga aytadi.",
+  },
+  doctorsEmpty: {
+    en: "Specialists appear here only when they have agreed to be listed. Your coordinator arranges a consultation with the treating specialist once your plan is ready.",
+    ru: "Специалисты появляются здесь только с их согласия. Когда план будет готов, координатор организует консультацию с лечащим специалистом.",
+    uz: "Mutaxassislar bu yerda faqat roziliklari bilan paydo bo'ladi. Reja tayyor bo'lgach, koordinator davolovchi mutaxassis bilan maslahatni tashkil qiladi.",
+  },
+  years: { en: "years' experience", ru: "лет опыта", uz: "yillik tajriba" },
+  specialties: { en: "specialties", ru: "направлений", uz: "yo'nalish" },
+  planCta: { en: "Get my free plan", ru: "Получить бесплатный план", uz: "Bepul rejani olish" },
+};
 
-export function Hospitals({ content, locale }: { content: SiteContent; locale: Locale }) {
+function NetworkEmpty({ text, href, label }: { text: string; href: string; label: string }) {
+  return (
+    <div className="mt-12 grid gap-6 rounded-3xl bg-white p-7 ring-1 ring-[#e6e3f4] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-10">
+      <p className="max-w-2xl text-lg leading-relaxed text-navy">{text}</p>
+      <Link href={href} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-violet px-6 font-semibold text-white transition hover:bg-brand-deep">
+        {label}
+        <span aria-hidden="true">&rarr;</span>
+      </Link>
+    </div>
+  );
+}
+
+/** Hospitals with a signed tie-up only; the catalogue decides what may be named. */
+export async function Hospitals({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { hospitals } = content;
+  const items = await publishedHospitals({ limit: 6 }).catch(() => []);
   return (
     <Section id="hospitals">
-      <SectionHeading
-        eyebrow={t(hospitals.eyebrow, locale)}
-        title={t(hospitals.title, locale)}
-        body={t(hospitals.body, locale)}
-      />
-
-      <ul className="mt-11 grid gap-5 lg:grid-cols-3">
-        {hospitals.items.map((item, i) => (
-          <li key={item.id} className="card link-card flex flex-col overflow-hidden p-0">
-            <div
-              className={`relative flex h-28 items-end bg-gradient-to-br p-4 ${HOSPITAL_HEADERS[i % HOSPITAL_HEADERS.length]}`}
-            >
-              <span className="flex items-center gap-1.5 text-sm font-semibold text-white">
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                  <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z" />
-                  <circle cx="12" cy="10" r="2.4" />
-                </svg>
-                {item.city}
-              </span>
-              <span className="absolute right-3 top-3 flex gap-1.5">
-                {item.accreditations.map((accreditation) => (
-                  <span key={accreditation} className="chip bg-white/90 text-ink">
-                    {accreditation}
+      <SectionHeading eyebrow={t(hospitals.eyebrow, locale)} title={t(hospitals.title, locale)} body={t(hospitals.body, locale)} />
+      {items.length === 0 ? (
+        <NetworkEmpty text={t(NETWORK_COPY.hospitalsEmpty, locale)} href={`/${locale}#quote-form`} label={t(NETWORK_COPY.planCta, locale)} />
+      ) : (
+        <>
+          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+              <li key={item._id}>
+                <Link
+                  href={`/${locale}/hospitals/${item._id}`}
+                  className="group flex h-full flex-col gap-3 rounded-3xl bg-white p-6 ring-1 ring-[#e6e3f4] transition hover:ring-violet/40"
+                >
+                  <span className="flex items-center gap-2 text-sm font-medium text-slate">
+                    <Icon name="hospital" className="h-4 w-4" />
+                    {item.city}
                   </span>
-                ))}
-              </span>
-            </div>
-
-            <div className="flex flex-1 flex-col p-5">
-              <h3 className="text-lg font-extrabold leading-tight text-ink">{item.name}</h3>
-
-              <ul className="mt-3 flex flex-wrap gap-1.5">
-                {item.tags.map((tag) => (
-                  <li key={tag} className="chip bg-brand-tint text-brand-deep">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-
-              <dl className="mt-5 grid flex-1 grid-cols-3 gap-3 border-t border-line pt-4">
-                <div>
-                  <dt className="text-[0.68rem] font-bold uppercase tracking-wider text-ink-muted">
-                    {t(hospitals.bedsLabel, locale)}
-                  </dt>
-                  <dd className="font-extrabold text-ink">{item.beds}</dd>
-                </div>
-                <div>
-                  <dt className="text-[0.68rem] font-bold uppercase tracking-wider text-ink-muted">
-                    {t(hospitals.proceduresLabel, locale)}
-                  </dt>
-                  <dd className="font-extrabold text-ink">{item.procedures}</dd>
-                </div>
-                <div>
-                  <dt className="text-[0.68rem] font-bold uppercase tracking-wider text-ink-muted">
-                    {t(hospitals.ratingLabel, locale)}
-                  </dt>
-                  <dd className="font-extrabold text-ink">&#9733; {item.rating}</dd>
-                </div>
-              </dl>
-
-              <Link href={`/${locale}/hospitals`} className="btn btn-tint mt-5 w-full !py-2.5 text-sm">
-                {t(hospitals.viewLabel, locale)}
-              </Link>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <div className="mt-9 text-center">
-        <Link href={`/${locale}/hospitals`} className="btn btn-ink">
-          {t(hospitals.allLabel, locale)}
-        </Link>
-      </div>
+                  <span className="text-xl font-bold leading-snug text-navy">{item.name}</span>
+                  <span className="flex flex-wrap gap-2">
+                    {item.accreditations.map((badge) => (
+                      <span key={badge} className="rounded-full bg-violet-soft px-3 py-1 text-sm font-semibold text-violet">
+                        {badge}
+                      </span>
+                    ))}
+                  </span>
+                  <span className="mt-auto flex items-center justify-between pt-2 text-sm text-slate">
+                    {item.specialtyCodes.length} {t(NETWORK_COPY.specialties, locale)}
+                    {item.beds ? ` · ${item.beds} ${t(hospitals.bedsLabel, locale).toLowerCase()}` : ""}
+                    <span aria-hidden="true" className="text-violet transition group-hover:translate-x-0.5">
+                      &rarr;
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-10">
+            <Link href={`/${locale}/hospitals`} className="btn btn-ink">
+              {t(hospitals.allLabel, locale)}
+            </Link>
+          </div>
+        </>
+      )}
     </Section>
   );
 }
 
-export function Doctors({ content, locale }: { content: SiteContent; locale: Locale }) {
+/** Doctors who consented to be listed, at hospitals we work with. Never typed in by hand. */
+export async function Doctors({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { doctors } = content;
+  const items = await publishedDoctors(8).catch(() => []);
   return (
     <Section id="doctors" muted>
-      <SectionHeading
-        eyebrow={t(doctors.eyebrow, locale)}
-        title={t(doctors.title, locale)}
-        body={t(doctors.body, locale)}
-      />
-
-      <ul className="mt-11 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {doctors.items.map((item) => (
-          <li key={item.id} className="card link-card flex flex-col p-6 text-center">
-            <span
-              aria-hidden="true"
-              className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-deep text-lg font-extrabold text-white"
-            >
-              {item.initials}
-            </span>
-            <h3 className="mt-4 font-extrabold leading-tight text-ink">{item.name}</h3>
-            <p className="mt-0.5 text-sm font-bold text-brand-deep">{t(item.speciality, locale)}</p>
-            <p className="mt-2 text-xs text-ink-muted">
-              {item.affiliation} &middot; {item.experience}
-            </p>
-            <p className="mt-1 flex-1 text-xs text-ink-muted">{t(item.highlight, locale)}</p>
-            <a
-              href={`/${locale}/doctors`}
-              className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-leaf-tint px-3 py-2 text-xs font-bold text-leaf transition hover:bg-[#d8f0de]"
-            >
-              {t(doctors.consultLabel, locale)} &middot; {item.fee}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <div className="mt-9 text-center">
-        <Link href={`/${locale}/doctors`} className="btn btn-ink">
-          {t(doctors.allLabel, locale)}
-        </Link>
-      </div>
+      <SectionHeading eyebrow={t(doctors.eyebrow, locale)} title={t(doctors.title, locale)} body={t(doctors.body, locale)} />
+      {items.length === 0 ? (
+        <NetworkEmpty text={t(NETWORK_COPY.doctorsEmpty, locale)} href={`/${locale}#quote-form`} label={t(NETWORK_COPY.planCta, locale)} />
+      ) : (
+        <>
+          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {items.map((doctor) => (
+              <li key={doctor._id}>
+                <Link
+                  href={`/${locale}/doctors/${doctor._id}`}
+                  className="flex h-full flex-col gap-2 rounded-3xl bg-white p-6 ring-1 ring-[#e6e3f4] transition hover:ring-violet/40"
+                >
+                  <span aria-hidden="true" className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-soft font-bold text-violet">
+                    {doctor.name
+                      .replace(/^Dr\.?\s*/i, "")
+                      .split(/\s+/)
+                      .slice(0, 2)
+                      .map((part) => part[0])
+                      .join("")}
+                  </span>
+                  <span className="text-lg font-bold leading-snug text-navy">{doctor.name}</span>
+                  {doctor.specialtyLabelRaw ? <span className="text-[15px] font-medium text-violet">{doctor.specialtyLabelRaw}</span> : null}
+                  {doctor.qualifications ? <span className="text-sm text-slate">{doctor.qualifications}</span> : null}
+                  {doctor.experienceYears ? (
+                    <span className="mt-auto pt-2 text-sm text-slate">
+                      {doctor.experienceYears} {t(NETWORK_COPY.years, locale)}
+                    </span>
+                  ) : null}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-10">
+            <Link href={`/${locale}/doctors`} className="btn btn-ink">
+              {t(doctors.allLabel, locale)}
+            </Link>
+          </div>
+        </>
+      )}
     </Section>
   );
 }

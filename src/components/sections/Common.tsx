@@ -1,6 +1,6 @@
 export function Eyebrow({ children, tone = "brand" }: { children: string; tone?: "brand" | "light" }) {
   return (
-    <p className={`text-xs font-bold uppercase tracking-[0.14em] ${tone === "light" ? "text-white/70" : "text-brand-deep"}`}>
+    <p className={`eyebrow ${tone === "light" ? "!text-white/75" : ""}`}>
       {children}
     </p>
   );
@@ -21,10 +21,10 @@ export function SectionHeading({
 }) {
   const centered = align === "center";
   return (
-    <div className={centered ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
+    <div className={centered ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
       <Eyebrow tone={tone}>{eyebrow}</Eyebrow>
       <h2 className={`section-title mt-3 ${tone === "light" ? "!text-white" : ""}`}>{title}</h2>
-      {body ? <p className={`section-body mt-3.5 ${tone === "light" ? "!text-white/75" : ""}`}>{body}</p> : null}
+      {body ? <p className={`section-body mt-4 ${centered ? "mx-auto max-w-2xl" : "max-w-2xl"} ${tone === "light" ? "!text-white/80" : ""}`}>{body}</p> : null}
     </div>
   );
 }
@@ -41,8 +41,8 @@ export function Section({
   className?: string;
 }) {
   return (
-    <section id={id} className={`${muted ? "bg-surface-muted" : "bg-white"} ${className}`}>
-      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-24">{children}</div>
+    <section id={id} className={`scroll-mt-20 ${muted ? "bg-hero" : "bg-white"} ${className}`}>
+      <div className="mx-auto max-w-[88rem] px-4 py-20 sm:px-6 lg:px-12 lg:py-28">{children}</div>
     </section>
   );
 }

@@ -288,8 +288,18 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       setView("chat");
       setOpen(true);
     };
+    // "Speak to Shifain" on the homepage opens the chat with the microphone on.
+    const openVoice = () => {
+      setView("chat");
+      setOpen(true);
+      setVoiceOn(true);
+    };
     window.addEventListener("shifain:open-chat", openChat);
-    return () => window.removeEventListener("shifain:open-chat", openChat);
+    window.addEventListener("shifain:open-voice", openVoice);
+    return () => {
+      window.removeEventListener("shifain:open-chat", openChat);
+      window.removeEventListener("shifain:open-voice", openVoice);
+    };
   }, []);
 
   useEffect(() => {

@@ -18,11 +18,7 @@ export const defaultContent: SiteContent = {
       "Глобальные медицинские маршруты в Индию",
       "Hindistonga global salomatlik safarlari",
     ),
-    wordmarkTagline: l(
-      "Global health journeys to India",
-      "Медицинские маршруты в Индию",
-      "Hindistonga salomatlik safarlari",
-    ),
+    wordmarkTagline: l("Trusted medical journey", "Надёжный путь к лечению", "Ishonchli tibbiy sayohat"),
   },
 
   contact: {
@@ -39,26 +35,26 @@ export const defaultContent: SiteContent = {
     packages: l("Packages", "Пакеты", "Paketlar"),
     stories: l("Stories", "Истории", "Hikoyalar"),
     patientLogin: l("Patient login", "Вход для пациентов", "Bemor kirishi"),
+    ourProcess: l("Our Process", "Как мы работаем", "Jarayonimiz"),
+    whyIndia: l("Why India", "Почему Индия", "Nega Hindiston"),
+    aboutUs: l("About Us", "О нас", "Biz haqimizda"),
+    loginSignup: l("Login / Sign Up", "Вход / Регистрация", "Kirish / Ro'yxatdan o'tish"),
   },
 
   sections: allSectionsOn(),
 
   hero: {
     eyebrow: l(
-      "Care in India for patients from any country",
-      "Лечение в Индии для пациентов из любой страны",
-      "Har qanday davlat bemorlari uchun Hindistonda davolanish",
+      "Your trusted partner for medical treatment in India",
+      "Ваш надёжный партнёр для лечения в Индии",
+      "Hindistonda davolanish uchun ishonchli hamkoringiz",
     ),
-    headline: l("World-class medical care", "Медицина мирового уровня", "Jahon darajasidagi tibbiy yordam"),
-    headlineAccent: l(
-      "in India — with the price agreed before you fly",
-      "в Индии — с ценой, согласованной до вылета",
-      "Hindistonda — narx uchishdan oldin kelishiladi",
-    ),
+    headline: l("Plan Your Medical Treatment in India —", "Спланируйте лечение в Индии —", "Hindistonda davolanishni rejalashtiring —"),
+    headlineAccent: l("with Confidence", "с уверенностью", "ishonch bilan"),
     body: l(
-      "Send your reports and get a treatment plan with an itemised cost estimate in minutes. Shape your own package — flights, stay, transfers — and the treating hospital confirms the final plan and price within 48 hours.",
-      "Отправьте медицинские документы и за несколько минут получите план лечения с детальной сметой. Соберите свой пакет — перелёты, проживание, трансферы, — а клиника подтвердит окончательный план и цену в течение 48 часов.",
-      "Tibbiy hujjatlaringizni yuboring va bir necha daqiqada batafsil xarajat hisobi bilan davolash rejasini oling. Parvoz, turar joy va transferlardan o'z paketingizni tuzing — shifoxona yakuniy reja va narxni 48 soat ichida tasdiqlaydi.",
+      "Get expert guidance, compare top hospitals, plan your treatment and travel — all in one place. Ask Shifain, anytime.",
+      "Получите экспертную помощь, сравните лучшие клиники, спланируйте лечение и поездку — всё в одном месте. Спросите Shifain в любое время.",
+      "Mutaxassis maslahatini oling, eng yaxshi shifoxonalarni solishtiring, davolanish va safarni rejalashtiring — barchasi bir joyda. Shifain'dan istalgan vaqtda so'rang.",
     ),
     primaryCta: l(
       "Get my free plan & estimate",
@@ -67,10 +63,35 @@ export const defaultContent: SiteContent = {
     ),
     secondaryCta: l("Talk to a coordinator", "Связаться с координатором", "Koordinator bilan bog'lanish"),
     badges: [
-      { id: "b1", label: l("Plan & estimate in minutes", "План и смета за минуты", "Reja va hisob bir necha daqiqada") },
-      { id: "b2", label: l("Guaranteed price", "Гарантированная цена", "Kafolatlangan narx") },
-      { id: "b3", label: l("In-app live translator", "Живой переводчик в приложении", "Ilovada jonli tarjimon") },
-      { id: "b4", label: l("JCI & NABH hospitals", "Клиники JCI и NABH", "JCI va NABH shifoxonalari") },
+      { id: "b1", label: l("Trusted Hospitals in India", "Проверенные клиники Индии", "Hindistonning ishonchli shifoxonalari") },
+      { id: "b2", label: l("End-to-End Travel Support", "Помощь с поездкой от начала до конца", "Safar bo'yicha to'liq yordam") },
+      { id: "b3", label: l("Personalized Care Assistance", "Персональная поддержка", "Shaxsiy g'amxo'rlik yordami") },
+    ],
+    chatTitle: l("Chat with Shifain", "Чат с Shifain", "Shifain bilan suhbat"),
+    chatBody: l(
+      "Ask anything about treatments, hospitals, or your travel plan",
+      "Спросите о лечении, клиниках или плане поездки",
+      "Davolash, shifoxonalar yoki safar rejangiz haqida so'rang",
+    ),
+    orLabel: l("or", "или", "yoki"),
+    voiceCta: l("Speak to Shifain", "Поговорить с Shifain", "Shifain bilan gaplashish"),
+    voiceBadge: l("New", "Новое", "Yangi"),
+    loginCta: l("Login to get personalized plan", "Войдите, чтобы получить личный план", "Shaxsiy reja uchun kiring"),
+    cardTitle: l("Plan · Travel · Treat", "План · Поездка · Лечение", "Reja · Safar · Davolash"),
+    cardBody: l(
+      "Your complete medical journey, made simple.",
+      "Весь путь к лечению — просто и понятно.",
+      "To'liq tibbiy safaringiz — oson va sodda.",
+    ),
+    imageAlt: l(
+      "A smiling patient looking up, with a hospital, the Taj Mahal and a plane flying to India",
+      "Улыбающаяся пациентка, клиника, Тадж-Махал и самолёт, летящий в Индию",
+      "Jilmayib turgan bemor, shifoxona, Toj Mahal va Hindistonga uchayotgan samolyot",
+    ),
+    values: [
+      { id: "v1", label: l("Trusted by patients from across the world", "Нам доверяют пациенты со всего мира", "Bizga butun dunyo bemorlari ishonadi") },
+      { id: "v2", label: l("Access India's world-class healthcare", "Доступ к медицине мирового уровня в Индии", "Hindistonning jahon darajasidagi tibbiyoti") },
+      { id: "v3", label: l("A healthier tomorrow, together", "Здоровое завтра — вместе", "Sog'lom ertaga — birgalikda") },
     ],
     form: {
       title: l(
@@ -105,14 +126,8 @@ export const defaultContent: SiteContent = {
     },
   },
 
-  stats: {
-    items: [
-      { id: "s1", value: "100,000+", label: l("Patients guided", "Пациентов сопровождено", "Bemorlarga yo'l ko'rsatildi") },
-      { id: "s2", value: "4.8 ★", label: l("Average patient rating", "Средняя оценка пациентов", "O'rtacha bemor bahosi") },
-      { id: "s3", value: "600+", label: l("JCI / NABH hospitals", "Клиник JCI / NABH", "JCI / NABH shifoxonalari") },
-      { id: "s4", value: "400+", label: l("Treatments & procedures", "Видов лечения и процедур", "Davolash va muolajalar") },
-    ],
-  },
+  // The figures band is counted live from the catalogue (see Stats); nothing is typed in here.
+  stats: { items: [] },
 
   usps: {
     eyebrow: l("Why ShifaIn", "Почему ShifaIn", "Nega ShifaIn"),
@@ -276,7 +291,7 @@ export const defaultContent: SiteContent = {
     items: [
       {
         slug: "cardiac-care",
-        icon: "❤️",
+        icon: "heart",
         title: l("Cardiac care", "Кардиология", "Kardiologiya"),
         body: l(
           "Bypass (CABG), valve replacement, angioplasty and paediatric heart surgery.",
@@ -291,7 +306,7 @@ export const defaultContent: SiteContent = {
       },
       {
         slug: "oncology",
-        icon: "🎗️",
+        icon: "ribbon",
         title: l("Oncology", "Онкология", "Onkologiya"),
         body: l(
           "Surgery, chemotherapy, radiation, CAR-T and proton therapy.",
@@ -306,7 +321,7 @@ export const defaultContent: SiteContent = {
       },
       {
         slug: "orthopaedics",
-        icon: "🦴",
+        icon: "bone",
         title: l("Orthopaedics", "Ортопедия", "Ortopediya"),
         body: l(
           "Knee & hip replacement, spine and complex orthopaedic surgery.",
@@ -321,7 +336,7 @@ export const defaultContent: SiteContent = {
       },
       {
         slug: "neurosurgery",
-        icon: "🧠",
+        icon: "brain",
         title: l("Neurosurgery", "Нейрохирургия", "Neyroxirurgiya"),
         body: l(
           "Brain tumour, deep brain stimulation, spinal fusion and stroke care.",
@@ -336,7 +351,7 @@ export const defaultContent: SiteContent = {
       },
       {
         slug: "organ-transplant",
-        icon: "🫀",
+        icon: "heart",
         title: l("Organ transplant", "Трансплантация органов", "A'zo transplantatsiyasi"),
         body: l(
           "Kidney, liver, bone-marrow and heart transplant programmes.",
@@ -351,7 +366,7 @@ export const defaultContent: SiteContent = {
       },
       {
         slug: "fertility-ivf",
-        icon: "👶",
+        icon: "baby",
         title: l("Fertility & IVF", "Репродуктология и ЭКО", "Reproduktologiya va EKO"),
         body: l(
           "Assisted reproduction and fertility treatment.",
@@ -542,10 +557,10 @@ export const defaultContent: SiteContent = {
       "Taxminiy baholar · summalar shifoxona, shahar va holatga qarab farqlanadi",
     ),
     items: [
-      { id: "c1", icon: "🦵", title: l("Knee replacement", "Замена коленного сустава", "Tizza bo'g'imini almashtirish"), amount: "$4,000", note: l("10–14 days stay", "10–14 дней пребывания", "10–14 kun turish") },
-      { id: "c2", icon: "🫀", title: l("Heart bypass (CABG)", "Коронарное шунтирование (АКШ)", "Yurak shuntlash (CABG)"), amount: "$4,500", note: l("12–16 days stay", "12–16 дней пребывания", "12–16 kun turish") },
-      { id: "c3", icon: "🧠", title: l("Brain tumour surgery", "Операция при опухоли мозга", "Miya o'smasi operatsiyasi"), amount: "$5,000", note: l("14–21 days stay", "14–21 день пребывания", "14–21 kun turish") },
-      { id: "c4", icon: "🩺", title: l("Kidney transplant", "Трансплантация почки", "Buyrak transplantatsiyasi"), amount: "$10,000", note: l("6–8 weeks stay", "6–8 недель пребывания", "6–8 hafta turish") },
+      { id: "c1", icon: "bone", title: l("Knee replacement", "Замена коленного сустава", "Tizza bo'g'imini almashtirish"), amount: "$4,000", note: l("10–14 days stay", "10–14 дней пребывания", "10–14 kun turish") },
+      { id: "c2", icon: "heart", title: l("Heart bypass (CABG)", "Коронарное шунтирование (АКШ)", "Yurak shuntlash (CABG)"), amount: "$4,500", note: l("12–16 days stay", "12–16 дней пребывания", "12–16 kun turish") },
+      { id: "c3", icon: "brain", title: l("Brain tumour surgery", "Операция при опухоли мозга", "Miya o'smasi operatsiyasi"), amount: "$5,000", note: l("14–21 days stay", "14–21 день пребывания", "14–21 kun turish") },
+      { id: "c4", icon: "organ", title: l("Kidney transplant", "Трансплантация почки", "Buyrak transplantatsiyasi"), amount: "$10,000", note: l("6–8 weeks stay", "6–8 недель пребывания", "6–8 hafta turish") },
     ],
   },
 
@@ -553,66 +568,44 @@ export const defaultContent: SiteContent = {
     eyebrow: l("Hospital network", "Сеть больниц", "Shifoxonalar tarmog'i"),
     title: l("India's leading accredited hospitals", "Ведущие аккредитованные клиники Индии", "Hindistonning yetakchi akkreditatsiyalangan shifoxonalari"),
     body: l(
-      "A preview of the network — JCI & NABH accredited, with international patient desks.",
-      "Обзор сети — аккредитация JCI и NABH, отделы для иностранных пациентов.",
-      "Tarmoq bilan tanishing — JCI va NABH akkreditatsiyasi, xalqaro bemorlar bo'limi bilan.",
+      "Accredited hospitals with international patient desks — named here once they have signed with us.",
+      "Аккредитованные клиники с международными отделами — появляются здесь после подписания договора с нами.",
+      "Xalqaro bemorlar bo'limiga ega akkreditatsiyalangan shifoxonalar — biz bilan shartnoma imzolagach shu yerda paydo bo'ladi.",
     ),
     bedsLabel: l("Beds", "Койки", "O'rinlar"),
     proceduresLabel: l("Procedures", "Процедуры", "Muolajalar"),
     ratingLabel: l("Rating", "Рейтинг", "Reyting"),
     viewLabel: l("View hospital", "Открыть клинику", "Shifoxonani ko'rish"),
-    allLabel: l("View all 600+ hospitals", "Все 600+ клиник", "Barcha 600+ shifoxona"),
-    items: [
-      { id: "h1", name: "BLK-Max Super Speciality", city: "Delhi", tags: ["Oncology", "BMT", "Cardiac"], accreditations: ["JCI", "NABH"], beds: "650", procedures: "302", rating: "5.0" },
-      { id: "h2", name: "Medanta – The Medicity", city: "Gurgaon", tags: ["Heart", "Transplant", "Neuro"], accreditations: ["JCI", "NABH"], beds: "1250", procedures: "281", rating: "4.6" },
-      { id: "h3", name: "Indraprastha Apollo", city: "Delhi", tags: ["Transplant", "Cardiac", "Oncology"], accreditations: ["JCI"], beds: "710", procedures: "304", rating: "4.4" },
-    ],
+    allLabel: l("View all hospitals", "Все клиники", "Barcha shifoxonalar"),
+    // Listed live from the catalogue: only hospitals and doctors with a signed tie-up and consent.
+    items: [],
   },
 
   doctors: {
     eyebrow: l("Expert doctors", "Опытные врачи", "Tajribali shifokorlar"),
     title: l("Talk to a specialist before you decide", "Поговорите со специалистом до решения", "Qaror qilishdan avval mutaxassis bilan gaplashing"),
     body: l(
-      "Book a video consult with senior specialists across India's top hospitals.",
-      "Запишитесь на видеоконсультацию с ведущими специалистами клиник Индии.",
-      "Hindistonning yetakchi shifoxonalari mutaxassislari bilan video maslahatga yoziling.",
+      "Specialists who have agreed to be listed, at the hospitals we work with.",
+      "Специалисты, согласившиеся на публикацию, в клиниках, с которыми мы работаем.",
+      "Ro'yxatga kiritilishga rozi bo'lgan mutaxassislar — biz ishlaydigan shifoxonalarda.",
     ),
     consultLabel: l("Video consult", "Видеоконсультация", "Video maslahat"),
     allLabel: l("Browse all doctors", "Все врачи", "Barcha shifokorlar"),
-    items: [
-      {
-        id: "d1", initials: "AK", name: "Dr. Ajay Kaul", affiliation: "Fortis, Noida", experience: "38 yrs", fee: "$50",
-        speciality: l("Cardiac Surgeon", "Кардиохирург", "Yurak jarrohi"),
-        highlight: l("20,000+ heart procedures", "Более 20 000 операций на сердце", "20 000+ yurak amaliyoti"),
-      },
-      {
-        id: "d2", initials: "SD", name: "Dr. Surender Dabas", affiliation: "Manipal, Delhi", experience: "22 yrs", fee: "$48",
-        speciality: l("Surgical Oncologist", "Хирург-онколог", "Jarroh-onkolog"),
-        highlight: l("Robotic head & neck surgery", "Роботизированная хирургия головы и шеи", "Bosh va bo'yin robot jarrohligi"),
-      },
-      {
-        id: "d3", initials: "DG", name: "Dr. Dhananjay Gupta", affiliation: "Fortis, Delhi", experience: "20 yrs", fee: "$40",
-        speciality: l("Orthopaedic Surgeon", "Ортопед-хирург", "Ortoped jarroh"),
-        highlight: l("Hip & knee replacement", "Эндопротезирование бедра и колена", "Chanoq va tizza protezlash"),
-      },
-      {
-        id: "d4", initials: "RG", name: "Dr. Rahul Gupta", affiliation: "Fortis, Noida", experience: "20 yrs", fee: "$36",
-        speciality: l("Neuro & Spine Surgeon", "Нейрохирург и спинальный хирург", "Neyro va umurtqa jarrohi"),
-        highlight: l("Spine & functional neurosurgery", "Спинальная и функциональная нейрохирургия", "Umurtqa va funksional neyroxirurgiya"),
-      },
-    ],
+    // Listed live from the catalogue: only hospitals and doctors with a signed tie-up and consent.
+    items: [],
   },
 
   comparison: {
     eyebrow: l("Treatment comparison", "Сравнение вариантов", "Variantlarni taqqoslash"),
     title: l("Compare options before you travel", "Сравните варианты до поездки", "Safardan oldin variantlarni taqqoslang"),
     body: l(
-      "See hospitals side by side. Illustrative estimates only.",
-      "Сравните клиники рядом. Оценки ориентировочные.",
-      "Shifoxonalarni yonma-yon ko'ring. Baholar taxminiy.",
+      "Your plan sets the hospitals that suit you side by side, like this example. Figures here are illustrative.",
+      "Ваш план покажет подходящие клиники рядом — как в этом примере. Цифры здесь ориентировочные.",
+      "Rejangiz sizga mos shifoxonalarni yonma-yon ko'rsatadi — bu misoldagidek. Bu yerdagi raqamlar taxminiy.",
     ),
     subject: l("Knee replacement", "Замена коленного сустава", "Tizza bo'g'imini almashtirish"),
-    columns: ["BLK-Max · Delhi", "Medanta · Gurgaon", "Apollo · Delhi"],
+    // An example only: hospitals are named on the site once they have signed with us.
+    columns: ["Hospital A · Delhi", "Hospital B · Gurugram", "Hospital C · Chennai"],
     rows: [
       { id: "r1", label: l("Estimated cost (all-in)", "Ориентировочная стоимость (всё включено)", "Taxminiy narx (hammasi kiritilgan)"), values: ["$4,800", "$5,300", "$4,600"] },
       { id: "r2", label: l("Estimated hospital stay", "Ориентировочный срок в клинике", "Shifoxonada taxminiy turish"), values: ["10–14 days", "10–15 days", "10–14 days"] },
@@ -658,10 +651,10 @@ export const defaultContent: SiteContent = {
     hubLabel: l("India", "Индия", "Hindiston"),
     points: [
       { id: "w1", icon: "spark", title: l("Advanced expertise", "Передовой опыт", "Ilg'or tajriba"), body: l("Experienced specialists and JCI/NABH tertiary-care hospitals.", "Опытные специалисты и клиники JCI/NABH третичного уровня.", "Tajribali mutaxassislar va JCI/NABH shifoxonalari.") },
-      { id: "w2", icon: "card", title: l("Up to 50–80% savings", "Экономия до 50–80%", "50–80% gacha tejash"), body: l("High-quality treatment at a fraction of Western costs.", "Качественное лечение за долю западной стоимости.", "G'arb narxining bir qismiga sifatli davolash.") },
+      { id: "w2", icon: "card", title: l("Lower costs", "Ниже стоимость", "Arzonroq narx"), body: l("Accredited care often at a fraction of the price in Europe or North America — your estimate shows the real figure.", "Аккредитованное лечение — часто в разы дешевле, чем в Европе или Северной Америке; ваша смета покажет реальную цифру.", "Akkreditatsiyalangan davolash — ko'pincha Yevropa yoki Shimoliy Amerikadagidan ancha arzon; smetangiz haqiqiy narxni ko'rsatadi.") },
       { id: "w3", icon: "clock", title: l("No long waiting lists", "Без долгих очередей", "Uzoq navbat yo'q"), body: l("Appointments and surgery scheduled quickly.", "Приёмы и операции назначаются быстро.", "Qabul va operatsiyalar tez belgilanadi.") },
       { id: "w4", icon: "translate", title: l("Multilingual support", "Многоязычная поддержка", "Ko'p tilli qo'llab-quvvatlash"), body: l("Human interpreters and a live translator in the app.", "Живые переводчики и переводчик в приложении.", "Jonli tarjimonlar va ilovadagi tarjimon.") },
-      { id: "w5", icon: "hospital", title: l("Broad options", "Широкий выбор", "Keng imkoniyatlar"), body: l("400+ procedures across every major speciality.", "Более 400 процедур по всем основным направлениям.", "Barcha yo'nalishlar bo'yicha 400+ muolaja.") },
+      { id: "w5", icon: "hospital", title: l("Broad options", "Широкий выбор", "Keng imkoniyatlar"), body: l("Hundreds of procedures across every major speciality.", "Сотни процедур по всем основным направлениям.", "Barcha asosiy yo'nalishlar bo'yicha yuzlab muolajalar.") },
       { id: "w6", icon: "home", title: l("Coordinated recovery", "Организованное восстановление", "Uyushtirilgan tiklanish"), body: l("Post-treatment stay and online follow-up back home.", "Восстановление после лечения и онлайн-наблюдение дома.", "Davolashdan keyingi turish va uyda onlayn kuzatuv.") },
     ],
   },
@@ -704,11 +697,11 @@ export const defaultContent: SiteContent = {
 
   stories: {
     eyebrow: l("Patient stories", "Истории пациентов", "Bemorlar hikoyalari"),
-    title: l("Journeys we're proud of", "Маршруты, которыми мы гордимся", "Faxrlanadigan safarlarimiz"),
+    title: l("Patient stories", "Истории пациентов", "Bemorlar hikoyalari"),
     body: l(
-      "Placeholder stories for design only — not real patients; these will be replaced with verified reviews.",
-      "Демонстрационные истории — не реальные пациенты; будут заменены проверенными отзывами.",
-      "Namuna hikoyalar — haqiqiy bemorlar emas; tasdiqlangan sharhlar bilan almashtiriladi.",
+      "Real journeys, told by the patients who made them.",
+      "Настоящие истории — рассказанные самими пациентами.",
+      "Haqiqiy safarlar — bemorlarning o'z so'zlari bilan.",
     ),
     items: [
       {
@@ -784,9 +777,9 @@ export const defaultContent: SiteContent = {
         id: "f4",
         question: l("Which countries do you serve?", "Какие страны вы обслуживаете?", "Qaysi davlatlarga xizmat ko'rsatasiz?"),
         answer: l(
-          "Any country. ShifaIn is built for patients travelling to India from anywhere in the world, with language support in the app wherever you are.",
-          "Любые. ShifaIn создан для пациентов, приезжающих в Индию из любой точки мира, с языковой поддержкой в приложении.",
-          "Har qanday davlat. ShifaIn dunyoning istalgan nuqtasidan Hindistonga keladigan bemorlar uchun yaratilgan, ilovada til qo'llovi bilan.",
+          "Any country. Shifain is built for patients travelling to India from anywhere in the world. We are starting with Uzbekistan, with Uzbek- and Russian-speaking coordinators, and the live translator covers many more languages.",
+          "Любые. Shifain создан для пациентов, приезжающих в Индию со всего мира. Мы начинаем с Узбекистана — с координаторами, говорящими на узбекском и русском, а живой переводчик поддерживает многие другие языки.",
+          "Har qanday davlat. Shifain dunyoning istalgan nuqtasidan Hindistonga keladigan bemorlar uchun yaratilgan. Biz O'zbekistondan boshlayapmiz — o'zbek va rus tilida gaplashadigan koordinatorlar bilan, jonli tarjimon esa yana ko'p tillarni qo'llaydi.",
         ),
       },
       {

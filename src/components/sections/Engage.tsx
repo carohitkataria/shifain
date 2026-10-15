@@ -3,7 +3,7 @@ import { Icon } from "../Icon";
 import { PackageBuilder } from "../PackageBuilder";
 import { Section, SectionHeading } from "./Common";
 import { t } from "@/lib/localize";
-import type { SiteContent } from "@/lib/content-types";
+import type { L, SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
 
 export function Planner({ content, locale }: { content: SiteContent; locale: Locale }) {
@@ -95,7 +95,7 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
 
   return (
     <Section id="partners">
-      <p className="eyebrow text-center">{t(partners.eyebrow, locale)}</p>
+      <p className="eyebrow">{t(partners.eyebrow, locale)}</p>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {panels.map((panel) => (
@@ -134,6 +134,8 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
 
 export function Stories({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { stories } = content;
+  // Only stories a patient agreed to share are shown; samples never reach the public page.
+  const verified = stories.items.filter((item) => item.verified);
   return (
     <Section id="stories" muted>
       <SectionHeading
@@ -142,36 +144,52 @@ export function Stories({ content, locale }: { content: SiteContent; locale: Loc
         body={t(stories.body, locale)}
       />
 
-      <ul className="mt-11 grid gap-5 lg:grid-cols-3">
-        {stories.items.map((item) => (
-          <li key={item.id} className="card flex flex-col p-6">
-            <div className="flex items-start justify-between gap-3">
-              <span aria-hidden="true" className="text-sm tracking-tight text-saffron">
-                &#9733;&#9733;&#9733;&#9733;&#9733;
-              </span>
-              <span className="chip bg-saffron-tint text-saffron">SAMPLE</span>
-            </div>
-            <p className="mt-3 flex-1 italic text-ink-soft">&ldquo;{t(item.quote, locale)}&rdquo;</p>
-            <div className="mt-5 flex items-center gap-3 border-t border-line pt-4">
-              <span
-                aria-hidden="true"
-                className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-tint text-sm font-extrabold text-brand-deep"
-              >
-                {item.initials}
-              </span>
-              <div>
-                <p className="text-sm font-bold text-ink">{item.name}</p>
-                <p className="text-xs text-ink-muted">
-                  {t(item.from, locale)} &middot; {t(item.treatment, locale)}
-                </p>
+      {verified.length ? (
+        <ul className="mt-12 grid gap-5 lg:grid-cols-3">
+          {verified.map((item) => (
+            <li key={item.id} className="flex flex-col rounded-3xl bg-white p-7 ring-1 ring-[#e6e3f4]">
+              <p className="flex-1 text-lg leading-relaxed text-navy">&ldquo;{t(item.quote, locale)}&rdquo;</p>
+              <div className="mt-6 flex items-center gap-3">
+                <span aria-hidden="true" className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-violet-soft text-sm font-bold text-violet">
+                  {item.initials}
+                </span>
+                <div>
+                  <p className="font-semibold text-navy">{item.name}</p>
+                  <p className="text-sm text-slate">
+                    {t(item.from, locale)} &middot; {t(item.treatment, locale)}
+                  </p>
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="mx-auto mt-12 grid max-w-4xl gap-6 rounded-3xl bg-white p-7 ring-1 ring-[#e6e3f4] sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center sm:p-10">
+          <span aria-hidden="true" className="flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-soft text-violet">
+            <Icon name="chat" className="h-8 w-8" />
+          </span>
+          <div>
+            <p className="text-xl font-bold leading-snug text-navy">{t(STORIES_SOON.title, locale)}</p>
+            <p className="mt-2 text-base leading-relaxed text-[#2c3a5e]">{t(STORIES_SOON.body, locale)}</p>
+          </div>
+        </div>
+      )}
     </Section>
   );
 }
+
+const STORIES_SOON: { title: L; body: L } = {
+  title: {
+    en: "Our first patients' stories will appear here.",
+    ru: "Здесь появятся истории наших первых пациентов.",
+    uz: "Bu yerda birinchi bemorlarimiz hikoyalari paydo bo'ladi.",
+  },
+  body: {
+    en: "We are just starting, with patients from Uzbekistan first. Each story will be published only with the patient's permission, in their own words — never written by us.",
+    ru: "Мы только начинаем — первыми к нам приходят пациенты из Узбекистана. Каждая история появится только с согласия пациента и его собственными словами — мы их не сочиняем.",
+    uz: "Biz endi boshlayapmiz — birinchi bo'lib O'zbekiston bemorlari bilan. Har bir hikoya faqat bemor roziligi bilan, uning o'z so'zlarida e'lon qilinadi — biz ularni o'ylab topmaymiz.",
+  },
+};
 
 export function Faq({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { faq } = content;
@@ -182,14 +200,14 @@ export function Faq({ content, locale }: { content: SiteContent; locale: Locale 
       <div className="mx-auto mt-11 max-w-3xl space-y-3">
         {faq.items.map((item, i) => (
           <details key={item.id} className="faq-item group" open={i === 0}>
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-ink marker:content-none">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold text-navy marker:content-none">
               {t(item.question, locale)}
               <span aria-hidden="true" className="faq-toggle">
                 <span className="group-open:hidden">+</span>
                 <span className="hidden group-open:inline">&minus;</span>
               </span>
             </summary>
-            <p className="mt-3 pr-10 text-sm leading-relaxed text-ink-soft">{t(item.answer, locale)}</p>
+            <p className="mt-3 pr-10 text-base leading-relaxed text-[#2c3a5e]">{t(item.answer, locale)}</p>
           </details>
         ))}
       </div>

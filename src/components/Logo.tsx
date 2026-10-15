@@ -1,19 +1,19 @@
 import Image from "next/image";
 
 /**
- * The ShifaIn logo. The artwork lives in brand-art.ts and is written out as
- * SVG files by scripts/brand/build-logo.mts, so pages load it once and cache
- * it rather than carrying the paths in every page's HTML.
+ * The ShifaIn logo: the lotus, aircraft and cross, the "shifain" wordmark
+ * with its orange i and green n, and the "Trusted medical journey" strapline.
+ * The files are cut from the approved artwork by scripts/brand/build-logo.mts.
  *
- * Intrinsic sizes are the artwork's proportions; CSS sets the actual height.
+ * Intrinsic sizes are the files' proportions; CSS sets the actual height.
  */
-const MARK = { width: 279, height: 192 };
-const WORDMARK = { width: 700, height: 195 };
-const STACKED = { width: 700, height: 419 };
+const MARK = { width: 347, height: 240 };
+const WORDMARK = { width: 520, height: 150 };
+const FULL = { width: 1250, height: 300 };
 
 type Tone = "light" | "dark";
 
-const src = (name: string, tone: Tone) => `/brand/shifain-${name}${tone === "dark" ? "-dark" : ""}.svg`;
+const src = (name: string, tone: Tone) => `/brand/shifain-${name}${tone === "dark" ? "-dark" : ""}.png`;
 
 /** The lotus, swoosh, aircraft and cross on their own. */
 export function LogoMark({
@@ -39,18 +39,33 @@ export function LogoMark({
   );
 }
 
-/** "shifaIn" with the tricolour "In". */
-export function Wordmark({ className = "h-6 w-auto", tone = "light", title }: { className?: string; tone?: Tone; title?: string }) {
+/** "shifain" with the orange i and green n. */
+export function Wordmark({
+  className = "h-6 w-auto",
+  tone = "light",
+  title,
+  priority = false,
+}: {
+  className?: string;
+  tone?: Tone;
+  title?: string;
+  priority?: boolean;
+}) {
   return (
-    <Image src={src("wordmark", tone)} alt={title ?? ""} width={WORDMARK.width} height={WORDMARK.height} className={`w-auto ${className}`} />
+    <Image
+      src={src("wordmark", tone)}
+      alt={title ?? ""}
+      width={WORDMARK.width}
+      height={WORDMARK.height}
+      priority={priority}
+      className={`w-auto ${className}`}
+    />
   );
 }
 
-/** Mark over wordmark, as on the sign — for sign-in pages and anywhere the logo stands alone. */
+/** The whole logo, strapline included — for sign-in pages and anywhere the logo stands alone. */
 export function LogoStacked({ className = "h-24 w-auto", tone = "light" }: { className?: string; tone?: Tone }) {
-  return (
-    <Image src={src("logo", tone)} alt="ShifaIn" width={STACKED.width} height={STACKED.height} className={`w-auto ${className}`} />
-  );
+  return <Image src={src("logo", tone)} alt="ShifaIn" width={FULL.width} height={FULL.height} className={`w-auto ${className}`} />;
 }
 
 type LogoProps = {
@@ -62,17 +77,17 @@ type LogoProps = {
   compact?: boolean;
 };
 
-/** Mark beside wordmark, with an optional strapline under the name. For headers and footers. */
+/** Mark beside wordmark, with the strapline under the name. For headers and footers. */
 export function Logo({ tagline, className = "", markClassName, wordmarkClassName, tone = "light", compact = false }: LogoProps) {
   return (
-    <span className={`flex items-center gap-2 ${className}`}>
-      <LogoMark className={markClassName ?? (compact ? "h-9" : "h-11")} tone={tone} priority />
+    <span className={`flex items-center gap-2.5 ${className}`}>
+      <LogoMark className={markClassName ?? (compact ? "h-9" : "h-12")} tone={tone} priority />
       <span className="flex flex-col justify-center leading-none">
-        <Wordmark className={wordmarkClassName ?? (compact ? "h-5" : "h-6")} tone={tone} title="ShifaIn" />
+        <Wordmark className={wordmarkClassName ?? (compact ? "h-6" : "h-8")} tone={tone} title="ShifaIn" priority />
         {tagline ? (
           <span
-            className={`mt-1 hidden max-w-[15rem] text-[0.58rem] font-semibold uppercase leading-tight tracking-[0.12em] md:block ${
-              tone === "dark" ? "text-white/60" : "text-ink-muted"
+            className={`mt-1 hidden whitespace-nowrap text-[0.6rem] font-semibold uppercase leading-none tracking-[0.2em] md:block ${
+              tone === "dark" ? "text-white/70" : "text-[#5f7393]"
             }`}
           >
             {tagline}

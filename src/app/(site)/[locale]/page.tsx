@@ -12,7 +12,7 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 type SectionProps = { content: SiteContent; locale: Locale };
 
 /** Every homepage section, keyed so the admin panel can order and hide them. */
-const SECTIONS: Record<SectionId, (props: SectionProps) => React.ReactElement> = {
+const SECTIONS: Record<SectionId, (props: SectionProps) => React.ReactNode | Promise<React.ReactNode>> = {
   hero: Hero,
   stats: Stats,
   usps: Usps,

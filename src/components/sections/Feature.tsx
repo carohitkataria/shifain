@@ -57,55 +57,49 @@ export function Journey({ content, locale }: { content: SiteContent; locale: Loc
   );
 }
 
+/** Everything the case manager arranges: the heading holds still on the left while the list reads down the right. */
 export function Services({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { services } = content;
   return (
     <Section id="services" muted>
-      <SectionHeading
-        eyebrow={t(services.eyebrow, locale)}
-        title={t(services.title, locale)}
-        body={t(services.body, locale)}
-      />
-      <div className="mt-12 lg:mt-6">
-        <Star
-          items={services.points.map((point) => ({
-            id: point.id,
-            icon: point.icon,
-            title: t(point.title, locale),
-            body: t(point.body, locale),
-          }))}
-          hubLabel={t(services.hubLabel, locale)}
-          hubIcon="chat"
-          tone="leaf"
-        />
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <SectionHeading align="start" eyebrow={t(services.eyebrow, locale)} title={t(services.title, locale)} body={t(services.body, locale)} />
+        </div>
+        <ul className="grid gap-x-10 gap-y-9 sm:grid-cols-2">
+          {services.points.map((point) => (
+            <li key={point.id} className="flex flex-col gap-3">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-violet">
+                <Icon name={point.icon} className="h-6 w-6" />
+              </span>
+              <h3 className="text-xl font-bold leading-snug text-navy">{t(point.title, locale)}</h3>
+              <p className="text-base leading-relaxed text-[#2c3a5e]">{t(point.body, locale)}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </Section>
   );
 }
 
+/** Reasons to choose India, set large on a field of navy so the section reads as its own chapter. */
 export function WhyIndia({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { whyIndia } = content;
   return (
-    <Section id="why-india">
-      <SectionHeading
-        eyebrow={t(whyIndia.eyebrow, locale)}
-        title={t(whyIndia.title, locale)}
-        body={t(whyIndia.body, locale)}
-      />
-      <div className="mt-12 lg:mt-6">
-        <Star
-          items={whyIndia.points.map((point) => ({
-            id: point.id,
-            icon: point.icon,
-            title: t(point.title, locale),
-            body: t(point.body, locale),
-          }))}
-          hubLabel={t(whyIndia.hubLabel, locale)}
-          hubIcon="hospital"
-          tone="saffron"
-        />
+    <section id="why-india" className="scroll-mt-20 bg-navy">
+      <div className="mx-auto max-w-[88rem] px-4 py-20 sm:px-6 lg:px-12 lg:py-28">
+        <SectionHeading align="start" tone="light" eyebrow={t(whyIndia.eyebrow, locale)} title={t(whyIndia.title, locale)} body={t(whyIndia.body, locale)} />
+        <ul className="mt-14 grid gap-px overflow-hidden rounded-3xl bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+          {whyIndia.points.map((point) => (
+            <li key={point.id} className="flex flex-col gap-3 bg-navy p-7 lg:p-9">
+              <Icon name={point.icon} className="h-7 w-7 text-[#f6a54a]" />
+              <h3 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-white">{t(point.title, locale)}</h3>
+              <p className="text-base leading-relaxed text-white/75">{t(point.body, locale)}</p>
+            </li>
+          ))}
+        </ul>
       </div>
-    </Section>
+    </section>
   );
 }
 
@@ -132,9 +126,9 @@ export function Guarantee({ content, locale }: { content: SiteContent; locale: L
   ];
 
   return (
-    <section id="promises" className="bg-ink">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-        <p className="eyebrow text-center text-white/60">{t(guarantee.eyebrow, locale)}</p>
+    <section id="promises" className="bg-[#14123a]">
+      <div className="mx-auto max-w-[88rem] px-4 py-16 sm:px-6 lg:px-12 lg:py-24">
+        <p className="eyebrow !text-white/75">{t(guarantee.eyebrow, locale)}</p>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           {promises.map((promise) => (
@@ -143,7 +137,7 @@ export function Guarantee({ content, locale }: { content: SiteContent; locale: L
                 <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${promise.tone}`}>
                   <Icon name={promise.icon} className="h-6 w-6" />
                 </span>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white/80">
+                <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-semibold text-white/85">
                   {promise.badge}
                 </span>
               </div>

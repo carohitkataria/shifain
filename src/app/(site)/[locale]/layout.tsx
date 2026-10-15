@@ -1,15 +1,23 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "../../globals.css";
 import { getContent } from "@/lib/store";
 import { t } from "@/lib/localize";
 import { LOCALES, LOCALE_META, isLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 import { FloatingTools } from "@/components/FloatingTools";
 
+/** The site's typeface, served from our own domain; Cyrillic falls back to the system face. */
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+});
+
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
 
-export const viewport: Viewport = { themeColor: "#3570b5" };
+export const viewport: Viewport = { themeColor: "#7c3aed" };
 
 export async function generateMetadata({
   params,
@@ -53,7 +61,7 @@ export default async function SiteLayout({
 
   return (
     <html lang={LOCALE_META[locale].htmlLang} dir={LOCALE_META[locale].dir}>
-      <body>
+      <body className={jakarta.className}>
         {children}
         <FloatingTools whatsapp={contact.whatsapp || null} phone={contact.phone || null} />
       </body>

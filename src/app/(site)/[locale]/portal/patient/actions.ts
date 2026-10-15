@@ -26,7 +26,7 @@ export async function patientLoginAction(formData: FormData) {
     return null;
   });
 
-  if (!record) redirect(`/${locale}/portal/patient/login?error=1`);
+  if (!record) redirect(`/${locale}/portal/patient/login?with=reference&error=1`);
 
   await startPatientSession(record.patient.phone);
   redirect(`/${locale}/portal/patient`);
