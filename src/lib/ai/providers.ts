@@ -44,14 +44,73 @@ export function available(provider: Provider): boolean {
   return Boolean(key) && Date.now() >= pausedUntil[provider];
 }
 
+// ---------------------------------------------------------------- health
+
+/**
+ * What the console shows under AI assistant → AI health: the last answer and
+ * the last failure from each provider. Kept in memory (one server process),
+ * which is enough to see "Gemini has been overloaded since 16:00".
+ */
+export type ProviderHealth = {
+  lastOkAt: string | null;
+  lastOkModel: string | null;
+  lastErrorAt: string | null;
+  lastError: string | null;
+  lastErrorModel: string | null;
+};
+
+const health: Record<Provider, ProviderHealth> = {
+  gemini: { lastOkAt: null, lastOkModel: null, lastErrorAt: null, lastError: null, lastErrorModel: null },
+  claude: { lastOkAt: null, lastOkModel: null, lastErrorAt: null, lastError: null, lastErrorModel: null },
+};
+
+export function noteSuccess(provider: Provider, model: string): void {
+  health[provider].lastOkAt = new Date().toISOString();
+  health[provider].lastOkModel = model;
+}
+
+export function noteError(provider: Provider, model: string | null, error: unknown): void {
+  health[provider].lastErrorAt = new Date().toISOString();
+  health[provider].lastErrorModel = model;
+  health[provider].lastError = String(error instanceof Error ? error.message : error).slice(0, 300);
+}
+
+export function providerHealth() {
+  const now = Date.now();
+  return {
+    gemini: {
+      configured: Boolean(process.env.GEMINI_API_KEY),
+      pausedUntil: pausedUntil.gemini > now ? new Date(pausedUntil.gemini).toISOString() : null,
+      models: geminiModelCache?.models ?? [],
+      chatOrder: geminiModelCache ? orderFor(geminiModelCache.models, "chat") : [],
+      busy: [...busyUntil.entries()].filter(([, until]) => until > now).map(([model]) => model),
+      ...health.gemini,
+    },
+    claude: {
+      configured: Boolean(process.env.ANTHROPIC_API_KEY),
+      pausedUntil: pausedUntil.claude > now ? new Date(pausedUntil.claude).toISOString() : null,
+      ...health.claude,
+    },
+  };
+}
+
 // ---------------------------------------------------------------- Gemini model choice
 
 /**
- * Google retires Gemini model names on its own schedule (2.0-flash and
- * 1.5-flash both went), so the model is not hardcoded. GEMINI_MODEL pins one;
- * otherwise the key's own model list is read and the best stable Flash model
- * that supports generateContent is used, re-checked every six hours.
+ * Google retires Gemini model names on its own schedule, so the model is not
+ * hardcoded: the key's own model list is read every six hours and ordered
+ * for the job.
+ *
+ * - chat: the "lite" models first. They are the cheapest, the fastest and
+ *   have the most free capacity, which is what a patient waiting on a reply
+ *   needs. GEMINI_CHAT_MODEL pins one.
+ * - plan: the full models first, for quality. GEMINI_MODEL / GEMINI_PLAN_MODEL pin one.
+ *
+ * Brand-new and preview models are skipped while stable ones exist: they are
+ * the ones Google most often reports as overloaded.
  */
+export type GeminiTier = "chat" | "plan";
+
 const GEMINI_LIST_URL = "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000";
 const MODEL_LIST_TTL = 6 * 60 * 60 * 1000;
 let geminiModelCache: { models: string[]; at: number } | null = null;
@@ -61,27 +120,41 @@ type GeminiModelInfo = { name: string; supportedGenerationMethods?: string[] };
 const SPECIALISED = /(image|tts|audio|live|embed|vision|robotics|computer|native|aqa|learnlm|gemma)/;
 const UNSTABLE = /(exp|preview|thinking)/;
 
+/** The usable Flash-family models a key can call, stable ones only when there are any. */
 export function rankGeminiModels(models: GeminiModelInfo[]): string[] {
   const usable = models
     .filter((m) => m.supportedGenerationMethods?.includes("generateContent"))
     .map((m) => m.name.replace(/^models\//, ""))
     .filter((name) => name.includes("flash") && !SPECIALISED.test(name));
   const stable = usable.filter((name) => !UNSTABLE.test(name));
-  const pool = stable.length > 0 ? stable : usable;
-
-  const version = (name: string) => Number(/gemini-(\d+(?:\.\d+)?)/.exec(name)?.[1] ?? 0);
-  const score = (name: string) =>
-    (name === "gemini-flash-latest" ? 1000 : 0) + version(name) * 10 - (name.includes("lite") ? 5 : 0) -
-    (/-\d{3}$/.test(name) ? 1 : 0);
-  return [...new Set(pool)].sort((a, b) => score(b) - score(a)).slice(0, 4);
+  const pool = [...new Set(stable.length > 0 ? stable : usable)];
+  return orderFor(pool, "plan").slice(0, 10);
 }
 
-async function geminiModels(preferred?: string): Promise<string[]> {
-  const pinned = preferred?.trim() || process.env.GEMINI_MODEL?.trim();
+const version = (name: string) => Number(/gemini-(\d+(?:\.\d+)?)/.exec(name)?.[1] ?? 0);
+
+/** Orders models for a job; see GeminiTier. */
+export function orderFor(models: string[], tier: GeminiTier): string[] {
+  const lite = (name: string) => name.includes("lite");
+  const score = (name: string) => {
+    const latest = name.endsWith("-latest") ? 0.5 : 0; // an alias for the newest, so slightly behind a pinned version for chat
+    const dated = /-\d{3}$/.test(name) ? -0.1 : 0;
+    if (tier === "chat") return (lite(name) ? 1000 : 0) + version(name) - latest + dated;
+    return (lite(name) ? 0 : 1000) + version(name) + (name === "gemini-flash-latest" ? 100 : 0) + dated;
+  };
+  return [...models].sort((a, b) => score(b) - score(a));
+}
+
+async function geminiModels(tier: GeminiTier, preferred?: string): Promise<string[]> {
+  const pinned =
+    preferred?.trim() || (tier === "chat" ? process.env.GEMINI_CHAT_MODEL?.trim() : process.env.GEMINI_MODEL?.trim());
   if (!geminiModelCache || Date.now() - geminiModelCache.at > MODEL_LIST_TTL) {
     let models: string[] = [];
     try {
-      const res = await fetch(GEMINI_LIST_URL, { headers: { "x-goog-api-key": process.env.GEMINI_API_KEY! } });
+      const res = await fetch(GEMINI_LIST_URL.replace("https://generativelanguage.googleapis.com", geminiBaseUrl()), {
+        headers: { "x-goog-api-key": process.env.GEMINI_API_KEY! },
+        signal: AbortSignal.timeout(5000),
+      });
       if (res.ok) {
         const json = (await res.json()) as { models?: GeminiModelInfo[] };
         models = rankGeminiModels(json.models ?? []);
@@ -93,33 +166,68 @@ async function geminiModels(preferred?: string): Promise<string[]> {
     }
     // A failed listing is retried in five minutes rather than trusted for six hours.
     geminiModelCache = {
-      models: models.length > 0 ? models : ["gemini-flash-latest"],
+      models: models.length > 0 ? models : ["gemini-flash-lite-latest", "gemini-flash-latest"],
       at: models.length > 0 ? Date.now() : Date.now() - MODEL_LIST_TTL + 5 * 60 * 1000,
     };
   }
-  const list = geminiModelCache.models;
+  const list = orderFor(geminiModelCache.models, tier);
   return pinned ? [pinned, ...list.filter((m) => m !== pinned)] : list;
+}
+
+/** Overridable for tests and proxies; Google's own endpoint otherwise. */
+export function geminiBaseUrl(): string {
+  return process.env.GEMINI_BASE_URL?.trim() || "https://generativelanguage.googleapis.com";
 }
 
 const isModelMissing = (error: unknown) => /\b404\b|not found|no longer available/i.test(String(error));
 /** Google's overload is per model, so a busy model is a reason to try the next one too. */
 const isModelBusy = (error: unknown) =>
-  /\b503\b|\b500\b|overloaded|high demand|unavailable/i.test(String(error));
+  /\b503\b|\b500\b|\b502\b|\b504\b|overloaded|high demand|unavailable|timed? ?out|abort|fetch failed/i.test(String(error));
 
-/** Tries each candidate model in turn, moving on only when Google says the model does not exist. */
+/** A model Google just called overloaded is left alone for three minutes, so the next patient doesn't wait on it too. */
+const busyUntil = new Map<string, number>();
+const BUSY_REST = 180_000;
+
+type GeminiOptions = {
+  preferred?: string;
+  tier?: GeminiTier;
+  /** How many models to try before giving up; a patient should not wait on four. */
+  attempts?: number;
+  /** Per-attempt limit, passed to the request. */
+  timeoutMs?: number;
+};
+
+/**
+ * Runs a Gemini call on the best model for the job, moving to the next model
+ * when one is overloaded, missing or too slow — up to `attempts` models.
+ */
 export async function withGeminiModel<T>(
-  run: (model: string) => Promise<T>,
-  preferred?: string,
+  run: (model: string, timeoutMs: number) => Promise<T>,
+  options: GeminiOptions | string = {},
 ): Promise<T> {
-  const candidates = await geminiModels(preferred);
+  const opts: GeminiOptions = typeof options === "string" ? { preferred: options } : options;
+  const tier = opts.tier ?? "plan";
+  const timeoutMs = opts.timeoutMs ?? (tier === "chat" ? 9000 : 90_000);
+  const attempts = opts.attempts ?? (tier === "chat" ? 2 : 4);
+  const now = Date.now();
+  const all = await geminiModels(tier, opts.preferred);
+  const ready = all.filter((model) => (busyUntil.get(model) ?? 0) <= now);
+  // If every model is resting, try the first anyway rather than not at all.
+  const candidates = (ready.length > 0 ? ready : all).slice(0, attempts);
+
   let lastError: unknown = new Error("No Gemini model available.");
   for (const model of candidates) {
     try {
-      return await run(model);
+      const result = await run(model, timeoutMs);
+      busyUntil.delete(model);
+      noteSuccess("gemini", model);
+      return result;
     } catch (error) {
       lastError = error;
+      noteError("gemini", model, error);
       if (isModelBusy(error)) {
-        console.error(`[shifain] Gemini model ${model} is busy, trying the next one`);
+        busyUntil.set(model, Date.now() + BUSY_REST);
+        console.error(`[shifain] Gemini model ${model} is busy or slow, trying the next one`);
         continue;
       }
       if (!isModelMissing(error)) throw error;

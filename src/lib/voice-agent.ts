@@ -2,33 +2,52 @@ import "server-only";
 import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
 import type { IntakeField } from "./conversation-intake";
-import { noteFailure, available, withGeminiModel } from "./ai/providers";
+import { noteFailure, available, withGeminiModel, geminiBaseUrl, noteSuccess, noteError } from "./ai/providers";
 import { COMMAND_NAMES, type CommandName } from "./voice/intents";
 import { getAssistantConfig } from "./assistant/config";
 import { knowledgeForPrompt } from "./assistant/knowledge";
 
 export { pauseDuration, rankGeminiModels } from "./ai/providers";
 
-/** Overridable without a deploy: set ANTHROPIC_MODEL on the host. */
-const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-5-5";
+/**
+ * Chat replies are short, so the fastest and cheapest Claude model is plenty.
+ * Overridable without a deploy: ANTHROPIC_CHAT_MODEL (or ANTHROPIC_MODEL).
+ */
+const CLAUDE_MODEL = process.env.ANTHROPIC_CHAT_MODEL?.trim() || process.env.ANTHROPIC_MODEL?.trim() || "claude-haiku-5-5";
+
+/** A patient is waiting: past this, the next provider (or the scripted reply) answers. */
+const CLAUDE_TIMEOUT_MS = 12_000;
+/** Replies are at most a few sentences; this caps what a turn can cost. */
+const MAX_REPLY_TOKENS = 450;
 
 /**
  * The assistant's character and limits. What the team adds in the console
  * (Assistant → Instructions and Knowledge) is appended to this on every turn.
  */
-const BASE_SYSTEM = `You are ShifaIn's care assistant. ShifaIn arranges planned medical treatment in India for international patients: finding the right hospital and doctor, a treatment plan with an itemised estimate, visa letters, travel, stay, interpreters and support until they are home.
+const BASE_SYSTEM = `You are ShifaIn's patient-support assistant for medical tourism. ShifaIn arranges planned medical treatment in India for international patients: finding a suitable hospital and doctor, a free treatment plan with an itemised estimate, visa letters, travel, stay, interpreters, and a coordinator who follows up until they are home.
+
+YOUR JOB
+- Understand the treatment the patient wants and their preferred destination (a city or hospital in India), from this conversation.
+- Explain ShifaIn's process, hospital options, travel coordination and coordinator follow-up using only the KNOWLEDGE below and what WHERE WE ARE tells you.
+- Collect only what the next step needs, one clear question at a time.
+
+CONVERSATION RULES
+- Use only this conversation and this patient's case. Never mention or reveal anything about any other patient.
+- Work out what they want from their latest messages. If they change the treatment they want, follow the new one straight away and drop the old one.
+- Never assume a treatment (heart surgery, knee replacement or anything else) without evidence from this conversation or their case.
+- Never say a plan is ready, a hospital has confirmed or booked anything, or a coordinator has reviewed the case unless WHERE WE ARE says so. Never make up a case reference or a status; if the status is not given, say their coordinator will confirm it.
+- If something is missing, ask one relevant question. Never ask again for something they have already told you.
+- If you do not have verified information to answer, say so plainly and offer to connect them with a coordinator.
+- Never diagnose, prescribe or change medication, or promise an outcome, success rate or survival figure.
+- Never invent hospital prices, doctor names or availability, treatment recommendations or hospital facts. Do not quote prices yourself: their free plan includes an itemised estimate, which the treating hospital confirms.
+- ShifaIn arranges treatment in India. If they want it elsewhere, say so kindly and offer a coordinator.
+- If something sounds like an emergency happening now (severe chest pain, trouble breathing, heavy bleeding, collapse), tell them to call their local emergency number or go to the nearest emergency department.
 
 HOW YOU TALK
-- Answer what the patient actually asked first — briefly, honestly, in general terms — then ask at most ONE question that moves things forward.
-- At most three short sentences. Replies are often read aloud: no markdown, no lists, no emoji.
-- Warm and plain. Many patients are anxious and speaking a second language; avoid jargon or explain it.
-- Reply in the patient's language.
-
-WHAT YOU NEVER DO
-- Never diagnose, prescribe or promise an outcome, success rate or survival figure.
-- Never quote a price yourself. Say their free plan includes an itemised estimate, which the treating hospital confirms.
-- Never invent hospitals, doctors or facts. Prefer the KNOWLEDGE below over general knowledge.
-- If something sounds like an emergency happening now (severe chest pain, trouble breathing, heavy bleeding, collapse), tell them to call their local emergency number or go to the nearest emergency department.`;
+- Respond to their latest message first, before anything new, then at most one question or next step.
+- Usually one to three short sentences. Replies may be read aloud: no markdown, no lists, no emoji.
+- Warm, professional and reassuring, in plain words. Many patients are anxious and speaking a second language; avoid jargon or explain it.
+- Reply in the patient's language.`;
 
 export type ConversationMessage = {
   role: "user" | "assistant";
@@ -42,6 +61,8 @@ export type IntakeReplyResult = {
   extracted: ExtractedInfo;
   /** Set when the patient asked the app to do something the simple patterns missed. */
   command?: CommandName;
+  /** "scripted" when no AI answered and the fallback did. */
+  source?: "ai" | "scripted";
 };
 
 /** Where the conversation is, which decides what the assistant should be doing. */
@@ -60,7 +81,7 @@ type TurnInput = {
 
 type TurnResult = { reply: string; extracted: ExtractedInfo; command?: CommandName };
 
-const FIELD_KEYS = ["treatment", "condition", "duration", "previousTreatment", "age", "name", "phone", "email", "country"] as const;
+const FIELD_KEYS = ["treatment", "condition", "duration", "previousTreatment", "age", "destination", "name", "phone", "email", "country"] as const;
 
 const FIELD_HELP: Record<(typeof FIELD_KEYS)[number], string> = {
   treatment:
@@ -69,6 +90,7 @@ const FIELD_HELP: Record<(typeof FIELD_KEYS)[number], string> = {
   duration: "How long they have had it, if said.",
   previousTreatment: "Treatment they have already had, if said.",
   age: "The patient's age, if said.",
+  destination: "Where they would like treatment (a city or hospital), only if they said it.",
   name: "Their full name, only if they said it.",
   phone: "Their phone number with country code, only if they said it.",
   email: "Their email, only if they said it.",
@@ -96,6 +118,7 @@ ${
     ? `Still needed: ${missing.join(" and ")}. Ask for it naturally, one question at a time. If they describe symptoms without naming a treatment, infer the specialty yourself rather than asking them to name a procedure.`
     : "You have what is needed."
 }
+If they change the treatment they want, put the new one in treatment, and fill condition only with what they said about the new one.
 As soon as both treatment and condition are known, set ready to true and, in your reply, thank them and say you will take a few quick details to prepare their free plan. Do not ask for their name, phone, email or country yourself — the system asks for those next.`;
 }
 
@@ -169,14 +192,22 @@ const GEMINI_SCHEMA: ResponseSchema = {
   required: ["reply", "ready", "command"],
 };
 
-async function turnWithGemini(model: string, input: TurnInput, system: string): Promise<TurnResult> {
+async function turnWithGemini(model: string, input: TurnInput, system: string, timeoutMs: number): Promise<TurnResult> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const result = await genAI
-    .getGenerativeModel({
-      model,
-      systemInstruction: system,
-      generationConfig: { responseMimeType: "application/json", responseSchema: GEMINI_SCHEMA, temperature: 0.4 },
-    })
+    .getGenerativeModel(
+      {
+        model,
+        systemInstruction: system,
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: GEMINI_SCHEMA,
+          temperature: 0.4,
+          maxOutputTokens: MAX_REPLY_TOKENS,
+        },
+      },
+      { timeout: timeoutMs, baseUrl: geminiBaseUrl() },
+    )
     .generateContent({
       contents: normaliseHistory(input.history, input.message).map((turn) => ({
         role: turn.role === "assistant" ? "model" : "user",
@@ -205,14 +236,17 @@ const CLAUDE_RESPOND: Anthropic.Messages.Tool = {
 
 async function turnWithClaude(input: TurnInput, system: string): Promise<TurnResult> {
   const client = new Anthropic();
-  const response = await client.messages.create({
+  const response = await client.messages.create(
+    {
     model: CLAUDE_MODEL,
-    max_tokens: 700,
+    max_tokens: MAX_REPLY_TOKENS,
     system,
     messages: normaliseHistory(input.history, input.message).map((turn) => ({ role: turn.role, content: turn.content })),
     tools: [CLAUDE_RESPOND],
     tool_choice: { type: "tool", name: "respond" },
-  });
+    },
+    { timeout: CLAUDE_TIMEOUT_MS, maxRetries: 0 },
+  );
   const block = response.content.find((item) => item.type === "tool_use");
   if (!block || block.type !== "tool_use") throw new Error("Claude returned no reply");
   return readResult(block.input as Record<string, unknown>, input.commands);
@@ -230,7 +264,7 @@ export async function assistantTurn(input: TurnInput): Promise<TurnResult | null
   const system = await systemFor(input);
   if (available("gemini")) {
     try {
-      const result = await withGeminiModel((model) => turnWithGemini(model, input, system));
+      const result = await withGeminiModel((model, timeoutMs) => turnWithGemini(model, input, system, timeoutMs), { tier: "chat" });
       if (result.reply || result.command) return result;
     } catch (err) {
       console.error("[shifain] Gemini turn failed:", err);
@@ -240,9 +274,11 @@ export async function assistantTurn(input: TurnInput): Promise<TurnResult | null
   if (available("claude")) {
     try {
       const result = await turnWithClaude(input, system);
+      noteSuccess("claude", CLAUDE_MODEL);
       if (result.reply || result.command) return result;
     } catch (err) {
       console.error("[shifain] Claude turn failed:", err);
+      noteError("claude", CLAUDE_MODEL, err);
       noteFailure("claude", err);
     }
   }
@@ -270,12 +306,12 @@ export async function generateIntakeReply(
     stage: { kind: "medical", fields: currentFields },
     commands: options.commands === true,
   });
-  if (result) return result;
+  if (result) return { ...result, source: "ai" };
   console.error("[shifain] no AI provider answered; using the scripted intake");
-  return scriptedIntake(userMessage, currentFields);
+  return { ...scriptedIntake(userMessage, currentFields), source: "scripted" };
 }
 
-export type ChatReplyResult = { reply: string; command?: CommandName };
+export type ChatReplyResult = { reply: string; command?: CommandName; source?: "ai" | "scripted" };
 
 const COORDINATOR_FALLBACK =
   "Thank you for your message. Your coordinator has it and will reply here shortly. If it is urgent, please message us on WhatsApp.";
@@ -294,7 +330,9 @@ export async function generateChatReply(
     stage: { kind: "followup", caseSummary: options.caseSummary ?? "The patient already has a case open with ShifaIn." },
     commands: options.commands === true,
   });
-  return result ? { reply: result.reply, command: result.command } : { reply: COORDINATOR_FALLBACK };
+  return result
+    ? { reply: result.reply, command: result.command, source: "ai" }
+    : { reply: COORDINATOR_FALLBACK, source: "scripted" };
 }
 
 export async function generateReply(

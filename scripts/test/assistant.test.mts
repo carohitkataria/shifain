@@ -16,6 +16,8 @@ import {
 } from "../../src/lib/assistant/profile.ts";
 import { instantAnswer, knowledgeForPrompt } from "../../src/lib/assistant/knowledge.ts";
 import type { KnowledgeEntry } from "../../src/lib/assistant/config.ts";
+import { orderFor, rankGeminiModels } from "../../src/lib/ai/providers.ts";
+import { isGeneralQuestion } from "../../src/lib/assistant/stats.ts";
 
 // names
 assert.equal(readName("My name is rohit kataria"), "Rohit Kataria");
@@ -78,5 +80,22 @@ assert.equal(guessLanguage("Menga yordam kerak"), "uz");
 assert.equal(guessLanguage("I have chest pain"), "en");
 assert.equal(guessLanguage("+998 90 123"), null);
 assert.equal(guessLanguage("Anna"), null);
+
+// Gemini model order: chat tries the cheap, fast "lite" models first; plans the full ones
+const listed = rankGeminiModels(
+  ["gemini-3.8-flash", "gemini-3.8-flash-lite", "gemini-3.7-flash-lite", "gemini-3.9-flash-preview", "gemini-flash-latest", "gemini-3.8-flash-image"].map(
+    (name) => ({ name: `models/${name}`, supportedGenerationMethods: ["generateContent"] }),
+  ),
+);
+assert.deepEqual(orderFor(listed, "chat").slice(0, 2), ["gemini-3.8-flash-lite", "gemini-3.7-flash-lite"]);
+assert.equal(orderFor(listed, "plan")[0], "gemini-flash-latest");
+assert.ok(!listed.includes("gemini-3.9-flash-preview"), "previews are skipped while stable models exist");
+assert.ok(!listed.includes("gemini-3.8-flash-image"));
+
+// which questions are worth remembering for the team
+assert.equal(isGeneralQuestion("Do I need a visa for India?"), true);
+assert.equal(isGeneralQuestion("Сколько стоит замена колена?"), true);
+assert.equal(isGeneralQuestion("Anna Petrova"), false);
+assert.equal(isGeneralQuestion("My father has had chest pain for three months and the doctor in Tashkent says he needs a bypass soon"), false);
 
 console.log("assistant: profile readers and knowledge matching pass");

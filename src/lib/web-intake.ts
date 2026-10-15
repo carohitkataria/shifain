@@ -100,19 +100,33 @@ export async function findWebIntake(sessionId: string): Promise<WebIntake | null
   return db.collection<WebIntake>(COLLECTION).findOne({ _id: sessionId });
 }
 
-/** A fresh conversation for this browser, keeping nothing of the last. */
-export async function resetWebIntake(sessionId: string): Promise<WebIntake> {
+/**
+ * A fresh case for this browser. With `carryOver` (a patient starting a
+ * second case) their contact details, language and the chat so far stay, so
+ * they are not asked their name again and the coordinator still sees the
+ * whole conversation.
+ */
+export async function resetWebIntake(sessionId: string, carryOver?: WebIntake): Promise<WebIntake> {
   const db = await getDb();
   const now = new Date().toISOString();
+  const fields = emptyFields();
+  if (carryOver) {
+    fields.name = carryOver.fields.name;
+    fields.phone = carryOver.fields.phone;
+    fields.country = carryOver.fields.country;
+  }
   const record: WebIntake = {
     _id: sessionId,
     sessionId,
-    fields: emptyFields(),
+    fields,
     state: "medical_chat",
     complete: false,
     caseReference: null,
-    messages: [],
+    messages: carryOver?.messages.slice(-40) ?? [],
     uploads: [],
+    ...(carryOver
+      ? { email: carryOver.email ?? null, emailSkipped: carryOver.emailSkipped, locale: carryOver.locale, language: carryOver.language }
+      : {}),
     createdAt: now,
     updatedAt: now,
   };
@@ -156,6 +170,29 @@ export async function updateWebIntakeFields(
     if (v) setFields[`fields.${k}`] = v;
   }
   await db.collection<WebIntake>(COLLECTION).updateOne({ _id: sessionId }, { $set: setFields });
+  return (await db.collection<WebIntake>(COLLECTION).findOne({ _id: sessionId }))!;
+}
+
+/**
+ * The patient now wants a different treatment: the new one replaces the old,
+ * and what they said about the old one is dropped so the plan is not built
+ * on the wrong symptoms. Contact details already given stay.
+ */
+export async function switchWebIntakeTreatment(sessionId: string, treatment: string): Promise<WebIntake> {
+  const db = await getDb();
+  await db.collection<WebIntake>(COLLECTION).updateOne(
+    { _id: sessionId },
+    {
+      $set: {
+        "fields.treatment": treatment,
+        "fields.condition": null,
+        "fields.duration": null,
+        "fields.previousTreatment": null,
+        state: "medical_chat" as IntakeState,
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  );
   return (await db.collection<WebIntake>(COLLECTION).findOne({ _id: sessionId }))!;
 }
 
@@ -223,6 +260,7 @@ export async function createCaseFromWebIntake(
     fields.duration ? `Duration: ${fields.duration}` : null,
     fields.previousTreatment ? `Previous treatment: ${fields.previousTreatment}` : null,
     fields.age ? `Patient age: ${fields.age}` : null,
+    fields.destination ? `Preferred destination: ${fields.destination}` : null,
   ]
     .filter(Boolean)
     .join("\n");

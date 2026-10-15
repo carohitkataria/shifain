@@ -242,7 +242,7 @@ export function say(key: SayKey, lang: SayLang, vars: Record<string, string | nu
 export const STATUS_WORDS: Record<string, Line> = {
   new: { en: "received, waiting for review", ru: "получена, ждёт рассмотрения", uz: "qabul qilindi, ko'rib chiqilmoqda" },
   planning: { en: "your plan is being prepared", ru: "план готовится", uz: "reja tayyorlanmoqda" },
-  planned: { en: "your plan is ready, and a coordinator is checking it", ru: "план готов, координатор его проверяет", uz: "reja tayyor, koordinator tekshirmoqda" },
+  planned: { en: "your draft plan is ready, and a coordinator will review it with you", ru: "черновик плана готов, координатор проверит его вместе с вами", uz: "reja loyihasi tayyor, koordinator uni siz bilan ko'rib chiqadi" },
   "plan-failed": { en: "a coordinator is preparing your plan by hand", ru: "координатор готовит план вручную", uz: "koordinator rejani qo'lda tayyorlamoqda" },
   confirmed: { en: "confirmed with the hospital", ru: "подтверждена больницей", uz: "shifoxona tomonidan tasdiqlangan" },
   closed: { en: "closed", ru: "закрыта", uz: "yopilgan" },

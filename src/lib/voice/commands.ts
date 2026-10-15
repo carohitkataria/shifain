@@ -373,7 +373,7 @@ export async function continueCommand(ctx: Ctx, pending: PendingCommand): Promis
         return { reply: line("cancelled") };
       }
       if (answer !== "yes") return { reply: line("sayYesNo") };
-      const fresh = await resetWebIntake(ctx.sessionId);
+      const fresh = await resetWebIntake(ctx.sessionId, ctx.intake);
       return beginCase({ ...ctx, intake: fresh }, String(pending.data.rest ?? ""));
     }
 

@@ -352,11 +352,15 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
   const post = useCallback(async (body: BodyInit, headers?: HeadersInit): Promise<ChatReply> => {
     setSending(true);
     try {
-      const res = await fetch("/api/chat", { method: "POST", body, headers });
+      // A reply should come in seconds; never leave the patient watching dots.
+      const res = await fetch("/api/chat", { method: "POST", body, headers, signal: AbortSignal.timeout(30_000) });
       const data = (await res.json()) as ChatReply;
       if (!res.ok && !data.reply) return { error: data.error ?? "Something went wrong. Please try again." };
       return data;
-    } catch {
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "TimeoutError") {
+        return { error: "That's taking longer than it should. Please send it again, or tap “Talk to a person”." };
+      }
       return { error: "You seem to be offline. Please try again." };
     } finally {
       setSending(false);

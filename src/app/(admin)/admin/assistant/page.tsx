@@ -5,7 +5,9 @@ import { AssistantTester } from "@/components/admin/AssistantTester";
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getAssistantConfig, type KnowledgeEntry } from "@/lib/assistant/config";
-import { deleteEntryAction, saveEntryAction, saveInstructionsAction } from "./actions";
+import { recentStats, topQuestions, type AnswerPath } from "@/lib/assistant/stats";
+import { providerHealth } from "@/lib/ai/providers";
+import { deleteEntryAction, dismissQuestionAction, saveEntryAction, saveInstructionsAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -16,25 +18,44 @@ const FLOW = [
   { step: "4", title: "A coordinator", body: "Reply from Messages and the AI steps aside until you hand back.", cost: "You" },
 ];
 
+const PATH_LABEL: Record<AnswerPath, { label: string; bar: string }> = {
+  command: { label: "Commands", bar: "bg-leaf" },
+  instant: { label: "Instant answers", bar: "bg-emerald-400" },
+  profile: { label: "Guided steps", bar: "bg-teal-400" },
+  greeting: { label: "Welcomes", bar: "bg-sky-400" },
+  handoff: { label: "Coordinator", bar: "bg-saffron" },
+  scripted: { label: "No AI reachable", bar: "bg-red-400" },
+  ai: { label: "AI", bar: "bg-brand" },
+};
+
 const EXAMPLES = `For example:
 - Always mention that we have Russian- and Uzbek-speaking coordinators.
 - If someone asks about cancer treatment, say our oncology partners review reports within 24 hours.
 - Never recommend a specific hospital by name; the plan does that.
 - Keep replies under two sentences on Telegram.`;
 
-function EntryForm({ entry }: { entry?: KnowledgeEntry }) {
+function EntryForm({
+  entry,
+  draft,
+}: {
+  entry?: KnowledgeEntry;
+  /** Prefilled from a question patients asked, not yet saved. */
+  draft?: { questionId: string; entry: KnowledgeEntry };
+}) {
+  const shown = entry ?? draft?.entry;
   return (
     <form action={saveEntryAction} className="grid gap-3">
       {entry ? <input type="hidden" name="id" value={entry.id} /> : null}
+      {draft ? <input type="hidden" name="fromQuestion" value={draft.questionId} /> : null}
       <label>
         <span className={adminLabel}>Topic</span>
-        <input name="title" defaultValue={entry?.title} placeholder="e.g. Payment and deposits" className={adminField} required />
+        <input name="title" defaultValue={shown?.title} placeholder="e.g. Payment and deposits" className={adminField} required />
       </label>
       <label>
         <span className={adminLabel}>When patients ask about…</span>
         <input
           name="keywords"
-          defaultValue={entry?.keywords.join(", ")}
+          defaultValue={shown?.keywords.join(", ")}
           placeholder="payment, pay, deposit, оплата, to'lov"
           className={adminField}
         />
@@ -42,27 +63,27 @@ function EntryForm({ entry }: { entry?: KnowledgeEntry }) {
       </label>
       <label>
         <span className={adminLabel}>Answer (English)</span>
-        <textarea name="answerEn" defaultValue={entry?.answer.en} rows={3} className={adminField} required />
+        <textarea name="answerEn" defaultValue={shown?.answer.en} rows={3} className={adminField} />
       </label>
       <div className="grid gap-3 sm:grid-cols-2">
         <label>
           <span className={adminLabel}>Answer (Russian, optional)</span>
-          <textarea name="answerRu" defaultValue={entry?.answer.ru} rows={3} className={adminField} />
+          <textarea name="answerRu" defaultValue={shown?.answer.ru} rows={3} className={adminField} />
         </label>
         <label>
           <span className={adminLabel}>Answer (Uzbek, optional)</span>
-          <textarea name="answerUz" defaultValue={entry?.answer.uz} rows={3} className={adminField} />
+          <textarea name="answerUz" defaultValue={shown?.answer.uz} rows={3} className={adminField} />
         </label>
       </div>
       <div className="flex flex-wrap gap-x-6 gap-y-2">
         <label className="flex items-center gap-2 text-sm text-ink">
-          <input type="checkbox" name="instant" defaultChecked={entry?.instant ?? false} className="h-4 w-4 accent-[color:var(--brand)]" />
+          <input type="checkbox" name="instant" defaultChecked={shown?.instant ?? false} className="h-4 w-4 accent-[color:var(--brand)]" />
           <span>
             <b>Answer instantly</b> — reply with exactly this, without the AI
           </span>
         </label>
         <label className="flex items-center gap-2 text-sm text-ink">
-          <input type="checkbox" name="enabled" defaultChecked={entry?.enabled ?? true} className="h-4 w-4 accent-[color:var(--brand)]" />
+          <input type="checkbox" name="enabled" defaultChecked={shown?.enabled ?? true} className="h-4 w-4 accent-[color:var(--brand)]" />
           <span>In use</span>
         </label>
       </div>
@@ -83,13 +104,16 @@ function EntryForm({ entry }: { entry?: KnowledgeEntry }) {
 export default async function AssistantPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
   if (!(await isAuthenticated())) redirect("/admin/login");
   const { saved, error } = await searchParams;
-  const config = await getAssistantConfig();
+  const [config, stats, questions] = await Promise.all([getAssistantConfig(), recentStats(7), topQuestions(12)]);
+  const health = providerHealth();
+  const free = stats.total - stats.byPath.ai;
+  const freeShare = stats.total ? Math.round((free / stats.total) * 100) : null;
 
   return (
     <AdminShell title="AI assistant" subtitle="Teach the assistant that answers patients on the website, by voice and on Telegram" fullWidth>
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "deleted" ? "entry deleted" : undefined} /> : null}
-      {error === "answer" ? <Warn>An entry needs an English answer.</Warn> : null}
+      {error === "answer" ? <Warn>An entry needs an answer in at least one language.</Warn> : null}
 
       <ol className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {FLOW.map((item) => (
@@ -107,6 +131,129 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
           </li>
         ))}
       </ol>
+
+      <div className="mb-6 grid gap-6 lg:grid-cols-2">
+        <Card title="Last 7 days" hint="How each patient message was answered. Everything except “AI” is free.">
+          {stats.total === 0 ? (
+            <p className="text-sm text-ink-soft">No conversations yet.</p>
+          ) : (
+            <>
+              <p className="text-3xl font-extrabold text-ink">
+                {freeShare}% <span className="text-base font-semibold text-ink-soft">answered without AI</span>
+              </p>
+              <p className="mt-1 text-sm text-ink-soft">
+                {stats.total} messages · {stats.byPath.ai} used AI
+                {stats.byPath.scripted ? ` · ${stats.byPath.scripted} when no AI was reachable` : ""}
+              </p>
+              <div className="mt-4 flex h-3 overflow-hidden rounded-full bg-surface-muted" aria-hidden="true">
+                {(Object.keys(PATH_LABEL) as AnswerPath[]).map((path) =>
+                  stats.byPath[path] ? (
+                    <span key={path} className={PATH_LABEL[path].bar} style={{ width: `${(stats.byPath[path] / stats.total) * 100}%` }} />
+                  ) : null,
+                )}
+              </div>
+              <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3">
+                {(Object.keys(PATH_LABEL) as AnswerPath[]).map((path) => (
+                  <li key={path} className="flex items-center gap-2 text-ink-soft">
+                    <span className={`h-2.5 w-2.5 rounded-full ${PATH_LABEL[path].bar}`} aria-hidden="true" />
+                    {PATH_LABEL[path].label}: <b className="text-ink">{stats.byPath[path]}</b>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </Card>
+
+        <Card title="AI health" hint="Live from this server since it last started. If Gemini shows errors, see the guide in the chat or Google AI Studio → Usage.">
+          <ul className="space-y-3 text-sm">
+            {(
+              [
+                ["Gemini", health.gemini],
+                ["Claude", health.claude],
+              ] as const
+            ).map(([label, item]) => {
+              const failing = item.lastErrorAt && (!item.lastOkAt || item.lastErrorAt > item.lastOkAt);
+              const state = !item.configured
+                ? { text: "Not set up", tone: "bg-surface-muted text-ink-soft" }
+                : item.pausedUntil
+                  ? { text: "Paused (quota or credit)", tone: "bg-saffron/15 text-saffron" }
+                  : failing
+                    ? { text: "Errors", tone: "bg-red-50 text-red-700" }
+                    : item.lastOkAt
+                      ? { text: "Working", tone: "bg-leaf/10 text-leaf" }
+                      : { text: "Not used yet", tone: "bg-surface-muted text-ink-soft" };
+              return (
+                <li key={label} className="rounded-xl border border-line p-3">
+                  <p className="flex items-center gap-2">
+                    <b className="text-ink">{label}</b>
+                    <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${state.tone}`}>{state.text}</span>
+                  </p>
+                  {item.lastOkAt ? (
+                    <p className="mt-1 text-ink-soft">
+                      Last answer {new Date(item.lastOkAt).toLocaleString("en-GB")} · {item.lastOkModel}
+                    </p>
+                  ) : null}
+                  {item.lastError ? (
+                    <p className="mt-1 break-words text-ink-soft">
+                      Last error {item.lastErrorAt ? new Date(item.lastErrorAt).toLocaleString("en-GB") : ""} · {item.lastErrorModel}:{" "}
+                      <span className="text-red-700">{item.lastError}</span>
+                    </p>
+                  ) : null}
+                  {"chatOrder" in item && item.chatOrder.length ? (
+                    <p className="mt-1 text-xs text-ink-muted">Chat tries, in order: {item.chatOrder.slice(0, 4).join(" → ")}</p>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
+      </div>
+
+      {questions.length > 0 ? (
+        <div className="mb-6">
+          <Card title="Questions the AI answered most" hint="Each of these cost an AI call every time. Turn the frequent ones into instant answers and they become free.">
+            <ul className="divide-y divide-line">
+              {questions.map((question) => (
+                <li key={question._id} className="py-3">
+                  <details>
+                    <summary className="flex cursor-pointer list-none items-start gap-3">
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-semibold text-ink">{question.text}</span>
+                        <span className="mt-0.5 line-clamp-2 block text-sm text-ink-soft">AI said: {question.lastReply}</span>
+                      </span>
+                      <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-xs font-bold text-brand-deep">
+                        ×{question.count}
+                      </span>
+                    </summary>
+                    <div className="mt-4 rounded-xl bg-surface-muted p-4">
+                      <p className="mb-3 text-sm text-ink-soft">Check the answer, add keywords, tick “Answer instantly”, and save.</p>
+                      <EntryForm
+                        draft={{
+                          questionId: question._id,
+                          entry: {
+                            id: "",
+                            title: question.text.replace(/\?$/, ""),
+                            answer: question.lang === "en" ? { en: question.lastReply } : { en: "", [question.lang]: question.lastReply },
+                            keywords: [],
+                            instant: true,
+                            enabled: true,
+                          },
+                        }}
+                      />
+                      <form action={dismissQuestionAction} className="mt-2">
+                        <input type="hidden" name="id" value={question._id} />
+                        <button type="submit" className="text-sm font-semibold text-ink-soft hover:underline">
+                          Dismiss this question
+                        </button>
+                      </form>
+                    </div>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+      ) : null}
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
         <div className="min-w-0 space-y-6">

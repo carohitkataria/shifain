@@ -17,7 +17,7 @@ import {
   yesNo,
 } from "../../src/lib/voice/intents.ts";
 import { guessGender, pickDeviceVoice, rankDeviceVoices } from "../../src/lib/voice/voices.ts";
-import { matchTreatment } from "../../src/lib/voice/treatments.ts";
+import { differentTreatments, matchTreatment, newTreatmentRequest } from "../../src/lib/voice/treatments.ts";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -78,6 +78,21 @@ const expect: [string, string | null][] = [
   ["Do I need a visa?", null],
   ["У меня болит колено уже два года", null],
   ["Hello", null],
+  // the welcome's quick replies
+  ["Get a free treatment plan", "start_case"],
+  ["How much does treatment cost?", "cost"],
+  ["Check my case", "case_status"],
+  ["Talk to a person", "human"],
+  ["Start a new case", "start_case"],
+  ["Case status", "case_status"],
+  ["Нужен план лечения", "start_case"],
+  ["Статус моей заявки", "case_status"],
+  ["Связаться с человеком", "human"],
+  ["Открыть новую заявку", "start_case"],
+  ["Bepul reja kerak", "start_case"],
+  ["Arizam holati", "case_status"],
+  ["Odam bilan gaplashish", "human"],
+  ["Yangi ariza och", "start_case"],
   ["What is the best hospital for me?", null], // a question for the assistant, not a page to open
   ["My doctor told me I need surgery on my spine", null],
 ];
@@ -154,4 +169,20 @@ for (const [phrase, code] of spoken) {
   assert.equal(matchTreatment(phrase, treatments)?._id ?? null, code, `"${phrase}" should be ${code}`);
 }
 
-console.log(`voice intents: ${expect.length} phrases and slot readers pass`);
+// A changed treatment is followed; a question about one, or the same one again, is not a change.
+const switches: [string, string | null, string | null][] = [
+  ["I want a knee replacement", "cabg", "total-knee-replacement"],
+  ["Actually I need a hip replacement instead", "heart bypass surgery", "total-hip-replacement"],
+  ["Мне нужна замена колена", "cabg", "total-knee-replacement"],
+  ["I want a knee replacement", "total-knee-replacement", null],
+  ["How much does a knee replacement cost?", "cabg", null],
+  ["my knee hurts", "cabg", null],
+];
+for (const [text, current, code] of switches) {
+  assert.equal(newTreatmentRequest(text, current, treatments)?._id ?? null, code, `"${text}" after ${current}`);
+}
+assert.equal(differentTreatments("knee replacement", "heart bypass surgery", treatments), true);
+assert.equal(differentTreatments("total knee replacement", "knee replacement surgery", treatments), false);
+assert.equal(differentTreatments("cardiology evaluation", "knee replacement", treatments), false);
+
+console.log(`voice intents: ${expect.length} phrases, slot readers and treatment changes pass`);

@@ -30,7 +30,7 @@ function score(message: string, entry: KnowledgeEntry): number {
 }
 
 export function answerIn(entry: KnowledgeEntry, lang: Lang): string {
-  return (entry.answer[lang] || entry.answer.en || "").trim();
+  return (entry.answer[lang] || entry.answer.en || entry.answer.ru || entry.answer.uz || "").trim();
 }
 
 /**

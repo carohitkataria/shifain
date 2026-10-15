@@ -20,6 +20,10 @@ import { parseCommand, slotsFor } from "../voice/intents";
 import { continueCommand, runCommand, type ClientAction, type CommandOutcome, type ReplyLink } from "../voice/commands";
 import { STATUS_WORDS, sayLang, type SayLang } from "../voice/command-copy";
 import { getAssistantConfig } from "./config";
+import { countAnswer, rememberQuestion, type AnswerPath } from "./stats";
+import { listTreatments } from "../catalogue";
+import { differentTreatments, newTreatmentRequest } from "../voice/treatments";
+import { markHumanRequested, switchWebIntakeTreatment } from "../web-intake";
 import { instantAnswer } from "./knowledge";
 import {
   guessLanguage,
@@ -43,7 +47,7 @@ export type TurnReply = {
   /** A coordinator is handling this chat; the assistant is quiet. */
   handoff?: boolean;
   /** Which path answered — shown in the admin test console. */
-  via: "command" | "instant" | "ai" | "scripted" | "profile" | "handoff";
+  via: AnswerPath;
 };
 
 type TurnInput = {
@@ -67,6 +71,69 @@ const CASE_OPENED: Record<SayLang, string> = {
   ru: "Спасибо, {name}. Заявка открыта — номер заканчивается на {ref}. Бесплатный план готовится, это около минуты — открываю его. Координатор также свяжется с вами по номеру {phone} в течение 24 часов. Вы вошли на этом устройстве — спрашивайте «какой статус моей заявки» в любое время.",
   uz: "Rahmat, {name}. Arizangiz ochildi — raqami {ref} bilan tugaydi. Bepul reja tayyorlanmoqda, bir daqiqacha — uni ochyapman. Koordinator 24 soat ichida {phone} raqami orqali bog'lanadi. Siz bu qurilmada tizimga kirdingiz — istalgan vaqtda «arizam qanday holatda» deb so'rang.",
 };
+
+const GREETING =
+  /^(hi|hii+|hello|hey|hola|good (morning|afternoon|evening)|salom|assalomu alaykum|assalom|привет|здравствуйте|здравствуй|добрый (день|вечер)|салам|намасте|namaste)[!. ]*$/i;
+
+const NO_AI_FOLLOWUP: Record<SayLang, string> = {
+  en: "Thank you — I've passed this to your coordinator, who will reply here shortly. You can also say “show my plan” or “case status” any time.",
+  ru: "Спасибо — я передал это вашему координатору, он скоро ответит здесь. В любой момент можно сказать «покажи план» или «статус заявки».",
+  uz: "Rahmat — buni koordinatoringizga yubordim, u tez orada shu yerda javob beradi. Istalgan vaqtda «rejamni ko'rsat» yoki «ariza holati» deyishingiz mumkin.",
+};
+
+const WELCOME: Record<SayLang, { fresh: string; back: string; resume: string; chips: string[]; backChips: string[] }> = {
+  en: {
+    fresh: "Hello, and welcome to ShifaIn. I can prepare a free treatment plan with an estimate, answer questions about treatment in India, or connect you with a coordinator. What would you like to do?",
+    back: "Welcome back{name}. Your case ending {ref}: {status}. What would you like to do?",
+    resume: "Hello again{name}. Let's pick up where we left off.",
+    chips: ["Get a free treatment plan", "How much does treatment cost?", "Check my case", "Talk to a person"],
+    backChips: ["Show my plan", "Case status", "Start a new case", "Talk to a person"],
+  },
+  ru: {
+    fresh: "Здравствуйте, добро пожаловать в ShifaIn. Я могу составить бесплатный план лечения со сметой, ответить на вопросы о лечении в Индии или связать вас с координатором. Что вас интересует?",
+    back: "С возвращением{name}. Ваша заявка …{ref}: {status}. Чем помочь?",
+    resume: "Снова здравствуйте{name}. Продолжим с того места, где остановились.",
+    chips: ["Нужен план лечения", "Сколько стоит лечение?", "Статус моей заявки", "Связаться с человеком"],
+    backChips: ["Покажи мой план", "Статус заявки", "Открыть новую заявку", "Связаться с человеком"],
+  },
+  uz: {
+    fresh: "Assalomu alaykum, ShifaIn'ga xush kelibsiz. Smetali bepul davolash rejasini tayyorlay olaman, Hindistonda davolanish haqida savollarga javob beraman yoki koordinator bilan bog'layman. Nima qilmoqchisiz?",
+    back: "Qaytganingizdan xursandmiz{name}. Arizangiz …{ref}: {status}. Qanday yordam beray?",
+    resume: "Yana salom{name}. To'xtagan joyimizdan davom etamiz.",
+    chips: ["Bepul reja kerak", "Davolash qancha turadi?", "Arizam holati", "Odam bilan gaplashish"],
+    backChips: ["Rejamni ko'rsat", "Ariza holati", "Yangi ariza och", "Odam bilan gaplashish"],
+  },
+};
+
+/** The answer to "hi": new visitors get the options, returning patients their case, mid-way patients the next step. */
+async function welcome(intake: WebIntake, lang: SayLang): Promise<TurnReply> {
+  const copy = WELCOME[lang];
+  const first = (intake.fields.name ?? "").split(" ")[0];
+  const name = first ? `, ${first}` : "";
+  if (intake.complete && intake.caseReference) {
+    const record = await getCase(intake.caseReference).catch(() => null);
+    const status = record ? (STATUS_WORDS[record.status]?.[lang] ?? record.status) : "";
+    return {
+      reply: copy.back.replace("{name}", name).replace("{ref}", intake.caseReference.slice(-4)).replace("{status}", status),
+      state: "complete",
+      caseReference: intake.caseReference,
+      suggestions: copy.backChips,
+      via: "greeting",
+    };
+  }
+  if (intake.state === "collecting_profile") {
+    const step = nextProfileStep(profileOf(intake));
+    if (step) {
+      return {
+        reply: `${copy.resume.replace("{name}", name)} ${profileQuestion(step, lang)}`,
+        state: "collecting_profile",
+        suggestions: profileSuggestions(step, lang),
+        via: "greeting",
+      };
+    }
+  }
+  return { reply: copy.fresh, state: intake.state, suggestions: copy.chips, via: "greeting" };
+}
 
 const TEST_CASE_NOTE = "(Test mode) Everything a case needs is here, so a real chat would open the case now, sign the patient in and open their plan page.";
 
@@ -100,6 +167,10 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
 
   const done = async (reply: TurnReply): Promise<TurnReply> => {
     if (reply.reply) await pushWebIntakeMessage(sessionId, "assistant", reply.reply);
+    if (!input.dryRun) {
+      await countAnswer(reply.via);
+      if (reply.via === "ai") await rememberQuestion(text, reply.reply, lang);
+    }
     return reply;
   };
 
@@ -115,6 +186,14 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
   const aiLanguage = input.detectedLanguage ?? guessed ?? intake.language;
   const command = await commandTurn(ctx, cities);
   if (command) return done(await afterCommand(input, command, lang));
+
+  // The patient changed their mind ("actually I need a knee replacement"): the
+  // new treatment replaces the old before anything else is asked.
+  const treatments = await listTreatments().catch(() => []);
+  if (!intake.complete && intake.fields.treatment) {
+    const switched = newTreatmentRequest(text, intake.fields.treatment, treatments);
+    if (switched) intake = await switchWebIntakeTreatment(sessionId, switched.name.en ?? switched._id);
+  }
 
   // 3. Contact details, once the medical picture is clear.
   if (intake.state === "collecting_profile" && !intake.complete) {
@@ -141,13 +220,27 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
           "You are collecting the patient's contact details so a coordinator can prepare their free plan and reach them. Answer their question briefly; do not ask for any detail yourself — the system asks next.",
       });
       return done({
-        reply: `${answered.reply} ${profileQuestion(step, lang)}`.trim(),
+        reply: `${answered.source === "scripted" ? "" : answered.reply} ${profileQuestion(step, lang)}`.trim(),
         state: "collecting_profile",
         suggestions: profileSuggestions(step, lang),
-        via: "ai",
+        via: answered.source === "scripted" ? "profile" : "ai",
       });
     }
     return done(await askNextOrOpen(input, intake, lang, ""));
+  }
+
+  // A plain "hi": a welcome with clear next steps, no AI needed.
+  if (GREETING.test(text.trim())) return done(await welcome(intake, lang));
+
+  // A returning patient naming a different treatment ("I want a knee replacement")
+  // is offered a new case rather than a reply about the old one.
+  if (intake.complete) {
+    const record = await getCase(intake.caseReference ?? "").catch(() => null);
+    const current = record?.plan?.recommendedTreatmentCode ?? record?.statedNeed;
+    if (newTreatmentRequest(text, current, treatments)) {
+      const outcome = await runCommand(ctx, { name: "start_case", slots: { rest: text } });
+      return done(await afterCommand(input, outcome, lang));
+    }
   }
 
   // 4. Instant answers the team has written.
@@ -159,13 +252,18 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
 
   // 5. Conversation.
   if (intake.complete) {
-    const { reply, command: named } = await generateChatReply(text, history, aiLanguage, {
+    const { reply, command: named, source } = await generateChatReply(text, history, aiLanguage, {
       commands: true,
       caseSummary: await caseSummary(intake),
     });
     if (named) {
       const outcome = await runCommand({ ...ctx, intake }, { name: named, slots: slotsFor(named, text, cities) });
       return done(await afterCommand(input, outcome, lang));
+    }
+    if (source === "scripted") {
+      // No AI could answer: a person will, and the inbox flags this chat for them.
+      if (!input.dryRun) await markHumanRequested(sessionId);
+      return done({ reply: NO_AI_FOLLOWUP[lang], state: "complete", caseReference: intake.caseReference, via: "scripted" });
     }
     return done({ reply, state: "complete", caseReference: intake.caseReference, via: "ai" });
   }
@@ -177,6 +275,15 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
   }
 
   const { readyToSubmit, email, ...fields } = turn.extracted;
+  // A different treatment named mid-conversation replaces the old one, and
+  // the old symptoms are not carried over to it.
+  const before = intake.fields;
+  if (fields.treatment && before.treatment && differentTreatments(fields.treatment, before.treatment, treatments)) {
+    await switchWebIntakeTreatment(sessionId, fields.treatment);
+    if (fields.condition === before.condition) fields.condition = undefined;
+    if (fields.duration === before.duration) fields.duration = undefined;
+    if (fields.previousTreatment === before.previousTreatment) fields.previousTreatment = undefined;
+  }
   // Details volunteered early ("I'm Anna, +998…") are kept, after the same checks as when asked.
   const volunteered = {
     name: fields.name ? readProfileAnswer("name", fields.name).value : undefined,
@@ -189,6 +296,7 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
     duration: fields.duration,
     previousTreatment: fields.previousTreatment,
     age: fields.age,
+    destination: fields.destination,
     ...volunteered,
   });
   if (email && readProfileAnswer("email", email).value) await setWebIntakeProfileExtras(sessionId, { email });
@@ -198,9 +306,9 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
   if (ready) {
     await setWebIntakeState(sessionId, "collecting_profile");
     intake = await getOrCreateWebIntake(sessionId);
-    return done({ ...(await askNextOrOpen(input, intake, lang, turn.reply)), via: "ai" });
+    return done({ ...(await askNextOrOpen(input, intake, lang, turn.reply)), via: turn.source === "scripted" ? "scripted" : "ai" });
   }
-  return done({ reply: turn.reply, state: "medical_chat", via: "ai" });
+  return done({ reply: turn.reply, state: "medical_chat", via: turn.source === "scripted" ? "scripted" : "ai" });
 }
 
 const QUESTION_START =
@@ -277,7 +385,9 @@ async function askNextOrOpen(input: TurnInput, intake: WebIntake, lang: SayLang,
   const reference = await createCaseFromWebIntake(intake, input.locale);
   if (intake.fields.phone) await startPatientSession(`+${intake.fields.phone.replace(/\D/g, "")}`).catch(() => undefined);
   const phone = intake.fields.phone ? `+${intake.fields.phone.replace(/\D/g, "")}` : "";
-  const reply = CASE_OPENED[lang]
+  // After the AI's own thanks, the case news starts without a second one.
+  const template = lead ? CASE_OPENED[lang].replace(/^[^.]*\{name\}\.\s*/, "") : CASE_OPENED[lang];
+  const reply = template
     .replace("{name}", (intake.fields.name ?? "").split(" ")[0])
     .replace("{ref}", reference.slice(-4))
     .replace("{phone}", phone);
@@ -290,12 +400,24 @@ async function askNextOrOpen(input: TurnInput, intake: WebIntake, lang: SayLang,
   };
 }
 
+/** What the AI may say about the case: only what the backend holds, never a guess. */
 async function caseSummary(intake: WebIntake): Promise<string> {
   const record = intake.caseReference ? await getCase(intake.caseReference).catch(() => null) : null;
-  if (!record) return "The patient already has a case open with ShifaIn.";
+  if (!record) {
+    return "The patient has a case with ShifaIn, but its details could not be loaded just now. Do not state a status, plan or reference; if they ask, say their coordinator will confirm.";
+  }
+  const plan =
+    record.status === "planning"
+      ? "Their plan is still being prepared — it is not ready."
+      : record.plan
+        ? "A draft plan was prepared automatically; a coordinator has not confirmed it with a hospital yet."
+        : "There is no plan yet — do not say one is ready.";
   return [
-    `Their case (reference ending ${record._id.slice(-4)}) is open. Status: ${STATUS_WORDS[record.status]?.en ?? record.status}.`,
-    record.statedNeed ? `They asked about: ${record.statedNeed}.` : "",
+    `Their case reference ends ${record._id.slice(-4)}. Status from the system: ${STATUS_WORDS[record.status]?.en ?? record.status}.`,
+    record.status === "confirmed" ? "The hospital has confirmed." : plan,
+    record.statedNeed
+      ? `The case is about: ${record.statedNeed}. If their latest message is about a different treatment, follow that instead of assuming this one.`
+      : "",
     record.plan?.understanding ? `Plan summary: ${record.plan.understanding}` : "",
     "A coordinator contacts them within 24 hours. For changes to the plan or account, set the matching command.",
   ]
