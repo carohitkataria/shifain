@@ -31,7 +31,7 @@ export function Header({
     { href: `${home}/hospitals`, label: t(content.nav.hospitals, locale) },
     { href: `${home}#journey`, label: t(content.nav.ourProcess, locale) },
     { href: `${home}#why-india`, label: t(content.nav.whyIndia, locale) },
-    { href: `${home}#stories`, label: t(content.nav.stories, locale) },
+    { href: `${home}#costs`, label: t(content.nav.costEstimate, locale) },
     { href: `${home}#about`, label: t(content.nav.aboutUs, locale) },
   ];
   const login = { href: `${home}/portal/patient`, label: account ?? t(content.nav.loginSignup, locale) };

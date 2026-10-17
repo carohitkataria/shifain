@@ -4,15 +4,39 @@ import { SECTION_IDS } from "./content-types";
 /** Compact helper for authoring a localized string. */
 const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
 
-const allSectionsOn = () =>
-  Object.fromEntries(SECTION_IDS.map((id, i) => [id, { enabled: true, order: i }])) as SiteContent["sections"];
+/**
+ * The homepage, in order. Sections not listed stay in the code and can be
+ * switched back on under Admin → Content; see docs/design/homepage.md for why
+ * they are off by default (each repeated something said elsewhere).
+ */
+const HOMEPAGE_ORDER: string[] = [
+  "hero",
+  "stats",
+  "specialties",
+  "journey",
+  "costs",
+  "whyIndia",
+  "hospitals",
+  "stories",
+  "faq",
+  "closing",
+  "partners",
+];
+
+const homepageSections = () =>
+  Object.fromEntries(
+    SECTION_IDS.map((id, i) => {
+      const at = HOMEPAGE_ORDER.indexOf(id);
+      return [id, { enabled: at >= 0, order: at >= 0 ? at : HOMEPAGE_ORDER.length + i }];
+    }),
+  ) as SiteContent["sections"];
 
 export const defaultContent: SiteContent = {
   version: 1,
   updatedAt: "1970-01-01T00:00:00.000Z",
 
   brand: {
-    name: "ShifaIn",
+    name: "Shifain",
     tagline: l(
       "Global health journeys to India",
       "Глобальные медицинские маршруты в Индию",
@@ -41,7 +65,7 @@ export const defaultContent: SiteContent = {
     loginSignup: l("Login / Sign Up", "Вход / Регистрация", "Kirish / Ro'yxatdan o'tish"),
   },
 
-  sections: allSectionsOn(),
+  sections: homepageSections(),
 
   hero: {
     eyebrow: l(
@@ -130,7 +154,7 @@ export const defaultContent: SiteContent = {
   stats: { items: [] },
 
   usps: {
-    eyebrow: l("Why ShifaIn", "Почему ShifaIn", "Nega ShifaIn"),
+    eyebrow: l("Why Shifain", "Почему Shifain", "Nega Shifain"),
     title: l("Everything that usually takes weeks — at once", "Всё, что обычно занимает недели — сразу", "Odatda haftalar ketadigan ishlar — bir zumda"),
     body: l(
       "One upload sets the whole journey in motion. Everything below runs from the same case file.",
@@ -203,89 +227,65 @@ export const defaultContent: SiteContent = {
   },
 
   journey: {
-    eyebrow: l("Your journey", "Ваш маршрут", "Sizning safaringiz"),
-    title: l("From reports to recovery, one path", "От документов до выздоровления — один путь", "Hujjatdan sog'ayishgacha — yagona yo'l"),
+    eyebrow: l("How it works", "Как это работает", "Qanday ishlaydi"),
+    title: l("How it works", "Как это работает", "Qanday ishlaydi"),
     body: l(
-      "You upload your reports. Everything after that is ours to run.",
-      "Вы загружаете документы. Всё остальное — наша работа.",
-      "Siz hujjatlarni yuklaysiz. Qolgan hamma ishni biz bajaramiz.",
+      "Four steps, with one coordinator who speaks your language from the first message to your follow-up at home.",
+      "Четыре шага и один координатор, говорящий на вашем языке, — от первого сообщения до наблюдения дома.",
+      "To'rt qadam va sizning tilingizda gaplashadigan bitta koordinator — birinchi xabardan uydagi kuzatuvgacha.",
     ),
     steps: [
       {
         id: "j1",
         icon: "upload",
-        title: l("Upload your reports", "Загрузите документы", "Hujjatlaringizni yuklang"),
+        title: l("Share your reports", "Отправьте документы", "Hujjatlarni yuboring"),
         body: l(
-          "Share scans, prescriptions and test results in any language.",
-          "Приложите снимки, назначения и результаты анализов на любом языке.",
-          "Tasvirlar, retseptlar va tahlil natijalarini istalgan tilda yuboring.",
+          "Scans, test results or a doctor's letter, in any language — or describe the problem in the chat.",
+          "Снимки, анализы или заключение врача на любом языке — или опишите проблему в чате.",
+          "Tasvirlar, tahlillar yoki shifokor xulosasi istalgan tilda — yoki muammoni chatda yozing.",
         ),
       },
       {
         id: "j2",
-        icon: "spark",
-        title: l("Instant plan & estimate", "Мгновенный план и смета", "Tezkor reja va hisob"),
+        icon: "clipboard",
+        title: l("Get your free plan", "Получите бесплатный план", "Bepul rejani oling"),
         body: l(
-          "An itemised plan appears in minutes — treatment, stay, travel and total cost.",
-          "Детальный план появляется за минуты — лечение, проживание, поездка и общая стоимость.",
-          "Batafsil reja bir necha daqiqada — davolash, turar joy, safar va umumiy xarajat.",
+          "A draft treatment plan with an itemised estimate, usually within minutes.",
+          "Черновик плана лечения с детальной сметой — обычно за несколько минут.",
+          "Batafsil smetali davolash rejasi loyihasi — odatda bir necha daqiqada.",
         ),
       },
       {
         id: "j3",
-        icon: "sliders",
-        title: l("Shape your package", "Настройте свой пакет", "Paketingizni sozlang"),
+        icon: "stethoscope",
+        title: l("The hospital confirms", "Клиника подтверждает", "Shifoxona tasdiqlaydi"),
         body: l(
-          "Add or remove flights, hotel stay, transfers and interpreter — the estimate updates live.",
-          "Добавляйте или убирайте перелёты, отель, трансферы и переводчика — смета обновляется сразу.",
-          "Parvoz, mehmonxona, transfer va tarjimonni qo'shing yoki olib tashlang — hisob darhol yangilanadi.",
+          "The treating specialist reviews your case and confirms the plan and price, normally within 48 hours.",
+          "Лечащий специалист изучает случай и подтверждает план и цену — обычно в течение 48 часов.",
+          "Davolovchi mutaxassis holatni ko'rib chiqib, reja va narxni odatda 48 soat ichida tasdiqlaydi.",
         ),
       },
       {
         id: "j4",
-        icon: "stethoscope",
-        title: l("Doctor confirmation in 48 hours", "Подтверждение врача за 48 часов", "48 soatda shifokor tasdig'i"),
-        body: l(
-          "The treating specialist reviews your case and confirms the final plan and price.",
-          "Лечащий специалист изучает случай и подтверждает окончательный план и цену.",
-          "Davolovchi mutaxassis holatni ko'rib chiqadi va yakuniy reja hamda narxni tasdiqlaydi.",
-        ),
-      },
-      {
-        id: "j5",
         icon: "plane",
-        title: l("We arrange the travel", "Мы организуем поездку", "Safarni biz tashkil qilamiz"),
+        title: l("Travel and treatment", "Поездка и лечение", "Safar va davolanish"),
         body: l(
-          "Medical visa, flights, airport pickup, accommodation and admission — handled end to end.",
-          "Медицинская виза, перелёты, встреча в аэропорту, проживание и госпитализация — под ключ.",
-          "Tibbiy viza, parvoz, aeroportdan kutib olish, turar joy va gospitalizatsiya — to'liq xizmat.",
-        ),
-      },
-      {
-        id: "j6",
-        icon: "home",
-        title: l("Treatment & follow-up home", "Лечение и наблюдение дома", "Davolash va uyda kuzatuv"),
-        body: l(
-          "Treatment at the guaranteed price, then remote follow-ups once you are back home.",
-          "Лечение по гарантированной цене, затем дистанционное наблюдение после возвращения.",
-          "Kafolatlangan narxda davolash, so'ngra uyga qaytgach masofaviy kuzatuv.",
+          "We arrange the visa letter, travel and stay, and stay with you until your follow-up at home.",
+          "Мы готовим визовое письмо, поездку и проживание и остаёмся с вами до наблюдения дома.",
+          "Viza xati, safar va turar joyni tashkil qilamiz va uydagi kuzatuvgacha siz bilan bo'lamiz.",
         ),
       },
     ],
-    footnote: l(
-      "A dedicated case manager stays with you at every stop on this path.",
-      "На каждом этапе этого пути с вами персональный менеджер.",
-      "Bu yo'lning har bir bosqichida siz bilan shaxsiy menejer bo'ladi.",
-    ),
+    footnote: l("", "", ""),
   },
 
   specialties: {
     eyebrow: l("Treatment categories", "Направления лечения", "Davolash yo'nalishlari"),
-    title: l("Specialised care, matched to you", "Специализированная помощь под ваш случай", "Sizga mos ixtisoslashgan yordam"),
+    title: l("Find your treatment", "Выберите лечение", "Davolashni tanlang"),
     body: l(
-      "Every plan is confirmed by the treating doctor after a medical evaluation.",
-      "Каждый план подтверждается лечащим врачом после медицинской оценки.",
-      "Har bir reja tibbiy baholashdan so'ng davolovchi shifokor tomonidan tasdiqlanadi.",
+      "Choose an area of care to see its treatments, typical stay and what to expect.",
+      "Выберите направление, чтобы увидеть виды лечения, сроки и чего ожидать.",
+      "Yo'nalishni tanlang — davolash turlari, odatiy muddat va nimani kutish kerakligini ko'ring.",
     ),
     linkLabel: l("Explore treatment", "Подробнее о лечении", "Davolash haqida batafsil"),
     items: [
@@ -534,23 +534,23 @@ export const defaultContent: SiteContent = {
     priceBadge: l("Guaranteed price", "Гарантированная цена", "Kafolatlangan narx"),
     translatorTitle: l("Speak to anyone, in your language", "Говорите с каждым на своём языке", "Har kim bilan o'z tilingizda gaplashing"),
     translatorBody: l(
-      "The ShifaIn app carries a live translator. Point it at a doctor, a nurse, a pharmacist or a taxi driver and speak normally — you are understood, and you understand back. No hunting for an interpreter, no conversation you cannot follow.",
-      "В приложении ShifaIn есть живой переводчик. Направьте его на врача, медсестру, фармацевта или водителя такси и говорите как обычно — вас поймут, и вы поймёте в ответ. Не нужно искать переводчика, не остаётся непонятых разговоров.",
-      "ShifaIn ilovasida jonli tarjimon mavjud. Uni shifokor, hamshira, dorixonachi yoki taksi haydovchisiga qarating va odatdagidek gapiring — sizni tushunishadi, siz ham tushunasiz. Tarjimon qidirish shart emas, tushunarsiz suhbat qolmaydi.",
+      "The Shifain app carries a live translator. Point it at a doctor, a nurse, a pharmacist or a taxi driver and speak normally — you are understood, and you understand back. No hunting for an interpreter, no conversation you cannot follow.",
+      "В приложении Shifain есть живой переводчик. Направьте его на врача, медсестру, фармацевта или водителя такси и говорите как обычно — вас поймут, и вы поймёте в ответ. Не нужно искать переводчика, не остаётся непонятых разговоров.",
+      "Shifain ilovasida jonli tarjimon mavjud. Uni shifokor, hamshira, dorixonachi yoki taksi haydovchisiga qarating va odatdagidek gapiring — sizni tushunishadi, siz ham tushunasiz. Tarjimon qidirish shart emas, tushunarsiz suhbat qolmaydi.",
     ),
     translatorBadge: l("Built into the app", "Встроено в приложение", "Ilovaga o'rnatilgan"),
   },
 
   costs: {
     eyebrow: l("Transparent cost", "Прозрачная стоимость", "Shaffof narx"),
-    title: l("Indicative treatment costs", "Ориентировочная стоимость лечения", "Davolashning taxminiy narxi"),
+    title: l("What treatment costs", "Сколько стоит лечение", "Davolash qancha turadi"),
     body: l(
-      "Starting-from estimates to help you plan. Your own figure is generated from your reports and guaranteed once the hospital confirms it.",
-      "Цены «от» помогут вам спланировать. Ваша собственная сумма формируется по вашим документам и фиксируется после подтверждения клиникой.",
-      "Rejalashtirish uchun «dan» narxlar. Sizning summangiz hujjatlaringiz asosida shakllanadi va shifoxona tasdiqlagach kafolatlanadi.",
+      "Starting prices to help you plan. Your own estimate is built from your reports.",
+      "Цены «от» для планирования. Ваша смета строится по вашим документам.",
+      "Rejalashtirish uchun boshlang'ich narxlar. Smetangiz hujjatlaringiz asosida tuziladi.",
     ),
     ctaLabel: l("Get my estimate", "Получить смету", "Hisobimni olish"),
-    fromLabel: l("Starting from", "Начиная от", "Boshlang'ich narx"),
+    fromLabel: l("From", "От", "Narxi"),
     footnote: l(
       "Illustrative estimates · figures vary by hospital, city and case",
       "Ориентировочные оценки · суммы зависят от клиники, города и случая",
@@ -566,7 +566,7 @@ export const defaultContent: SiteContent = {
 
   hospitals: {
     eyebrow: l("Hospital network", "Сеть больниц", "Shifoxonalar tarmog'i"),
-    title: l("India's leading accredited hospitals", "Ведущие аккредитованные клиники Индии", "Hindistonning yetakchi akkreditatsiyalangan shifoxonalari"),
+    title: l("Hospitals and doctors", "Клиники и врачи", "Shifoxonalar va shifokorlar"),
     body: l(
       "Accredited hospitals with international patient desks — named here once they have signed with us.",
       "Аккредитованные клиники с международными отделами — появляются здесь после подписания договора с нами.",
@@ -642,20 +642,20 @@ export const defaultContent: SiteContent = {
 
   whyIndia: {
     eyebrow: l("Why India", "Почему Индия", "Nega Hindiston"),
-    title: l("Why patients choose India", "Почему пациенты выбирают Индию", "Nega bemorlar Hindistonni tanlaydi"),
+    title: l("Why India, with Shifain", "Почему Индия — и почему с Shifain", "Nega Hindiston — va nega Shifain bilan"),
     body: l(
-      "Practical reasons patients travel for care — with realistic expectations, not guarantees.",
-      "Практические причины поездки на лечение — с реалистичными ожиданиями, без обещаний.",
-      "Davolanish uchun safar qilishning amaliy sabablari — va'dalarsiz, real kutilmalar bilan.",
+      "Accredited care at a fair price, without having to arrange it alone.",
+      "Аккредитованное лечение по честной цене — и вам не нужно организовывать всё самим.",
+      "Adolatli narxda akkreditatsiyalangan davolash — hammasini o'zingiz tashkil qilishingiz shart emas.",
     ),
     hubLabel: l("India", "Индия", "Hindiston"),
     points: [
-      { id: "w1", icon: "spark", title: l("Advanced expertise", "Передовой опыт", "Ilg'or tajriba"), body: l("Experienced specialists and JCI/NABH tertiary-care hospitals.", "Опытные специалисты и клиники JCI/NABH третичного уровня.", "Tajribali mutaxassislar va JCI/NABH shifoxonalari.") },
-      { id: "w2", icon: "card", title: l("Lower costs", "Ниже стоимость", "Arzonroq narx"), body: l("Accredited care often at a fraction of the price in Europe or North America — your estimate shows the real figure.", "Аккредитованное лечение — часто в разы дешевле, чем в Европе или Северной Америке; ваша смета покажет реальную цифру.", "Akkreditatsiyalangan davolash — ko'pincha Yevropa yoki Shimoliy Amerikadagidan ancha arzon; smetangiz haqiqiy narxni ko'rsatadi.") },
-      { id: "w3", icon: "clock", title: l("No long waiting lists", "Без долгих очередей", "Uzoq navbat yo'q"), body: l("Appointments and surgery scheduled quickly.", "Приёмы и операции назначаются быстро.", "Qabul va operatsiyalar tez belgilanadi.") },
-      { id: "w4", icon: "translate", title: l("Multilingual support", "Многоязычная поддержка", "Ko'p tilli qo'llab-quvvatlash"), body: l("Human interpreters and a live translator in the app.", "Живые переводчики и переводчик в приложении.", "Jonli tarjimonlar va ilovadagi tarjimon.") },
-      { id: "w5", icon: "hospital", title: l("Broad options", "Широкий выбор", "Keng imkoniyatlar"), body: l("Hundreds of procedures across every major speciality.", "Сотни процедур по всем основным направлениям.", "Barcha asosiy yo'nalishlar bo'yicha yuzlab muolajalar.") },
-      { id: "w6", icon: "home", title: l("Coordinated recovery", "Организованное восстановление", "Uyushtirilgan tiklanish"), body: l("Post-treatment stay and online follow-up back home.", "Восстановление после лечения и онлайн-наблюдение дома.", "Davolashdan keyingi turish va uyda onlayn kuzatuv.") },
+      { id: "w1", icon: "shield", title: l("Price agreed before you fly", "Цена согласована до вылета", "Narx uchishdan oldin kelishiladi"), body: l("The hospital confirms your price before you travel. It changes only if doctors find something new, and you are told first.", "Клиника подтверждает цену до поездки. Она меняется, только если врачи найдут что-то новое, — и вам скажут заранее.", "Shifoxona narxni safardan oldin tasdiqlaydi. U faqat shifokorlar yangi narsa topsa o'zgaradi va sizga oldindan aytiladi.") },
+      { id: "w2", icon: "translate", title: l("Your language, all the way", "Ваш язык — на каждом шаге", "Har qadamda o'z tilingiz"), body: l("A coordinator who speaks Uzbek, Russian or English, and a live translator for doctors and nurses.", "Координатор, говорящий на узбекском, русском или английском, и живой переводчик для разговора с врачами.", "O'zbek, rus yoki ingliz tilida gaplashadigan koordinator va shifokorlar bilan suhbat uchun jonli tarjimon.") },
+      { id: "w3", icon: "hospital", title: l("Accredited hospitals", "Аккредитованные клиники", "Akkreditatsiyalangan shifoxonalar"), body: l("JCI and NABH accredited hospitals with international patient desks.", "Клиники с аккредитацией JCI и NABH и международными отделами.", "Xalqaro bemorlar bo'limiga ega JCI va NABH akkreditatsiyalangan shifoxonalar.") },
+      { id: "w4", icon: "plane", title: l("Visa, travel and stay", "Виза, поездка и проживание", "Viza, safar va turar joy"), body: l("Visa invitation letter, flights, airport pickup and a stay near the hospital, arranged for you.", "Приглашение для визы, перелёт, встреча в аэропорту и жильё рядом с клиникой — всё организуем мы.", "Viza taklifnomasi, parvoz, aeroportdan kutib olish va shifoxona yaqinida turar joy — biz tashkil qilamiz.") },
+      { id: "w5", icon: "card", title: l("Often far lower costs", "Часто намного дешевле", "Ko'pincha ancha arzon"), body: l("Accredited care often costs a fraction of the price in Europe or North America. Your estimate shows the real figure.", "Аккредитованное лечение часто в разы дешевле, чем в Европе или Северной Америке. Ваша смета покажет реальную цифру.", "Akkreditatsiyalangan davolash ko'pincha Yevropa yoki Shimoliy Amerikadagidan ancha arzon. Smetangiz haqiqiy narxni ko'rsatadi.") },
+      { id: "w6", icon: "home", title: l("Follow-up at home", "Наблюдение дома", "Uyda kuzatuv"), body: l("Online check-ins with your doctor after you fly home.", "Онлайн-консультации с вашим врачом после возвращения домой.", "Uyga qaytgach shifokoringiz bilan onlayn uchrashuvlar.") },
     ],
   },
 
@@ -741,9 +741,9 @@ export const defaultContent: SiteContent = {
     eyebrow: l("Questions", "Вопросы", "Savollar"),
     title: l("Frequently asked questions", "Часто задаваемые вопросы", "Ko'p so'raladigan savollar"),
     body: l(
-      "Straight answers about how ShifaIn works.",
-      "Прямые ответы о том, как работает ShifaIn.",
-      "ShifaIn qanday ishlashi haqida aniq javoblar.",
+      "Straight answers about how Shifain works.",
+      "Прямые ответы о том, как работает Shifain.",
+      "Shifain qanday ishlashi haqida aniq javoblar.",
     ),
     items: [
       {
@@ -786,9 +786,9 @@ export const defaultContent: SiteContent = {
         id: "f5",
         question: l("Are your services really free?", "Ваши услуги действительно бесплатны?", "Xizmatlaringiz rostdan bepulmi?"),
         answer: l(
-          "Yes. Planning, visa help, travel coordination, interpreters and follow-up are free, and using ShifaIn does not increase your hospital bill.",
-          "Да. Планирование, помощь с визой, организация поездки, переводчики и последующее наблюдение бесплатны, а использование ShifaIn не увеличивает счёт клиники.",
-          "Ha. Rejalashtirish, vizada yordam, safar tashkili, tarjimonlar va keyingi kuzatuv bepul, ShifaIn'dan foydalanish shifoxona hisobini oshirmaydi.",
+          "Yes. Planning, visa help, travel coordination, interpreters and follow-up are free, and using Shifain does not increase your hospital bill.",
+          "Да. Планирование, помощь с визой, организация поездки, переводчики и последующее наблюдение бесплатны, а использование Shifain не увеличивает счёт клиники.",
+          "Ha. Rejalashtirish, vizada yordam, safar tashkili, tarjimonlar va keyingi kuzatuv bepul, Shifain'dan foydalanish shifoxona hisobini oshirmaydi.",
         ),
       },
       {
@@ -804,41 +804,37 @@ export const defaultContent: SiteContent = {
   },
 
   closing: {
-    title: l(
-      "Your health journey to India, handled end to end.",
-      "Ваш путь к лечению в Индии — под ключ.",
-      "Hindistonga salomatlik safaringiz — to'liq xizmat.",
-    ),
+    title: l("Get your free treatment plan", "Получите бесплатный план лечения", "Bepul davolash rejasini oling"),
     body: l(
-      "Send your reports and get a free plan and estimate right away — with a coordinator who speaks your language, every step of the way.",
-      "Отправьте документы и сразу получите бесплатный план и смету — с координатором, говорящим на вашем языке, на каждом этапе.",
-      "Hujjatlaringizni yuboring va bepul reja hamda hisobni darhol oling — har bosqichda o'z tilingizda gaplashadigan koordinator bilan.",
+      "Tell us what you need in three short steps. A coordinator who speaks your language replies within 24 hours.",
+      "Расскажите, что вам нужно, в три коротких шага. Координатор, говорящий на вашем языке, ответит в течение 24 часов.",
+      "Nima kerakligini uchta qisqa qadamda ayting. Sizning tilingizda gaplashadigan koordinator 24 soat ichida javob beradi.",
     ),
-    primaryCta: l("Start your medical journey", "Начать медицинский маршрут", "Tibbiy safarni boshlash"),
-    secondaryCta: l("Upload medical reports", "Загрузить документы", "Hujjatlarni yuklash"),
+    primaryCta: l("Prefer to talk? Chat with Shifain", "Хотите поговорить? Чат с Shifain", "Gaplashmoqchimisiz? Shifain bilan suhbat"),
+    secondaryCta: l("WhatsApp us", "Написать в WhatsApp", "WhatsApp orqali yozish"),
   },
 
   footer: {
     about: l(
-      "ShifaIn plans and runs medical journeys to India — instant estimates, accredited hospitals, guaranteed prices and support in your language.",
-      "ShifaIn планирует и сопровождает медицинские поездки в Индию — мгновенные сметы, аккредитованные клиники, гарантированные цены и поддержка на вашем языке.",
-      "ShifaIn Hindistonga tibbiy safarlarni rejalashtiradi va yo'lga qo'yadi — tezkor hisob, akkreditatsiyalangan shifoxonalar, kafolatlangan narx va o'z tilingizda qo'llov.",
+      "Shifain plans and runs medical journeys to India — instant estimates, accredited hospitals, guaranteed prices and support in your language.",
+      "Shifain планирует и сопровождает медицинские поездки в Индию — мгновенные сметы, аккредитованные клиники, гарантированные цены и поддержка на вашем языке.",
+      "Shifain Hindistonga tibbiy safarlarni rejalashtiradi va yo'lga qo'yadi — tezkor hisob, akkreditatsiyalangan shifoxonalar, kafolatlangan narx va o'z tilingizda qo'llov.",
     ),
     disclaimer: l(
-      "ShifaIn is a care-coordination platform, not a hospital or a medical provider. Nothing here is medical advice. Diagnosis, treatment and prognosis are decided by qualified healthcare professionals. Costs shown are indicative until confirmed by the treating hospital.",
-      "ShifaIn — платформа координации лечения, а не больница и не медицинская организация. Материалы сайта не являются медицинской консультацией. Диагноз, лечение и прогноз определяют квалифицированные врачи. Указанные цены ориентировочны до подтверждения клиникой.",
-      "ShifaIn — davolashni muvofiqlashtirish platformasi, shifoxona yoki tibbiy muassasa emas. Bu yerdagi ma'lumot tibbiy maslahat emas. Tashxis, davolash va prognozni malakali shifokorlar belgilaydi. Ko'rsatilgan narxlar shifoxona tasdiqlagunicha taxminiy.",
+      "Shifain is a care-coordination platform, not a hospital or a medical provider. Nothing here is medical advice. Diagnosis, treatment and prognosis are decided by qualified healthcare professionals. Costs shown are indicative until confirmed by the treating hospital.",
+      "Shifain — платформа координации лечения, а не больница и не медицинская организация. Материалы сайта не являются медицинской консультацией. Диагноз, лечение и прогноз определяют квалифицированные врачи. Указанные цены ориентировочны до подтверждения клиникой.",
+      "Shifain — davolashni muvofiqlashtirish platformasi, shifoxona yoki tibbiy muassasa emas. Bu yerdagi ma'lumot tibbiy maslahat emas. Tashxis, davolash va prognozni malakali shifokorlar belgilaydi. Ko'rsatilgan narxlar shifoxona tasdiqlagunicha taxminiy.",
     ),
-    copyright: l("© ShifaIn. All rights reserved.", "© ShifaIn. Все права защищены.", "© ShifaIn. Barcha huquqlar himoyalangan."),
+    copyright: l("© Shifain. All rights reserved.", "© Shifain. Все права защищены.", "© Shifain. Barcha huquqlar himoyalangan."),
     columns: [
       {
         id: "fc1",
         title: l("Patients", "Пациентам", "Bemorlarga"),
         links: [
-          { id: "fl1", label: l("Get an estimate", "Получить смету", "Hisob olish"), href: "#quote" },
+          { id: "fl1", label: l("Get an estimate", "Получить смету", "Hisob olish"), href: "#quote-form" },
           { id: "fl2", label: l("Treatments", "Лечение", "Davolash"), href: "#specialties" },
           { id: "fl3", label: l("Hospitals", "Больницы", "Shifoxonalar"), href: "#hospitals" },
-          { id: "fl4", label: l("Doctors", "Врачи", "Shifokorlar"), href: "#doctors" },
+          { id: "fl4", label: l("Doctors", "Врачи", "Shifokorlar"), href: "/doctors" },
         ],
       },
       {
@@ -855,8 +851,8 @@ export const defaultContent: SiteContent = {
         id: "fc3",
         title: l("Company", "Компания", "Kompaniya"),
         links: [
-          { id: "fl9", label: l("About ShifaIn", "О ShifaIn", "ShifaIn haqida"), href: "#" },
-          { id: "fl10", label: l("Patient stories", "Истории пациентов", "Bemorlar hikoyalari"), href: "#stories" },
+          { id: "fl9", label: l("About Shifain", "О Shifain", "Shifain haqida"), href: "#about" },
+          { id: "fl10", label: l("Questions & answers", "Вопросы и ответы", "Savol-javoblar"), href: "#faq" },
           { id: "fl11", label: l("Privacy policy", "Политика конфиденциальности", "Maxfiylik siyosati"), href: "#" },
           { id: "fl12", label: l("Terms of use", "Условия использования", "Foydalanish shartlari"), href: "#" },
         ],

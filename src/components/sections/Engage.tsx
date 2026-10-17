@@ -60,22 +60,19 @@ export function Planner({ content, locale }: { content: SiteContent; locale: Loc
 }
 
 /**
- * Professional entry points sit low on the page: patients get the login in the
- * header, doctors and hospitals get theirs here.
+ * Professional entry points sit last on the page, as one quiet strip: patients
+ * get the login in the header, doctors and hospitals get theirs here.
  */
 export function Partners({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { partners } = content;
-
-  const panels = [
+  const rows = [
     {
       id: "doctors",
       icon: "stethoscope",
       title: t(partners.doctorTitle, locale),
       body: t(partners.doctorBody, locale),
-      points: partners.doctorPoints.map((point) => ({ id: point.id, label: t(point.label, locale) })),
       cta: t(partners.doctorCta, locale),
-      ctaHref: "#quote-form",
-      warm: false,
+      ctaHref: `/${locale}/portal/doctor/apply`,
       login: t(partners.doctorLogin, locale),
       loginHref: `/${locale}/portal/doctor`,
     },
@@ -84,51 +81,39 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
       icon: "hospital",
       title: t(partners.hospitalTitle, locale),
       body: t(partners.hospitalBody, locale),
-      points: partners.hospitalPoints.map((point) => ({ id: point.id, label: t(point.label, locale) })),
       cta: t(partners.hospitalCta, locale),
       ctaHref: `/${locale}/portal/hospital`,
-      warm: true,
       login: t(partners.hospitalLogin, locale),
       loginHref: `/${locale}/portal/hospital`,
     },
   ];
 
   return (
-    <Section id="partners">
-      <p className="eyebrow">{t(partners.eyebrow, locale)}</p>
-
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        {panels.map((panel) => (
-          <div key={panel.id} className={`card flex flex-col p-7 ${panel.warm ? "!border-saffron/25 bg-saffron-tint/40" : ""}`}>
-            <span className={`flex h-12 w-12 items-center justify-center rounded-xl ${panel.warm ? "bg-saffron-tint text-saffron" : "bg-brand-tint text-brand-deep"}`}>
-              <Icon name={panel.icon} className="h-6 w-6" />
-            </span>
-            <h3 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">{panel.title}</h3>
-            <p className="mt-2 text-ink-soft">{panel.body}</p>
-
-            <ul className="mt-5 grid flex-1 gap-2.5 sm:grid-cols-2">
-              {panel.points.map((point) => (
-                <li key={point.id} className="flex items-start gap-2 text-sm text-ink-soft">
-                  <span className="mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-full bg-leaf-tint text-leaf">
-                    <Icon name="check" className="h-3 w-3" />
-                  </span>
-                  {point.label}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link href={panel.ctaHref} className={`btn !py-2.5 text-sm ${panel.warm ? "btn-accent" : "btn-primary"}`}>
-                {panel.cta}
+    <section id="partners" aria-label={t(partners.eyebrow, locale)} className="scroll-mt-20 bg-white py-10 lg:py-14">
+      <div className="ui-container grid gap-4 lg:grid-cols-2 lg:gap-6">
+        {rows.map((row) => (
+          <div key={row.id} className="flex flex-col gap-4 rounded-[1.25rem] bg-hero p-5 sm:p-6">
+            <div className="flex items-start gap-4">
+              <span aria-hidden="true" className="ui-tile h-11 w-11 flex-none bg-white">
+                <Icon name={row.icon} className="h-6 w-6" />
+              </span>
+              <div>
+                <h2 className="text-lg font-bold leading-snug text-navy">{row.title}</h2>
+                <p className="mt-1 text-[15px] leading-relaxed text-[#2c3a5e]">{row.body}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 sm:pl-[3.75rem]">
+              <Link href={row.ctaHref} className="ui-btn ui-btn-secondary min-h-11 px-5 text-[15px]">
+                {row.cta}
               </Link>
-              <Link href={panel.loginHref} className="btn btn-secondary !py-2.5 text-sm">
-                {panel.login}
+              <Link href={row.loginHref} className="ui-link px-2 text-[15px]">
+                {row.login}
               </Link>
             </div>
           </div>
         ))}
       </div>
-    </Section>
+    </section>
   );
 }
 
@@ -136,6 +121,8 @@ export function Stories({ content, locale }: { content: SiteContent; locale: Loc
   const { stories } = content;
   // Only stories a patient agreed to share are shown; samples never reach the public page.
   const verified = stories.items.filter((item) => item.verified);
+  // Until a patient agrees to share their story, the section is left out rather than filled.
+  if (verified.length === 0) return null;
   return (
     <Section id="stories" muted>
       <SectionHeading
@@ -195,21 +182,23 @@ export function Faq({ content, locale }: { content: SiteContent; locale: Locale 
   const { faq } = content;
   return (
     <Section id="faq">
-      <SectionHeading eyebrow={t(faq.eyebrow, locale)} title={t(faq.title, locale)} body={t(faq.body, locale)} />
-
-      <div className="mx-auto mt-11 max-w-3xl space-y-3">
-        {faq.items.map((item, i) => (
-          <details key={item.id} className="faq-item group" open={i === 0}>
-            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold text-navy marker:content-none">
-              {t(item.question, locale)}
-              <span aria-hidden="true" className="faq-toggle">
-                <span className="group-open:hidden">+</span>
-                <span className="hidden group-open:inline">&minus;</span>
-              </span>
-            </summary>
-            <p className="mt-3 pr-10 text-base leading-relaxed text-[#2c3a5e]">{t(item.answer, locale)}</p>
-          </details>
-        ))}
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <SectionHeading title={t(faq.title, locale)} body={t(faq.body, locale)} />
+        </div>
+        <div className="divide-y divide-[#e6e3f4] border-y border-[#e6e3f4]">
+          {faq.items.map((item) => (
+            <details key={item.id} className="group">
+              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-base font-semibold text-navy sm:text-lg [&::-webkit-details-marker]:hidden">
+                {t(item.question, locale)}
+                <span aria-hidden="true" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-violet-soft text-lg text-violet transition-transform group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+              <p className="pb-5 pr-12 text-base leading-relaxed text-[#2c3a5e]">{t(item.answer, locale)}</p>
+            </details>
+          ))}
+        </div>
       </div>
     </Section>
   );

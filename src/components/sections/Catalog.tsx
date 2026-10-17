@@ -20,7 +20,7 @@ const STAT_LABELS: Record<"treatments" | "specialties" | "cities" | "languages",
   languages: { en: "languages in the live translator", ru: "языков в живом переводчике", uz: "jonli tarjimondagi tillar" },
 };
 
-/** Figures counted from the catalogue on every render, so they are never more than the truth. */
+/** The proof strip under the hero: figures counted from the catalogue, so never more than the truth. */
 export async function Stats({ locale }: { content: SiteContent; locale: Locale }) {
   const [treatments, specialties, cities] = await Promise.all([
     listTreatments().catch(() => []),
@@ -36,95 +36,98 @@ export async function Stats({ locale }: { content: SiteContent; locale: Locale }
   if (figures.length === 0) return null;
 
   return (
-    <section className="bg-navy">
-      <div className="mx-auto grid max-w-[88rem] grid-cols-2 gap-x-6 gap-y-10 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:px-12">
+    <section aria-label="Shifain in numbers" className="bg-white">
+      <dl className="ui-container grid grid-cols-2 gap-x-4 gap-y-6 py-8 sm:py-10 lg:grid-cols-4">
         {figures.map((item) => (
-          <div key={item.id}>
-            <p className="text-[clamp(2.4rem,1.6rem+2.4vw,4rem)] font-extrabold leading-none tracking-[-0.03em] text-white">{item.value}</p>
-            <p className="mt-2 max-w-[14rem] text-base font-medium leading-snug text-white/75">{t(STAT_LABELS[item.id], locale)}</p>
+          <div key={item.id} className="flex flex-col">
+            <dt className="order-2 mt-1 text-sm font-medium leading-snug text-slate sm:text-base">{t(STAT_LABELS[item.id], locale)}</dt>
+            <dd className="order-1 text-[2rem] font-extrabold leading-none tracking-[-0.03em] text-navy sm:text-[2.5rem]">{item.value}</dd>
           </div>
         ))}
-      </div>
+      </dl>
     </section>
   );
 }
 
-/** Treatment categories — every card is a link through to its treatment page. */
+/** Treatment categories: the quickest way in, like a clinic's directory board. */
 export function Specialties({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { specialties } = content;
+  const all = (
+    <Link href={`/${locale}/treatments`} className="ui-link">
+      {t(SEE_ALL_TREATMENTS, locale)}
+    </Link>
+  );
   return (
-    <Section id="specialties">
-      <SectionHeading
-        eyebrow={t(specialties.eyebrow, locale)}
-        title={t(specialties.title, locale)}
-        body={t(specialties.body, locale)}
-      />
+    <Section id="specialties" muted>
+      <SectionHeading title={t(specialties.title, locale)} body={t(specialties.body, locale)} action={all} />
 
-      <ul className="mt-11 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-10 lg:grid-cols-3">
         {specialties.items.map((item) => (
           <li key={item.slug}>
             <Link
               href={`/${locale}/treatments/${item.slug}`}
-              className="card link-card group flex h-full flex-col p-6 focus:outline-none"
+              className="group flex h-full flex-col gap-3 rounded-[1.25rem] bg-white p-4 ring-1 ring-[#e6e3f4] transition hover:ring-violet/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet sm:flex-row sm:items-start sm:gap-4 sm:p-6"
             >
-              <span aria-hidden="true" className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-soft text-violet">
+              <span aria-hidden="true" className="ui-tile h-11 w-11 flex-none sm:h-12 sm:w-12">
                 <Icon name={item.icon} className="h-6 w-6" />
               </span>
-              <h3 className="mt-4 text-xl font-extrabold tracking-tight text-ink">{t(item.title, locale)}</h3>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">{t(item.body, locale)}</p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand-deep">
-                {t(specialties.linkLabel, locale)}
-                <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-                  &rarr;
-                </span>
+              <span className="min-w-0">
+                <span className="block text-base font-bold leading-snug text-navy sm:text-lg">{t(item.title, locale)}</span>
+                <span className="mt-1 hidden text-[15px] leading-relaxed text-[#2c3a5e] sm:block">{t(item.body, locale)}</span>
               </span>
             </Link>
           </li>
         ))}
       </ul>
+    </Section>
+  );
+}
 
-      <div className="mt-9 text-center">
-        <Link href={`/${locale}/treatments`} className="btn btn-ink">
-          {t(SEE_ALL_TREATMENTS, locale)}
-        </Link>
+const COSTS_COPY: Record<"exact" | "stay", L> = {
+  exact: { en: "Get my exact estimate", ru: "Узнать точную смету", uz: "Aniq smetani olish" },
+  stay: { en: "Stay", ru: "Пребывание", uz: "Turish" },
+};
+
+/** Starting prices as a short price list: a row each on a phone, four columns on a wide screen. */
+export function Costs({ content, locale }: { content: SiteContent; locale: Locale }) {
+  const { costs } = content;
+  return (
+    <Section id="costs">
+      <SectionHeading title={t(costs.title, locale)} body={t(costs.body, locale)} />
+
+      <ul className="mt-8 divide-y divide-[#eeebf7] rounded-[1.25rem] bg-white ring-1 ring-[#e6e3f4] lg:mt-10 lg:grid lg:grid-cols-4 lg:divide-x lg:divide-y-0">
+        {costs.items.map((item) => (
+          <li key={item.id} className="flex items-center gap-4 p-4 sm:p-5 lg:flex-col lg:items-start lg:gap-5 lg:p-7">
+            <span aria-hidden="true" className="ui-tile h-11 w-11 flex-none">
+              <Icon name={item.icon} className="h-6 w-6" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-bold leading-snug text-navy lg:text-lg">{t(item.title, locale)}</span>
+              <span className="mt-0.5 block text-sm text-slate">{t(item.note, locale)}</span>
+            </span>
+            <span className="text-right lg:text-left">
+              <span className="block text-sm text-slate">{t(costs.fromLabel, locale)}</span>
+              <span className="block text-xl font-extrabold tracking-tight text-navy lg:text-[1.75rem]">{item.amount}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-slate">{t(costs.footnote, locale)}</p>
+        <a href="#quote-form" className="ui-btn ui-btn-primary">
+          {t(COSTS_COPY.exact, locale)}
+        </a>
       </div>
     </Section>
   );
 }
 
-export function Costs({ content, locale }: { content: SiteContent; locale: Locale }) {
-  const { costs } = content;
-  return (
-    <Section id="costs" muted>
-      <SectionHeading eyebrow={t(costs.eyebrow, locale)} title={t(costs.title, locale)} body={t(costs.body, locale)} />
-
-      <ul className="mt-11 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {costs.items.map((item) => (
-          <li key={item.id} className="card flex flex-col p-4 text-center">
-            <span aria-hidden="true" className="flex h-20 items-center justify-center rounded-2xl bg-violet-soft text-violet">
-              <Icon name={item.icon} className="h-9 w-9" />
-            </span>
-            <h3 className="mt-4 font-extrabold leading-tight text-ink">{t(item.title, locale)}</h3>
-            <p className="mt-2 text-xs text-ink-muted">{t(costs.fromLabel, locale)}</p>
-            <p className="text-2xl font-extrabold tracking-tight text-brand-deep">{item.amount}</p>
-            <p className="mt-1 flex-1 text-xs text-ink-muted">{t(item.note, locale)}</p>
-            <Link href={`/${locale}/conditions`} className="btn btn-tint mt-4 w-full !py-2.5 text-sm">
-              {t(costs.ctaLabel, locale)}
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      <p className="mt-6 text-center text-xs text-ink-muted">{t(costs.footnote, locale)}</p>
-    </Section>
-  );
-}
-
-const NETWORK_COPY: Record<"hospitalsEmpty" | "doctorsEmpty" | "years" | "specialties" | "planCta", L> = {
-  hospitalsEmpty: {
-    en: "We list a hospital here only once it has signed with us. Until then, your plan describes the kind of accredited centre that suits you, and your coordinator names the options with you.",
-    ru: "Мы показываем клинику здесь только после подписания договора с ней. До тех пор план описывает подходящий тип аккредитованного центра, а координатор называет варианты вместе с вами.",
-    uz: "Shifoxonani bu yerda faqat u biz bilan shartnoma imzolagandan keyin ko'rsatamiz. Shungacha reja sizga mos akkreditatsiyalangan markaz turini tasvirlaydi, koordinator esa variantlarni siz bilan birga aytadi.",
+const NETWORK_COPY: Record<"empty" | "doctorsEmpty" | "years" | "specialties" | "planCta" | "hospitals" | "doctors", L> = {
+  empty: {
+    en: "We name a hospital or doctor here only once they have signed with us and agreed to be listed. Until then, your plan describes the kind of accredited centre that suits you, and your coordinator goes through the options with you.",
+    ru: "Мы называем здесь клинику или врача только после подписания договора и с их согласия. До тех пор план описывает подходящий тип аккредитованного центра, а координатор обсуждает варианты с вами.",
+    uz: "Shifoxona yoki shifokorni bu yerda faqat ular biz bilan shartnoma imzolab, rozilik bergandan keyin ko'rsatamiz. Shungacha reja sizga mos akkreditatsiyalangan markaz turini tasvirlaydi, koordinator esa variantlarni siz bilan ko'rib chiqadi.",
   },
   doctorsEmpty: {
     en: "Specialists appear here only when they have agreed to be listed. Your coordinator arranges a consultation with the treating specialist once your plan is ready.",
@@ -134,116 +137,136 @@ const NETWORK_COPY: Record<"hospitalsEmpty" | "doctorsEmpty" | "years" | "specia
   years: { en: "years' experience", ru: "лет опыта", uz: "yillik tajriba" },
   specialties: { en: "specialties", ru: "направлений", uz: "yo'nalish" },
   planCta: { en: "Get my free plan", ru: "Получить бесплатный план", uz: "Bepul rejani olish" },
+  hospitals: { en: "Hospitals", ru: "Клиники", uz: "Shifoxonalar" },
+  doctors: { en: "Doctors", ru: "Врачи", uz: "Shifokorlar" },
 };
 
 function NetworkEmpty({ text, href, label }: { text: string; href: string; label: string }) {
   return (
-    <div className="mt-12 grid gap-6 rounded-3xl bg-white p-7 ring-1 ring-[#e6e3f4] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-10">
-      <p className="max-w-2xl text-lg leading-relaxed text-navy">{text}</p>
-      <Link href={href} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-violet px-6 font-semibold text-white transition hover:bg-brand-deep">
+    <div className="mt-6 flex flex-col gap-5 rounded-[1.25rem] bg-white p-5 ring-1 ring-[#e6e3f4] sm:flex-row sm:items-center sm:justify-between sm:p-8 lg:mt-8">
+      <p className="max-w-2xl text-base leading-relaxed text-navy sm:text-lg">{text}</p>
+      <a href={href} className="ui-btn ui-btn-secondary shrink-0">
         {label}
-        <span aria-hidden="true">&rarr;</span>
-      </Link>
+      </a>
     </div>
   );
 }
 
-/** Hospitals with a signed tie-up only; the catalogue decides what may be named. */
+function initialsOf(name: string): string {
+  return name
+    .replace(/^Dr\.?\s*/i, "")
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("");
+}
+
+/**
+ * Hospitals and doctors, from signed tie-ups only: the catalogue decides who
+ * may be named. With nobody listed yet it is one honest line, not two empty sections.
+ */
 export async function Hospitals({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { hospitals } = content;
-  const items = await publishedHospitals({ limit: 6 }).catch(() => []);
+  const [places, doctors] = await Promise.all([
+    publishedHospitals({ limit: 6 }).catch(() => []),
+    publishedDoctors(4).catch(() => []),
+  ]);
+
   return (
-    <Section id="hospitals">
-      <SectionHeading eyebrow={t(hospitals.eyebrow, locale)} title={t(hospitals.title, locale)} body={t(hospitals.body, locale)} />
-      {items.length === 0 ? (
-        <NetworkEmpty text={t(NETWORK_COPY.hospitalsEmpty, locale)} href={`/${locale}#quote-form`} label={t(NETWORK_COPY.planCta, locale)} />
-      ) : (
-        <>
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((item) => (
+    <Section id="hospitals" muted>
+      {/* With nobody listed yet the panel says it all; the intro would only repeat it. */}
+      <SectionHeading title={t(hospitals.title, locale)} body={places.length || doctors.length ? t(hospitals.body, locale) : undefined} />
+      {places.length === 0 && doctors.length === 0 ? (
+        <NetworkEmpty text={t(NETWORK_COPY.empty, locale)} href="#quote-form" label={t(NETWORK_COPY.planCta, locale)} />
+      ) : null}
+
+      {places.length ? (
+        <div className="mt-8 lg:mt-10">
+          <div className="flex items-center justify-between gap-4">
+            <h3 className="text-lg font-bold text-navy">{t(NETWORK_COPY.hospitals, locale)}</h3>
+            <Link href={`/${locale}/hospitals`} className="ui-link">
+              {t(hospitals.allLabel, locale)}
+            </Link>
+          </div>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {places.map((item) => (
               <li key={item._id}>
                 <Link
                   href={`/${locale}/hospitals/${item._id}`}
-                  className="group flex h-full flex-col gap-3 rounded-3xl bg-white p-6 ring-1 ring-[#e6e3f4] transition hover:ring-violet/40"
+                  className="flex h-full flex-col gap-2 rounded-[1.25rem] bg-white p-5 ring-1 ring-[#e6e3f4] transition hover:ring-violet/50"
                 >
-                  <span className="flex items-center gap-2 text-sm font-medium text-slate">
-                    <Icon name="hospital" className="h-4 w-4" />
-                    {item.city}
-                  </span>
-                  <span className="text-xl font-bold leading-snug text-navy">{item.name}</span>
-                  <span className="flex flex-wrap gap-2">
-                    {item.accreditations.map((badge) => (
-                      <span key={badge} className="rounded-full bg-violet-soft px-3 py-1 text-sm font-semibold text-violet">
-                        {badge}
-                      </span>
-                    ))}
-                  </span>
-                  <span className="mt-auto flex items-center justify-between pt-2 text-sm text-slate">
-                    {item.specialtyCodes.length} {t(NETWORK_COPY.specialties, locale)}
-                    {item.beds ? ` · ${item.beds} ${t(hospitals.bedsLabel, locale).toLowerCase()}` : ""}
-                    <span aria-hidden="true" className="text-violet transition group-hover:translate-x-0.5">
-                      &rarr;
-                    </span>
+                  <span className="text-sm text-slate">{item.city}</span>
+                  <span className="text-lg font-bold leading-snug text-navy">{item.name}</span>
+                  <span className="text-sm text-slate">
+                    {[...item.accreditations, `${item.specialtyCodes.length} ${t(NETWORK_COPY.specialties, locale)}`].join(", ")}
                   </span>
                 </Link>
               </li>
             ))}
           </ul>
-          <div className="mt-10">
-            <Link href={`/${locale}/hospitals`} className="btn btn-ink">
-              {t(hospitals.allLabel, locale)}
+        </div>
+      ) : null}
+
+      {doctors.length ? (
+        <div className="mt-8 lg:mt-10">
+          <div className="flex items-center justify-between gap-4">
+            <h3 className="text-lg font-bold text-navy">{t(NETWORK_COPY.doctors, locale)}</h3>
+            <Link href={`/${locale}/doctors`} className="ui-link">
+              {t(content.doctors.allLabel, locale)}
             </Link>
           </div>
-        </>
-      )}
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {doctors.map((doctor) => (
+              <li key={doctor._id}>
+                <Link
+                  href={`/${locale}/doctors/${doctor._id}`}
+                  className="flex h-full items-start gap-4 rounded-[1.25rem] bg-white p-5 ring-1 ring-[#e6e3f4] transition hover:ring-violet/50"
+                >
+                  <span aria-hidden="true" className="ui-tile h-12 w-12 flex-none rounded-full font-bold">
+                    {initialsOf(doctor.name)}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-bold leading-snug text-navy">{doctor.name}</span>
+                    {doctor.specialtyLabelRaw ? <span className="block text-sm text-violet">{doctor.specialtyLabelRaw}</span> : null}
+                    {doctor.experienceYears ? (
+                      <span className="block text-sm text-slate">
+                        {doctor.experienceYears} {t(NETWORK_COPY.years, locale)}
+                      </span>
+                    ) : null}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </Section>
   );
 }
 
-/** Doctors who consented to be listed, at hospitals we work with. Never typed in by hand. */
+/** The standalone doctors section; off by default since doctors now show beside hospitals. */
 export async function Doctors({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { doctors } = content;
   const items = await publishedDoctors(8).catch(() => []);
   return (
-    <Section id="doctors" muted>
-      <SectionHeading eyebrow={t(doctors.eyebrow, locale)} title={t(doctors.title, locale)} body={t(doctors.body, locale)} />
+    <Section id="doctors">
+      <SectionHeading title={t(doctors.title, locale)} body={t(doctors.body, locale)} />
       {items.length === 0 ? (
-        <NetworkEmpty text={t(NETWORK_COPY.doctorsEmpty, locale)} href={`/${locale}#quote-form`} label={t(NETWORK_COPY.planCta, locale)} />
+        <NetworkEmpty text={t(NETWORK_COPY.doctorsEmpty, locale)} href="#quote-form" label={t(NETWORK_COPY.planCta, locale)} />
       ) : (
-        <>
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {items.map((doctor) => (
-              <li key={doctor._id}>
-                <Link
-                  href={`/${locale}/doctors/${doctor._id}`}
-                  className="flex h-full flex-col gap-2 rounded-3xl bg-white p-6 ring-1 ring-[#e6e3f4] transition hover:ring-violet/40"
-                >
-                  <span aria-hidden="true" className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-soft font-bold text-violet">
-                    {doctor.name
-                      .replace(/^Dr\.?\s*/i, "")
-                      .split(/\s+/)
-                      .slice(0, 2)
-                      .map((part) => part[0])
-                      .join("")}
-                  </span>
-                  <span className="text-lg font-bold leading-snug text-navy">{doctor.name}</span>
-                  {doctor.specialtyLabelRaw ? <span className="text-[15px] font-medium text-violet">{doctor.specialtyLabelRaw}</span> : null}
-                  {doctor.qualifications ? <span className="text-sm text-slate">{doctor.qualifications}</span> : null}
-                  {doctor.experienceYears ? (
-                    <span className="mt-auto pt-2 text-sm text-slate">
-                      {doctor.experienceYears} {t(NETWORK_COPY.years, locale)}
-                    </span>
-                  ) : null}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-10">
-            <Link href={`/${locale}/doctors`} className="btn btn-ink">
-              {t(doctors.allLabel, locale)}
-            </Link>
-          </div>
-        </>
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((doctor) => (
+            <li key={doctor._id}>
+              <Link
+                href={`/${locale}/doctors/${doctor._id}`}
+                className="flex h-full flex-col gap-1 rounded-[1.25rem] bg-white p-5 ring-1 ring-[#e6e3f4] transition hover:ring-violet/50"
+              >
+                <span className="font-bold text-navy">{doctor.name}</span>
+                {doctor.specialtyLabelRaw ? <span className="text-sm text-violet">{doctor.specialtyLabelRaw}</span> : null}
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
     </Section>
   );

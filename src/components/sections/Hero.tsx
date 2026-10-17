@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { PlanRequestForm } from "../PlanRequestForm";
 import { OpenChatButton } from "../OpenChatButton";
-import { WIZARD_COPY } from "@/lib/intake-copy";
 import { t } from "@/lib/localize";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -111,16 +109,16 @@ const VALUES = [
 ];
 
 export function Hero({ content, locale }: { content: SiteContent; locale: Locale }) {
-  const { hero, specialties } = content;
+  const { hero } = content;
 
   return (
     <>
       <section id="quote" aria-labelledby="hero-title" className="hero-field relative overflow-hidden">
         <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-12">
           <div className="grid items-center lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] 2xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
-            <div className="relative z-10 min-w-0 pb-6 pt-8 sm:pt-10 lg:pb-8 lg:pt-10">
+            <div className="relative z-10 min-w-0 pb-6 pt-6 sm:pt-10 lg:pb-8 lg:pt-10">
               <p
-                className="hero-rise inline-flex max-w-full items-center gap-2 rounded-full border border-violet-line bg-violet-soft px-4 py-2 text-sm font-medium text-violet sm:text-[15px]"
+                className="hero-rise hidden max-w-full items-center gap-2 rounded-full border border-violet-line bg-violet-soft px-4 py-2 text-sm font-medium text-violet sm:inline-flex sm:text-[15px]"
                 style={{ "--i": 0 } as React.CSSProperties}
               >
                 <GlobeCheck className="h-5 w-5 flex-none" />
@@ -129,7 +127,7 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
 
               <h1
                 id="hero-title"
-                className="hero-rise mt-6 text-[clamp(2.1rem,0.55rem+3.45vw,4.15rem)] font-extrabold leading-[1.13] tracking-[-0.025em] text-navy lg:-mr-24 [text-wrap:balance]"
+                className="hero-rise mt-0 text-[clamp(2.1rem,0.55rem+3.45vw,4.15rem)] font-extrabold leading-[1.13] tracking-[-0.025em] text-navy lg:-mr-24 [text-wrap:balance]"
                 style={{ "--i": 1 } as React.CSSProperties}
               >
                 {t(hero.headline, locale).replace(/ ([—–])/g, "\u00a0$1")} <span className="text-violet">{t(hero.headlineAccent, locale)}</span>
@@ -185,7 +183,7 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
               </div>
 
               <ul
-                className="hero-rise mt-9 grid max-w-[43rem] grid-cols-1 gap-4 min-[480px]:grid-cols-3 min-[480px]:gap-0"
+                className="hero-rise mt-9 hidden max-w-[43rem] grid-cols-3 sm:grid"
                 style={{ "--i": 4 } as React.CSSProperties}
               >
                 {hero.badges.slice(0, 3).map((badge, index) => {
@@ -193,10 +191,10 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
                   return (
                     <li
                       key={badge.id}
-                      className="flex items-center gap-3 min-[480px]:justify-center min-[480px]:border-l min-[480px]:border-[#d9dcec] min-[480px]:px-3 min-[480px]:first:justify-start min-[480px]:first:border-l-0 min-[480px]:first:pl-0"
+                      className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-center sm:gap-3 sm:border-l sm:border-[#d9dcec] sm:px-3 sm:first:justify-start sm:first:border-l-0 sm:first:pl-0"
                     >
-                      <Icon className={`h-8 w-8 flex-none sm:h-9 sm:w-9 ${colour}`} />
-                      <span className="text-[15px] font-medium leading-snug text-navy sm:text-base">{t(badge.label, locale)}</span>
+                      <Icon className={`h-7 w-7 flex-none sm:h-9 sm:w-9 ${colour}`} />
+                      <span className="text-sm font-medium leading-snug text-navy sm:text-base">{t(badge.label, locale)}</span>
                     </li>
                   );
                 })}
@@ -228,7 +226,7 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
             </figure>
           </div>
 
-          <ul className="relative z-10 mb-8 grid gap-4 rounded-3xl bg-hero-band px-6 py-5 sm:grid-cols-3 sm:gap-0 sm:px-4 lg:-mt-2 lg:mb-10">
+          <ul className="relative z-10 mb-10 hidden rounded-3xl bg-hero-band px-4 py-5 xl:-mt-2 xl:grid xl:grid-cols-3">
             {hero.values.map((value, index) => {
               const { Icon, colour } = VALUES[index] ?? VALUES[0];
               return (
@@ -245,29 +243,6 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
         </div>
       </section>
 
-      <section id="quote-form" className="scroll-mt-24 bg-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-14 lg:py-20">
-          <div className="lg:pt-8">
-            <h2 className="text-[clamp(1.7rem,1.2rem+1.6vw,2.5rem)] font-extrabold leading-tight tracking-tight text-navy [text-wrap:balance]">
-              {t(hero.form.title, locale)}
-            </h2>
-            <p className="mt-3 max-w-md text-base leading-relaxed text-ink-soft">{t(WIZARD_COPY.subtitle, locale)}</p>
-          </div>
-          <div className="min-w-0 rounded-2xl border border-line/70 bg-white p-5 shadow-xl shadow-brand/[0.06] sm:p-7">
-            <PlanRequestForm
-              locale={locale}
-              treatments={specialties.items.map((item) => ({ slug: item.slug, title: item.title }))}
-              labels={{
-                submit: t(hero.form.submit, locale),
-                country: t(hero.form.countryLabel, locale),
-                countryPlaceholder: t(hero.form.countryPlaceholder, locale),
-                phone: t(hero.form.phoneLabel, locale),
-                privacy: t(hero.form.privacy, locale),
-              }}
-            />
-          </div>
-        </div>
-      </section>
     </>
   );
 }
