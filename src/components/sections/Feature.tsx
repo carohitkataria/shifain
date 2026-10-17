@@ -1,6 +1,5 @@
 import { Icon } from "../Icon";
 import { Star } from "../Star";
-import { Trail } from "../Trail";
 import { Section, SectionHeading } from "./Common";
 import { t } from "@/lib/localize";
 import type { SiteContent } from "@/lib/content-types";
@@ -31,28 +30,36 @@ export function Usps({ content, locale }: { content: SiteContent; locale: Locale
   );
 }
 
+/** How it works: four real steps, so here the numbers carry meaning. */
 export function Journey({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { journey } = content;
   return (
     <Section id="journey">
-      <SectionHeading
-        eyebrow={t(journey.eyebrow, locale)}
-        title={t(journey.title, locale)}
-        body={t(journey.body, locale)}
-      />
-      <div className="mt-12 lg:mt-8">
-        <Trail
-          stops={journey.steps.map((step) => ({
-            id: step.id,
-            icon: step.icon,
-            title: t(step.title, locale),
-            body: t(step.body, locale),
-          }))}
-        />
+      <SectionHeading title={t(journey.title, locale)} body={t(journey.body, locale)} />
+      <ol className="relative mt-8 grid gap-6 lg:mt-12 lg:grid-cols-4 lg:gap-8">
+        {journey.steps.map((step, index) => (
+          <li key={step.id} className="relative grid content-start grid-cols-[2.75rem_minmax(0,1fr)] gap-4 lg:grid-cols-1 lg:gap-5">
+            {index < journey.steps.length - 1 ? (
+              <span
+                aria-hidden="true"
+                className="absolute left-[1.35rem] top-12 h-[calc(100%-1.5rem)] w-0.5 bg-[#e6e3f4] lg:left-14 lg:top-[1.35rem] lg:h-0.5 lg:w-[calc(100%-1.5rem)]"
+              />
+            ) : null}
+            <span className="relative z-10 flex h-11 w-11 items-center justify-center rounded-full bg-violet text-lg font-bold text-white">
+              {index + 1}
+            </span>
+            <div>
+              <h3 className="text-lg font-bold leading-snug text-navy lg:text-xl">{t(step.title, locale)}</h3>
+              <p className="mt-1.5 max-w-[36rem] text-base leading-relaxed text-[#2c3a5e]">{t(step.body, locale)}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <div className="mt-8 lg:mt-12">
+        <a href="#quote-form" className="ui-btn ui-btn-primary w-full sm:w-auto">
+          {t(content.hero.primaryCta, locale)}
+        </a>
       </div>
-      <p className="mt-8 text-center text-sm font-semibold text-ink-muted lg:mt-4">
-        {t(journey.footnote, locale)}
-      </p>
     </Section>
   );
 }
@@ -82,19 +89,23 @@ export function Services({ content, locale }: { content: SiteContent; locale: Lo
   );
 }
 
-/** Reasons to choose India, set large on a field of navy so the section reads as its own chapter. */
+/** Why India, with Shifain: the six promises, said once, on the page's one dark field. */
 export function WhyIndia({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { whyIndia } = content;
   return (
-    <section id="why-india" className="scroll-mt-20 bg-navy">
-      <div className="mx-auto max-w-[88rem] px-4 py-20 sm:px-6 lg:px-12 lg:py-28">
-        <SectionHeading align="start" tone="light" eyebrow={t(whyIndia.eyebrow, locale)} title={t(whyIndia.title, locale)} body={t(whyIndia.body, locale)} />
-        <ul className="mt-14 grid gap-px overflow-hidden rounded-3xl bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+    <section id="why-india" className="ui-section scroll-mt-20 bg-navy">
+      <div className="ui-container">
+        <SectionHeading tone="light" title={t(whyIndia.title, locale)} body={t(whyIndia.body, locale)} />
+        <ul className="mt-8 grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-y-12">
           {whyIndia.points.map((point) => (
-            <li key={point.id} className="flex flex-col gap-3 bg-navy p-7 lg:p-9">
-              <Icon name={point.icon} className="h-7 w-7 text-[#f6a54a]" />
-              <h3 className="text-2xl font-bold leading-tight tracking-[-0.01em] text-white">{t(point.title, locale)}</h3>
-              <p className="text-base leading-relaxed text-white/75">{t(point.body, locale)}</p>
+            <li key={point.id} className="grid grid-cols-[2.75rem_minmax(0,1fr)] gap-4">
+              <span aria-hidden="true" className="flex h-11 w-11 items-center justify-center rounded-[0.875rem] bg-white/10 text-[#f6b36b]">
+                <Icon name={point.icon} className="h-6 w-6" />
+              </span>
+              <div>
+                <h3 className="text-lg font-bold leading-snug text-white lg:text-xl">{t(point.title, locale)}</h3>
+                <p className="mt-1.5 text-base leading-relaxed text-white/75">{t(point.body, locale)}</p>
+              </div>
             </li>
           ))}
         </ul>

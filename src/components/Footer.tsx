@@ -33,7 +33,7 @@ export function Footer({ content, locale }: { content: SiteContent; locale: Loca
 
             {content.footer.columns.map((column) => (
               <div key={column.id}>
-                <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-white">
+                <h3 className="text-base font-bold text-white">
                   {t(column.title, locale)}
                 </h3>
                 <ul className="mt-4 space-y-2.5">

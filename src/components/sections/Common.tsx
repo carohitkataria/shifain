@@ -6,25 +6,33 @@ export function Eyebrow({ children, tone = "brand" }: { children: string; tone?:
   );
 }
 
+/**
+ * A section's heading and one line under it. Left-aligned; the label that
+ * older content stores as `eyebrow` is no longer shown (see docs/design/homepage.md).
+ */
 export function SectionHeading({
-  eyebrow,
   title,
   body,
-  align = "center",
+  align = "start",
   tone = "brand",
+  action,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   body?: string;
   align?: "center" | "start";
   tone?: "brand" | "light";
+  /** A link set beside the heading on wide screens, under it on phones. */
+  action?: React.ReactNode;
 }) {
   const centered = align === "center";
   return (
-    <div className={centered ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
-      <Eyebrow tone={tone}>{eyebrow}</Eyebrow>
-      <h2 className={`section-title mt-3 ${tone === "light" ? "!text-white" : ""}`}>{title}</h2>
-      {body ? <p className={`section-body mt-4 ${centered ? "mx-auto max-w-2xl" : "max-w-2xl"} ${tone === "light" ? "!text-white/80" : ""}`}>{body}</p> : null}
+    <div className={`flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between ${centered ? "text-center sm:flex-col sm:items-center" : ""}`}>
+      <div className={centered ? "mx-auto max-w-3xl" : "max-w-3xl"}>
+        <h2 className={`ui-h2 ${tone === "light" ? "!text-white" : ""}`}>{title}</h2>
+        {body ? <p className={`ui-lead ${centered ? "mx-auto" : ""} ${tone === "light" ? "!text-white/80" : ""}`}>{body}</p> : null}
+      </div>
+      {action ? <div className="shrink-0">{action}</div> : null}
     </div>
   );
 }
@@ -41,8 +49,8 @@ export function Section({
   className?: string;
 }) {
   return (
-    <section id={id} className={`scroll-mt-20 ${muted ? "bg-hero" : "bg-white"} ${className}`}>
-      <div className="mx-auto max-w-[88rem] px-4 py-20 sm:px-6 lg:px-12 lg:py-28">{children}</div>
+    <section id={id} className={`ui-section scroll-mt-20 ${muted ? "bg-hero" : "bg-white"} ${className}`}>
+      <div className="ui-container">{children}</div>
     </section>
   );
 }
