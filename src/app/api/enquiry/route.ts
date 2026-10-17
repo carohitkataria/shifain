@@ -4,7 +4,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { publicUrl } from "@/lib/origin";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { newReference } from "@/lib/cases";
+import { linkCaseToAccount, newReference } from "@/lib/cases";
+import { currentPatient } from "@/lib/patient-auth";
 import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
 import { openCase } from "@/lib/case-flow";
 import { attributeFromCookie } from "@/lib/referrals";
@@ -39,7 +40,10 @@ export async function POST(request: NextRequest) {
   const country = String(form.get("country") ?? "").trim();
   const dial = String(form.get("dial") ?? "").trim();
   const local = String(form.get("phone") ?? "").trim();
-  const email = String(form.get("email") ?? "").trim() || null;
+  const signedIn = isDatabaseConfigured() ? await currentPatient().catch(() => null) : null;
+  const accountEmail = signedIn?.kind === "email" ? signedIn.email : null;
+  // A signed-in patient who leaves the email blank is reached at their account's.
+  const email = String(form.get("email") ?? "").trim().toLowerCase() || accountEmail;
   const phone = [dial, local].filter(Boolean).join(" ").trim();
 
   if (!name || !phone || !country) return back;
@@ -69,6 +73,7 @@ export async function POST(request: NextRequest) {
   try {
     const record = await openCase({ locale, patient, intake, source: "website", referredBy: null });
     await attributeFromCookie(record, "link");
+    if (accountEmail && accountEmail !== email) await linkCaseToAccount(record._id, accountEmail).catch(() => undefined);
     return NextResponse.redirect(publicUrl(request, `/${locale}/plan/${record._id}`), 303);
   } catch (error) {
     console.error("[shifain] could not open a case", error);

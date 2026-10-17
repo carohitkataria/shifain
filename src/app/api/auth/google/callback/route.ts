@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { publicOrigin, publicUrl } from "@/lib/origin";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { emailFromCode } from "@/lib/google-auth";
-import { startPatientEmailSession } from "@/lib/patient-auth";
+import { ensureAccount, startPatientEmailSession } from "@/lib/patient-auth";
 import { OAUTH_COOKIE } from "../route";
 
 export async function GET(request: NextRequest) {
@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  await ensureAccount(email, "", locale).catch((error) => console.error("[shifain] could not record a Google account", error));
   await startPatientEmailSession(email);
   return NextResponse.redirect(publicUrl(request, `/${locale}/portal/patient`));
 }

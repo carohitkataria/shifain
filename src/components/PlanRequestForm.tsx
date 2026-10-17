@@ -41,10 +41,13 @@ export function PlanRequestForm({
   locale,
   treatments,
   labels,
+  defaults,
 }: {
   locale: Locale;
   treatments: { slug: string; title: L }[];
   labels: { submit: string; country: string; countryPlaceholder: string; phone: string; privacy: string };
+  /** A signed-in patient's details, so they are not typed twice. */
+  defaults?: { firstName?: string; lastName?: string; country?: string; dial?: string; phone?: string; email?: string };
 }) {
   const [step, setStep] = useState(0);
   const [need, setNeed] = useState("");
@@ -53,7 +56,7 @@ export function PlanRequestForm({
   const [files, setFiles] = useState<File[]>([]);
   const [description, setDescription] = useState("");
   const [answered, setAnswered] = useState(false);
-  const [dial, setDial] = useState("");
+  const [dial, setDial] = useState(defaults?.dial ?? "");
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -446,6 +449,7 @@ export function PlanRequestForm({
               name="firstName"
               data-field="firstName"
               autoComplete="given-name"
+              defaultValue={defaults?.firstName}
               aria-invalid={Boolean(errors.firstName)}
               aria-describedby={errors.firstName ? "err-firstName" : undefined}
               onInput={() => setErrors((x) => ({ ...x, firstName: undefined }))}
@@ -456,7 +460,7 @@ export function PlanRequestForm({
             <label htmlFor="lastName" className={labelCls}>
               {t(INTAKE_COPY.lastNameLabel, locale)}
             </label>
-            <input id="lastName" name="lastName" autoComplete="family-name" className={field} />
+            <input id="lastName" name="lastName" autoComplete="family-name" defaultValue={defaults?.lastName} className={field} />
           </div>
         </div>
         <FieldError id="err-firstName" text={errors.firstName} />
@@ -469,7 +473,7 @@ export function PlanRequestForm({
             id="country"
             name="country"
             data-field="country"
-            defaultValue=""
+            defaultValue={defaults?.country ?? ""}
             autoComplete="country-name"
             aria-invalid={Boolean(errors.country)}
             aria-describedby={errors.country ? "err-country" : undefined}
@@ -513,6 +517,7 @@ export function PlanRequestForm({
               data-field="phone"
               inputMode="tel"
               autoComplete="tel-national"
+              defaultValue={defaults?.phone}
               aria-invalid={Boolean(errors.phone)}
               aria-describedby={errors.phone ? "err-phone" : "phone-note"}
               onInput={() => setErrors((x) => ({ ...x, phone: undefined }))}
@@ -536,6 +541,7 @@ export function PlanRequestForm({
             data-field="email"
             autoComplete="email"
             inputMode="email"
+            defaultValue={defaults?.email}
             placeholder={t(INTAKE_COPY.emailPlaceholder, locale)}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "err-email" : undefined}

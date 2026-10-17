@@ -27,26 +27,27 @@ export const PATIENT_COPY = {
   referenceTab: l("Use my reference", "По номеру обращения", "Murojaat raqami bilan"),
   email: l("Email address", "Электронная почта", "Elektron pochta"),
   emailBody: l(
-    "The address you gave us. We send a six-digit code to it.",
-    "Адрес, который вы оставили. Мы пришлём на него шестизначный код.",
-    "Siz qoldirgan manzil. Unga olti xonali kod yuboramiz.",
+    "The address on your account or your case. We email a six-digit code to it.",
+    "Адрес из вашего аккаунта или обращения. Мы пришлём на него шестизначный код.",
+    "Akkauntingiz yoki murojaatingizdagi manzil. Unga olti xonali kod yuboramiz.",
   ),
   sendCode: l("Send me a code", "Отправить код", "Kod yuborish"),
   codeSent: l(
-    "If that address has a case with us, a code is on its way. It works for 15 minutes.",
-    "Если по этому адресу есть обращение, код уже в пути. Он действует 15 минут.",
-    "Agar bu manzilda murojaat bo'lsa, kod yo'lda. U 15 daqiqa amal qiladi.",
+    "If that address has an account or a case with us, a code is on its way. It works for 15 minutes. Check your spam folder if it has not arrived in a minute.",
+    "Если на этот адрес есть аккаунт или обращение, код уже в пути. Он действует 15 минут. Если письма нет через минуту, проверьте папку «Спам».",
+    "Agar bu manzilda akkaunt yoki murojaat bo'lsa, kod yo'lda. U 15 daqiqa amal qiladi. Bir daqiqada kelmasa, «Spam» papkasini tekshiring.",
   ),
-  codeViaCoordinator: l(
-    "Email is not switched on for this site yet, so your coordinator has your code — call or message them and they will read it out. It works for 15 minutes.",
-    "Отправка писем на этом сайте пока не включена — код есть у вашего координатора, он его продиктует. Код действует 15 минут.",
-    "Bu saytda pochta yuborish hali yoqilmagan — kod koordinatoringizda, u aytib beradi. Kod 15 daqiqa amal qiladi.",
+  mailFailed: l(
+    "We could not send the email just now. Please try again in a minute, or sign in with your case reference.",
+    "Сейчас не получилось отправить письмо. Попробуйте через минуту или войдите по номеру обращения.",
+    "Hozir xat yuborib bo'lmadi. Bir daqiqadan so'ng qayta urinib ko'ring yoki murojaat raqami bilan kiring.",
   ),
-  codeShown: l(
-    "Email is not switched on for this site yet, so here is your code. It works for 15 minutes.",
-    "Отправка писем пока не включена, поэтому вот ваш код. Он действует 15 минут.",
-    "Pochta hali yoqilmagan, shuning uchun kodingiz shu yerda. U 15 daqiqa amal qiladi.",
+  emailInvalid: l(
+    "Please enter a full email address, like name@example.com.",
+    "Введите полный адрес почты, например name@example.com.",
+    "To'liq pochta manzilini kiriting, masalan name@example.com.",
   ),
+  devCode: l("Development only — your code:", "Только для разработки — ваш код:", "Faqat ishlab chiqish uchun — kodingiz:"),
   code: l("Six-digit code", "Шестизначный код", "Olti xonali kod"),
   codeFailed: l(
     "That code did not work. Ask for a new one and try again.",

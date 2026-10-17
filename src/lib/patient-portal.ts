@@ -4,7 +4,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getDb, isDatabaseConfigured } from "./db";
 import { casesForEmail, casesForPhone, type PatientCase, type PlanEdit } from "./cases";
-import { currentPatient, normalisePhone, type PatientIdentity } from "./patient-auth";
+import { currentPatient, getPatientAccount, normalisePhone, type PatientAccount, type PatientIdentity } from "./patient-auth";
 import { MAX_REPORT_BYTES, storeReports, type ReportUpload } from "./reports";
 import { getSettings } from "./settings";
 
@@ -61,38 +61,46 @@ type CaseWithAppointments = PatientCase & { appointments?: Appointment[] };
 
 export type PortalData = {
   identity: PatientIdentity;
+  /** Who signed up, when they did; patients who only ever sent a case have none. */
+  account: PatientAccount | null;
   cases: CaseWithAppointments[];
   active: CaseWithAppointments | null;
 };
 
 /** The signed-in patient and their cases, once per request. */
-const loadCases = cache(async (): Promise<{ identity: PatientIdentity; cases: CaseWithAppointments[] } | null> => {
-  if (!isDatabaseConfigured()) return null;
-  const identity = await currentPatient().catch(() => null);
-  if (!identity) return null;
-  const cases = (await (identity.kind === "email" ? casesForEmail(identity.email) : casesForPhone(identity.digits)).catch(
-    () => [],
-  )) as CaseWithAppointments[];
-  return { identity, cases };
-});
+const loadCases = cache(
+  async (): Promise<{ identity: PatientIdentity; account: PatientAccount | null; cases: CaseWithAppointments[] } | null> => {
+    if (!isDatabaseConfigured()) return null;
+    const identity = await currentPatient().catch(() => null);
+    if (!identity) return null;
+    const [cases, account] = await Promise.all([
+      (identity.kind === "email" ? casesForEmail(identity.email) : casesForPhone(identity.digits)).catch(() => []),
+      identity.kind === "email" ? getPatientAccount(identity.email).catch(() => null) : null,
+    ]);
+    return { identity, account, cases: cases as CaseWithAppointments[] };
+  },
+);
 
 /** For portal pages: the patient's cases and the one they are looking at, or off to sign in. */
 export async function loadPortal(locale: string, caseParam?: string | null): Promise<PortalData> {
   const loaded = await loadCases();
   if (!loaded) redirect(`/${locale}/portal/patient/login`);
-  const { identity, cases } = loaded;
+  const { identity, account, cases } = loaded;
   const wanted = caseParam?.trim().toUpperCase();
   const active =
     (wanted && cases.find((item) => item._id === wanted)) ||
     cases.find((item) => item.status !== "closed") ||
     cases[0] ||
     null;
-  return { identity, cases, active };
+  return { identity, account, cases, active };
 }
 
 /** Whether this signed-in patient may see or change this case. */
-export function ownsCase(identity: PatientIdentity, record: Pick<PatientCase, "patient">): boolean {
-  if (identity.kind === "email") return (record.patient.email ?? "").toLowerCase() === identity.email.toLowerCase();
+export function ownsCase(identity: PatientIdentity, record: Pick<PatientCase, "patient" | "accountEmail">): boolean {
+  if (identity.kind === "email") {
+    const email = identity.email.toLowerCase();
+    return (record.patient.email ?? "").toLowerCase() === email || (record.accountEmail ?? "").toLowerCase() === email;
+  }
   const known = normalisePhone(record.patient.phone);
   return identity.digits.length >= 6 && known.length >= 6 && known.endsWith(identity.digits.slice(-9));
 }
