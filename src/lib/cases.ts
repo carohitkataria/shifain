@@ -45,6 +45,8 @@ export type PatientCase = {
   planEdits?: PlanEdit[];
   /** When the patient asked for the plan to be redone; limits how often that runs. */
   replans?: string[];
+  /** The signed-in account that opened this case, when its contact email is someone else's. */
+  accountEmail?: string | null;
 };
 
 export type PatientPreferences = {
@@ -134,15 +136,26 @@ export async function casesForPhone(digits: string, limit = 20): Promise<Patient
     .toArray();
 }
 
-/** A patient's own cases, found by the email they gave us. */
+/** The whole address, ignoring case: older cases kept it as typed ("Name@Gmail.com"). */
+export const emailMatcher = (email: string) =>
+  new RegExp(`^${email.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i");
+
+/** A patient's own cases, found by the email they gave us or the account that opened them. */
 export async function casesForEmail(email: string, limit = 20): Promise<PatientCase[]> {
   const db = await getDb();
+  const address = emailMatcher(email);
   return db
     .collection<PatientCase>("cases")
-    .find({ "patient.email": email.toLowerCase() })
+    .find({ $or: [{ "patient.email": address }, { accountEmail: address }] })
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();
+}
+
+/** Ties a case to the signed-in account that opened it. */
+export async function linkCaseToAccount(reference: string, email: string): Promise<void> {
+  const db = await getDb();
+  await db.collection<PatientCase>("cases").updateOne({ _id: reference }, { $set: { accountEmail: email.toLowerCase() } });
 }
 
 /** The cases one partner doctor has referred, newest first. */

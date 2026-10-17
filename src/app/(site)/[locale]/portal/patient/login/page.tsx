@@ -11,16 +11,15 @@ import { PATIENT_COPY } from "@/lib/patient-copy";
 import { LOGIN_COPY, PORTAL_COPY, PORTAL_NAV } from "@/lib/portal-patient-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
-import { patientLoginAction, requestEmailCodeAction, verifyEmailCodeAction } from "../actions";
+import { patientLoginAction, requestEmailCodeAction } from "../actions";
+import { AUTH_FIELD, AUTH_PRIMARY, AuthAlert, EmailCodeForm } from "@/components/portal/EmailCodeForm";
 
 export const dynamic = "force-dynamic";
 
-type Query = { with?: string; sent?: string; email?: string; code?: string; error?: string };
+type Query = { with?: string; sent?: string; email?: string; dev?: string; error?: string };
 
-const FIELD =
-  "min-h-12 w-full rounded-2xl border border-[#dcd8ee] bg-white px-4 text-[16px] text-navy placeholder:text-[#8b93ad] focus:border-violet focus:outline-none focus:ring-2 focus:ring-violet-soft";
-const PRIMARY =
-  "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-violet px-6 font-semibold text-white transition hover:bg-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+const FIELD = AUTH_FIELD;
+const PRIMARY = AUTH_PRIMARY;
 
 const INSIDE = ["plan", "reports", "schedule", "translator", "history", "help"] as const;
 
@@ -99,9 +98,14 @@ export default async function PatientLoginPage({
             </div>
 
             {query.error && query.error !== "code" ? (
-              <p role="alert" className="mt-5 rounded-2xl bg-[#fdecec] px-4 py-3 text-[15px] font-medium text-[#8f1d1d]">
-                {t(PATIENT_COPY.failed, locale)}
-              </p>
+              <div className="mt-5">
+                <AuthAlert>
+                  {t(
+                    query.error === "mail" ? PATIENT_COPY.mailFailed : query.error === "email" ? PATIENT_COPY.emailInvalid : PATIENT_COPY.failed,
+                    locale,
+                  )}
+                </AuthAlert>
+              </div>
             ) : null}
 
             {byReference ? (
@@ -124,40 +128,17 @@ export default async function PatientLoginPage({
                 </button>
               </form>
             ) : codeStep ? (
-              <form action={verifyEmailCodeAction} className="mt-6 flex flex-col gap-4">
-                <input type="hidden" name="locale" value={locale} />
-                <input type="hidden" name="email" value={email} />
-                <p className="text-[15px] leading-relaxed text-[#2c3a5e]">
-                  {query.sent === "code" ? t(PATIENT_COPY.codeShown, locale) : `${t(LOGIN_COPY.codeSentTo, locale)} ${email}. ${t(PATIENT_COPY.codeSent, locale)}`}
-                </p>
-                {query.sent === "code" && query.code ? (
-                  <p className="rounded-2xl bg-violet-soft px-4 py-3 text-center text-3xl font-bold tracking-[0.3em] text-violet">{query.code}</p>
-                ) : null}
-                {query.error === "code" ? (
-                  <p role="alert" className="rounded-2xl bg-[#fdecec] px-4 py-3 text-[15px] font-medium text-[#8f1d1d]">
-                    {t(PATIENT_COPY.codeFailed, locale)}
-                  </p>
-                ) : null}
-                <label className="flex flex-col gap-1.5 text-[15px] font-semibold text-navy">
-                  {t(PATIENT_COPY.code, locale)}
-                  <input
-                    name="code"
-                    required
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    pattern="\d{6}"
-                    maxLength={6}
-                    className={`${FIELD} text-center text-2xl font-bold tracking-[0.4em]`}
-                  />
-                </label>
-                <button type="submit" className={PRIMARY}>
-                  {t(PATIENT_COPY.verify, locale)}
-                  <PortalIcon name="arrow" />
-                </button>
-                <Link href={here} className="min-h-11 self-center pt-2 text-[15px] font-semibold text-violet hover:underline">
-                  {t(PATIENT_COPY.useAnother, locale)}
-                </Link>
-              </form>
+              <EmailCodeForm
+                locale={locale}
+                email={email}
+                from="login"
+                intro={`${t(LOGIN_COPY.codeSentTo, locale)} ${email}. ${t(PATIENT_COPY.codeSent, locale)}`}
+                submit={t(PATIENT_COPY.verify, locale)}
+                failed={query.error === "code"}
+                devCode={query.dev}
+                backHref={here}
+                backLabel={t(PATIENT_COPY.useAnother, locale)}
+              />
             ) : (
               <div className="mt-6 flex flex-col gap-4">
                 {google ? (
@@ -199,9 +180,15 @@ export default async function PatientLoginPage({
             <div className="mt-8 rounded-2xl bg-surface-muted p-4">
               <p className="font-semibold text-navy">{t(LOGIN_COPY.newHere, locale)}</p>
               <p className="mt-1 text-[15px] text-[#2c3a5e]">{t(LOGIN_COPY.newHereBody, locale)}</p>
-              <Link href={`/${locale}#quote-form`} className="mt-2 inline-flex min-h-11 items-center gap-2 font-semibold text-violet hover:underline">
-                {t(PORTAL_COPY.startCase, locale)}
+              <Link
+                href={`/${locale}/portal/patient/signup`}
+                className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 font-semibold text-violet ring-1 ring-violet-line transition hover:bg-violet-soft"
+              >
+                {t(LOGIN_COPY.createAccount, locale)}
                 <PortalIcon name="arrow" className="h-4 w-4" />
+              </Link>
+              <Link href={`/${locale}#quote-form`} className="mt-1 flex min-h-11 items-center text-[15px] font-medium text-slate hover:text-violet hover:underline">
+                {t(LOGIN_COPY.orPlan, locale)}
               </Link>
             </div>
           </section>

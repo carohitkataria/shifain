@@ -378,13 +378,82 @@ export const LOGIN_COPY = {
   codeSentTo: l("We sent a code to", "Мы отправили код на", "Kod yuborildi:"),
   newHere: l("New to Shifain?", "Впервые в Shifain?", "Shifain'da yangimisiz?"),
   newHereBody: l(
-    "Get your free treatment plan first — your space is created with it.",
-    "Сначала получите бесплатный план лечения — пространство создаётся вместе с ним.",
-    "Avval bepul davolash rejasini oling — kabinet u bilan birga yaratiladi.",
+    "Create your account with a few details. You can start a case now or whenever you are ready.",
+    "Создайте аккаунт за минуту. Обращение можно открыть сразу или когда будете готовы.",
+    "Bir necha ma'lumot bilan akkaunt yarating. Murojaatni hozir yoki tayyor bo'lganingizda ochishingiz mumkin.",
   ),
+  createAccount: l("Create an account", "Создать аккаунт", "Akkaunt yaratish"),
+  orPlan: l("Or get a free plan without an account", "Или получите бесплатный план без аккаунта", "Yoki akkauntsiz bepul reja oling"),
+  haveAccount: l("Already have an account?", "Уже есть аккаунт?", "Akkauntingiz bormi?"),
+  signInLink: l("Sign in", "Войти", "Kirish"),
   languages: l(
     "Available in English, Русский and O'zbek, with a translator for many more.",
     "Доступно на English, Русском и O'zbek, а переводчик — на многих других.",
     "English, Русский va O'zbek tillarida, tarjimon esa yana ko'p tillarda.",
   ),
+};
+
+export const SIGNUP_COPY = {
+  title: l("Create your Shifain account", "Создайте аккаунт Shifain", "Shifain akkauntini yarating"),
+  lead: l(
+    "A few details and a code from your email — that is all. Start a case now, or come back whenever you are ready.",
+    "Несколько данных и код из письма — вот и всё. Откройте обращение сейчас или вернитесь, когда будете готовы.",
+    "Bir necha ma'lumot va pochtangizdagi kod — shu xolos. Murojaatni hozir oching yoki tayyor bo'lganingizda qayting.",
+  ),
+  cardTitle: l("Sign up", "Регистрация", "Ro'yxatdan o'tish"),
+  cardLead: l("No password. We verify your email with a code.", "Без пароля. Почту подтверждаем кодом.", "Parolsiz. Pochtangizni kod bilan tasdiqlaymiz."),
+  firstName: l("First name", "Имя", "Ism"),
+  lastName: l("Last name", "Фамилия", "Familiya"),
+  country: l("Country you live in", "Страна проживания", "Yashash mamlakati"),
+  countryPick: l("Choose your country", "Выберите страну", "Mamlakatni tanlang"),
+  phone: l("Phone or WhatsApp", "Телефон или WhatsApp", "Telefon yoki WhatsApp"),
+  dial: l("Country code", "Код страны", "Mamlakat kodi"),
+  email: l("Email address", "Электронная почта", "Elektron pochta"),
+  emailHint: l("We send a six-digit code here to verify it.", "Сюда придёт шестизначный код для подтверждения.", "Tasdiqlash uchun bu yerga olti xonali kod yuboramiz."),
+  agree: l(
+    "I agree to Shifain keeping these details to contact me and plan my treatment.",
+    "Я согласен(на), чтобы Shifain хранил эти данные, чтобы связаться со мной и спланировать лечение.",
+    "Shifain bu ma'lumotlarni men bilan bog'lanish va davolanishimni rejalashtirish uchun saqlashiga roziman.",
+  ),
+  submit: l("Send my code", "Отправить код", "Kodni yuborish"),
+  codeSent: l(
+    "We emailed a six-digit code to",
+    "Мы отправили шестизначный код на",
+    "Olti xonali kod yuborildi:",
+  ),
+  codeNote: l(
+    "Enter it below to finish. It works for 15 minutes. Check your spam folder if it has not arrived in a minute.",
+    "Введите его ниже, чтобы завершить. Он действует 15 минут. Если письма нет через минуту, проверьте «Спам».",
+    "Yakunlash uchun uni quyida kiriting. U 15 daqiqa amal qiladi. Bir daqiqada kelmasa, «Spam» papkasini tekshiring.",
+  ),
+  verify: l("Verify and create my account", "Подтвердить и создать аккаунт", "Tasdiqlash va akkaunt yaratish"),
+  detailsError: l(
+    "Please fill in your first name, country, phone and a full email address, and tick the agreement.",
+    "Заполните имя, страну, телефон и полный адрес почты и отметьте согласие.",
+    "Ism, mamlakat, telefon va to'liq pochta manzilini kiriting hamda roziligingizni belgilang.",
+  ),
+  startOver: l("Change my details", "Изменить данные", "Ma'lumotlarni o'zgartirish"),
+};
+
+export const ACCOUNT_COPY = {
+  welcome: l("Welcome to Shifain", "Добро пожаловать в Shifain", "Shifain'ga xush kelibsiz"),
+  ready: l(
+    "Your account is ready. Whenever you are, start a case: tell us what you need and send any reports, and we draft your free treatment plan.",
+    "Ваш аккаунт готов. Когда будете готовы, откройте обращение: расскажите, что нужно, приложите документы — и мы подготовим бесплатный план лечения.",
+    "Akkauntingiz tayyor. Tayyor bo'lganingizda murojaat oching: nima kerakligini ayting, hujjatlarni yuboring — biz bepul davolash rejasini tayyorlaymiz.",
+  ),
+  noCaseYet: l(
+    "You have no case yet. Start one whenever you are ready — it takes about two minutes, and it appears here straight away.",
+    "У вас пока нет обращения. Откройте его, когда будете готовы, — это около двух минут, и оно сразу появится здесь.",
+    "Sizda hali murojaat yo'q. Tayyor bo'lganingizda oching — taxminan ikki daqiqa, va u darhol shu yerda paydo bo'ladi.",
+  ),
+  startCase: l("Start a case", "Открыть обращение", "Murojaat ochish"),
+  newCaseTitle: l("Start a new case", "Новое обращение", "Yangi murojaat"),
+  newCaseLead: l(
+    "Your details are filled in from your account. Tell us what you need and we draft your free plan.",
+    "Ваши данные подставлены из аккаунта. Расскажите, что нужно, — и мы подготовим бесплатный план.",
+    "Ma'lumotlaringiz akkauntdan olindi. Nima kerakligini ayting — biz bepul reja tayyorlaymiz.",
+  ),
+  newCase: l("New case", "Новое обращение", "Yangi murojaat"),
+  meanwhile: l("Meanwhile, you can", "А пока вы можете", "Hozircha siz"),
 };

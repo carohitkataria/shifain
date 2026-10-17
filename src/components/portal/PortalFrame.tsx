@@ -6,7 +6,7 @@ import { PortalNav } from "./PortalNav";
 import { PortalIcon } from "./PortalIcon";
 import { patientLogoutAction } from "@/app/(site)/[locale]/portal/patient/actions";
 import { PATIENT_COPY } from "@/lib/patient-copy";
-import { PORTAL_COPY, PORTAL_NAV, type PortalSection } from "@/lib/portal-patient-copy";
+import { ACCOUNT_COPY, PORTAL_COPY, PORTAL_NAV, type PortalSection } from "@/lib/portal-patient-copy";
 import { t } from "@/lib/localize";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -77,11 +77,13 @@ export function PortalFrame({
   content: SiteContent;
   locale: Locale;
   data: PortalData;
-  section: PortalSection;
+  /** "new" is the start-a-case page, which is not in the section list. */
+  section: PortalSection | "new";
   children: React.ReactNode;
 }) {
-  const { active, cases } = data;
-  const name = active?.patient.name && active.patient.name !== "Website patient" ? active.patient.name : "";
+  const { active, cases, account } = data;
+  const accountName = account ? [account.firstName, account.lastName].filter(Boolean).join(" ") : "";
+  const name = accountName || (active?.patient.name && active.patient.name !== "Website patient" ? active.patient.name : "");
   const initials =
     name
       .split(/\s+/)
@@ -90,6 +92,7 @@ export function PortalFrame({
       .map((part) => part[0]?.toUpperCase())
       .join("") || "S";
   const path = section === "overview" ? "/portal/patient" : `/portal/patient/${section}`;
+  const newCase = `/${locale}/portal/patient/new`;
 
   return (
     <>
@@ -145,6 +148,16 @@ export function PortalFrame({
               />
             </Suspense>
 
+            {active ? (
+              <Link
+                href={newCase}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-white px-4 text-[15px] font-semibold text-violet ring-1 ring-violet-line transition hover:bg-violet-soft"
+              >
+                <span aria-hidden="true" className="text-lg leading-none">+</span>
+                {t(ACCOUNT_COPY.newCase, locale)}
+              </Link>
+            ) : null}
+
             <form action={patientLogoutAction} className="hidden lg:block">
               <input type="hidden" name="locale" value={locale} />
               <button
@@ -158,24 +171,48 @@ export function PortalFrame({
           </aside>
 
           <div className="flex min-w-0 flex-col gap-6">
-            {active || section === "help" || section === "translator" ? (
+            {active || section === "help" || section === "translator" || section === "new" || (section === "profile" && account) ? (
               children
             ) : (
-              <Panel>
-                <p className="max-w-xl text-lg leading-relaxed text-navy">{t(PORTAL_COPY.noCases, locale)}</p>
-                <Link
-                  href={`/${locale}#quote-form`}
-                  className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-violet px-6 font-semibold text-white hover:bg-brand-deep"
-                >
-                  {t(PORTAL_COPY.startCase, locale)}
-                  <PortalIcon name="arrow" />
-                </Link>
-              </Panel>
+              <NoCaseYet locale={locale} firstName={account?.firstName || name.split(" ")[0] || ""} />
             )}
           </div>
         </div>
       </main>
       <Footer content={content} locale={locale} />
+    </>
+  );
+}
+
+/** What a signed-in patient with no case sees: a welcome, and one way to start. */
+function NoCaseYet({ locale, firstName }: { locale: Locale; firstName: string }) {
+  const base = `/${locale}/portal/patient`;
+  return (
+    <>
+      <PortalHeading title={`${t(ACCOUNT_COPY.welcome, locale)}${firstName ? `, ${firstName}` : ""}`} lead={t(ACCOUNT_COPY.ready, locale)} />
+      <Panel>
+        <p className="max-w-xl text-lg leading-relaxed text-navy">{t(ACCOUNT_COPY.noCaseYet, locale)}</p>
+        <Link
+          href={`${base}/new`}
+          className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-violet px-6 font-semibold text-white hover:bg-brand-deep"
+        >
+          {t(ACCOUNT_COPY.startCase, locale)}
+          <PortalIcon name="arrow" />
+        </Link>
+        <p className="mt-6 text-[15px] text-slate">{t(ACCOUNT_COPY.meanwhile, locale)}</p>
+        <ul className="mt-2 flex flex-wrap gap-2">
+          {(["translator", "help", "profile"] as const).map((item) => (
+            <li key={item}>
+              <Link
+                href={`${base}/${item}`}
+                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-muted px-4 text-[15px] font-semibold text-navy transition hover:bg-violet-soft hover:text-violet"
+              >
+                {t(PORTAL_NAV[item], locale)}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Panel>
     </>
   );
 }

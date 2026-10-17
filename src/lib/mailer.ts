@@ -10,10 +10,13 @@ import "server-only";
  * avoiding: someone would sit waiting for it.
  */
 export function isMailConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY && process.env.MAIL_FROM);
+  return Boolean(process.env.RESEND_API_KEY);
 }
 
-export async function send(to: string, subject: string, text: string): Promise<boolean> {
+/** shifain.com is the domain verified with Resend, so mail can go out before MAIL_FROM is set. */
+const DEFAULT_FROM = "Shifain <no-reply@shifain.com>";
+
+export async function send(to: string, subject: string, text: string, html?: string): Promise<boolean> {
   if (!isMailConfigured()) return false;
 
   try {
@@ -23,7 +26,7 @@ export async function send(to: string, subject: string, text: string): Promise<b
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from: process.env.MAIL_FROM, to, subject, text }),
+      body: JSON.stringify({ from: process.env.MAIL_FROM || DEFAULT_FROM, to, subject, text, ...(html ? { html } : {}) }),
     });
     if (!response.ok) {
       console.error("[shifain] mail rejected", response.status, await response.text().catch(() => ""));

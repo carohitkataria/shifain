@@ -2,8 +2,8 @@ import "server-only";
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { getDb } from "./db";
-import { send } from "./mailer";
-import type { PatientCase } from "./cases";
+import { isMailConfigured, send } from "./mailer";
+import { emailMatcher, type PatientCase } from "./cases";
 
 export const PATIENT_COOKIE = "shifain_patient";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -81,18 +81,36 @@ export async function currentPatientPhone(): Promise<string | null> {
   const token = jar.get(PATIENT_COOKIE)?.value;
   if (!token) return null;
 
-  const parts = token.split(".");
-  if (parts.length !== 3) return null;
-  const [digits, expires, signature] = parts;
-  if (!safeEqual(signature, sign(`${digits}.${expires}`))) return null;
-  if (Number(expires) <= Date.now()) return null;
-  return digits;
+  const identity = readToken(token);
+  return identity?.kind === "phone" ? identity.digits : null;
 }
 
 // ------------------------------------------------------------ email sign-in
 
 const CODE_TTL_MINUTES = 15;
 const MAX_ATTEMPTS = 5;
+const RESEND_AFTER_MS = 60 * 1000;
+
+/** What a patient gives us to open an account, before any case exists. */
+export type SignUpDetails = {
+  firstName: string;
+  lastName: string;
+  country: string;
+  dial: string;
+  phone: string;
+  locale: string;
+};
+
+/**
+ * A patient's account: who they are, verified by a code sent to their email.
+ * Cases attach to it by that email, so it can exist long before the first case.
+ */
+export type PatientAccount = SignUpDetails & {
+  _id: string; // the email, lower-cased
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 type SignInCode = {
   _id: string;
@@ -101,28 +119,73 @@ type SignInCode = {
   attempts: number;
   createdAt: Date;
   expiresAt: Date;
+  /** Present when the code finishes a sign-up; the account is created only once the code is entered. */
+  signUp?: SignUpDetails | null;
 };
 
 const hashCode = (email: string, code: string) =>
   crypto.createHmac("sha256", secret()).update(`${email.toLowerCase()}:${code}`).digest("base64url");
 
-/**
- * Issues a six-digit code to an email that has a case against it.
- *
- * An address we have never seen gets the same answer as one we have — "check
- * your inbox" — so the page cannot be used to find out who is a patient here.
- */
-export async function requestEmailCode(
-  emailInput: string,
-): Promise<{ delivered: boolean; codeForCoordinator: string | null }> {
-  const email = emailInput.trim().toLowerCase();
-  const db = await getDb();
+export const normaliseEmail = (value: string) => value.trim().toLowerCase();
 
-  const known = await db.collection<PatientCase>("cases").findOne({ "patient.email": email });
-  if (!known) return { delivered: false, codeForCoordinator: null };
+export async function getPatientAccount(email: string): Promise<PatientAccount | null> {
+  const db = await getDb();
+  return db.collection<PatientAccount>("patient_accounts").findOne({ _id: normaliseEmail(email) });
+}
+
+/** Whether this address may sign in: it has an account, or a case was opened with it. */
+async function isKnownEmail(email: string): Promise<boolean> {
+  const db = await getDb();
+  const [account, record] = await Promise.all([
+    db.collection<PatientAccount>("patient_accounts").findOne({ _id: email }, { projection: { _id: 1 } }),
+    db.collection<PatientCase>("cases").findOne(
+      { $or: [{ "patient.email": emailMatcher(email) }, { accountEmail: emailMatcher(email) }] },
+      { projection: { _id: 1 } },
+    ),
+  ]);
+  return Boolean(account || record);
+}
+
+function codeEmail(code: string, signUp: boolean): { subject: string; text: string; html: string } {
+  const subject = signUp ? "Your Shifain verification code" : "Your Shifain sign-in code";
+  const lead = signUp ? "Use this code to finish creating your Shifain account:" : "Use this code to sign in to Shifain:";
+  const text = `${lead}\n\n${code}\n\nIt works for the next ${CODE_TTL_MINUTES} minutes. If you did not ask for it, you can ignore this email.`;
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#0a1a47;max-width:480px;margin:0 auto;padding:24px">
+<p style="font-size:20px;font-weight:700;color:#722be4;margin:0 0 16px">Shifain</p>
+<p style="font-size:16px;margin:0 0 16px">${lead}</p>
+<p style="font-size:32px;font-weight:700;letter-spacing:8px;background:#f4ecff;color:#722be4;text-align:center;border-radius:12px;padding:16px;margin:0 0 16px">${code}</p>
+<p style="font-size:14px;color:#3f4a69;margin:0">It works for the next ${CODE_TTL_MINUTES} minutes. If you did not ask for it, you can ignore this email.</p>
+</div>`;
+  return { subject, text, html };
+}
+
+export type CodeRequest =
+  /** A code was emailed, or the address is unknown and nothing was sent; the page says the same either way. */
+  | { status: "sent" }
+  /** The code could not be emailed. It is never shown on the page instead: that would let anyone sign in as anyone. */
+  | { status: "mail-failed" }
+  /** Development only, with no mail provider: the code, so the flow can be tried locally. */
+  | { status: "dev"; code: string };
+
+/**
+ * Issues a six-digit code by email, to sign in or to finish signing up.
+ *
+ * For sign-in, an address we have never seen gets the same answer as one we
+ * have — "check your inbox" — so the page cannot be used to find out who is a
+ * patient here. A sign-up always gets a code; the account exists only once the
+ * code comes back.
+ */
+export async function requestEmailCode(emailInput: string, signUp: SignUpDetails | null = null): Promise<CodeRequest> {
+  const email = normaliseEmail(emailInput);
+  if (!signUp && !(await isKnownEmail(email))) return { status: "sent" };
+
+  const now = new Date();
+  const db = await getDb();
+  // One email a minute per address, so the form cannot be used to flood someone's inbox.
+  const recent = await db.collection<SignInCode>("signin_codes").findOne({ _id: email }, { projection: { createdAt: 1 } });
+  if (recent && now.getTime() - new Date(recent.createdAt).getTime() < RESEND_AFTER_MS) return { status: "sent" };
 
   const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
-  const now = new Date();
 
   await db.collection<SignInCode>("signin_codes").updateOne(
     { _id: email },
@@ -133,6 +196,7 @@ export async function requestEmailCode(
         attempts: 0,
         createdAt: now,
         expiresAt: new Date(now.getTime() + CODE_TTL_MINUTES * 60 * 1000),
+        signUp,
       },
     },
     { upsert: true },
@@ -142,43 +206,80 @@ export async function requestEmailCode(
     .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0, name: "expiresAt_ttl" })
     .catch(() => undefined);
 
-  const delivered = await send(
-    email,
-    "Your ShifaIn sign-in code",
-    `Your code is ${code}. It works for the next ${CODE_TTL_MINUTES} minutes.\n\nIf you did not ask for it, you can ignore this email.`,
-  );
+  const message = codeEmail(code, Boolean(signUp));
+  if (await send(email, message.subject, message.text, message.html)) return { status: "sent" };
 
-  // With no mail provider configured the code is still valid; a coordinator
-  // reads it out. Better than a sign-in that silently cannot work.
-  return { delivered, codeForCoordinator: delivered ? null : code };
+  if (process.env.NODE_ENV !== "production" && !isMailConfigured()) {
+    console.info(`[shifain] no mailer configured; sign-in code for ${email}: ${code}`);
+    return { status: "dev", code };
+  }
+  await db.collection<SignInCode>("signin_codes").deleteOne({ _id: email });
+  return { status: "mail-failed" };
 }
 
+/** Checks a code. For a sign-up, this is when the account is created. Returns the email, or null. */
 export async function verifyEmailCode(emailInput: string, code: string): Promise<string | null> {
-  const email = emailInput.trim().toLowerCase();
+  const email = normaliseEmail(emailInput);
   const db = await getDb();
   const codes = db.collection<SignInCode>("signin_codes");
 
   const record = await codes.findOne({ _id: email });
-  if (!record || record.expiresAt.getTime() < Date.now()) return null;
+  if (!record || new Date(record.expiresAt).getTime() < Date.now()) return null;
 
   if (record.attempts >= MAX_ATTEMPTS) {
     await codes.deleteOne({ _id: email });
     return null;
   }
 
-  if (!safeEqual(record.codeHash, hashCode(email, code.trim()))) {
+  if (!safeEqual(record.codeHash, hashCode(email, code.replace(/\s/g, "")))) {
     await codes.updateOne({ _id: email }, { $inc: { attempts: 1 } });
     return null;
   }
 
   // One code, one sign-in.
   await codes.deleteOne({ _id: email });
+  if (record.signUp) await saveAccount(email, record.signUp);
   return email;
+}
+
+/** Creates the account, or brings an existing one's details up to date. */
+async function saveAccount(email: string, details: SignUpDetails): Promise<void> {
+  const now = new Date().toISOString();
+  const db = await getDb();
+  await db.collection<PatientAccount>("patient_accounts").updateOne(
+    { _id: email },
+    { $set: { ...details, email, updatedAt: now }, $setOnInsert: { createdAt: now } },
+    { upsert: true },
+  );
+}
+
+/** A patient signing in with Google has proved the address; give them an account if they have none. */
+export async function ensureAccount(email: string, name: string, locale: string): Promise<void> {
+  const db = await getDb();
+  const now = new Date().toISOString();
+  const [firstName = "", ...rest] = name.trim().split(/\s+/);
+  await db.collection<PatientAccount>("patient_accounts").updateOne(
+    { _id: normaliseEmail(email) },
+    {
+      $setOnInsert: {
+        email: normaliseEmail(email),
+        firstName,
+        lastName: rest.join(" "),
+        country: "",
+        dial: "",
+        phone: "",
+        locale,
+        createdAt: now,
+        updatedAt: now,
+      },
+    },
+    { upsert: true },
+  );
 }
 
 export async function startPatientEmailSession(email: string): Promise<void> {
   const expires = Date.now() + MAX_AGE_SECONDS * 1000;
-  const payload = `e:${email.toLowerCase()}.${expires}`;
+  const payload = `e:${normaliseEmail(email)}.${expires}`;
   const jar = await cookies();
   jar.set(PATIENT_COOKIE, `${payload}.${sign(payload)}`, {
     httpOnly: true,
@@ -197,11 +298,23 @@ export async function currentPatient(): Promise<PatientIdentity | null> {
   const token = jar.get(PATIENT_COOKIE)?.value;
   if (!token) return null;
 
-  const parts = token.split(".");
-  if (parts.length !== 3) return null;
-  const [subject, expires, signature] = parts;
+  return readToken(token);
+}
+
+/**
+ * Reads "<subject>.<expires>.<signature>". The subject of an email session is
+ * the address itself, which has dots of its own ("name@gmail.com"), so the
+ * token is split from the right: the last two dots are ours.
+ */
+function readToken(token: string): PatientIdentity | null {
+  const signatureAt = token.lastIndexOf(".");
+  const expiresAt = token.lastIndexOf(".", signatureAt - 1);
+  if (signatureAt <= 0 || expiresAt <= 0) return null;
+  const subject = token.slice(0, expiresAt);
+  const expires = token.slice(expiresAt + 1, signatureAt);
+  const signature = token.slice(signatureAt + 1);
   if (!safeEqual(signature, sign(`${subject}.${expires}`))) return null;
-  if (Number(expires) <= Date.now()) return null;
+  if (!(Number(expires) > Date.now())) return null;
 
   return subject.startsWith("e:")
     ? { kind: "email", email: subject.slice(2) }
