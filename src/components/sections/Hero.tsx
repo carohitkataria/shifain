@@ -117,20 +117,24 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
         <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-12">
           <div className="grid items-center lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] 2xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
             <div className="relative z-10 min-w-0 pb-6 pt-6 sm:pt-10 lg:pb-8 lg:pt-10">
-              <p
-                className="hero-rise hidden max-w-full items-center gap-2 rounded-full border border-violet-line bg-violet-soft px-4 py-2 text-sm font-medium text-violet sm:inline-flex sm:text-[15px]"
-                style={{ "--i": 0 } as React.CSSProperties}
-              >
-                <GlobeCheck className="h-5 w-5 flex-none" />
-                <span>{t(hero.eyebrow, locale)}</span>
-              </p>
+              {/* The badge shows only when the content sets one. */}
+              {t(hero.eyebrow, locale) ? (
+                <p
+                  className="hero-rise mb-6 hidden max-w-full items-center gap-2 rounded-full border border-violet-line bg-violet-soft px-4 py-2 text-sm font-medium text-violet sm:inline-flex sm:text-[15px]"
+                  style={{ "--i": 0 } as React.CSSProperties}
+                >
+                  <GlobeCheck className="h-5 w-5 flex-none" />
+                  <span>{t(hero.eyebrow, locale)}</span>
+                </p>
+              ) : null}
 
               <h1
                 id="hero-title"
-                className="hero-rise mt-0 text-[clamp(2.1rem,0.55rem+3.45vw,4.15rem)] font-extrabold leading-[1.13] tracking-[-0.025em] text-navy lg:-mr-24 [text-wrap:balance]"
+                className="hero-rise mt-0 text-[clamp(2.1rem,0.55rem+3.45vw,4.15rem)] font-extrabold leading-[1.13] tracking-[-0.025em] text-navy [text-wrap:balance]"
                 style={{ "--i": 1 } as React.CSSProperties}
               >
-                {t(hero.headline, locale).replace(/ ([—–])/g, "\u00a0$1")} <span className="text-violet">{t(hero.headlineAccent, locale)}</span>
+                {t(hero.headline, locale).replace(/ ([—–])/g, "\u00a0$1")}
+                {t(hero.headlineAccent, locale) ? <span className="text-violet"> {t(hero.headlineAccent, locale)}</span> : null}
               </h1>
 
               <p

@@ -60,7 +60,7 @@ export default async function SiteLayout({
   const { contact } = await getContent();
 
   return (
-    <html lang={LOCALE_META[locale].htmlLang} dir={LOCALE_META[locale].dir}>
+    <html lang={LOCALE_META[locale].htmlLang} dir={LOCALE_META[locale].dir} className="site-scale">
       <body className={jakarta.className}>
         {children}
         <FloatingTools whatsapp={contact.whatsapp || null} phone={contact.phone || null} />
