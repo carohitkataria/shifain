@@ -68,17 +68,18 @@ export const defaultContent: SiteContent = {
   sections: homepageSections(),
 
   hero: {
-    eyebrow: l(
-      "Your trusted partner for medical treatment in India",
-      "Ваш надёжный партнёр для лечения в Индии",
-      "Hindistonda davolanish uchun ishonchli hamkoringiz",
+    // No badge above the headline; set one here and it appears.
+    eyebrow: l("", "", ""),
+    headline: l(
+      "Your trusted medical journey to India",
+      "Ваш надёжный путь к лечению в Индии",
+      "Hindistonga ishonchli tibbiy safaringiz",
     ),
-    headline: l("Plan Your Medical Treatment in India —", "Спланируйте лечение в Индии —", "Hindistonda davolanishni rejalashtiring —"),
-    headlineAccent: l("with Confidence", "с уверенностью", "ishonch bilan"),
+    headlineAccent: l("", "", ""),
     body: l(
-      "Get expert guidance, compare top hospitals, plan your treatment and travel — all in one place. Ask Shifain, anytime.",
-      "Получите экспертную помощь, сравните лучшие клиники, спланируйте лечение и поездку — всё в одном месте. Спросите Shifain в любое время.",
-      "Mutaxassis maslahatini oling, eng yaxshi shifoxonalarni solishtiring, davolanish va safarni rejalashtiring — barchasi bir joyda. Shifain'dan istalgan vaqtda so'rang.",
+      "Your partner for medical treatment in India, from your first consultation to your journey home.",
+      "Ваш партнёр в лечении в Индии — от первой консультации до возвращения домой.",
+      "Hindistonda davolanishda hamkoringiz — birinchi maslahatdan uyga qaytishgacha.",
     ),
     primaryCta: l(
       "Get my free plan & estimate",

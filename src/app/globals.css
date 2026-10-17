@@ -1557,3 +1557,16 @@ body {
     padding-block: 6rem;
   }
 }
+
+/*
+ * The patient-facing site is set at 80% on laptops and desktops — the size it
+ * was approved at in the browser. Everything scales together (type, spacing,
+ * images), exactly as browser zoom does. Phones and tablets stay at 100% so
+ * text and touch targets keep their readable sizes. The admin console has its
+ * own layout and is not affected.
+ */
+@media (min-width: 1280px) {
+  html.site-scale {
+    zoom: 0.8;
+  }
+}
