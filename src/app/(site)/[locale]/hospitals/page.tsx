@@ -3,7 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Icon } from "@/components/Icon";
 import { getContent } from "@/lib/store";
-import { publishedHospitals } from "@/lib/catalogue";
+import { publishedHospitals, accreditationLabels } from "@/lib/catalogue";
 import { HOSPITAL_COPY } from "@/lib/hospital-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
@@ -51,7 +51,7 @@ export default async function HospitalsPage({ params }: { params: Promise<{ loca
                     </span>
                     {hospital.accreditations?.length ? (
                       <span className="mt-3 flex flex-wrap gap-1.5">
-                        {hospital.accreditations.map((mark) => (
+                        {accreditationLabels(hospital).map((mark) => (
                           <span
                             key={mark}
                             className="rounded-full bg-leaf/10 px-2.5 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-leaf"

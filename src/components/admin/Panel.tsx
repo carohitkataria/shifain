@@ -2,6 +2,9 @@ import { AdminIcon } from "./AdminIcon";
 
 export const adminField =
   "w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-tint";
+/** A table column heading in the console's label style (never `block`, which would break the row). */
+export const TH = "px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider text-ink-soft";
+
 export const adminLabel =
   "mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft";
 
@@ -23,12 +26,13 @@ export function Stage({ value, tone = "quiet" }: { value: string; tone?: keyof t
 }
 
 /**
- * A "?" that reveals its help on hover, so guidance is there when wanted
- * without a paragraph taking up room on every screen.
+ * A "?" that reveals its help on hover or keyboard focus, so guidance is there
+ * when wanted without a paragraph taking up room on every screen. Hidden, it
+ * takes no space, so it never widens the page.
  */
 export function Hint({ text }: { text: string }) {
   return (
-    <span className="group relative ml-1.5 inline-flex shrink-0 align-middle">
+    <span className="group relative ml-1.5 inline-flex shrink-0 align-middle" tabIndex={0}>
       <span
         aria-hidden="true"
         className="flex h-4 w-4 cursor-help items-center justify-center rounded-full bg-surface-muted text-[10px] font-bold text-ink-soft ring-1 ring-line"
@@ -38,7 +42,7 @@ export function Hint({ text }: { text: string }) {
       <span className="sr-only">{text}</span>
       <span
         role="tooltip"
-        className="pointer-events-none absolute left-0 top-6 z-30 w-60 rounded-lg bg-ink px-3 py-2 text-xs font-medium normal-case leading-relaxed tracking-normal text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100"
+        className="pointer-events-none absolute left-0 top-6 z-30 hidden w-60 max-w-[70vw] rounded-lg bg-ink px-3 py-2 text-xs font-medium normal-case leading-relaxed tracking-normal text-white shadow-lg group-hover:block group-focus:block"
       >
         {text}
       </span>

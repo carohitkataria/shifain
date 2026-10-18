@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Icon } from "../Icon";
-import { listCities, listSpecialties, listTreatments, publishedDoctors, publishedHospitals } from "@/lib/catalogue";
+import { accreditationLabels, listCities, listSpecialties, listTreatments, publishedDoctors, publishedHospitals } from "@/lib/catalogue";
 import { PORTAL_LANGUAGES } from "@/lib/patient-portal";
 import { Section, SectionHeading } from "./Common";
 import { t } from "@/lib/localize";
@@ -198,7 +198,7 @@ export async function Hospitals({ content, locale }: { content: SiteContent; loc
                   <span className="text-sm text-slate">{item.city}</span>
                   <span className="text-lg font-bold leading-snug text-navy">{item.name}</span>
                   <span className="text-sm text-slate">
-                    {[...item.accreditations, `${item.specialtyCodes.length} ${t(NETWORK_COPY.specialties, locale)}`].join(", ")}
+                    {[...accreditationLabels(item), `${item.specialtyCodes.length} ${t(NETWORK_COPY.specialties, locale)}`].join(", ")}
                   </span>
                 </Link>
               </li>

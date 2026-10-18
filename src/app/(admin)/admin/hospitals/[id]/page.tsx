@@ -1,248 +1,160 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { AdminShell, Notice, SaveButton } from "@/components/admin/AdminShell";
+import { AdminShell, Notice } from "@/components/admin/AdminShell";
+import { Warn } from "@/components/admin/Panel";
+import { StatusPill, StepHeading, StepIssues, Stepper, type StepState } from "@/components/admin/onboarding/Wizard";
+import {
+  AccreditationsStep,
+  BasicsStep,
+  FacilitiesStep,
+  InfrastructureStep,
+  SpecialtiesStep,
+} from "@/components/admin/onboarding/steps/ProfileSteps";
+import { CommercialsStep, DoctorsStep, MediaStep, PackagesStep } from "@/components/admin/onboarding/steps/NetworkSteps";
+import { ReviewStep } from "@/components/admin/onboarding/steps/ReviewStep";
 import { isAuthenticated } from "@/lib/auth";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
-import type { Doctor, Hospital } from "@/lib/catalogue";
-import { saveHospitalAction } from "../actions";
+import type { Doctor } from "@/lib/catalogue";
+import { currentActor, gateFor, loadHospitalOnboarding, loadMasters, statusOf } from "@/lib/onboarding";
+import { STEPS, isStep, type StepKey } from "@/lib/onboarding-rules";
+import { mediaInfo } from "@/lib/media";
 
 export const dynamic = "force-dynamic";
 
-const field =
-  "w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-tint";
-const label = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft";
+const LEADS: Record<StepKey, string> = {
+  basics: "Who the hospital is, where it is, how far from the airport, and who runs its international desk.",
+  infrastructure: "Beds, theatres and clinical capabilities — the numbers patients look for and the planner matches on.",
+  accreditations: "Each certificate with its validity. Status is worked out from the dates, never typed.",
+  specialties: "What the hospital offers, its centres of excellence and the specialties each one covers.",
+  facilities: "What an international patient can count on, and the languages spoken.",
+  doctors: "The panel: search, filter and act on several at once. Open a doctor for their full profile, procedures and schedule.",
+  packages: "Bundled treatments, each tied to a specialty and procedure the hospital actually offers.",
+  media: "Logo, cover, gallery and virtual tour.",
+  commercials: "Commission, payment terms and the signed agreement.",
+  review: "Every check in one place, then submit for an approver. Nothing reaches patients until it is published.",
+};
 
-export default async function HospitalPage({
+export default async function HospitalOnboardingPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string; error?: string }>;
+  searchParams: Promise<{ step?: string; saved?: string; error?: string; q?: string; spec?: string; count?: string }>;
 }) {
   if (!(await isAuthenticated())) redirect("/admin/login");
   if (!isDatabaseConfigured()) notFound();
 
   const { id } = await params;
-  const { saved, error } = await searchParams;
+  const query = await searchParams;
+  const step: StepKey = isStep(query.step) ? query.step : "basics";
+
+  const [data, masters, actor] = await Promise.all([loadHospitalOnboarding(id), loadMasters(), currentActor()]);
+  if (!data) notFound();
+  const { hospital } = data;
+  const status = statusOf(hospital);
+  const issues = gateFor(data, masters);
+
+  const filled: Record<StepKey, boolean> = {
+    basics: Boolean(hospital.name && hospital.city && hospital.country && hospital.hospitalType),
+    infrastructure: hospital.beds !== null && hospital.beds !== undefined,
+    accreditations: (hospital.accreditationRecords ?? []).length > 0,
+    specialties: (hospital.specialtyCodes ?? []).length > 0,
+    facilities: Boolean(hospital.facilities?.length || hospital.languages?.length),
+    doctors: data.doctors.length > 0,
+    packages: data.packages.length > 0,
+    media: Boolean(hospital.media?.logoId || hospital.media?.coverId || hospital.media?.galleryIds.length),
+    commercials: data.tieup?.status === "active",
+    review: status !== "draft",
+  };
+  // A step not started is simply to do; only a started step can be "needs attention".
+  const states = Object.fromEntries(
+    STEPS.map(({ key }) => [
+      key,
+      !filled[key] ? "todo" : issues.some((issue) => issue.step === key && issue.level === "block" && !issue.publishOnly) ? "issues" : "done",
+    ]),
+  ) as Record<StepKey, StepState>;
+
+  const base = `/admin/hospitals/${encodeURIComponent(id)}`;
+  const index = STEPS.findIndex((item) => item.key === step);
+  const back = index > 0 ? `${base}?step=${STEPS[index - 1].key}` : null;
+  const next = `${base}?step=${STEPS[Math.min(index + 1, STEPS.length - 1)].key}`;
+  const current = STEPS[index];
 
   const db = await getDb();
-  const hospital = await db.collection<Hospital>("hospitals").findOne({ _id: id });
-  if (!hospital) notFound();
+  const fileIds = [
+    hospital.media?.logoId,
+    hospital.media?.coverId,
+    ...(hospital.media?.galleryIds ?? []),
+    data.tieup?.agreementFileId,
+  ].filter((value): value is string => Boolean(value));
+  const [files, others] = await Promise.all([
+    step === "media" || step === "commercials" ? mediaInfo(fileIds) : Promise.resolve([]),
+    step === "doctors"
+      ? db
+          .collection<Doctor>("doctors")
+          .find({ _id: { $nin: data.doctors.map(({ doctor }) => doctor._id) } }, { projection: { name: 1 } })
+          .sort({ name: 1 })
+          .limit(500)
+          .toArray()
+      : Promise.resolve([]),
+  ]);
 
-  const links = await db
-    .collection<{ doctorId: string }>("hospital_doctor_map")
-    .find({ hospitalId: id, stale: { $ne: true } } as never)
-    .toArray();
-  const doctors = links.length
-    ? await db
-        .collection<Doctor>("doctors")
-        .find({ _id: { $in: links.map((link) => link.doctorId) } })
-        .toArray()
-    : [];
+  const savedNote =
+    query.saved === "created"
+      ? "Hospital added as a draft. Work through the steps; save as often as you like."
+      : query.saved === "status"
+      ? "Status updated."
+      : query.saved === "bulk"
+        ? `Updated ${query.count ?? ""} ${query.count === "1" ? "doctor" : "doctors"}.`
+        : query.saved
+          ? `${STEPS.find((item) => item.key === query.saved)?.short ?? "Changes"} saved.`
+          : null;
 
   return (
     <AdminShell
       title={hospital.name}
-      subtitle={`${hospital.city}${hospital.state ? `, ${hospital.state}` : ""} · ${hospital._id}`}
-      action={<SaveButton form="hospital-form">Save hospital</SaveButton>}
+      subtitle={`${[hospital.city, hospital.state, hospital.country].filter(Boolean).join(", ")}${hospital.assignedRm ? ` · RM ${hospital.assignedRm}` : ""}`}
+      action={<StatusPill status={status} />}
+      fullWidth
     >
-      <Link href="/admin/hospitals" className="mb-6 inline-block text-sm font-bold text-brand hover:underline">
+      <Link href="/admin/hospitals" className="mb-5 inline-block text-sm font-bold text-brand hover:underline">
         &larr; All hospitals
       </Link>
 
-      {saved ? <Notice>Saved.</Notice> : null}
-      {error === "tieup" ? (
-        <p role="alert" className="mb-6 rounded-lg bg-saffron/15 px-3 py-2.5 text-sm font-semibold text-ink">
-          To publish a hospital its partner status must be <strong>signed</strong> and it must carry
-          a tie-up reference. That is the rule the whole catalogue rests on — we list only where we
-          have an agreement.
-        </p>
-      ) : null}
-      {error === "1" ? (
-        <p role="alert" className="mb-6 rounded-lg bg-red-50 px-3 py-2.5 text-sm font-semibold text-red-700">
-          That was not a valid stage.
-        </p>
-      ) : null}
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-8">
+        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+          <Stepper base={base} current={step} states={states} />
+        </aside>
 
-      <form id="hospital-form" action={saveHospitalAction} className="space-y-5">
-        <input type="hidden" name="id" value={hospital._id} />
+        <div className="min-w-0">
+          <StepHeading title={`${index + 1}. ${current.title}`} lead={LEADS[step]} />
+          {savedNote ? <Notice>{savedNote}</Notice> : null}
+          {query.error ? <Warn>{query.error}</Warn> : null}
+          {status === "submitted" || status === "under_review" || status === "approved" ? (
+            step !== "review" ? (
+              <p className="mb-5 rounded-lg bg-brand-tint px-3.5 py-2.5 text-sm font-semibold text-brand-deep">
+                This hospital is {status.replace("_", " ")}. Saving a change sends it back to draft for another review.
+              </p>
+            ) : null
+          ) : null}
+          {step !== "review" ? <StepIssues issues={issues.filter((issue) => issue.step === step)} started={filled[step]} /> : null}
 
-        <section className="card p-6">
-          <h2 className="font-extrabold text-ink">Commercial stage</h2>
-          <p className="mt-1 text-sm text-ink-soft">
-            What we may show a patient. Nothing reaches the public site until this says published.
-          </p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
-            <label className="block min-w-0">
-              <span className={label}>Partner status</span>
-              <select name="partnerStatus" defaultValue={hospital.partnerStatus} className={field}>
-                {["prospect", "contacted", "negotiating", "signed", "suspended"].map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block min-w-0">
-              <span className={label}>Publication</span>
-              <select name="publicationState" defaultValue={hospital.publication?.state} className={field}>
-                {["research", "verified", "published", "withdrawn"].map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block min-w-0">
-              <span className={label}>Tie-up reference</span>
-              <input
-                name="tieupId"
-                defaultValue={hospital.publication?.tieupId ?? ""}
-                placeholder="e.g. TIE-2026-014"
-                className={field}
-              />
-            </label>
-          </div>
-        </section>
-
-        <section className="card p-6">
-          <h2 className="font-extrabold text-ink">Profile</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <label className="block min-w-0">
-              <span className={label}>Legal name</span>
-              <input name="legalName" defaultValue={hospital.legalName ?? ""} className={field} />
-            </label>
-            <label className="block min-w-0">
-              <span className={label}>Type</span>
-              <input
-                name="hospitalType"
-                defaultValue={hospital.hospitalType ?? ""}
-                placeholder="Multi-speciality, Cancer centre…"
-                className={field}
-              />
-            </label>
-            <label className="block min-w-0">
-              <span className={label}>Beds</span>
-              <input name="beds" type="number" defaultValue={hospital.beds ?? ""} className={field} />
-            </label>
-            <label className="block min-w-0">
-              <span className={label}>ICU beds</span>
-              <input name="icuBeds" type="number" defaultValue={hospital.icuBeds ?? ""} className={field} />
-            </label>
-            <label className="block min-w-0 sm:col-span-2">
-              <span className={label}>Website</span>
-              <input name="officialWebsite" defaultValue={hospital.officialWebsite ?? ""} className={field} />
-            </label>
-            <label className="block min-w-0 sm:col-span-2">
-              <span className={label}>About (shown on the public profile)</span>
-              <textarea name="about" rows={4} defaultValue={hospital.about ?? ""} className={field} />
-            </label>
-          </div>
-        </section>
-
-        <section className="card p-6">
-          <h2 className="font-extrabold text-ink">What they can treat</h2>
-          <p className="mt-1 text-sm text-ink-soft">
-            Comma separated codes. Specialties and capabilities are what the planner matches a case
-            against, so these decide where a patient can be placed.
-          </p>
-          <div className="mt-4 space-y-4">
-            <label className="block">
-              <span className={label}>Accreditations</span>
-              <input
-                name="accreditations"
-                defaultValue={(hospital.accreditations ?? []).join(", ")}
-                placeholder="JCI, NABH"
-                className={field}
-              />
-            </label>
-            <label className="block">
-              <span className={label}>Specialty codes</span>
-              <input
-                name="specialtyCodes"
-                defaultValue={(hospital.specialtyCodes ?? []).join(", ")}
-                placeholder="cardiology, orthopaedics"
-                className={field}
-              />
-            </label>
-            <label className="block">
-              <span className={label}>Capabilities</span>
-              <input
-                name="capabilities"
-                defaultValue={(hospital.capabilities ?? []).join(", ")}
-                placeholder="cath-lab, cardiac-icu, blood-bank"
-                className={field}
-              />
-            </label>
-          </div>
-        </section>
-
-        <section className="card p-6">
-          <h2 className="font-extrabold text-ink">International desk</h2>
-          <label className="mt-4 flex items-center gap-2.5">
-            <input
-              type="checkbox"
-              name="deskExists"
-              defaultChecked={hospital.internationalDesk?.exists === true}
-              className="h-4 w-4 accent-brand"
-            />
-            <span className="text-sm font-semibold text-ink">They have one</span>
-          </label>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <label className="block min-w-0">
-              <span className={label}>Contact</span>
-              <input name="deskName" defaultValue={hospital.internationalDesk?.contactName ?? ""} className={field} />
-            </label>
-            <label className="block min-w-0">
-              <span className={label}>Email</span>
-              <input name="deskEmail" defaultValue={hospital.internationalDesk?.email ?? ""} className={field} />
-            </label>
-            <label className="block min-w-0">
-              <span className={label}>Phone</span>
-              <input name="deskPhone" defaultValue={hospital.internationalDesk?.phone ?? ""} className={field} />
-            </label>
-            <label className="block min-w-0">
-              <span className={label}>Languages</span>
-              <input
-                name="deskLanguages"
-                defaultValue={(hospital.internationalDesk?.languages ?? []).join(", ")}
-                placeholder="English, Arabic, Russian"
-                className={field}
-              />
-            </label>
-          </div>
-        </section>
-
-        <div className="flex justify-end pt-2">
-          <SaveButton form="hospital-form">Save hospital</SaveButton>
+          {step === "basics" ? <BasicsStep hospital={hospital} masters={masters} back={back} /> : null}
+          {step === "infrastructure" ? <InfrastructureStep hospital={hospital} masters={masters} back={back} /> : null}
+          {step === "accreditations" ? <AccreditationsStep hospital={hospital} back={back} /> : null}
+          {step === "specialties" ? (
+            <SpecialtiesStep hospital={hospital} masters={masters} coe={data.coe} departmentBeds={data.departmentBeds} back={back} />
+          ) : null}
+          {step === "facilities" ? <FacilitiesStep hospital={hospital} back={back} /> : null}
+          {step === "doctors" ? (
+            <DoctorsStep hospital={hospital} doctors={data.doctors} others={others} masters={masters} query={query} back={back} next={next} />
+          ) : null}
+          {step === "packages" ? <PackagesStep hospital={hospital} packages={data.packages} masters={masters} back={back} /> : null}
+          {step === "media" ? <MediaStep hospital={hospital} files={files} back={back} /> : null}
+          {step === "commercials" ? <CommercialsStep hospital={hospital} tieup={data.tieup} files={files} back={back} /> : null}
+          {step === "review" ? <ReviewStep data={data} status={status} issues={issues} actor={actor} /> : null}
         </div>
-      </form>
-
-      <section className="mt-10">
-        <h2 className="font-extrabold text-ink">Doctors on record here</h2>
-        {doctors.length === 0 ? (
-          <p className="card mt-3 p-5 text-sm text-ink-soft">
-            None mapped yet. Doctor records are added as the partnership progresses.
-          </p>
-        ) : (
-          <ul className="mt-3 space-y-2">
-            {doctors.map((doctor) => (
-              <li key={doctor._id} className="card flex flex-wrap items-center gap-x-4 gap-y-2 p-4">
-                <span className="min-w-0 flex-1 basis-48">
-                  <span className="block font-semibold text-ink">{doctor.name}</span>
-                  <span className="mt-0.5 block text-sm text-ink-soft">
-                    {doctor.specialtyLabelRaw ?? doctor.specialtyCode ?? "Specialty not mapped"}
-                    {doctor.experienceYears ? ` · ${doctor.experienceYears} years` : ""}
-                  </span>
-                </span>
-                <span className="shrink-0 rounded-full bg-surface-muted px-3 py-1 text-sm font-semibold text-ink-soft">
-                  {doctor.consentToList ? "consented" : "no consent yet"}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      </div>
     </AdminShell>
   );
 }

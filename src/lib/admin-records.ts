@@ -174,3 +174,55 @@ export function pick(row: ImportRow, ...names: string[]): string {
   }
   return "";
 }
+
+// ------------------------------------------------------------ repeatable rows
+
+export type FormRow = { values: Record<string, string>; lists: Record<string, string[]>; files: Record<string, File> };
+
+/**
+ * Rows from a repeatable section, posted as `prefix.<n>.<field>`. Rows come
+ * back in the order they were added; a row with nothing filled in is dropped.
+ */
+export function readRows(formData: FormData, prefix: string): FormRow[] {
+  const rows = new Map<number, FormRow>();
+  const pattern = new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\.(\\d+)\\.([A-Za-z0-9_]+)$`);
+  for (const [key, value] of formData.entries()) {
+    const match = pattern.exec(key);
+    if (!match) continue;
+    const index = Number(match[1]);
+    const field = match[2];
+    const row = rows.get(index) ?? { values: {}, lists: {}, files: {} };
+    if (typeof value === "string") {
+      row.values[field] = value.trim();
+      (row.lists[field] ??= []).push(value.trim());
+    } else if (value.size > 0) {
+      row.files[field] = value;
+    }
+    rows.set(index, row);
+  }
+  return [...rows.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([, row]) => row)
+    .filter((row) => Object.values(row.values).some(Boolean) || Object.keys(row.files).length > 0);
+}
+
+/** A whole number in a sensible range, or null. Zero is a real answer for counts. */
+export function count(value: FormDataEntryValue | string | null | undefined, max = 100_000): number | null {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed >= 0 && parsed <= max ? Math.round(parsed) : null;
+}
+
+/** A decimal (coordinates, percentages, prices), or null. */
+export function decimal(value: FormDataEntryValue | string | null | undefined, min = -Infinity, max = Infinity): number | null {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed >= min && parsed <= max ? parsed : null;
+}
+
+export const isoDate = (value: string | null | undefined): string | null =>
+  value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+
+export const hhmm = (value: string | null | undefined): string | null => (value && /^\d{2}:\d{2}$/.test(value) ? value : null);

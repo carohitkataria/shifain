@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
+import { currentActor } from "@/lib/onboarding";
 import { getDb } from "@/lib/db";
 import type { Doctor, DoctorSchedule, Hospital, HospitalDoctorLink } from "@/lib/catalogue";
 import {
@@ -17,75 +18,6 @@ import {
   uniqueDoctorId,
   uniqueHospitalId,
 } from "@/lib/admin-records";
-
-const PARTNER_STATUS = ["prospect", "contacted", "negotiating", "signed", "suspended"];
-const PUBLICATION = ["research", "verified", "published", "withdrawn"];
-
-const list = splitList;
-const numberOrNull = num;
-
-export async function saveHospitalAction(formData: FormData) {
-  if (!(await isAuthenticated())) redirect("/admin/login");
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) redirect("/admin/hospitals");
-
-  const db = await getDb();
-  const hospitals = db.collection<Hospital>("hospitals");
-  const current = await hospitals.findOne({ _id: id });
-  if (!current) redirect("/admin/hospitals");
-
-  const partnerStatus = String(formData.get("partnerStatus") ?? current.partnerStatus);
-  const state = String(formData.get("publicationState") ?? current.publication.state);
-  const tieupId = String(formData.get("tieupId") ?? "").trim() || null;
-
-  if (!PARTNER_STATUS.includes(partnerStatus) || !PUBLICATION.includes(state)) {
-    redirect(`/admin/hospitals/${id}?error=1`);
-  }
-
-  // The gate the whole catalogue rests on: nothing is published to patients
-  // without a signed tie-up behind it.
-  if (state === "published" && (!tieupId || partnerStatus !== "signed")) {
-    redirect(`/admin/hospitals/${id}?error=tieup`);
-  }
-
-  await hospitals.updateOne(
-    { _id: id },
-    {
-      $set: {
-        legalName: String(formData.get("legalName") ?? "").trim() || null,
-        hospitalType: String(formData.get("hospitalType") ?? "").trim() || null,
-        beds: numberOrNull(formData.get("beds")),
-        icuBeds: numberOrNull(formData.get("icuBeds")),
-        accreditations: list(formData.get("accreditations")),
-        specialtyCodes: list(formData.get("specialtyCodes")),
-        capabilities: list(formData.get("capabilities")),
-        officialWebsite: String(formData.get("officialWebsite") ?? "").trim() || null,
-        about: String(formData.get("about") ?? "").trim() || null,
-        internationalDesk: {
-          exists: formData.get("deskExists") === "on",
-          contactName: String(formData.get("deskName") ?? "").trim() || null,
-          email: String(formData.get("deskEmail") ?? "").trim() || null,
-          phone: String(formData.get("deskPhone") ?? "").trim() || null,
-          languages: list(formData.get("deskLanguages")),
-        },
-        partnerStatus,
-        publication: {
-          state,
-          publishedAt:
-            state === "published"
-              ? (current.publication.publishedAt ?? new Date().toISOString())
-              : null,
-          tieupId,
-        },
-      },
-    },
-  );
-
-  revalidatePath("/admin/hospitals");
-  revalidatePath("/", "layout");
-  redirect(`/admin/hospitals/${id}?saved=1`);
-}
 
 // ------------------------------------------------------------ hospitals CRUD
 
@@ -102,10 +34,17 @@ export async function createHospitalAction(formData: FormData) {
     ...blankHospital(id, name, city),
     state: text(formData.get("state")),
     provenance: authoredProvenance(),
+    onboarding: {
+      status: "draft",
+      submittedBy: null,
+      reviewedBy: null,
+      updatedAt: new Date().toISOString(),
+      history: [{ at: new Date().toISOString(), status: "draft", by: (await currentActor()) || "Admin", note: "Hospital added" }],
+    },
   } as never);
 
   revalidatePath("/admin/hospitals");
-  redirect(`/admin/hospitals/${id}?saved=created`);
+  redirect(`/admin/hospitals/${id}?step=basics&saved=created`);
 }
 
 export async function deleteHospitalAction(formData: FormData) {
@@ -121,6 +60,11 @@ export async function deleteHospitalAction(formData: FormData) {
     db.collection<Hospital>("hospitals").deleteOne({ _id: id }),
     db.collection<HospitalDoctorLink>("hospital_doctor_map").deleteMany({ hospitalId: id }),
     db.collection<DoctorSchedule>("doctor_schedules").deleteMany({ hospitalId: id }),
+    db.collection("schedule_exceptions").deleteMany({ hospitalId: id }),
+    db.collection("hospital_specialty_map").deleteMany({ hospitalId: id }),
+    db.collection("hospital_packages").deleteMany({ hospitalId: id }),
+    db.collection("treatment_hospital_map").deleteMany({ hospitalId: id }),
+    db.collection("media_assets").deleteMany({ ownerType: "hospital", ownerId: id }),
   ]);
 
   revalidatePath("/admin/hospitals");
@@ -195,104 +139,14 @@ export async function deleteDoctorAction(formData: FormData) {
     db.collection<Doctor>("doctors").deleteOne({ _id: id }),
     db.collection<HospitalDoctorLink>("hospital_doctor_map").deleteMany({ doctorId: id }),
     db.collection<DoctorSchedule>("doctor_schedules").deleteMany({ doctorId: id }),
+    db.collection("schedule_exceptions").deleteMany({ doctorId: id }),
+    db.collection("treatment_doctor_map").deleteMany({ doctorId: id }),
+    db.collection("media_assets").deleteMany({ ownerType: "doctor", ownerId: id }),
   ]);
 
   revalidatePath("/admin/doctors");
   revalidatePath("/", "layout");
   redirect("/admin/doctors?saved=deleted");
-}
-
-// ------------------------------------------------------- mapping and rotas
-
-/** A doctor can sit at any number of hospitals; this adds one of them. */
-export async function linkDoctorAction(formData: FormData) {
-  if (!(await isAuthenticated())) redirect("/admin/login");
-
-  const doctorId = String(formData.get("doctorId") ?? "");
-  const hospitalId = String(formData.get("hospitalId") ?? "");
-  const back = String(formData.get("back") ?? `/admin/doctors/${doctorId}`);
-  if (!doctorId || !hospitalId) redirect(back);
-
-  const db = await getDb();
-  await db.collection<HospitalDoctorLink>("hospital_doctor_map").updateOne(
-    { _id: `${hospitalId}__${doctorId}` },
-    {
-      $set: {
-        hospitalId,
-        doctorId,
-        specialtyCode: text(formData.get("specialtyCode")),
-        attachment: (String(formData.get("attachment") || "visiting")) as
-          | "primary"
-          | "visiting"
-          | "consultant",
-        current: true,
-        stale: false,
-        provenance: authoredProvenance(),
-      } as never,
-    },
-    { upsert: true },
-  );
-
-  revalidatePath(back);
-  redirect(`${back}?saved=linked`);
-}
-
-export async function unlinkDoctorAction(formData: FormData) {
-  if (!(await isAuthenticated())) redirect("/admin/login");
-
-  const doctorId = String(formData.get("doctorId") ?? "");
-  const hospitalId = String(formData.get("hospitalId") ?? "");
-  const back = String(formData.get("back") ?? `/admin/doctors/${doctorId}`);
-
-  const db = await getDb();
-  await Promise.all([
-    db.collection<HospitalDoctorLink>("hospital_doctor_map").deleteMany({ doctorId, hospitalId }),
-    db.collection<DoctorSchedule>("doctor_schedules").deleteMany({ doctorId, hospitalId }),
-  ]);
-
-  revalidatePath(back);
-  redirect(`${back}?saved=unlinked`);
-}
-
-/** One line of a rota. Every field but the two ids may be left blank. */
-export async function addScheduleAction(formData: FormData) {
-  if (!(await isAuthenticated())) redirect("/admin/login");
-
-  const doctorId = String(formData.get("doctorId") ?? "");
-  const hospitalId = String(formData.get("hospitalId") ?? "");
-  const back = String(formData.get("back") ?? `/admin/doctors/${doctorId}`);
-  if (!doctorId || !hospitalId) redirect(back);
-
-  const day = String(formData.get("day") ?? "");
-  const db = await getDb();
-  await db.collection<DoctorSchedule>("doctor_schedules").insertOne({
-    _id: `${doctorId}__${hospitalId}__${day || "any"}__${Date.now().toString(36)}`,
-    doctorId,
-    hospitalId,
-    day: (["mon", "tue", "wed", "thu", "fri", "sat", "sun"].includes(day) ? day : null) as never,
-    from: text(formData.get("from")),
-    to: text(formData.get("to")),
-    slotMinutes: num(formData.get("slotMinutes")),
-    note: text(formData.get("note")),
-    updatedAt: new Date().toISOString(),
-  } as never);
-
-  revalidatePath(back);
-  redirect(`${back}?saved=scheduled`);
-}
-
-export async function removeScheduleAction(formData: FormData) {
-  if (!(await isAuthenticated())) redirect("/admin/login");
-
-  const id = String(formData.get("scheduleId") ?? "");
-  const back = String(formData.get("back") ?? "/admin/doctors");
-  if (id) {
-    const db = await getDb();
-    await db.collection<DoctorSchedule>("doctor_schedules").deleteOne({ _id: id });
-  }
-
-  revalidatePath(back);
-  redirect(back);
 }
 
 // ------------------------------------------------------------- bulk import
