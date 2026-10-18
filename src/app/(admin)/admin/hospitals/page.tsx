@@ -3,30 +3,31 @@ import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
-import type { Hospital } from "@/lib/catalogue";
+import { accreditationLabels, type Hospital } from "@/lib/catalogue";
+import { StatusPill } from "@/components/admin/onboarding/Wizard";
+import { ONBOARDING_STATUSES, STATUS_LABEL, type OnboardingStatus } from "@/lib/onboarding-rules";
 import { createHospitalAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-const TONE: Record<string, string> = {
-  published: "bg-leaf/10 text-leaf",
-  verified: "bg-brand-tint text-brand-deep",
-  research: "bg-surface-muted text-ink-soft",
-  withdrawn: "bg-saffron/15 text-saffron",
-};
+/** Research rows that predate onboarding read as drafts, unless they are already live. */
+const statusOf = (hospital: Hospital): OnboardingStatus =>
+  hospital.onboarding?.status ?? (hospital.publication?.state === "published" ? "published" : "draft");
 
 export default async function HospitalsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; city?: string; state?: string; saved?: string }>;
+  searchParams: Promise<{ q?: string; city?: string; status?: string; saved?: string }>;
 }) {
   if (!(await isAuthenticated())) redirect("/admin/login");
-  const { q = "", city = "", state = "", saved } = await searchParams;
+  const { q = "", city = "", status = "", saved } = await searchParams;
 
   const query: Record<string, unknown> = {};
-  if (q.trim()) query.name = { $regex: q.trim(), $options: "i" };
+  if (q.trim()) query.name = { $regex: q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
   if (city) query.city = city;
-  if (state) query["publication.state"] = state;
+  if (status === "published") query["publication.state"] = "published";
+  else if (status === "draft") query.$or = [{ "onboarding.status": "draft" }, { onboarding: { $exists: false }, "publication.state": { $ne: "published" } }];
+  else if (status) query["onboarding.status"] = status;
 
   const [hospitals, cities] = await Promise.all([
     readOr<Hospital[]>([], (db) =>
@@ -116,16 +117,16 @@ export default async function HospitalsPage({
           </select>
         </label>
         <label className="min-w-0 basis-40">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">Stage</span>
+          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">Onboarding</span>
           <select
-            name="state"
-            defaultValue={state}
+            name="status"
+            defaultValue={status}
             className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
           >
-            <option value="">Any stage</option>
-            {["research", "verified", "published", "withdrawn"].map((value) => (
+            <option value="">Any status</option>
+            {ONBOARDING_STATUSES.map((value) => (
               <option key={value} value={value}>
-                {value}
+                {STATUS_LABEL[value]}
               </option>
             ))}
           </select>
@@ -148,19 +149,14 @@ export default async function HospitalsPage({
                 <span className="block font-semibold text-ink">{hospital.name}</span>
                 <span className="mt-0.5 block text-sm text-ink-soft">
                   {hospital.city}
-                  {hospital.accreditations?.length ? ` · ${hospital.accreditations.join(", ")}` : ""}
+                  {accreditationLabels(hospital).length ? ` · ${accreditationLabels(hospital).join(", ")}` : ""}
                   {hospital.specialtyCodes?.length
                     ? ` · ${hospital.specialtyCodes.length} specialties`
                     : " · specialties not mapped"}
+                  {hospital.assignedRm ? ` · RM ${hospital.assignedRm}` : ""}
                 </span>
               </span>
-              <span
-                className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold ${
-                  TONE[hospital.publication?.state] ?? TONE.research
-                }`}
-              >
-                {hospital.publication?.state ?? "research"}
-              </span>
+              <StatusPill status={statusOf(hospital)} />
             </Link>
           </li>
         ))}

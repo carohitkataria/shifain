@@ -184,6 +184,8 @@ export const COLLECTIONS = [
           required: ["body"],
           properties: {
             body: { enum: ["NABH", "JCI", "NABL", "Other"] },
+            // The accreditation's own name when body is "Other" (ISO 9001, GHA…).
+            name: { bsonType: ["string", "null"] },
             reference: { bsonType: ["string", "null"] },
             validUntil: { bsonType: ["string", "date", "null"] },
             verifiedAt: { bsonType: ["string", "date", "null"] },
@@ -197,9 +199,44 @@ export const COLLECTIONS = [
       partnerStatus: { enum: ["prospect", "contacted", "negotiating", "signed", "suspended"] },
       publication,
       provenance,
+      // Onboarding (admin-led, maker–checker). Only `publication` decides what patients see.
+      slug: { bsonType: ["string", "null"] },
+      groupId: { bsonType: ["string", "null"] },
+      yearEstablished: { bsonType: ["int", "null"] },
+      airportDistanceKm: { bsonType: ["double", "int", "null"] },
+      hduBeds: { bsonType: ["int", "null"] },
+      otCount: { bsonType: ["int", "null"] },
+      cathlabCount: { bsonType: ["int", "null"] },
+      accreditationRecords: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["code", "revoked"],
+          properties: {
+            code: { bsonType: "string" },
+            certificateNo: { bsonType: ["string", "null"] },
+            validFrom: { bsonType: ["string", "null"] },
+            validTo: { bsonType: ["string", "null"] },
+            fileId: { bsonType: ["string", "null"] },
+            revoked: { bsonType: "bool" },
+          },
+        },
+      },
+      onboarding: {
+        bsonType: "object",
+        required: ["status"],
+        properties: {
+          status: { enum: ["draft", "submitted", "under_review", "approved", "published", "suspended"] },
+          submittedBy: { bsonType: ["string", "null"] },
+          reviewedBy: { bsonType: ["string", "null"] },
+          history: { bsonType: "array" },
+        },
+      },
     }),
     indexes: [
       { key: { city: 1 } },
+      { key: { "onboarding.status": 1 } },
+      { key: { slug: 1 }, options: { sparse: true } },
       { key: { partnerStatus: 1 } },
       { key: { "publication.state": 1 } },
       { key: { specialtyCodes: 1 } },
@@ -224,6 +261,19 @@ export const COLLECTIONS = [
       publication,
       thirdParty: { bsonType: ["object", "null"] },
       provenance,
+      // Onboarding: the profile a patient sees, and how they find the doctor.
+      onboardingStatus: { enum: ["draft", "active", "inactive"] },
+      registrationCouncil: { bsonType: ["string", "null"] },
+      registrationChecked: { bsonType: "bool" },
+      designation: { bsonType: ["string", "null"] },
+      specialties: { bsonType: "array", items: { bsonType: "object", required: ["code"] } },
+      qualificationRecords: { bsonType: "array" },
+      awards: { bsonType: "array" },
+      memberships: { bsonType: "array" },
+      experienceHistory: { bsonType: "array" },
+      languages: { bsonType: "array", items: { bsonType: "string" } },
+      consultFee: { bsonType: ["double", "int", "null"] },
+      teleconsultFee: { bsonType: ["double", "int", "null"] },
     }),
     indexes: [
       { key: { specialtyCode: 1 } },
@@ -242,6 +292,9 @@ export const COLLECTIONS = [
       specialtyCode: { bsonType: ["string", "null"] },
       attachment: { enum: ["primary", "visiting", "consultant"] },
       current: { bsonType: "bool" },
+      // Title and OPD differ from one hospital to the next.
+      designation: { bsonType: ["string", "null"] },
+      opdLocation: { bsonType: ["string", "null"] },
       provenance,
     }),
     indexes: [{ key: { hospitalId: 1 } }, { key: { doctorId: 1 } }, { key: { specialtyCode: 1 } }],
@@ -253,6 +306,7 @@ export const COLLECTIONS = [
       specialtyCode: { bsonType: "string" },
       departmentName: { bsonType: ["string", "null"] },
       isCentreOfExcellence: { bsonType: "bool" },
+      bedCount: { bsonType: ["int", "null"] },
       provenance,
     }),
     indexes: [{ key: { hospitalId: 1 } }, { key: { specialtyCode: 1 } }],
@@ -318,6 +372,8 @@ export const COLLECTIONS = [
       deskLanguages: { bsonType: "array", items: { bsonType: "string" } },
       responseSlaHours: { bsonType: ["int", "null"] },
       notes: { bsonType: ["string", "null"] },
+      paymentTerms: { bsonType: ["string", "null"] },
+      agreementFileId: { bsonType: ["string", "null"] },
     }),
     indexes: [{ key: { hospitalId: 1 } }, { key: { status: 1 } }],
   },
@@ -430,12 +486,92 @@ export const COLLECTIONS = [
       slotMinutes: { bsonType: ["int", "null"] },
       note: { bsonType: ["string", "null"] },
       updatedAt: { bsonType: ["string", "date", "null"] },
+      consultType: { enum: ["in_person", "video", "both", null] },
+      validFrom: { bsonType: ["string", "null"] },
+      validTo: { bsonType: ["string", "null"] },
     }),
     indexes: [
       { key: { doctorId: 1 } },
       { key: { hospitalId: 1 } },
       { key: { doctorId: 1, hospitalId: 1, day: 1 } },
     ],
+  },
+  {
+    name: "schedule_exceptions",
+    // Blackout days (leave, conferences). A null hospitalId covers every hospital.
+    validator: doc(["doctorId", "date", "available"], {
+      doctorId: { bsonType: "string" },
+      hospitalId: { bsonType: ["string", "null"] },
+      date: { bsonType: "string" },
+      available: { bsonType: "bool" },
+      reason: { bsonType: ["string", "null"] },
+    }),
+    indexes: [{ key: { doctorId: 1, date: 1 } }],
+  },
+  {
+    name: "doctor_appointments",
+    // A booked slot. Free slots are never stored: they are computed from the
+    // weekly schedule, less exceptions and these bookings.
+    validator: doc(["doctorId", "hospitalId", "date", "start", "status"], {
+      doctorId: { bsonType: "string" },
+      hospitalId: { bsonType: "string" },
+      caseId: { bsonType: ["string", "null"] },
+      date: { bsonType: "string" },
+      start: { bsonType: "string" },
+      end: { bsonType: ["string", "null"] },
+      consultType: { enum: ["in_person", "video", "both"] },
+      status: { enum: ["requested", "confirmed", "completed", "cancelled", "no_show"] },
+    }),
+    indexes: [{ key: { doctorId: 1, date: 1 } }, { key: { hospitalId: 1, date: 1 } }],
+  },
+  {
+    name: "hospital_groups",
+    validator: doc(["name"], {
+      name: { bsonType: "string" },
+      website: { bsonType: ["string", "null"] },
+    }),
+    indexes: [{ key: { name: 1 } }],
+  },
+  {
+    name: "sub_specialties",
+    validator: doc(["specialtyCode", "name"], {
+      specialtyCode: { bsonType: "string" },
+      name: { bsonType: "string" },
+    }),
+    indexes: [{ key: { specialtyCode: 1 } }],
+  },
+  {
+    name: "hospital_packages",
+    // A bundled treatment. Its procedure must belong to one of the hospital's specialties.
+    validator: doc(["hospitalId", "specialtyCode", "treatmentCode", "name", "status"], {
+      hospitalId: { bsonType: "string" },
+      specialtyCode: { bsonType: "string" },
+      treatmentCode: { bsonType: "string" },
+      name: { bsonType: "string" },
+      inclusions: { bsonType: ["string", "null"] },
+      exclusions: { bsonType: ["string", "null"] },
+      priceMin: { bsonType: ["double", "int", "null"] },
+      priceMax: { bsonType: ["double", "int", "null"] },
+      currency: { bsonType: "string" },
+      stayDays: { bsonType: ["int", "null"] },
+      roomCategory: { bsonType: ["string", "null"] },
+      status: { enum: ["draft", "active", "inactive"] },
+    }),
+    indexes: [{ key: { hospitalId: 1 } }, { key: { treatmentCode: 1 } }],
+  },
+  {
+    name: "media_assets",
+    // Logos, gallery, doctor photos, certificates and agreements. Only pictures
+    // of a published owner are ever served to the public.
+    validator: doc(["ownerType", "ownerId", "kind", "filename", "mediaType", "bytes"], {
+      ownerType: { enum: ["hospital", "doctor"] },
+      ownerId: { bsonType: "string" },
+      kind: { enum: ["logo", "cover", "gallery", "photo", "certificate", "agreement"] },
+      filename: { bsonType: "string" },
+      mediaType: { bsonType: "string" },
+      bytes: { bsonType: "int" },
+    }),
+    indexes: [{ key: { ownerType: 1, ownerId: 1 } }],
   },
   {
     name: "attractions",

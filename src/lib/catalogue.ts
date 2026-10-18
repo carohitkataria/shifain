@@ -65,6 +65,20 @@ export type PriceBand = {
   exclusions?: string[];
 };
 
+/** The public summary of an accreditation, in the shape the hospitals validator accepts. */
+export type AccreditationSummary = {
+  body: "NABH" | "JCI" | "NABL" | "Other";
+  /** The accreditation's own name when `body` is "Other" (ISO 9001, GHA…). */
+  name?: string | null;
+  reference: string | null;
+  validUntil: string | null;
+  verifiedAt: string | null;
+};
+
+/** Accreditations as words, whichever form the record holds them in. */
+export const accreditationLabels = (hospital: Pick<Hospital, "accreditations">): string[] =>
+  (hospital.accreditations ?? []).map((item) => (typeof item === "string" ? item : item.name || item.body));
+
 export type Hospital = {
   _id: string;
   legacyId?: string;
@@ -77,7 +91,8 @@ export type Hospital = {
   hospitalType: string | null;
   beds: number | null;
   icuBeds: number | null;
-  accreditations: string[];
+  /** Only accreditations in force, summarised; the full records are `accreditationRecords`. */
+  accreditations: (string | AccreditationSummary)[];
   specialtyCodes: string[];
   capabilities: string[];
   internationalDesk?: {
@@ -91,6 +106,42 @@ export type Hospital = {
   about?: string | null;
   partnerStatus: string;
   publication: { state: string; publishedAt: string | null; tieupId: string | null };
+} & HospitalOnboardingFields;
+
+/** What onboarding adds to a hospital. All optional: research rows predate it. */
+export type HospitalOnboardingFields = {
+  slug?: string | null;
+  groupId?: string | null;
+  yearEstablished?: number | null;
+  ownership?: string | null;
+  assignedRm?: string | null;
+  address?: string | null;
+  pincode?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  nearestAirport?: string | null;
+  airportDistanceKm?: number | null;
+  aboutRu?: string | null;
+  aboutUz?: string | null;
+  usps?: string[];
+  hduBeds?: number | null;
+  otCount?: number | null;
+  cathlabCount?: number | null;
+  doctorCount?: number | null;
+  nurseCount?: number | null;
+  accreditationRecords?: import("./onboarding-rules").AccreditationRecord[];
+  centres?: { id: string; name: string; description: string | null; specialtyCodes: string[] }[];
+  facilities?: string[];
+  languages?: string[];
+  media?: { logoId: string | null; coverId: string | null; galleryIds: string[]; virtualTourUrl: string | null; videoUrl: string | null };
+  kycVerified?: boolean;
+  onboarding?: {
+    status: import("./onboarding-rules").OnboardingStatus;
+    submittedBy: string | null;
+    reviewedBy: string | null;
+    updatedAt: string;
+    history: { at: string; status: import("./onboarding-rules").OnboardingStatus; by: string; note: string | null }[];
+  };
 };
 
 export type Doctor = {
@@ -106,7 +157,32 @@ export type Doctor = {
   consentToList: boolean;
   partnerStatus: string;
   publication: { state: string; publishedAt: string | null; tieupId: string | null };
+} & DoctorOnboardingFields;
+
+export type DoctorOnboardingFields = {
+  slug?: string | null;
+  gender?: string | null;
+  photoId?: string | null;
+  registrationCouncil?: string | null;
+  /** A person checked the number against the council's register. With both fields, the "verified" badge. */
+  registrationChecked?: boolean;
+  designation?: string | null;
+  languages?: string[];
+  /** First is primary. `specialtyCode` mirrors the primary for older readers. */
+  specialties?: { code: string; subSpecialty: string | null }[];
+  qualificationRecords?: { degree: string; institution: string | null; year: number | null }[];
+  awards?: { title: string; awardingBody: string | null; year: number | null }[];
+  memberships?: { body: string; membershipNo: string | null }[];
+  experienceHistory?: { role: string; organization: string; fromYear: number | null; toYear: number | null }[];
+  consultFee?: number | null;
+  teleconsultFee?: number | null;
+  currency?: string | null;
+  onboardingStatus?: "draft" | "active" | "inactive";
 };
+
+/** A doctor whose registration we have checked carries a verified badge. */
+export const isVerifiedDoctor = (doctor: Pick<Doctor, "registrationNumber"> & DoctorOnboardingFields) =>
+  Boolean(doctor.registrationNumber && doctor.registrationCouncil && doctor.registrationChecked);
 
 export type Category = { _id: string; name: L; tier: string; order: number };
 
@@ -124,6 +200,9 @@ export type DoctorSchedule = {
   slotMinutes: number | null;
   note: string | null;
   updatedAt: string | null;
+  consultType?: "in_person" | "video" | "both" | null;
+  validFrom?: string | null;
+  validTo?: string | null;
 };
 
 export type HospitalDoctorLink = {
@@ -134,6 +213,9 @@ export type HospitalDoctorLink = {
   attachment: "primary" | "visiting" | "consultant";
   current: boolean;
   stale?: boolean;
+  /** Title at this hospital, which can differ from one hospital to the next. */
+  designation?: string | null;
+  opdLocation?: string | null;
 };
 
 /**

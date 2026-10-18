@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Icon } from "@/components/Icon";
 import { getContent } from "@/lib/store";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
-import { listSpecialties, type Doctor, type Hospital } from "@/lib/catalogue";
+import { listSpecialties, type Doctor, type Hospital, accreditationLabels } from "@/lib/catalogue";
 import { HOSPITAL_COPY } from "@/lib/hospital-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
@@ -82,7 +82,7 @@ export default async function HospitalProfile({
 
             {hospital.accreditations?.length ? (
               <div className="mt-4 flex flex-wrap gap-2">
-                {hospital.accreditations.map((mark) => (
+                {accreditationLabels(hospital).map((mark) => (
                   <span
                     key={mark}
                     className="rounded-full bg-leaf/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-leaf"
