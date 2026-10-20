@@ -117,6 +117,8 @@ export type HospitalOnboardingFields = {
   assignedRm?: string | null;
   address?: string | null;
   pincode?: string | null;
+  /** The hospital's public switchboard. */
+  phone?: string | null;
   lat?: number | null;
   lng?: number | null;
   nearestAirport?: string | null;
