@@ -160,6 +160,11 @@ async function saveBasics(hospital: Hospital, formData: FormData) {
       about: text(formData.get("about")),
       aboutRu: text(formData.get("aboutRu")),
       aboutUz: text(formData.get("aboutUz")),
+      awards: readRows(formData, "award").map((row) => {
+        if (!row.values.title) fail(id, "basics", "Every award needs its title.");
+        const year = count(row.values.year ?? null, new Date().getFullYear());
+        return { title: row.values.title, awardingBody: text(row.values.awardingBody ?? null), year: year && year >= 1900 ? year : null };
+      }),
       usps: String(formData.get("usps") ?? "")
         .split("\n")
         .map((line) => line.trim())
@@ -184,6 +189,7 @@ async function saveInfrastructure(hospital: Hospital, formData: FormData) {
     $set: {
       beds: count(formData.get("beds")),
       icuBeds: count(formData.get("icuBeds")),
+      campusAcres: decimal(formData.get("campusAcres"), 0, 10000),
       hduBeds: count(formData.get("hduBeds")),
       otCount: count(formData.get("otCount"), 500),
       cathlabCount: count(formData.get("cathlabCount"), 100),

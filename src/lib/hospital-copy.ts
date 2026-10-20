@@ -94,11 +94,39 @@ export const HOSPITAL_COPY = {
     accommodation: l("Accommodation tie-ups", "Помощь с проживанием", "Turar joy bilan yordam"),
     dietary: l("Dietary options (halal, vegetarian)", "Особое питание (халяль, вегетарианское)", "Maxsus ovqat (halol, vegetarian)"),
     "virtual-tour": l("Virtual tour", "Виртуальный тур", "Virtual sayohat"),
-    "prayer-room": l("Prayer room", "Молельная комната", "Namozxona"),
+    "prayer-room": l("Prayer room / religious facilities", "Молельная комната", "Namozxona"),
     "pharmacy-24h": l("24-hour pharmacy", "Круглосуточная аптека", "Kecha-kunduz dorixona"),
     "emergency-24x7": l("24×7 emergency", "Круглосуточная неотложная помощь", "Kecha-kunduz shoshilinch yordam"),
     ambulance: l("Ambulance", "Скорая помощь", "Tez yordam"),
     "medical-records-transfer": l("Medical records transfer", "Передача медицинских документов", "Tibbiy hujjatlarni uzatish"),
+    concierge: l("Personal assistance / concierge", "Персональный помощник / консьерж", "Shaxsiy yordamchi / konsyerj"),
+    "welcome-package": l("Welcome package", "Приветственный набор", "Kutib olish to'plami"),
+    "air-ambulance": l("Air ambulance", "Санавиация", "Havo tez yordami"),
+    parking: l("Parking", "Парковка", "Avtoturargoh"),
+    "private-rooms": l("Private rooms", "Отдельные палаты", "Alohida palatalar"),
+    "family-accommodation": l("Family accommodation", "Проживание для родственников", "Qarindoshlar uchun turar joy"),
+    "mobility-access": l("Mobility-accessible rooms", "Палаты для маломобильных", "Harakati cheklanganlar uchun xonalar"),
+    wifi: l("Free Wi-Fi", "Бесплатный Wi-Fi", "Bepul Wi-Fi"),
+    "tv-in-room": l("TV in room", "Телевизор в палате", "Xonada televizor"),
+    "phone-in-room": l("Phone in room", "Телефон в палате", "Xonada telefon"),
+    "safe-in-room": l("Safe in room", "Сейф в палате", "Xonada seyf"),
+    laundry: l("Laundry", "Прачечная", "Kir yuvish"),
+    "dry-cleaning": l("Dry cleaning", "Химчистка", "Kimyoviy tozalash"),
+    "business-centre": l("Business centre", "Бизнес-центр", "Biznes markaz"),
+    "fitness-centre": l("Fitness centre", "Фитнес-центр", "Fitnes markaz"),
+    nursery: l("Nursery / nanny services", "Детская комната / няня", "Bolalar xonasi / enagalik"),
+    cafe: l("Café", "Кафе", "Kafe"),
+    insurance: l("Insurance tie-ups", "Работа со страховыми компаниями", "Sug'urta kompaniyalari bilan hamkorlik"),
+  } as Record<string, L>,
+  facilityGroups: {
+    support: l("Patient support", "Поддержка пациентов", "Bemorlarga yordam"),
+    transport: l("Transportation", "Транспорт", "Transport"),
+    stay: l("Comfort during stay", "Комфорт во время пребывания", "Davolanish davridagi qulaylik"),
+    food: l("Food services", "Питание", "Ovqatlanish"),
+    money: l("Money matters", "Финансы", "Moliyaviy masalalar"),
+    medical: l("Round-the-clock care", "Круглосуточная помощь", "Kecha-kunduz yordam"),
+    language: l("Language support", "Языковая поддержка", "Til yordami"),
+    clinical: l("Equipment and units", "Оборудование и отделения", "Jihozlar va bo'limlar"),
   } as Record<string, L>,
   languageNames: {
     en: l("English", "Английский", "Ingliz"),
@@ -118,4 +146,82 @@ export const HOSPITAL_COPY = {
     fr: l("French", "Французский", "Fransuz"),
     sw: l("Swahili", "Суахили", "Suaxili"),
   } as Record<string, L>,
+};
+
+/** Russian counts take one of three forms: 1 врач, 2 врача, 5 врачей. */
+const ruPlural = (n: number, one: string, few: string, many: string) => {
+  const tens = n % 100;
+  const units = n % 10;
+  if (tens >= 11 && tens <= 14) return many;
+  if (units === 1) return one;
+  if (units >= 2 && units <= 4) return few;
+  return many;
+};
+
+/** The hospital profile page. Functions take the hospital's display name or a count. */
+export const HOSPITAL_PAGE = {
+  home: l("Home", "Главная", "Bosh sahifa"),
+  hospitals: l("Hospitals", "Клиники", "Shifoxonalar"),
+  partner: l("Shifain partner hospital", "Клиника-партнёр Shifain", "Shifain hamkor shifoxonasi"),
+  overview: l("Overview", "Обзор", "Umumiy ma'lumot"),
+  doctorsOnShifain: l("Doctors on Shifain", "Врачи на Shifain", "Shifain'dagi shifokorlar"),
+  viewList: l("View list", "Смотреть список", "Ro'yxatni ko'rish"),
+  viewAll: l("View all", "Смотреть все", "Hammasini ko'rish"),
+  location: l("Location", "Расположение", "Manzil"),
+  established: l("Established in", "Год основания", "Tashkil etilgan yili"),
+  accreditations: l("Accreditations", "Аккредитации", "Akkreditatsiyalar"),
+  type: l("Hospital type", "Тип клиники", "Shifoxona turi"),
+  beds: l("Number of beds", "Количество коек", "Koykalar soni"),
+  specialties: l("Specialties", "Направления", "Yo'nalishlar"),
+  facilities: l("Facilities", "Удобства", "Qulayliklar"),
+  images: l("Images", "Фотографии", "Rasmlar"),
+  campus: (acres: number) => l(`${acres}-acre campus`, `Территория ${acres} акров`, `${acres} akr hudud`),
+  photosSoon: l("Photos coming soon", "Фотографии скоро появятся", "Rasmlar tez orada"),
+  about: (name: string) => l(`About ${name}`, `О клинике ${name}`, `${name} haqida`),
+  highlights: l("Highlights", "Главное", "Asosiy jihatlar"),
+  awards: l("Awards and recognition", "Награды и признание", "Mukofotlar va e'tirof"),
+  bySpecialty: (name: string) => l(`Doctors at ${name} by specialty`, `Врачи клиники ${name} по направлениям`, `${name} shifokorlari yo'nalishlar bo'yicha`),
+  doctorsCount: (n: number) =>
+    l(`${n} ${n === 1 ? "doctor" : "doctors"}`, `${n} ${ruPlural(n, "врач", "врача", "врачей")}`, `${n} ta shifokor`),
+  doctorsAt: (name: string) => l(`Doctors at ${name}`, `Врачи клиники ${name}`, `${name} shifokorlari`),
+  seeAll: (n: number) => l(`See all ${n} doctors`, `Все врачи (${n})`, `Barcha ${n} ta shifokor`),
+  experience: (n: number) => l(`${n}+ years of experience`, `Опыт более ${n} лет`, `${n}+ yillik tajriba`),
+  departments: (name: string) => l(`Specialties and centres at ${name}`, `Направления и центры клиники ${name}`, `${name} yo'nalishlari va markazlari`),
+  allDepartments: l("All departments", "Все отделения", "Barcha bo'limlar"),
+  servicesAt: (name: string) => l(`Services at ${name}`, `Услуги клиники ${name}`, `${name} xizmatlari`),
+  conditionsAt: (name: string) => l(`Conditions treated at ${name}`, `Что лечат в клинике ${name}`, `${name}da davolanadigan kasalliklar`),
+  locationAt: (name: string) => l(`How to reach ${name}`, `Как добраться до клиники ${name}`, `${name}ga qanday borish mumkin`),
+  address: l("Address", "Адрес", "Manzil"),
+  mapTitle: (name: string) => l(`Map showing ${name}`, `Карта: ${name}`, `Xarita: ${name}`),
+  faq: l("Frequently asked questions", "Частые вопросы", "Ko'p beriladigan savollar"),
+  faqWhere: (name: string) => l(`Where is ${name}?`, `Где находится ${name}?`, `${name} qayerda joylashgan?`),
+  faqAirport: (airport: string, km: number | null) =>
+    l(
+      `The nearest international airport is ${airport}${km ? `, about ${km} km away` : ""}. Shifain arranges your airport pickup.`,
+      `Ближайший международный аэропорт — ${airport}${km ? `, около ${km} км` : ""}. Shifain организует встречу в аэропорту.`,
+      `Eng yaqin xalqaro aeroport — ${airport}${km ? `, taxminan ${km} km` : ""}. Shifain sizni aeroportda kutib olishni tashkil qiladi.`,
+    ),
+  faqAccredited: (name: string) => l(`Which accreditations does ${name} hold?`, `Какие аккредитации у клиники ${name}?`, `${name} qanday akkreditatsiyalarga ega?`),
+  faqBeds: (name: string) => l(`How big is ${name}?`, `Насколько велика клиника ${name}?`, `${name} qanchalik katta?`),
+  faqBedsAnswer: (beds: number | null, acres: number | null, doctors: number | null) =>
+    l(
+      [beds ? `${beds} beds` : null, acres ? `a ${acres}-acre campus` : null, doctors ? `more than ${doctors} doctors` : null].filter(Boolean).join(", ") + ".",
+      [beds ? `${beds} коек` : null, acres ? `территория ${acres} акров` : null, doctors ? `более ${doctors} врачей` : null].filter(Boolean).join(", ") + ".",
+      [beds ? `${beds} ta koyka` : null, acres ? `${acres} akr hudud` : null, doctors ? `${doctors} dan ortiq shifokor` : null].filter(Boolean).join(", ") + ".",
+    ),
+  faqStrengths: (name: string) => l(`What is ${name} known for?`, `Чем известна клиника ${name}?`, `${name} nimasi bilan mashhur?`),
+  faqStrengthsAnswer: (list: string) =>
+    l(`Its centres of excellence: ${list}.`, `Центры передового опыта: ${list}.`, `Mukammallik markazlari: ${list}.`),
+  faqBook: (name: string) => l(`How do I book an appointment at ${name} from abroad?`, `Как записаться в клинику ${name} из-за рубежа?`, `Chet eldan ${name}ga qanday yozilish mumkin?`),
+  faqBookAnswer: l(
+    "Fill in the form on this page with your reports or a short description. You get a draft treatment plan and cost estimate in minutes; the hospital confirms it within 48 hours. Shifain then arranges the appointment, visa letter, travel, stay and interpreter.",
+    "Заполните форму на этой странице: приложите заключения или коротко опишите проблему. Черновик плана лечения и сметы вы получите за минуты, клиника подтвердит его в течение 48 часов. Затем Shifain организует приём, визовое письмо, перелёт, проживание и переводчика.",
+    "Ushbu sahifadagi shaklni to'ldiring: tahlillarni biriktiring yoki muammoni qisqacha yozing. Davolash rejasi va narx hisobi loyihasini bir necha daqiqada olasiz, shifoxona uni 48 soat ichida tasdiqlaydi. Keyin Shifain qabul, viza xati, safar, turar joy va tarjimonni tashkil qiladi.",
+  ),
+  faqDirect: l("Do I need to contact the hospital myself?", "Нужно ли связываться с клиникой самостоятельно?", "Shifoxona bilan o'zim bog'lanishim kerakmi?"),
+  faqDirectAnswer: l(
+    "No. Your Shifain coordinator deals with the hospital for you: appointments, admission, reports and follow-up after you fly home all go through one person who speaks your language.",
+    "Нет. Ваш координатор Shifain общается с клиникой за вас: приём, госпитализация, заключения и наблюдение после возвращения домой — всё через одного человека, который говорит на вашем языке.",
+    "Yo'q. Shifain koordinatoringiz shifoxona bilan siz uchun ishlaydi: qabul, yotqizish, tahlillar va uyga qaytgandan keyingi kuzatuv — hammasi sizning tilingizda gapiradigan bitta odam orqali.",
+  ),
 };

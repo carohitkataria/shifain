@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { getContent } from "@/lib/store";
-import { listSpecialties } from "@/lib/catalogue";
+import { listCategories, listSpecialties } from "@/lib/catalogue";
 import { doctorSpecialtyCodes, listedDoctors } from "@/lib/directory";
 import { HOSPITAL_COPY } from "@/lib/hospital-copy";
 import { DOCTOR_LIST_COPY } from "@/lib/directory-copy";
@@ -16,17 +16,37 @@ export default async function DoctorsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ specialty?: string }>;
+  searchParams: Promise<{ specialty?: string; category?: string; hospital?: string }>;
 }) {
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
-  const { specialty = "" } = await searchParams;
+  const { specialty = "", category = "", hospital = "" } = await searchParams;
 
-  const [content, specialties, all] = await Promise.all([getContent(), listSpecialties(), listedDoctors()]);
+  const [content, specialties, categories, everyone] = await Promise.all([getContent(), listSpecialties(), listCategories(), listedDoctors()]);
   const specialtyName = (code: string) => t(specialties.find((item) => item._id === code)?.name, locale) || code;
+  // A hospital page links here for its own doctors; the filters then stay within that hospital.
+  const atHospital = hospital ? everyone.filter(({ hospitals }) => hospitals.some((item) => item._id === hospital)) : everyone;
+  const hospitalLabel = hospital
+    ? (() => {
+        const found = atHospital[0]?.hospitals.find((item) => item._id === hospital);
+        return found ? `${found.name}, ${found.city}` : null;
+      })()
+    : null;
+  const all = hospitalLabel ? atHospital : everyone;
+  const inCategory = new Set(specialties.filter((item) => item.categoryCode === category).map((item) => item._id));
+  const categoryLabel = category && inCategory.size ? t(categories.find((item) => item._id === category)?.name, locale) || category : null;
   // Only the specialties someone listed practises, so every filter returns doctors.
   const offered = specialties.filter((item) => all.some(({ doctor }) => doctorSpecialtyCodes(doctor).includes(item._id)));
-  const doctors = specialty ? all.filter(({ doctor }) => doctorSpecialtyCodes(doctor).includes(specialty)) : all;
+  const doctors = all.filter(({ doctor }) => {
+    const codes = doctorSpecialtyCodes(doctor);
+    if (specialty && !codes.includes(specialty)) return false;
+    if (categoryLabel && !codes.some((code) => inCategory.has(code))) return false;
+    return true;
+  });
+  const query = (next: Record<string, string>) => {
+    const search = new URLSearchParams(Object.entries({ hospital: hospitalLabel ? hospital : "", ...next }).filter(([, value]) => value));
+    return `/${locale}/doctors${search.size ? `?${search}` : ""}`;
+  };
 
   return (
     <>
@@ -36,6 +56,32 @@ export default async function DoctorsPage({
         <div className="mx-auto w-full max-w-5xl">
           <h1 className="text-3xl font-extrabold tracking-tight text-ink">{t(DOCTOR_LIST_COPY.title, locale)}</h1>
           <p className="mt-2 max-w-2xl leading-relaxed text-ink-soft">{t(DOCTOR_LIST_COPY.body, locale)}</p>
+          {hospitalLabel || categoryLabel ? (
+            <ul className="mt-5 flex flex-wrap gap-2" aria-label="Filters">
+              {hospitalLabel ? (
+                <li className="inline-flex min-h-10 items-center gap-2 rounded-full bg-violet-soft pl-4 pr-1.5 text-sm font-bold text-violet">
+                  <Link href={`/${locale}/hospitals/${hospital}`} className="hover:underline">
+                    {hospitalLabel}
+                  </Link>
+                  <Link
+                    href={`/${locale}/doctors${specialty ? `?specialty=${specialty}` : category ? `?category=${category}` : ""}`}
+                    aria-label={`${t(DOCTOR_LIST_COPY.clear, locale)}: ${hospitalLabel}`}
+                    className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white"
+                  >
+                    ×
+                  </Link>
+                </li>
+              ) : null}
+              {categoryLabel ? (
+                <li className="inline-flex min-h-10 items-center gap-2 rounded-full bg-violet-soft pl-4 pr-1.5 text-sm font-bold text-violet">
+                  {categoryLabel}
+                  <Link href={query({})} aria-label={`${t(DOCTOR_LIST_COPY.clear, locale)}: ${categoryLabel}`} className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white">
+                    ×
+                  </Link>
+                </li>
+              ) : null}
+            </ul>
+          ) : null}
 
           {all.length === 0 ? (
             <div className="card mt-8 p-7">
@@ -51,10 +97,10 @@ export default async function DoctorsPage({
                   (item) => (
                     <Link
                       key={item._id || "all"}
-                      href={item._id ? `/${locale}/doctors?specialty=${item._id}` : `/${locale}/doctors`}
-                      aria-current={specialty === item._id ? "page" : undefined}
+                      href={query({ specialty: item._id })}
+                      aria-current={specialty === item._id && !categoryLabel ? "page" : undefined}
                       className={`inline-flex min-h-10 items-center rounded-full px-4 text-sm font-semibold ring-1 transition ${
-                        specialty === item._id ? "bg-violet text-white ring-violet" : "bg-white text-ink-soft ring-line hover:text-brand"
+                        specialty === item._id && !categoryLabel ? "bg-violet text-white ring-violet" : "bg-white text-ink-soft ring-line hover:text-brand"
                       }`}
                     >
                       {item.label}

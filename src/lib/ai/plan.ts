@@ -36,6 +36,8 @@ export type PlanInput = {
   description?: string | null;
   /** The standard questions, when they answered those instead. */
   answers?: IntakeAnswers | null;
+  /** The partner hospital or doctor they asked for from that page, e.g. "Dr X at Artemis Hospital". */
+  requested?: string | null;
 };
 
 const SYSTEM = `You are the planning assistant for ShifaIn, which arranges medical treatment in India for patients travelling from abroad.
@@ -141,6 +143,9 @@ function patientPrompt(input: PlanInput, usable: PlanReport[]): string {
   return [
     `The patient is travelling from ${input.country}.`,
     input.statedNeed ? `What they are seeking: "${input.statedNeed}".` : "",
+    input.requested
+      ? `They asked for ${input.requested}, a ShifaIn partner. Plan around it (its city) unless what they describe clearly needs care it does not offer; if so, say why in "understanding".`
+      : "",
     usable.length > 0 ? `They uploaded ${usable.length} file(s): ${usable.map((r) => r.filename).join(", ")}.` : "",
     input.description?.trim()
       ? `They described the problem themselves:\n"""\n${input.description.trim()}\n"""`

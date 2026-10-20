@@ -4,7 +4,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { publicUrl } from "@/lib/origin";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { linkCaseToAccount, newReference } from "@/lib/cases";
+import { linkCaseToAccount, newReference, type CaseRequest } from "@/lib/cases";
+import { listedDoctor, listedHospital } from "@/lib/directory";
 import { currentPatient } from "@/lib/patient-auth";
 import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
 import { openCase } from "@/lib/case-flow";
@@ -23,12 +24,37 @@ async function recordToDisk(entry: Record<string, unknown>): Promise<void> {
   await fs.appendFile(ENQUIRY_LOG, `${JSON.stringify(entry)}\n`, "utf8");
 }
 
+/**
+ * The partner the patient asked for from a hospital or doctor page. Only a
+ * listed hospital or doctor counts, so a hand-edited form cannot put a name
+ * on the case that the directory would not show.
+ */
+async function requestedFrom(form: FormData): Promise<CaseRequest | null> {
+  const hospitalId = String(form.get("hospitalId") ?? "").trim();
+  const doctorId = String(form.get("doctorId") ?? "").trim();
+  if (!hospitalId && !doctorId) return null;
+  const [hospital, doctor] = await Promise.all([
+    hospitalId ? listedHospital(hospitalId) : null,
+    doctorId ? listedDoctor(doctorId) : null,
+  ]);
+  if (!hospital && !doctor) return null;
+  return {
+    hospitalId: hospital?._id ?? null,
+    hospitalName: hospital ? [hospital.name, hospital.city].filter(Boolean).join(", ") : null,
+    doctorId: doctor?._id ?? null,
+    doctorName: doctor?.name ?? null,
+  };
+}
+
 export async function POST(request: NextRequest) {
   const form = await request.formData();
 
   const localeField = String(form.get("locale") ?? "");
   const locale = isLocale(localeField) ? localeField : DEFAULT_LOCALE;
-  const back = NextResponse.redirect(publicUrl(request, `/${locale}#quote-form`), 303);
+  // A hospital or doctor page sends the patient back to its own form, not the homepage's.
+  const from = String(form.get("from") ?? "");
+  const page = /^\/(en|ru|uz)\/(hospitals|doctors)\/[\w-]+$/.test(from) ? `${from}#book` : `/${locale}#quote-form`;
+  const back = NextResponse.redirect(publicUrl(request, page), 303);
 
   // Name arrives as title + first + last; older callers may still send `name`.
   const name = (
@@ -63,6 +89,7 @@ export async function POST(request: NextRequest) {
       route: intake.route,
       statedNeed: intake.statedNeed,
       reportCount: intake.meta.length,
+      askedFor: [form.get("hospitalId"), form.get("doctorId")].filter(Boolean).join(" / ") || null,
     }).catch((error) => console.error("[shifain] could not record enquiry", reference, error));
     return NextResponse.redirect(
       publicUrl(request, `/${locale}/enquiry/received?ref=${reference}`),
@@ -71,7 +98,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const record = await openCase({ locale, patient, intake, source: "website", referredBy: null });
+    const requested = await requestedFrom(form);
+    const record = await openCase({ locale, patient, intake, source: "website", referredBy: null, requested });
     await attributeFromCookie(record, "link");
     if (accountEmail && accountEmail !== email) await linkCaseToAccount(record._id, accountEmail).catch(() => undefined);
     return NextResponse.redirect(publicUrl(request, `/${locale}/plan/${record._id}`), 303);
@@ -86,6 +114,7 @@ export async function POST(request: NextRequest) {
       route: intake.route,
       statedNeed: intake.statedNeed,
       reportCount: intake.meta.length,
+      askedFor: [form.get("hospitalId"), form.get("doctorId")].filter(Boolean).join(" / ") || null,
     }).catch(() => undefined);
     return NextResponse.redirect(
       publicUrl(request, `/${locale}/enquiry/received?ref=${fallback}`),

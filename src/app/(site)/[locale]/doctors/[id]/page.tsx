@@ -8,7 +8,8 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { isVerifiedDoctor, listSpecialties } from "@/lib/catalogue";
 import { conditionsFor, doctorSpecialtyCodes, hospitalsForDoctor, listedDoctor, proceduresFor } from "@/lib/directory";
 import { mediaUrl } from "@/lib/media";
-import { DOCTOR_LIST_COPY } from "@/lib/directory-copy";
+import { BOOKING_COPY, DOCTOR_LIST_COPY } from "@/lib/directory-copy";
+import { BookingPanel } from "@/components/BookingForm";
 import { HOSPITAL_COPY } from "@/lib/hospital-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
@@ -69,7 +70,7 @@ export default async function DoctorProfile({ params }: { params: Promise<{ loca
       <Header content={content} locale={locale} path={`/doctors/${id}`} />
 
       <main className="bg-surface-muted px-4 py-10 sm:py-14">
-        <div className="mx-auto w-full max-w-5xl">
+        <div className="mx-auto w-full max-w-6xl">
           <Link href={`/${locale}/doctors`} className="text-sm font-bold text-brand hover:underline">
             &larr; {t(DOCTOR_LIST_COPY.back, locale)}
           </Link>
@@ -127,12 +128,12 @@ export default async function DoctorProfile({ params }: { params: Promise<{ loca
                 ))}
               </ul>
             </div>
-            <Link href={`/${locale}#quote-form`} className="btn btn-primary shrink-0">
-              {t(HOSPITAL_COPY.cta, locale)}
-            </Link>
+            <a href="#book" className="btn btn-primary shrink-0">
+              {t(BOOKING_COPY.book, locale)}
+            </a>
           </header>
 
-          <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem]">
+          <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <div className="min-w-0 space-y-5">
               {doctor.about ? (
                 <Section title={t(DOCTOR_LIST_COPY.about, locale)}>
@@ -234,7 +235,15 @@ export default async function DoctorProfile({ params }: { params: Promise<{ loca
               ) : null}
             </div>
 
-            <aside className="min-w-0 space-y-5 lg:sticky lg:top-24 lg:self-start">
+            <aside className="min-w-0 space-y-5">
+              <BookingPanel
+                locale={locale}
+                from={`/${locale}/doctors/${id}`}
+                doctorId={id}
+                hospitalId={places[0]?.hospital._id ?? null}
+                specialties={codes.map(specialtyName)}
+                subject={[doctor.name, places[0] ? `${places[0].hospital.name}, ${places[0].hospital.city}` : null].filter(Boolean).join(" · ")}
+              />
               {places.length ? (
                 <Section title={t(DOCTOR_LIST_COPY.worksAt, locale)}>
                   <ul className="space-y-4">
@@ -286,19 +295,12 @@ export default async function DoctorProfile({ params }: { params: Promise<{ loca
                 </Section>
               ) : null}
 
-              {doctor.registrationNumber || doctor.officialProfileUrl ? (
-                <section className="card space-y-2 p-6 text-sm">
-                  {doctor.registrationNumber ? (
-                    <p className="text-ink-soft">
-                      {t(DOCTOR_LIST_COPY.registration, locale)}: <span className="font-semibold text-ink">{doctor.registrationNumber}</span>
-                      {doctor.registrationCouncil ? ` · ${doctor.registrationCouncil}` : ""}
-                    </p>
-                  ) : null}
-                  {doctor.officialProfileUrl ? (
-                    <a href={doctor.officialProfileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex font-semibold text-brand hover:underline">
-                      {t(DOCTOR_LIST_COPY.officialProfile, locale)}
-                    </a>
-                  ) : null}
+              {doctor.registrationNumber ? (
+                <section className="card p-6 text-sm">
+                  <p className="text-ink-soft">
+                    {t(DOCTOR_LIST_COPY.registration, locale)}: <span className="font-semibold text-ink">{doctor.registrationNumber}</span>
+                    {doctor.registrationCouncil ? ` · ${doctor.registrationCouncil}` : ""}
+                  </p>
                 </section>
               ) : null}
             </aside>

@@ -5,16 +5,28 @@ import { Icon } from "@/components/Icon";
 import { getContent } from "@/lib/store";
 import { publishedHospitals, accreditationLabels } from "@/lib/catalogue";
 import { HOSPITAL_COPY } from "@/lib/hospital-copy";
+import { DOCTOR_LIST_COPY } from "@/lib/directory-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export default async function HospitalsPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function HospitalsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ city?: string; country?: string }>;
+}) {
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const { city = "", country = "" } = await searchParams;
 
-  const [content, hospitals] = await Promise.all([getContent(), publishedHospitals({ limit: 200 })]);
+  const [content, published] = await Promise.all([getContent(), publishedHospitals({ limit: 200 })]);
+  // The breadcrumb on a hospital page links here by city or country.
+  const same = (a: string | null | undefined, b: string) => (a ?? "").toLowerCase() === b.toLowerCase();
+  const hospitals = published.filter((item) => (!city || same(item.city, city)) && (!country || same(item.country, country)));
+  const place = city || country;
 
   return (
     <>
@@ -28,6 +40,15 @@ export default async function HospitalsPage({ params }: { params: Promise<{ loca
           <p className="mt-2 max-w-2xl leading-relaxed text-ink-soft">
             {t(HOSPITAL_COPY.listBody, locale)}
           </p>
+
+          {place ? (
+            <p className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-full bg-violet-soft pl-4 pr-1.5 text-sm font-bold text-violet">
+              {place}
+              <Link href={`/${locale}/hospitals`} aria-label={`${t(DOCTOR_LIST_COPY.clear, locale)}: ${place}`} className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white">
+                ×
+              </Link>
+            </p>
+          ) : null}
 
           {hospitals.length === 0 ? (
             <div className="card mt-8 p-7">
