@@ -5,13 +5,22 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Icon } from "@/components/Icon";
 import { getContent } from "@/lib/store";
+import { accreditationLabels, listSpecialties } from "@/lib/catalogue";
+import { conditionsFor, doctorSpecialtyCodes, doctorsFor, hospitalsFor, specialtiesInCategory } from "@/lib/directory";
+import { CONDITION_COPY } from "@/lib/directory-copy";
+import { HOSPITAL_COPY } from "@/lib/hospital-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
+
+/** A treatment page covers one catalogue category; most slugs are the category's own id. */
+const CATEGORY_OF: Record<string, string> = { neurosurgery: "neurosciences", "organ-transplant": "transplant", "fertility-ivf": "fertility" };
 
 async function findSpecialty(slug: string) {
   const content = await getContent();
   return { content, specialty: content.specialties.items.find((item) => item.slug === slug) };
 }
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -40,6 +49,10 @@ export default async function TreatmentPage({
   if (!specialty) notFound();
 
   const related = content.specialties.items.filter((item) => item.slug !== slug);
+  const specialties = await listSpecialties();
+  const codes = specialtiesInCategory(specialties, CATEGORY_OF[slug] ?? slug);
+  const [conditions, hospitals, doctors] = await Promise.all([conditionsFor(codes), hospitalsFor(codes), doctorsFor(codes, 12)]);
+  const specialtyName = (code: string) => t(specialties.find((item) => item._id === code)?.name, locale) || code;
 
   return (
     <>
@@ -100,6 +113,63 @@ export default async function TreatmentPage({
           <p className="mt-10 rounded-xl2 border border-line bg-surface-muted p-5 text-sm leading-relaxed text-ink-soft">
             {t(content.specialties.body, locale)}
           </p>
+
+          {conditions.length ? (
+            <>
+              <h2 className="mt-14 text-xl font-extrabold tracking-tight text-ink">{t(CONDITION_COPY.title, locale)}</h2>
+              <ul className="mt-5 flex flex-wrap gap-2.5">
+                {conditions.map((disease) => (
+                  <li key={disease._id}>
+                    <Link
+                      href={`/${locale}/conditions/${disease._id}`}
+                      className="inline-flex min-h-10 items-center rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand-deep"
+                    >
+                      {t(disease.name, locale)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+
+          {hospitals.length ? (
+            <>
+              <h2 className="mt-14 text-xl font-extrabold tracking-tight text-ink">{t(CONDITION_COPY.hospitals, locale)}</h2>
+              <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                {hospitals.map((hospital) => (
+                  <li key={hospital._id}>
+                    <Link href={`/${locale}/hospitals/${hospital._id}`} className="card link-card flex h-full flex-col p-5">
+                      <span className="font-bold text-ink">{hospital.name}</span>
+                      <span className="text-sm text-ink-soft">{[hospital.city, ...accreditationLabels(hospital)].filter(Boolean).join(" · ")}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+
+          {doctors.length ? (
+            <>
+              <h2 className="mt-14 text-xl font-extrabold tracking-tight text-ink">{t(CONDITION_COPY.doctors, locale)}</h2>
+              <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                {doctors.map((doctor) => (
+                  <li key={doctor._id}>
+                    <Link href={`/${locale}/doctors/${doctor._id}`} className="card link-card flex h-full flex-col p-5">
+                      <span className="font-bold text-ink">{doctor.name}</span>
+                      <span className="text-sm text-ink-soft">
+                        {[doctor.designation, doctorSpecialtyCodes(doctor).map(specialtyName).join(", ")].filter(Boolean).join(" · ")}
+                      </span>
+                      {doctor.experienceYears ? (
+                        <span className="text-sm text-ink-muted">
+                          {doctor.experienceYears}+ {t(HOSPITAL_COPY.years, locale)}
+                        </span>
+                      ) : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
 
           <h2 className="mt-14 text-xl font-extrabold tracking-tight text-ink">
             {t(content.specialties.title, locale)}

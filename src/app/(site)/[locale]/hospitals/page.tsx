@@ -49,6 +49,15 @@ export default async function HospitalsPage({ params }: { params: Promise<{ loca
                       {hospital.city}
                       {hospital.state ? `, ${hospital.state}` : ""}
                     </span>
+                    <span className="mt-1 text-sm text-ink-muted">
+                      {[
+                        hospital.hospitalType ? t(HOSPITAL_COPY.types[hospital.hospitalType], locale) || hospital.hospitalType : null,
+                        hospital.yearEstablished ? `${t(HOSPITAL_COPY.established, locale)} ${hospital.yearEstablished}` : null,
+                        hospital.specialtyCodes?.length ? `${hospital.specialtyCodes.length} ${t(HOSPITAL_COPY.specialtiesCount, locale)}` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
                     {hospital.accreditations?.length ? (
                       <span className="mt-3 flex flex-wrap gap-1.5">
                         {accreditationLabels(hospital).map((mark) => (

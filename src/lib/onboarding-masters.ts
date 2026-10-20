@@ -56,6 +56,9 @@ export const FACILITIES = [
   { value: "virtual-tour", label: "Virtual tour" },
   { value: "prayer-room", label: "Prayer room" },
   { value: "pharmacy-24h", label: "24-hour pharmacy" },
+  { value: "emergency-24x7", label: "24×7 emergency" },
+  { value: "ambulance", label: "Ambulance" },
+  { value: "medical-records-transfer", label: "Medical records transfer" },
 ];
 
 export const LANGUAGES = [
@@ -83,8 +86,10 @@ export const DESIGNATIONS = [
   "Consultant",
   "Senior Consultant",
   "Associate Director",
+  "Additional Director",
   "Director",
   "Head of Department",
+  "Chief",
   "Chairman",
 ];
 

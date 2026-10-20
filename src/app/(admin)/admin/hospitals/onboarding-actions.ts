@@ -156,6 +156,7 @@ async function saveBasics(hospital: Hospital, formData: FormData) {
       nearestAirportIata: /^[A-Z]{3}$/.test(iata) ? iata : null,
       airportDistanceKm: decimal(formData.get("airportDistanceKm"), 0, 2000),
       officialWebsite: url(text(formData.get("officialWebsite"))),
+      phone: text(formData.get("phone")),
       about: text(formData.get("about")),
       aboutRu: text(formData.get("aboutRu")),
       aboutUz: text(formData.get("aboutUz")),

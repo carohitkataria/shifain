@@ -20,6 +20,23 @@ export const DOCTOR_LIST_COPY = {
   anyDay: l("By arrangement", "По договорённости", "Kelishuv bo'yicha"),
   about: l("About", "О враче", "Shifokor haqida"),
   registration: l("Registration", "Регистрация", "Ro'yxatdan o'tish"),
+  verified: l("Registration verified", "Регистрация проверена", "Ro'yxatdan o'tish tasdiqlangan"),
+  experience: l("years of experience", "лет опыта", "yillik tajriba"),
+  languages: l("Languages", "Языки", "Tillar"),
+  procedures: l("Procedures performed", "Выполняемые процедуры", "Bajariladigan muolajalar"),
+  qualifications: l("Qualifications", "Образование", "Ma'lumoti"),
+  workHistory: l("Work experience", "Опыт работы", "Ish tajribasi"),
+  memberships: l("Memberships", "Членство в организациях", "A'zolik"),
+  awards: l("Awards and achievements", "Награды и достижения", "Mukofotlar va yutuqlar"),
+  fees: l("Consultation fee", "Стоимость консультации", "Maslahat narxi"),
+  inPerson: l("in person", "очно", "yuzma-yuz"),
+  video: l("video", "видео", "video"),
+  conditions: l("Conditions they treat", "Заболевания, которые лечит", "Davolaydigan kasalliklari"),
+  opd: l("OPD", "Кабинет", "Qabul xonasi"),
+  officialProfile: l("Profile on the hospital's website", "Профиль на сайте клиники", "Shifoxona saytidagi profil"),
+  present: l("present", "по н. в.", "hozirgacha"),
+  atHospital: l("at", "в", ""),
+  filterAll: l("All specialties", "Все направления", "Barcha yo'nalishlar"),
 };
 
 export const CONDITION_COPY = {
@@ -36,6 +53,9 @@ export const CONDITION_COPY = {
   specialty: l("Handled by", "Направление", "Yo'nalish"),
   back: l("All conditions", "Все заболевания", "Barcha kasalliklar"),
   cta: l("Get a plan for this", "Получить план", "Bu bo'yicha reja olish"),
+  hospitals: l("Hospitals that treat this", "Клиники, где это лечат", "Buni davolaydigan shifoxonalar"),
+  doctors: l("Doctors who treat this", "Врачи, которые это лечат", "Buni davolaydigan shifokorlar"),
+  related: l("Related conditions", "Связанные заболевания", "Bog'liq kasalliklar"),
   disclaimer: l(
     "These are planning figures from our catalogue, not a diagnosis and not a quote. Your treating doctor confirms the pathway and the hospital confirms the price.",
     "Это плановые ориентиры из нашего каталога, а не диагноз и не счёт. Лечащий врач подтверждает путь лечения, клиника — цену.",

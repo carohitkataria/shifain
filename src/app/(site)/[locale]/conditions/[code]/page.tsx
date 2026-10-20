@@ -5,7 +5,9 @@ import { Footer } from "@/components/Footer";
 import { Icon } from "@/components/Icon";
 import { getContent } from "@/lib/store";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
-import { listSpecialties, priceBandsFor, type Disease, type MatchingRule, type Treatment } from "@/lib/catalogue";
+import { accreditationLabels, listSpecialties, priceBandsFor, type Disease, type MatchingRule, type Treatment } from "@/lib/catalogue";
+import { doctorSpecialtyCodes, doctorsFor, hospitalsFor } from "@/lib/directory";
+import { HOSPITAL_COPY } from "@/lib/hospital-copy";
 import { estimateFor } from "@/lib/ai/estimate";
 import { CONDITION_COPY } from "@/lib/directory-copy";
 import { PLAN_COPY } from "@/lib/plan-copy";
@@ -31,7 +33,9 @@ export default async function ConditionPage({
   if (!disease) notFound();
 
   const rules = await db.collection<MatchingRule>("matching_rules").find({ diseaseCode: code }).toArray();
-  const [content, specialties, treatments, bands] = await Promise.all([
+  // Who treats it: the specialties the condition belongs to, and those its pathways run through.
+  const codes = [...new Set([disease.primarySpecialtyCode, ...(disease.specialtyCodes ?? []), ...rules.map((rule) => rule.specialtyCode)])];
+  const [content, specialties, treatments, bands, hospitals, doctors] = await Promise.all([
     getContent(),
     listSpecialties(),
     db
@@ -39,6 +43,8 @@ export default async function ConditionPage({
       .find({ _id: { $in: rules.map((rule) => rule.treatmentCode) } })
       .toArray(),
     priceBandsFor(rules.map((rule) => rule.treatmentCode)),
+    hospitalsFor(codes),
+    doctorsFor(codes, 12),
   ]);
 
   const treatmentById = new Map(treatments.map((item) => [item._id, item]));
@@ -100,6 +106,47 @@ export default async function ConditionPage({
                 })}
               </ul>
             </section>
+
+            {hospitals.length ? (
+              <section className="mt-8">
+                <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-ink-soft">{t(CONDITION_COPY.hospitals, locale)}</h2>
+                <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {hospitals.map((hospital) => (
+                    <li key={hospital._id}>
+                      <Link href={`/${locale}/hospitals/${hospital._id}`} className="link-card flex h-full flex-col rounded-xl2 border border-line bg-white p-4">
+                        <span className="font-bold text-ink">{hospital.name}</span>
+                        <span className="text-sm text-ink-soft">
+                          {[hospital.city, ...accreditationLabels(hospital)].filter(Boolean).join(" · ")}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            {doctors.length ? (
+              <section className="mt-8">
+                <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-ink-soft">{t(CONDITION_COPY.doctors, locale)}</h2>
+                <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {doctors.map((doctor) => (
+                    <li key={doctor._id}>
+                      <Link href={`/${locale}/doctors/${doctor._id}`} className="link-card flex h-full flex-col rounded-xl2 border border-line bg-white p-4">
+                        <span className="font-bold text-ink">{doctor.name}</span>
+                        <span className="text-sm text-ink-soft">
+                          {[doctor.designation, doctorSpecialtyCodes(doctor).map(specialtyName).join(", ")].filter(Boolean).join(" · ")}
+                        </span>
+                        {doctor.experienceYears ? (
+                          <span className="text-sm text-ink-muted">
+                            {doctor.experienceYears}+ {t(HOSPITAL_COPY.years, locale)}
+                          </span>
+                        ) : null}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
             <p className="mt-8 border-t border-line pt-5 text-sm leading-relaxed text-ink-soft">
               {t(CONDITION_COPY.disclaimer, locale)} {t(PLAN_COPY.indicative, locale)}

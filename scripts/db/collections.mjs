@@ -202,6 +202,7 @@ export const COLLECTIONS = [
       // Onboarding (admin-led, maker–checker). Only `publication` decides what patients see.
       slug: { bsonType: ["string", "null"] },
       groupId: { bsonType: ["string", "null"] },
+      phone: { bsonType: ["string", "null"] },
       yearEstablished: { bsonType: ["int", "null"] },
       airportDistanceKm: { bsonType: ["double", "int", "null"] },
       hduBeds: { bsonType: ["int", "null"] },
