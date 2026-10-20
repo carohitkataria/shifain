@@ -42,23 +42,45 @@ export const OWNERSHIP = [
   { value: "public-private", label: "Public–private partnership" },
 ];
 
+/** How the public profile groups a hospital's services, in this order. */
+export const FACILITY_GROUPS = ["support", "transport", "stay", "food", "money", "medical"] as const;
+export type FacilityGroup = (typeof FACILITY_GROUPS)[number];
+
 /** Services an international patient asks about before anything clinical. */
-export const FACILITIES = [
-  { value: "international-desk", label: "International patient desk" },
-  { value: "airport-pickup", label: "Airport pickup" },
-  { value: "visa-letter", label: "Visa invitation letter" },
-  { value: "interpreter", label: "Interpreter service" },
-  { value: "teleconsultation", label: "Teleconsultation" },
-  { value: "forex", label: "Foreign exchange" },
-  { value: "international-lounge", label: "International lounge" },
-  { value: "accommodation", label: "Accommodation tie-ups" },
-  { value: "dietary", label: "Dietary options (halal, vegetarian)" },
-  { value: "virtual-tour", label: "Virtual tour" },
-  { value: "prayer-room", label: "Prayer room" },
-  { value: "pharmacy-24h", label: "24-hour pharmacy" },
-  { value: "emergency-24x7", label: "24×7 emergency" },
-  { value: "ambulance", label: "Ambulance" },
-  { value: "medical-records-transfer", label: "Medical records transfer" },
+export const FACILITIES: { value: string; label: string; group: FacilityGroup }[] = [
+  { value: "international-desk", label: "International patient desk", group: "support" },
+  { value: "visa-letter", label: "Visa invitation letter", group: "support" },
+  { value: "interpreter", label: "Interpreter service", group: "support" },
+  { value: "teleconsultation", label: "Teleconsultation", group: "support" },
+  { value: "medical-records-transfer", label: "Medical records transfer", group: "support" },
+  { value: "concierge", label: "Personal assistance / concierge", group: "support" },
+  { value: "welcome-package", label: "Welcome package", group: "support" },
+  { value: "virtual-tour", label: "Virtual tour", group: "support" },
+  { value: "airport-pickup", label: "Airport pickup", group: "transport" },
+  { value: "ambulance", label: "Ambulance", group: "transport" },
+  { value: "air-ambulance", label: "Air ambulance", group: "transport" },
+  { value: "parking", label: "Parking", group: "transport" },
+  { value: "private-rooms", label: "Private rooms", group: "stay" },
+  { value: "family-accommodation", label: "Family accommodation", group: "stay" },
+  { value: "accommodation", label: "Accommodation tie-ups", group: "stay" },
+  { value: "international-lounge", label: "International lounge", group: "stay" },
+  { value: "mobility-access", label: "Mobility-accessible rooms", group: "stay" },
+  { value: "wifi", label: "Free Wi-Fi", group: "stay" },
+  { value: "tv-in-room", label: "TV in room", group: "stay" },
+  { value: "phone-in-room", label: "Phone in room", group: "stay" },
+  { value: "safe-in-room", label: "Safe in room", group: "stay" },
+  { value: "laundry", label: "Laundry", group: "stay" },
+  { value: "dry-cleaning", label: "Dry cleaning", group: "stay" },
+  { value: "business-centre", label: "Business centre", group: "stay" },
+  { value: "fitness-centre", label: "Fitness centre", group: "stay" },
+  { value: "nursery", label: "Nursery / nanny services", group: "stay" },
+  { value: "prayer-room", label: "Prayer room / religious facilities", group: "stay" },
+  { value: "cafe", label: "Café", group: "food" },
+  { value: "dietary", label: "Dietary options (halal, vegetarian)", group: "food" },
+  { value: "forex", label: "Foreign exchange", group: "money" },
+  { value: "insurance", label: "Insurance tie-ups", group: "money" },
+  { value: "emergency-24x7", label: "24×7 emergency", group: "medical" },
+  { value: "pharmacy-24h", label: "24-hour pharmacy", group: "medical" },
 ];
 
 export const LANGUAGES = [

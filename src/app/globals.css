@@ -1570,3 +1570,11 @@ body {
     zoom: 0.8;
   }
 }
+
+/* A side panel that follows the reader, only where the screen is tall enough to show all of it. */
+@media (min-width: 64rem) and (min-height: 62rem) {
+  .sticky-tall {
+    position: sticky;
+    top: 6rem;
+  }
+}

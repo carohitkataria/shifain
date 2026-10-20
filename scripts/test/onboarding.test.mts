@@ -6,6 +6,7 @@
  */
 import assert from "node:assert/strict";
 import { accreditationStatus, blockers, computeSlots, reviewGate, type GateInput } from "../../src/lib/onboarding-rules.ts";
+import { describeRequest } from "../../src/lib/cases.ts";
 
 const TODAY = "2026-10-18";
 
@@ -70,4 +71,16 @@ assert.equal(
   2,
 );
 
-console.log("onboarding: accreditation status, review gate and slots pass");
+// booking from a hospital or doctor page: the planner and coordinator are told who was asked for
+assert.equal(describeRequest(null), null);
+assert.equal(describeRequest({ hospitalId: null, hospitalName: null, doctorId: null, doctorName: null }), null);
+assert.equal(
+  describeRequest({ hospitalId: "h-a", hospitalName: "Artemis Hospital, Gurgaon", doctorId: null, doctorName: null }),
+  "Artemis Hospital, Gurgaon",
+);
+assert.equal(
+  describeRequest({ hospitalId: "h-a", hospitalName: "Artemis Hospital, Gurgaon", doctorId: "d-x", doctorName: "Dr. IPS Oberoi" }),
+  "Dr. IPS Oberoi at Artemis Hospital, Gurgaon",
+);
+
+console.log("onboarding: accreditation status, review gate, slots and booking requests pass");

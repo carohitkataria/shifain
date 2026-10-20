@@ -5,7 +5,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { Saved, adminField, adminLabel } from "@/components/admin/Panel";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
-import type { CaseStatus, PatientCase } from "@/lib/cases";
+import { describeRequest, type CaseStatus, type PatientCase } from "@/lib/cases";
 import { listPartners, type Referral } from "@/lib/partners";
 import { SOURCE_LABEL, STAGE_LABEL, partnerIdOf, sourceOf } from "@/lib/referrals";
 import { answerAppointmentAction, attributeCaseAction, deleteCaseAction, saveCaseAction, setCaseStatusAction } from "./actions";
@@ -205,6 +205,9 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
                         ? "described in their own words"
                         : "answered the standard questions"}
                   </p>
+                  {describeRequest(item.requested) ? (
+                    <p className="mt-1 text-sm font-semibold text-brand">Asked for: {describeRequest(item.requested)}</p>
+                  ) : null}
                   {item.reports.length > 0 ? (
                     <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm">
                       {item.reports.map((report, index) =>

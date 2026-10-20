@@ -1,7 +1,7 @@
 import "server-only";
 import { after } from "next/server";
 import { loadGrounding } from "./catalogue";
-import { createCase, getCase, savePlan, savePlanFailure, type CaseSource, type CaseStatus, type PatientCase } from "./cases";
+import { createCase, describeRequest, getCase, savePlan, savePlanFailure, type CaseRequest, type CaseSource, type CaseStatus, type PatientCase } from "./cases";
 import { getDb } from "./db";
 import { generatePlan } from "./ai/plan";
 import { expiryFromNow, listReports, readReport, storeReports } from "./reports";
@@ -27,6 +27,8 @@ export async function openCase(input: {
   /** A partner user id, only when the partner is known at intake time. */
   referredBy: string | null;
   status?: CaseStatus;
+  /** The hospital or doctor page the patient asked from. */
+  requested?: CaseRequest | null;
 }): Promise<PatientCase> {
   const { intake } = input;
   const settings = await getSettings();
@@ -46,6 +48,7 @@ export async function openCase(input: {
         : null,
     source: input.source,
     referredBy: input.referredBy,
+    requested: input.requested ?? null,
   });
 
   after(async () => {
@@ -84,6 +87,7 @@ export async function openCase(input: {
           reports: intake.forPlanner,
           description: intake.description,
           answers: intake.answers,
+          requested: describeRequest(input.requested),
         },
         await loadGrounding(),
       );
@@ -158,6 +162,7 @@ export async function replanCase(reference: string): Promise<ReplanResult> {
           reports,
           description: [record.description, ...added, ...wishes].filter(Boolean).join("\n\n") || null,
           answers: record.answers,
+          requested: describeRequest(record.requested),
         },
         await loadGrounding(),
       );

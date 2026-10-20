@@ -151,6 +151,45 @@ const PATHS: Record<string, JSX.Element> = {
       <path d="M9.3 11h.01M14.7 11h.01M9.5 14.6c1.4 1.2 3.6 1.2 5 0M12 3.5c-1.2 1-1.2 2.4 0 3" />
     </>
   ),
+  pin: (
+    <>
+      <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" />
+      <circle cx="12" cy="10" r="2.4" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="8.5" r="3" />
+      <path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8" />
+      <circle cx="16.8" cy="9.5" r="2.3" />
+      <path d="M16.5 14.4c2.2.1 3.7 1.6 4.1 4" />
+    </>
+  ),
+  calendar: (
+    <>
+      <rect x="4" y="5.5" width="16" height="14.5" rx="2.2" />
+      <path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" />
+    </>
+  ),
+  award: (
+    <>
+      <circle cx="12" cy="9" r="5.2" />
+      <path d="m9.2 13.4-1.4 7 4.2-2.3 4.2 2.3-1.4-7" />
+    </>
+  ),
+  image: (
+    <>
+      <rect x="3.5" y="5" width="17" height="14" rx="2.2" />
+      <circle cx="9" cy="10" r="1.6" />
+      <path d="m4 17 4.8-4.5 3.4 3 2.8-2.5L20 17.5" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" />
+      <circle cx="12" cy="12" r="2.8" />
+    </>
+  ),
 };
 
 /** The few emoji older content used as icons, drawn as line icons instead. */

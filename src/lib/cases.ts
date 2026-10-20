@@ -47,7 +47,22 @@ export type PatientCase = {
   replans?: string[];
   /** The signed-in account that opened this case, when its contact email is someone else's. */
   accountEmail?: string | null;
+  /** The hospital or doctor page the patient asked from, when they did. */
+  requested?: CaseRequest | null;
 };
+
+export type CaseRequest = {
+  hospitalId: string | null;
+  hospitalName: string | null;
+  doctorId: string | null;
+  doctorName: string | null;
+};
+
+/** One sentence for the planner and the coordinator: who the patient asked for. */
+export const describeRequest = (request: CaseRequest | null | undefined): string | null =>
+  request && (request.hospitalName || request.doctorName)
+    ? [request.doctorName, request.hospitalName].filter(Boolean).join(" at ")
+    : null;
 
 export type PatientPreferences = {
   city?: string | null;
@@ -94,6 +109,7 @@ export async function createCase(
     planError: null,
     source: input.source,
     referredBy: input.referredBy,
+    ...(input.requested ? { requested: input.requested } : {}),
   };
   const db = await getDb();
   await db.collection<PatientCase>("cases").insertOne(record);

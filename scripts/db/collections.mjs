@@ -205,6 +205,19 @@ export const COLLECTIONS = [
       phone: { bsonType: ["string", "null"] },
       yearEstablished: { bsonType: ["int", "null"] },
       airportDistanceKm: { bsonType: ["double", "int", "null"] },
+      campusAcres: { bsonType: ["double", "int", "null"] },
+      awards: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["title"],
+          properties: {
+            title: { bsonType: "string" },
+            awardingBody: { bsonType: ["string", "null"] },
+            year: { bsonType: ["int", "null"] },
+          },
+        },
+      },
       hduBeds: { bsonType: ["int", "null"] },
       otCount: { bsonType: ["int", "null"] },
       cathlabCount: { bsonType: ["int", "null"] },
@@ -465,6 +478,16 @@ export const COLLECTIONS = [
       planError: { bsonType: ["string", "null"] },
       // Set when a partner doctor submitted the case rather than the patient.
       referredBy: { bsonType: ["string", "null"] },
+      // The hospital or doctor page the patient asked from, when they did.
+      requested: {
+        bsonType: ["object", "null"],
+        properties: {
+          hospitalId: { bsonType: ["string", "null"] },
+          hospitalName: { bsonType: ["string", "null"] },
+          doctorId: { bsonType: ["string", "null"] },
+          doctorName: { bsonType: ["string", "null"] },
+        },
+      },
       updatedAt: { bsonType: ["string", "date", "null"] },
     }),
     indexes: [

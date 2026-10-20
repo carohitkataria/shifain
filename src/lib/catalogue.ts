@@ -126,6 +126,8 @@ export type HospitalOnboardingFields = {
   aboutRu?: string | null;
   aboutUz?: string | null;
   usps?: string[];
+  awards?: { title: string; awardingBody: string | null; year: number | null }[];
+  campusAcres?: number | null;
   hduBeds?: number | null;
   otCount?: number | null;
   cathlabCount?: number | null;

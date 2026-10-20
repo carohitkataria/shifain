@@ -108,6 +108,21 @@ export function BasicsStep({ hospital, masters, back }: { hospital: Hospital; ma
             <AreaField label="What sets it apart" name="usps" rows={3} defaultValue={(hospital.usps ?? []).join("\n")} placeholder="One per line, up to eight" />
           </div>
         </FieldGroup>
+
+        <FieldGroup title="Awards and recognition" hint="Shown on the public profile with the year and who gave it.">
+          <RowsEditor
+            name="award"
+            itemLabel="Award"
+            addLabel="Add an award"
+            empty="None added."
+            initial={(hospital.awards ?? []).map((item) => ({ title: item.title, awardingBody: item.awardingBody ?? "", year: item.year?.toString() ?? "" }))}
+            fields={[
+              { key: "title", label: "Title", type: "text", span: 3, required: true, placeholder: "Kayakalp Award" },
+              { key: "awardingBody", label: "Awarded by", type: "text", span: 2 },
+              { key: "year", label: "Year", type: "number", span: 1, min: 1900 },
+            ]}
+          />
+        </FieldGroup>
       </StepForm>
     </>
   );
@@ -120,6 +135,7 @@ export function InfrastructureStep({ hospital, masters, back }: { hospital: Hosp
         <FieldGroup title="Beds and theatres" hint="Shown on the profile as trust signals. Leave blank if not known; zero means none.">
           <div className={grid6}>
             <TextField label="Total beds" name="beds" type="number" min={0} span={2} defaultValue={hospital.beds} />
+            <TextField label="Campus (acres)" name="campusAcres" type="number" step="0.1" min={0} span={2} defaultValue={hospital.campusAcres} />
             <TextField label="ICU beds" name="icuBeds" type="number" min={0} span={2} defaultValue={hospital.icuBeds} />
             <TextField label="HDU / critical-care beds" name="hduBeds" type="number" min={0} span={2} defaultValue={hospital.hduBeds} />
             <TextField label="Operation theatres" name="otCount" type="number" min={0} span={2} defaultValue={hospital.otCount} />
