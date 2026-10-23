@@ -30,6 +30,7 @@ export default async function CalendarPage(props: AppProps & { searchParams: Pro
 
   return (
     <AppShell
+      wide
       app={app}
       section="calendar"
       sheets={

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AppIcon } from "./AppIcon";
 import { HelpButton, OpenSheet, Sheet, ShareLocation, Toast } from "./client";
+import { Logo } from "@/components/Logo";
 import { APP } from "@/lib/patient-app-copy";
 import { initials, telHref, type AppData } from "@/lib/patient-app";
 import { t } from "@/lib/localize";
@@ -70,7 +71,7 @@ export const href = (app: AppData, section: string, extra = "") => {
  * bell), the screen, the help button, and the bottom bar with the translator
  * in the middle. The More and SOS sheets live here so every screen has them.
  */
-export function AppShell({ app, section, title, children, sheets }: { app: AppData; section: Section; title?: string; children: React.ReactNode; sheets?: React.ReactNode }) {
+export function AppShell({ app, section, title, children, sheets, wide = false }: { app: AppData; section: Section; title?: string; children: React.ReactNode; sheets?: React.ReactNode; wide?: boolean }) {
   const { locale, record, ctx, portal } = app;
   const account = portal.account;
   const name = (account ? [account.firstName, account.lastName].filter(Boolean).join(" ") : "") || (record?.patient.name && record.patient.name !== "Website patient" ? record.patient.name : "") || "Shifain";
@@ -83,6 +84,31 @@ export function AppShell({ app, section, title, children, sheets }: { app: AppDa
   const nav: { key: Section; icon: string; label: L }[] = [
     { key: "home", icon: "home", label: APP.nav.home },
     { key: "case", icon: "case", label: APP.nav.case },
+  ];
+
+  // On a computer the bottom bar and the More sheet become this sidebar: every screen one click away.
+  const side: { key: Section; icon: string; label: L; path?: string }[][] = [
+    [
+      { key: "home", icon: "home", label: APP.nav.home },
+      { key: "case", icon: "case", label: APP.nav.case },
+      { key: "calendar", icon: "calendar", label: APP.nav.calendar },
+      { key: "translate", icon: "translate", label: APP.nav.translate, path: "translator" },
+      { key: "messages", icon: "chat", label: APP.quickTiles.messages },
+    ],
+    [
+      { key: "reports", icon: "file", label: APP.quickTiles.reports },
+      { key: "documents", icon: "passport", label: APP.quickTiles.documents },
+      { key: "payments", icon: "wallet", label: APP.quickTiles.payments },
+      { key: "tasks", icon: "alert", label: APP.quickTiles.tasks },
+      { key: "plan", icon: "shield", label: APP.quickTiles.plan },
+    ],
+    [
+      { key: "stay", icon: "bed", label: APP.quickTiles.stay },
+      { key: "family", icon: "family", label: APP.quickTiles.family },
+      { key: "companions", icon: "users", label: APP.quickTiles.companions },
+      { key: "notifications", icon: "bell", label: APP.quickTiles.alerts },
+      { key: "settings", icon: "gear", label: APP.quickTiles.settings },
+    ],
   ];
 
   const tile = (key: string, icon: string, label: L, to?: string, red?: boolean) =>
@@ -100,9 +126,35 @@ export function AppShell({ app, section, title, children, sheets }: { app: AppDa
 
   return (
     <div className="a-device">
+      <aside className="a-side" aria-label="Menu">
+        <Link href={`/${locale}`} className="a-side-logo" aria-label="Shifain">
+          <Logo compact />
+        </Link>
+        {side.map((group, index) => (
+          <ul key={index} className="a-side-list">
+            {group.map((item) => (
+              <li key={item.key}>
+                <Link href={href(app, item.path ?? item.key)} className="a-side-link" aria-current={section === item.key ? "page" : undefined}>
+                  <AppIcon name={item.icon} />
+                  <span>{t(item.label, locale)}</span>
+                  {item.key === "notifications" && app.unread ? <span className="a-bdg">{app.unread > 9 ? "9+" : app.unread}</span> : null}
+                  {item.key === "tasks" && app.todo.length ? <span className="a-bdg">{app.todo.length}</span> : null}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ))}
+        {record ? (
+          <OpenSheet id="sos" className="a-btn a-btn-red a-w a-side-sos">
+            <AppIcon name="phone" />
+            {t(APP.emergency, locale)}
+          </OpenSheet>
+        ) : null}
+      </aside>
+
       <header className="a-top">
         {home ? null : (
-          <Link href={href(app, "home")} className="a-ibtn" aria-label={t(APP.back, locale)}>
+          <Link href={href(app, "home")} className="a-ibtn a-back" aria-label={t(APP.back, locale)}>
             <AppIcon name="left" />
           </Link>
         )}
@@ -134,7 +186,7 @@ export function AppShell({ app, section, title, children, sheets }: { app: AppDa
             </span>
           </p>
         ) : null}
-        {children}
+        <div className={`a-page ${wide ? "a-page-wide" : ""}`}>{children}</div>
       </main>
 
       <HelpButton label={t(APP.askAssistant, locale)} />
