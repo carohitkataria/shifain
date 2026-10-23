@@ -6,7 +6,8 @@ import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { linkCaseToAccount, newReference, type CaseRequest } from "@/lib/cases";
 import { listedDoctor, listedHospital } from "@/lib/directory";
-import { currentPatient } from "@/lib/patient-auth";
+import { currentPatient, getPatientAccount } from "@/lib/patient-auth";
+import { setPreferences } from "@/lib/journey";
 import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
 import { openCase } from "@/lib/case-flow";
 import { attributeFromCookie } from "@/lib/referrals";
@@ -102,6 +103,9 @@ export async function POST(request: NextRequest) {
     const record = await openCase({ locale, patient, intake, source: "website", referredBy: null, requested });
     await attributeFromCookie(record, "link");
     if (accountEmail && accountEmail !== email) await linkCaseToAccount(record._id, accountEmail).catch(() => undefined);
+    // The ways to reach them chosen at sign-up travel with every case they open.
+    const account = accountEmail ? await getPatientAccount(accountEmail).catch(() => null) : null;
+    if (account?.channels?.length) await setPreferences(record._id, { channels: account.channels, mainChannel: account.mainChannel ?? account.channels[0] }).catch(() => undefined);
     return NextResponse.redirect(publicUrl(request, `/${locale}/plan/${record._id}`), 303);
   } catch (error) {
     console.error("[shifain] could not open a case", error);

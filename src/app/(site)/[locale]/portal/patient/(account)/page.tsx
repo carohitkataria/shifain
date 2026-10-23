@@ -1,182 +1,321 @@
 import Link from "next/link";
-import { OpenChatButton } from "@/components/OpenChatButton";
-import { Panel, PortalFrame, PortalHeading, StatusPill } from "@/components/portal/PortalFrame";
-import { PortalIcon } from "@/components/portal/PortalIcon";
-import { PORTAL_COPY, PORTAL_NAV } from "@/lib/portal-patient-copy";
-import { portalPage, withCase, type PortalPageProps } from "@/lib/patient-portal-page";
-import { languageName } from "@/lib/patient-portal";
+import { AppShell, MoreLink, SecHead, href } from "@/components/patient-app/AppShell";
+import { AppIcon } from "@/components/patient-app/AppIcon";
+import { OpenSheet } from "@/components/patient-app/client";
+import { AskSheet, BookSheet, PickupSheet } from "@/components/patient-app/sheets";
+import { PlanGrid, TodoRow } from "@/components/patient-app/rows";
+import { balanceOf, eventTitle, fmtDay, money } from "@/components/patient-app/view";
+import { APP } from "@/lib/patient-app-copy";
+import { doctorOptions, indiaNow, loadApp, telHref, tgHref, waHref, type AppProps } from "@/lib/patient-app";
+import { STAGES, arrivalDate, nextEvent, stagesDone } from "@/lib/journey-rules";
 import { t } from "@/lib/localize";
-import type { CaseStatus } from "@/lib/cases";
 
 export const dynamic = "force-dynamic";
 
-const STEPS = ["received", "plan", "review", "hospital", "travel", "treatment", "home"] as const;
-
-/** How far along the journey the backend says the case is; -1 when closed. */
-const CURRENT_STEP: Record<CaseStatus, number> = {
-  new: 1,
-  planning: 1,
-  "plan-failed": 1,
-  planned: 2,
-  confirmed: 4,
-  closed: -1,
-};
-
-const NEXT_HREF: Record<CaseStatus, string> = {
-  new: "reports",
-  planning: "reports",
-  "plan-failed": "reports",
-  planned: "plan",
-  confirmed: "schedule",
-  closed: "",
-};
-
-const FEATURES = ["plan", "reports", "schedule", "translator", "history", "help"] as const;
-
-const telHref = (value: string) => `tel:${value.replace(/[^\d+]/g, "")}`;
-const waHref = (value: string) => `https://wa.me/${value.replace(/\D/g, "")}`;
-
-export default async function PortalOverview(props: PortalPageProps) {
-  const { locale, content, data } = await portalPage(props);
-  const record = data.active;
-  const base = `/${locale}/portal/patient`;
+/** Home: where the trip stands, what is next, what is open — every tile opens its screen. */
+export default async function PatientHome(props: AppProps) {
+  const app = await loadApp(props);
+  const { locale, record, ctx, today } = app;
+  const account = app.portal.account;
+  const first =
+    (app.portal.viewer?.role === "family" ? app.portal.viewer.member.name : account?.firstName || (record?.patient.name !== "Website patient" ? record?.patient.name : "") || "")?.split(" ")[0] ?? "";
+  const hour = Number(indiaNow().slice(0, 2));
+  const greeting = t(hour < 12 ? APP.greeting.morning : hour < 17 ? APP.greeting.afternoon : APP.greeting.evening, locale);
+  const dateLine = new Date(`${today}T00:00:00`).toLocaleDateString(locale === "en" ? "en-GB" : locale, { weekday: "long", day: "numeric", month: "long" });
 
   if (!record) {
-    return <PortalFrame content={content} locale={locale} data={data} section="overview">{null}</PortalFrame>;
+    return (
+      <AppShell app={app} section="home">
+        <div className="a-greet">
+          <h2>
+            {greeting}
+            {first ? (
+              <>
+                , <b>{first}</b>
+              </>
+            ) : null}
+          </h2>
+          <p>{dateLine}</p>
+        </div>
+        <div className="a-card a-pad a-sec">
+          <p style={{ fontSize: 13.5 }}>{t(APP.noCase, locale)}</p>
+          <Link href={href(app, "new")} className="a-btn a-btn-p a-w" style={{ marginTop: 12 }}>
+            <AppIcon name="plus" />
+            {t(APP.startCase, locale)}
+          </Link>
+        </div>
+      </AppShell>
+    );
   }
 
-  const first = record.patient.name && record.patient.name !== "Website patient" ? record.patient.name.split(" ")[0] : "";
-  const current = CURRENT_STEP[record.status];
-  const nextHref = NEXT_HREF[record.status] ? withCase(`${base}/${NEXT_HREF[record.status]}`, record._id) : `/${locale}#quote-form`;
-  const upcoming = (record.appointments ?? [])
-    .filter((item) => item.status === "requested" || item.status === "confirmed")
-    .sort((a, b) => a.date.localeCompare(b.date))[0];
+  const arrival = arrivalDate(record);
+  const days = arrival ? Math.round((Date.parse(`${arrival}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86_400_000) : null;
+  const done = stagesDone(record, today);
+  const next = nextEvent(app.events, today, indiaNow());
+  const nextIsCar = next && (next.source === "ride" || /pickup|transfer|airport|car/i.test(`${next.title} ${next.id}`));
+  const driver = ctx?.driver;
+  const due = balanceOf(app);
+  const patientTodo = app.todo;
+  const { slots } = await doctorOptions(ctx);
 
   return (
-    <PortalFrame content={content} locale={locale} data={data} section="overview">
-      <PortalHeading title={`${t(PORTAL_COPY.hello, locale)}${first ? `, ${first}` : ""}`} lead={t(PORTAL_COPY.overviewLead, locale)} />
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-        <Panel dark className="flex flex-col gap-5">
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="text-sm font-medium text-white/75">{t(PORTAL_COPY.statusNow, locale)}</p>
-            <StatusPill status={record.status} locale={locale} />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-white/75">{t(PORTAL_COPY.nextStep, locale)}</p>
-            <p className="mt-1 max-w-2xl text-xl font-semibold leading-snug text-white sm:text-2xl">{t(PORTAL_COPY.next[record.status], locale)}</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href={nextHref}
-              className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-navy transition hover:bg-violet-soft"
-            >
-              {t(PORTAL_COPY.nextAction[record.status], locale)}
-              <PortalIcon name="arrow" />
-            </Link>
-            <OpenChatButton className="inline-flex min-h-12 items-center gap-2 rounded-full px-5 font-semibold text-white ring-1 ring-white/40 transition hover:bg-white/10">
-              <PortalIcon name="chat" />
-              {t(PORTAL_COPY.chatNow, locale)}
-            </OpenChatButton>
-          </div>
-          <p className="text-sm text-white/70">
-            {t(PORTAL_COPY.caseLabel, locale)} {record._id} · {t(PORTAL_COPY.opened, locale)}{" "}
-            {new Date(record.createdAt).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" })}
-          </p>
-        </Panel>
-
-        <Panel className="flex flex-col gap-4">
-          <h2 className="text-lg font-bold text-navy">{t(PORTAL_COPY.coordinator, locale)}</h2>
-          <p className="text-[15px] leading-relaxed text-[#2c3a5e]">{t(PORTAL_COPY.coordinatorBody, locale)}</p>
-          {upcoming ? (
-            <Link href={withCase(`${base}/schedule`, record._id)} className="rounded-2xl bg-violet-soft p-4 text-navy hover:bg-[#ece2ff]">
-              <span className="block text-sm font-semibold text-violet">{t(PORTAL_COPY.callStatus[upcoming.status], locale)}</span>
-              <span className="mt-1 block font-semibold">
-                {t(PORTAL_COPY.kinds[upcoming.kind], locale)} ·{" "}
-                {upcoming.confirmedSlot ||
-                  `${new Date(`${upcoming.date}T12:00:00`).toLocaleDateString(locale, { day: "numeric", month: "short" })}, ${t(PORTAL_COPY.windows[upcoming.window], locale)}`}{" "}
-                · {languageName(upcoming.language)}
-              </span>
-            </Link>
+    <AppShell
+      app={app}
+      section="home"
+      sheets={
+        <>
+          <BookSheet app={app} section="home" slots={slots} />
+          <PickupSheet app={app} section="stay" />
+          <AskSheet app={app} section="messages" />
+        </>
+      }
+    >
+      <div className="a-greet">
+        <h2>
+          {greeting}
+          {first ? (
+            <>
+              , <b>{first}</b>
+            </>
           ) : null}
-          <div className="grid grid-cols-3 gap-2">
-            <a href={waHref(content.contact.whatsapp)} className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl bg-leaf-tint text-sm font-semibold text-[#1f6b31] hover:bg-[#d9f0df]">
-              <PortalIcon name="whatsapp" />
-              {t(PORTAL_COPY.whatsapp, locale)}
-            </a>
-            <a href={telHref(content.contact.phone)} className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl bg-surface-muted text-sm font-semibold text-navy hover:bg-[#efeafd]">
-              <PortalIcon name="phone" />
-              {t(PORTAL_COPY.call, locale)}
-            </a>
-            <a href={`mailto:${content.contact.email}?subject=${encodeURIComponent(`Case ${record._id}`)}`} className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl bg-surface-muted text-sm font-semibold text-navy hover:bg-[#efeafd]">
-              <PortalIcon name="mail" />
-              {t(PORTAL_COPY.email, locale)}
-            </a>
-          </div>
-        </Panel>
+        </h2>
+        <p>
+          {dateLine}
+          {days != null ? (
+            <>
+              {" · "}
+              <b style={{ color: "var(--primary)" }}>{days > 0 ? t(APP.daysToTravel(days), locale) : days === 0 ? t(APP.travelToday, locale) : t(APP.inIndia, locale)}</b>
+            </>
+          ) : null}
+        </p>
       </div>
 
-      <Panel>
-        <h2 className="text-lg font-bold text-navy">{t(PORTAL_COPY.journey, locale)}</h2>
-        {record.status === "closed" ? (
-          <p className="mt-3 text-[15px] text-[#2c3a5e]">{t(PORTAL_COPY.next.closed, locale)}</p>
-        ) : null}
-        <ol className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-7">
-          {STEPS.map((step, index) => {
-            const state = current < 0 ? "later" : index < current ? "done" : index === current ? "now" : "later";
-            return (
-              <li
-                key={step}
-                aria-current={state === "now" ? "step" : undefined}
-                className={`flex items-center gap-3 rounded-2xl p-3 2xl:flex-col 2xl:items-start ${
-                  state === "now" ? "bg-violet text-white" : state === "done" ? "bg-leaf-tint text-[#1f6b31]" : "bg-surface-muted text-slate"
-                }`}
-              >
-                <span
-                  className={`flex h-9 w-9 flex-none items-center justify-center rounded-full text-sm font-bold ${
-                    state === "now" ? "bg-white text-violet" : state === "done" ? "bg-leaf text-white" : "bg-white text-slate"
-                  }`}
-                >
-                  {state === "done" ? <PortalIcon name="check" className="h-4 w-4" /> : index + 1}
-                </span>
-                <span>
-                  <span className="block text-[15px] font-semibold leading-tight">{t(PORTAL_COPY.steps[step], locale)}</span>
-                  <span className="mt-0.5 block text-sm opacity-80">
-                    {t(state === "done" ? PORTAL_COPY.stepDone : state === "now" ? PORTAL_COPY.stepNow : PORTAL_COPY.stepLater, locale)}
-                  </span>
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      </Panel>
+      <Link href={href(app, "case")} className="a-card a-pad a-tap" style={{ marginTop: 14 }}>
+        <div className="a-row a-between">
+          <span className="a-tiny a-muted" style={{ fontWeight: 700, textTransform: "uppercase" }}>
+            {t(APP.journey, locale)}
+          </span>
+          <span className="a-pill t-sch">{t(APP.stepOf(Math.min(done + 1, STAGES.length), STAGES.length), locale)}</span>
+        </div>
+        <div className="a-steps">
+          {STAGES.map((stage, index) => (
+            <div key={stage} className={`a-s ${index < done ? "done" : index === done ? "now" : ""}`}>
+              <i>{index < done ? <AppIcon name="check" /> : null}</i>
+              {t(APP.stages[stage], locale)}
+            </div>
+          ))}
+        </div>
+      </Link>
 
-      <section aria-labelledby="portal-features">
-        <h2 id="portal-features" className="text-lg font-bold text-navy">
-          {t(PORTAL_COPY.quickLinks, locale)}
-        </h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {FEATURES.map((feature) => (
-            <li key={feature}>
-              <Link
-                href={withCase(`${base}/${feature}`, record._id)}
-                className="group flex h-full items-start gap-4 rounded-3xl bg-white p-5 ring-1 ring-[#e6e3f4] transition hover:ring-violet/40"
-              >
-                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-violet-soft text-violet">
-                  <PortalIcon name={feature} />
+      <div className="a-kgrid a-sec">
+        <Link href={href(app, "calendar")} className="a-card a-kpi a-tap">
+          <span className="a-chip c-violet">
+            <AppIcon name="plane" />
+          </span>
+          <div>
+            <div className="a-v">{arrival ? fmtDay(arrival, locale) : t(APP.kpi.notSet, locale)}</div>
+            <div className="a-l">{t(APP.kpi.arrival, locale)}</div>
+          </div>
+        </Link>
+        <Link href={href(app, "payments")} className="a-card a-kpi a-tap">
+          <span className="a-chip c-amber">
+            <AppIcon name="wallet" />
+          </span>
+          <div>
+            <div className="a-v">{due != null ? money(due, record.billing?.currency ?? "USD") : t(APP.kpi.notSet, locale)}</div>
+            <div className="a-l">{t(due != null ? APP.kpi.balance : APP.kpi.estimate, locale)}</div>
+          </div>
+        </Link>
+        <Link href={href(app, "reports")} className="a-card a-kpi a-tap">
+          <span className="a-chip c-teal">
+            <AppIcon name="file" />
+          </span>
+          <div>
+            <div className="a-v">{record.reports.length}</div>
+            <div className="a-l">{t(APP.kpi.reports, locale)}</div>
+          </div>
+        </Link>
+        <Link href={href(app, "tasks")} className="a-card a-kpi a-tap">
+          <span className="a-chip c-rose">
+            <AppIcon name="alert" />
+          </span>
+          <div>
+            <div className="a-v">{patientTodo.length}</div>
+            <div className="a-l">{t(APP.kpi.todo, locale)}</div>
+          </div>
+        </Link>
+      </div>
+
+      <section className="a-sec">
+        <SecHead icon="clock" title={t(APP.nextUp, locale)} action={<MoreLink to={href(app, "calendar")} label={t(APP.nav.calendar, locale)} />} />
+        {next ? (
+          <div className="a-card a-pad">
+            <Link href={href(app, "calendar", `day=${next.date}&e=${next.id}`)} className="a-row a-tap">
+              <span className={`a-chip ${nextIsCar ? "c-sky" : "c-violet"}`}>
+                <AppIcon name={nextIsCar ? "car" : "calendar"} />
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <b style={{ fontSize: 14 }}>{eventTitle(next, locale)}</b>
+                <div className="a-tiny a-muted">
+                  {fmtDay(next.date, locale, true)}
+                  {next.time ? ` · ${next.time}` : ""}
+                  {nextIsCar && driver ? ` · ${driver.name.split(" ")[0]}${driver.vehicle?.plate ? ` · ${driver.vehicle.plate}` : ""}` : next.where ? ` · ${next.where}` : ""}
+                </div>
+              </div>
+            </Link>
+            {nextIsCar && driver ? (
+              <div className="a-actions" style={{ marginTop: 12 }}>
+                {driver.phone ? (
+                  <a href={telHref(driver.phone)} className="a-btn a-btn-t">
+                    <AppIcon name="phone" />
+                    {t(APP.call, locale)}
+                  </a>
+                ) : null}
+                {driver.telegram || driver.phone ? (
+                  <a href={tgHref(driver.telegram ?? driver.phone!)} className="a-btn a-btn-tg" target="_blank" rel="noopener noreferrer">
+                    <AppIcon name="tg" />
+                    {t(APP.telegram, locale)}
+                  </a>
+                ) : null}
+                {driver.whatsapp || driver.phone ? (
+                  <a href={waHref(driver.whatsapp ?? driver.phone!)} className="a-btn a-btn-wa" target="_blank" rel="noopener noreferrer">
+                    <AppIcon name="wa" />
+                    {t(APP.whatsapp, locale)}
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <p className="a-card a-pad a-tiny a-muted">{t(APP.nothingNext, locale)}</p>
+        )}
+      </section>
+
+      <section className="a-sec">
+        <SecHead icon="alert" title={t(APP.todo, locale)} count={patientTodo.length} action={<MoreLink to={href(app, "tasks")} label={t(APP.all, locale)} />} />
+        {patientTodo.length ? (
+          <ul className="a-card a-list">
+            {patientTodo.slice(0, 3).map((item) => (
+              <TodoRow key={item.id} item={item} app={app} />
+            ))}
+          </ul>
+        ) : (
+          <p className="a-card a-pad a-tiny a-muted">{t(APP.allClear, locale)}</p>
+        )}
+      </section>
+
+      <section className="a-sec">
+        <SecHead icon="case" title={t(APP.caseSummary, locale)} action={<MoreLink to={href(app, "case")} label={t(APP.open, locale)} />} />
+        <ul className="a-card a-list">
+          <li>
+            <Link href={href(app, "case")} className="a-li a-tap">
+              <span className="a-chip c-rose">
+                <AppIcon name="heart" />
+              </span>
+              <span className="a-t">
+                <b>{app.names.disease ?? record.statedNeed ?? t(APP.caseShort, locale)}</b>
+                <small>{app.names.treatment ?? t(APP.fullPlan, locale)}</small>
+              </span>
+              <AppIcon name="right" />
+            </Link>
+          </li>
+          {ctx?.doctor ? (
+            <li>
+              <Link href={href(app, "case")} className="a-li a-tap">
+                <span className="a-chip c-violet">
+                  <AppIcon name="stethoscope" />
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center justify-between gap-2 text-base font-bold text-navy">
-                    {t(PORTAL_NAV[feature], locale)}
-                    <PortalIcon name="arrow" className="h-4 w-4 text-violet transition group-hover:translate-x-0.5" />
-                  </span>
-                  <span className="mt-1 block text-[15px] leading-snug text-[#2c3a5e]">{t(PORTAL_COPY.features[feature], locale)}</span>
+                <span className="a-t">
+                  <b>{ctx.doctor.name}</b>
+                  <small>{[ctx.doctor.designation, ctx.doctor.experienceYears ? `${ctx.doctor.experienceYears}+` : null].filter(Boolean).join(" · ")}</small>
                 </span>
+                <AppIcon name="right" />
               </Link>
             </li>
-          ))}
+          ) : null}
+          {ctx?.hospital ? (
+            <li>
+              <Link href={href(app, "case")} className="a-li a-tap">
+                <span className="a-chip c-teal">
+                  <AppIcon name="hospital" />
+                </span>
+                <span className="a-t">
+                  <b>{ctx.hospital.name}</b>
+                  <small>{[ctx.hospital.city, ...(ctx.hospital.accreditations ?? []).slice(0, 2).map((item) => (typeof item === "string" ? item : item.name ?? item.body))].filter(Boolean).join(" · ")}</small>
+                </span>
+                <AppIcon name="right" />
+              </Link>
+            </li>
+          ) : null}
+          {record.plan ? (
+            <li>
+              <Link href={href(app, "calendar")} className="a-li a-tap">
+                <span className="a-chip c-amber">
+                  <AppIcon name="calendar" />
+                </span>
+                <span className="a-t">
+                  <b>
+                    {arrival ? `${fmtDay(arrival, locale)} · ` : ""}
+                    {record.plan.stay.daysInCountry} {locale === "ru" ? "дн." : locale === "uz" ? "kun" : "days"}
+                  </b>
+                  <small>
+                    {record.plan.stay.inpatientNights} {locale === "ru" ? "ноч. в клинике" : locale === "uz" ? "kecha shifoxonada" : "nights in hospital"}
+                  </small>
+                </span>
+                <AppIcon name="right" />
+              </Link>
+            </li>
+          ) : null}
         </ul>
       </section>
-    </PortalFrame>
+
+      <section className="a-sec">
+        <SecHead icon="shield" title={t(APP.planStatus, locale)} action={<MoreLink to={href(app, "case")} label={t(APP.details, locale)} />} />
+        <PlanGrid app={app} />
+      </section>
+
+      <section className="a-sec">
+        <SecHead icon="grid" title={t(APP.quick, locale)} />
+        <div className="a-g3">
+          <OpenSheet id="book" className="a-tile">
+            <AppIcon name="calendar" />
+            {t(APP.quickTiles.book, locale)}
+          </OpenSheet>
+          <OpenSheet id="pickup" className="a-tile">
+            <AppIcon name="car" />
+            {t(APP.quickTiles.cab, locale)}
+          </OpenSheet>
+          <Link href={href(app, "reports")} className="a-tile">
+            <AppIcon name="file" />
+            {t(APP.quickTiles.reports, locale)}
+          </Link>
+          <Link href={href(app, "stay")} className="a-tile">
+            <AppIcon name="bed" />
+            {t(APP.quickTiles.stay, locale)}
+          </Link>
+          <Link href={href(app, "companions")} className="a-tile">
+            <AppIcon name="users" />
+            {t(APP.quickTiles.companions, locale)}
+          </Link>
+          <Link href={href(app, "family")} className="a-tile">
+            <AppIcon name="family" />
+            {t(APP.quickTiles.family, locale)}
+            {record.family?.length ? <span className="a-bdg">{record.family.length}</span> : null}
+          </Link>
+          <Link href={href(app, "payments")} className="a-tile">
+            <AppIcon name="wallet" />
+            {t(APP.quickTiles.payments, locale)}
+          </Link>
+          <Link href={href(app, "documents")} className="a-tile">
+            <AppIcon name="passport" />
+            {t(APP.quickTiles.documents, locale)}
+          </Link>
+          <OpenSheet id="sos" className="a-tile red">
+            <AppIcon name="phone" />
+            {t(APP.quickTiles.emergency, locale)}
+          </OpenSheet>
+        </div>
+      </section>
+    </AppShell>
   );
 }

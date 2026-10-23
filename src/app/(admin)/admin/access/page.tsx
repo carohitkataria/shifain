@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
@@ -112,11 +113,25 @@ export default async function AccessPage({
             <span className={label}>Hospital record id (optional)</span>
             <input type="text" name="hospitalId" placeholder="h-…" className={field} />
           </label>
+          <label className="block min-w-0">
+            <span className={label}>Phone (coordinators: shown to patients)</span>
+            <input type="tel" name="phone" placeholder="+91…" className={field} />
+          </label>
+          <label className="block min-w-0">
+            <span className={label}>Telegram (coordinators)</span>
+            <input type="text" name="telegram" placeholder="username" className={field} />
+          </label>
+          <label className="block min-w-0 sm:col-span-2">
+            <span className={label}>Languages spoken (coordinators, comma separated)</span>
+            <input type="text" name="languages" placeholder="English, Russian, Uzbek" className={field} />
+          </label>
         </div>
         <button type="submit" className="btn btn-primary">
           Save login
         </button>
         <p className="text-sm leading-relaxed text-ink-soft">
+          Coordinators sign in at <Link href="/coordinator/login" className="font-semibold text-brand hover:underline">/coordinator</Link> and
+          see the patients assigned to them on each case&apos;s care desk.
           Saving an existing email replaces that person&apos;s password. Existing sessions keep
           working for up to twelve hours — suspend the login to cut access off now.
         </p>
@@ -133,6 +148,7 @@ export default async function AccessPage({
                 <span className="block font-semibold text-ink">{user.name}</span>
                 <span className="mt-0.5 block text-sm text-ink-soft">
                   {user.email} · {user.role}
+                  {user.phone ? ` · ${user.phone}` : ""}
                   {user.lastLoginAt ? ` · last signed in ${user.lastLoginAt.slice(0, 10)}` : " · never signed in"}
                 </span>
               </span>

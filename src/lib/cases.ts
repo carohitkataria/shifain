@@ -11,6 +11,11 @@ export type CaseReport = {
   filename: string;
   mediaType: string;
   bytes: number;
+  /** Who added it: the patient (the default, for older files), the hospital or the Shifain desk. */
+  source?: "patient" | "hospital" | "shifain";
+  kind?: "report" | "prescription" | "bill" | "document";
+  /** For a document, which checklist line it answers. */
+  docKey?: import("./journey-rules").DocKey;
 };
 
 /** How the patient told us about their problem. */
@@ -72,9 +77,16 @@ export type PatientPreferences = {
   packages?: Record<string, boolean>;
   /** Medical details added after the case opened, newest last. */
   notes?: { at: string; text: string }[];
+  /** How the patient wants to be reached; the main one first. */
+  channels?: import("./journey-rules").ContactChannel[];
+  mainChannel?: import("./journey-rules").ContactChannel;
+  /** Whether others from home, here at the same time, may see them in Companions. */
+  companionsVisible?: boolean;
+  /** Someone at home to call in an emergency. */
+  homeContact?: { name: string; phone: string; relation: string | null } | null;
 };
 
-export type PlanEdit = { at: string; via: "voice" | "chat" | "portal"; change: string };
+export type PlanEdit = { at: string; via: "voice" | "chat" | "portal" | "coordinator"; change: string };
 
 /**
  * The reference is also the only thing guarding the plan URL, which carries a
@@ -146,7 +158,7 @@ export async function casesForPhone(digits: string, limit = 20): Promise<Patient
   const tail = digits.slice(-9).split("").join("[^0-9]*");
   return db
     .collection<PatientCase>("cases")
-    .find({ "patient.phone": { $regex: `${tail}$` } })
+    .find({ $or: [{ "patient.phone": { $regex: `${tail}$` } }, { "family.phone": { $regex: `${tail}$` } }] } as never)
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();
@@ -162,7 +174,7 @@ export async function casesForEmail(email: string, limit = 20): Promise<PatientC
   const address = emailMatcher(email);
   return db
     .collection<PatientCase>("cases")
-    .find({ $or: [{ "patient.email": address }, { accountEmail: address }] })
+    .find({ $or: [{ "patient.email": address }, { accountEmail: address }, { "family.email": address }] } as never)
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();

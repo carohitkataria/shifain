@@ -1,12 +1,9 @@
 import Link from "next/link";
-import { Suspense } from "react";
-import { Header } from "../Header";
-import { Footer } from "../Footer";
-import { PortalNav } from "./PortalNav";
 import { PortalIcon } from "./PortalIcon";
-import { patientLogoutAction } from "@/app/(site)/[locale]/portal/patient/actions";
+import { AppShell, type Section } from "../patient-app/AppShell";
+import { buildApp } from "@/lib/patient-app";
 import { PATIENT_COPY } from "@/lib/patient-copy";
-import { ACCOUNT_COPY, PORTAL_COPY, PORTAL_NAV, type PortalSection } from "@/lib/portal-patient-copy";
+import { ACCOUNT_COPY, PORTAL_NAV, type PortalSection } from "@/lib/portal-patient-copy";
 import { t } from "@/lib/localize";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -64,10 +61,24 @@ export function Notice({ tone, children }: { tone: "good" | "bad"; children: Rea
   );
 }
 
-const SECTIONS = Object.keys(PORTAL_NAV) as PortalSection[];
+const SECTION_OF: Record<PortalSection | "new", Section> = {
+  overview: "home",
+  plan: "plan",
+  reports: "reports",
+  schedule: "schedule",
+  translator: "translate",
+  history: "history",
+  help: "help",
+  profile: "settings",
+  new: "new",
+};
 
-/** Header, the patient's card and the section list around one portal page. */
-export function PortalFrame({
+/**
+ * The earlier portal pages (full plan, calls, history, help, a new case),
+ * now inside the patient app's phone frame so every screen has the same bar,
+ * bell, SOS and help button.
+ */
+export async function PortalFrame({
   content,
   locale,
   data,
@@ -81,106 +92,19 @@ export function PortalFrame({
   section: PortalSection | "new";
   children: React.ReactNode;
 }) {
-  const { active, cases, account } = data;
-  const accountName = account ? [account.firstName, account.lastName].filter(Boolean).join(" ") : "";
-  const name = accountName || (active?.patient.name && active.patient.name !== "Website patient" ? active.patient.name : "");
-  const initials =
-    name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join("") || "S";
-  const path = section === "overview" ? "/portal/patient" : `/portal/patient/${section}`;
-  const newCase = `/${locale}/portal/patient/new`;
-
+  const app = await buildApp(locale, content, data, {});
+  const { active, account } = data;
+  const name = account?.firstName || (active?.patient.name && active.patient.name !== "Website patient" ? active.patient.name : "");
   return (
-    <>
-      <Header content={content} locale={locale} path={path} account={t(PORTAL_COPY.portalName, locale)} />
-      <main className="bg-hero">
-        <div className="mx-auto grid max-w-[100rem] gap-6 px-4 pb-16 pt-6 sm:px-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10 lg:px-12 lg:pt-10">
-          <aside className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-28 lg:self-start">
-            <div className="flex items-center gap-3">
-              <span
-                className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-violet text-lg font-bold text-white"
-                aria-hidden="true"
-              >
-                {initials}
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-base font-bold text-navy">{name || t(PORTAL_COPY.portalName, locale)}</p>
-                {active ? (
-                  <p className="truncate text-sm text-slate">
-                    {t(PORTAL_COPY.caseLabel, locale)} …{active._id.slice(-4)}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-
-            {cases.length > 1 && active ? (
-              <form className="flex items-center gap-2" action={`/${locale}${path}`}>
-                <label className="sr-only" htmlFor="portal-case">
-                  {t(PORTAL_COPY.switchCase, locale)}
-                </label>
-                <select
-                  id="portal-case"
-                  name="case"
-                  defaultValue={active._id}
-                  className="min-h-11 w-full rounded-xl border border-[#dcd8ee] bg-white px-3 text-sm text-navy"
-                >
-                  {cases.map((item) => (
-                    <option key={item._id} value={item._id}>
-                      {(item.statedNeed || t(PORTAL_COPY.caseLabel, locale)).slice(0, 40)} · …{item._id.slice(-4)}
-                    </option>
-                  ))}
-                </select>
-                <button type="submit" className="min-h-11 rounded-xl bg-white px-3 text-sm font-semibold text-violet ring-1 ring-[#dcd8ee] hover:bg-violet-soft">
-                  {t(PORTAL_COPY.switchCase, locale)}
-                </button>
-              </form>
-            ) : null}
-
-            <Suspense fallback={null}>
-              <PortalNav
-                locale={locale}
-                label={t(PORTAL_COPY.portalName, locale)}
-                items={SECTIONS.map((key) => ({ section: key, label: t(PORTAL_NAV[key], locale) }))}
-              />
-            </Suspense>
-
-            {active ? (
-              <Link
-                href={newCase}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-white px-4 text-[15px] font-semibold text-violet ring-1 ring-violet-line transition hover:bg-violet-soft"
-              >
-                <span aria-hidden="true" className="text-lg leading-none">+</span>
-                {t(ACCOUNT_COPY.newCase, locale)}
-              </Link>
-            ) : null}
-
-            <form action={patientLogoutAction} className="hidden lg:block">
-              <input type="hidden" name="locale" value={locale} />
-              <button
-                type="submit"
-                className="flex min-h-11 w-full items-center gap-3 rounded-xl px-4 text-[15px] font-medium text-slate transition hover:bg-white/80 hover:text-navy"
-              >
-                <PortalIcon name="logout" />
-                {t(PORTAL_COPY.signOut, locale)}
-              </button>
-            </form>
-          </aside>
-
-          <div className="flex min-w-0 flex-col gap-6">
-            {active || section === "help" || section === "translator" || section === "new" || (section === "profile" && account) ? (
-              children
-            ) : (
-              <NoCaseYet locale={locale} firstName={account?.firstName || name.split(" ")[0] || ""} />
-            )}
-          </div>
-        </div>
-      </main>
-      <Footer content={content} locale={locale} />
-    </>
+    <AppShell app={app} section={SECTION_OF[section]}>
+      <div className="a-legacy flex min-w-0 flex-col gap-5">
+        {active || section === "help" || section === "translator" || section === "new" || (section === "profile" && account) ? (
+          children
+        ) : (
+          <NoCaseYet locale={locale} firstName={name.split(" ")[0] || ""} />
+        )}
+      </div>
+    </AppShell>
   );
 }
 

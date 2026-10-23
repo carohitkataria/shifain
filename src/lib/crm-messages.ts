@@ -12,7 +12,8 @@ export type MessageDirection = "inbound" | "outbound";
 
 export type CrmMessage = {
   _id: string;
-  channel: Channel | "email";
+  /** "portal" is the in-app thread between a patient and their care team. */
+  channel: Channel | "email" | "portal";
   direction: MessageDirection;
   contactType: "patient" | "partner" | "lead";
   contactId: string | null;

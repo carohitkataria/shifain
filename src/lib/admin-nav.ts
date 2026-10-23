@@ -53,7 +53,8 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/admin/leads", label: "Leads", icon: "folder" },
       { href: "/admin/referrals", label: "Referrals", icon: "route" },
-      { href: "/admin/cases", label: "Inquiries", icon: "folder" },
+      { href: "/admin/cases", label: "Inquiries & care desk", icon: "folder" },
+      { href: "/admin/providers", label: "Drivers, hotels, interpreters", icon: "people" },
       { href: "/admin/messages", label: "Messages", icon: "chat" },
       { href: "/admin/assistant", label: "AI assistant", icon: "help" },
       { href: "/admin/telegram", label: "Telegram", icon: "chat" },
@@ -84,7 +85,7 @@ export const NAV_GROUPS: NavGroup[] = [
     id: "system",
     heading: "System",
     items: [
-      { href: "/admin/access", label: "Partner logins", icon: "people" },
+      { href: "/admin/access", label: "Partner & coordinator logins", icon: "people" },
       { href: "/admin/system/database", label: "Database", icon: "grid" },
       { href: "/admin/system/settings", label: "Site settings", icon: "sliders" },
     ],

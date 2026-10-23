@@ -1,4 +1,5 @@
 import "server-only";
+import { TELEGRAM_FIRST } from "./journey-rules";
 
 /**
  * Region-based communication channel selection.
@@ -11,10 +12,7 @@ import "server-only";
 
 export type Channel = "telegram" | "whatsapp" | "sms";
 
-const TELEGRAM_COUNTRIES = new Set([
-  "RU", "UA", "BY", "KZ", "UZ", "TJ", "KG", "TM",
-  "GE", "AM", "AZ", "MD", "MN", "IR",
-]);
+const TELEGRAM_COUNTRIES = TELEGRAM_FIRST;
 
 const SMS_COUNTRIES = new Set([
   "US", "CA", "AU", "JP", "KR", "CN",

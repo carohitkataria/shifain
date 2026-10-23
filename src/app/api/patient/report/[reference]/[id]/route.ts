@@ -5,7 +5,7 @@ import { readReport } from "@/lib/reports";
 /** A patient's own stored report, only to the patient who owns the case. Never cached. */
 export async function GET(_request: Request, { params }: { params: Promise<{ reference: string; id: string }> }) {
   const { reference, id } = await params;
-  const owned = await ownedCase(reference);
+  const owned = await ownedCase(reference, "reports");
   if (!owned) return new NextResponse("Not found", { status: 404 });
 
   const report = await readReport(owned.record._id, `${owned.record._id}-${id}`).catch(() => null);

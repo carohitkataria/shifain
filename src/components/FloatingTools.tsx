@@ -742,6 +742,8 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       <button
         ref={fabRef}
         type="button"
+        // The patient app has its own help button (bottom right, above its tab bar).
+        hidden={!open && /^\/(en|ru|uz)\/portal\/patient(\/|$)/.test(pathname)}
         className={`help-fab ${open ? "help-fab-open" : ""}`}
         aria-expanded={open}
         aria-label={open ? "Close help" : "Need help? Chat with us"}

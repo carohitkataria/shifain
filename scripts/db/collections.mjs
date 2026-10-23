@@ -203,6 +203,7 @@ export const COLLECTIONS = [
       slug: { bsonType: ["string", "null"] },
       groupId: { bsonType: ["string", "null"] },
       phone: { bsonType: ["string", "null"] },
+      emergencyPhone: { bsonType: ["string", "null"] },
       yearEstablished: { bsonType: ["int", "null"] },
       airportDistanceKm: { bsonType: ["double", "int", "null"] },
       campusAcres: { bsonType: ["double", "int", "null"] },
@@ -425,6 +426,10 @@ export const COLLECTIONS = [
       offerId: { bsonType: ["string", "null"] },
       payoutMethod: { bsonType: ["string", "null"] },
       payoutDetails: { bsonType: ["string", "null"] },
+      // How patients reach a coordinator.
+      phone: { bsonType: ["string", "null"] },
+      telegram: { bsonType: ["string", "null"] },
+      languages: { bsonType: "array", items: { bsonType: "string" } },
       passwordHash: { bsonType: "string" },
       status: { enum: ["invited", "active", "suspended"] },
       createdAt: { bsonType: ["string", "date"] },
@@ -471,6 +476,9 @@ export const COLLECTIONS = [
             filename: { bsonType: "string" },
             mediaType: { bsonType: "string" },
             bytes: { bsonType: ["int", "long"] },
+            source: { enum: ["patient", "hospital", "shifain"] },
+            kind: { enum: ["report", "prescription", "bill", "document"] },
+            docKey: { enum: ["passport", "visa", "invitation", "ticket", "consent", "insurance"] },
           },
         },
       },
@@ -489,12 +497,138 @@ export const COLLECTIONS = [
         },
       },
       updatedAt: { bsonType: ["string", "date", "null"] },
+      // The journey, once a plan exists (src/lib/journey-rules.ts). Kept by the
+      // coordinator desk; the patient adds rides, events, family and requests.
+      care: {
+        bsonType: "object",
+        properties: {
+          coordinatorId: { bsonType: ["string", "null"] },
+          hospitalId: { bsonType: ["string", "null"] },
+          doctorId: { bsonType: ["string", "null"] },
+          driverId: { bsonType: ["string", "null"] },
+          interpreterId: { bsonType: ["string", "null"] },
+          hotelId: { bsonType: ["string", "null"] },
+          room: { bsonType: ["string", "null"] },
+          checkIn: { bsonType: ["string", "null"] },
+          checkOut: { bsonType: ["string", "null"] },
+          wifi: { bsonType: ["string", "null"] },
+          ward: { bsonType: ["string", "null"] },
+        },
+      },
+      journey: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["id", "kind", "title", "status"],
+          properties: {
+            kind: { enum: ["visa", "flight-in", "pickup", "hotel", "consult", "admission", "procedure", "physio", "discharge", "follow-up", "flight-out", "other"] },
+            status: { enum: ["pending", "booked", "done", "cancelled"] },
+            date: { bsonType: ["string", "null"] },
+            time: { bsonType: ["string", "null"] },
+          },
+        },
+      },
+      rides: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["id", "to", "when", "status"],
+          properties: {
+            to: { enum: ["hospital", "hotel", "airport", "pharmacy", "food", "other"] },
+            status: { enum: ["requested", "assigned", "on-the-way", "arrived", "completed", "cancelled"] },
+            passengers: { bsonType: ["int", "long", "double"] },
+          },
+        },
+      },
+      tasks: {
+        bsonType: "array",
+        items: { bsonType: "object", required: ["id", "title", "owner", "status"], properties: { owner: { enum: ["patient", "desk"] }, status: { enum: ["open", "done"] } } },
+      },
+      requests: {
+        bsonType: "array",
+        items: { bsonType: "object", required: ["id", "kind", "status"], properties: { kind: { enum: ["doctor-change"] }, status: { enum: ["open", "accepted", "declined"] } } },
+      },
+      events: { bsonType: "array", items: { bsonType: "object", required: ["id", "title", "date"] } },
+      eventNotes: { bsonType: "object" },
+      family: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["id", "name", "relation"],
+          properties: {
+            relation: { enum: ["spouse", "child", "parent", "sibling", "friend", "other"] },
+            travelling: { bsonType: "bool" },
+            access: { bsonType: "array", items: { enum: ["reports", "calendar", "payments"] } },
+            passport: { enum: ["missing", "uploaded", "verified"] },
+          },
+        },
+      },
+      billing: {
+        bsonType: "object",
+        properties: {
+          quote: { bsonType: ["double", "int", "long", "null"] },
+          currency: { enum: ["USD", "INR", "EUR"] },
+          lines: { bsonType: "array" },
+          payments: { bsonType: "array" },
+          dueNote: { bsonType: ["string", "null"] },
+        },
+      },
+      documents: {
+        bsonType: "array",
+        items: {
+          bsonType: "object",
+          required: ["key", "status"],
+          properties: {
+            key: { enum: ["passport", "visa", "invitation", "ticket", "consent", "insurance"] },
+            status: { enum: ["needed", "uploaded", "verified", "issued", "signed", "optional"] },
+          },
+        },
+      },
     }),
     indexes: [
       { key: { createdAt: -1 } },
       { key: { status: 1 } },
       { key: { referredBy: 1, createdAt: -1 } },
+      { key: { "care.coordinatorId": 1, updatedAt: -1 } },
+      { key: { "preferences.companionsVisible": 1 } },
+      { key: { "family.email": 1 } },
     ],
+  },
+  {
+    name: "providers",
+    // Drivers and their vehicles, partner hotels and interpreters: who the
+    // coordinator desk assigns to a case (cases.care).
+    validator: doc(["kind", "name", "active"], {
+      kind: { enum: ["driver", "hotel", "interpreter"] },
+      name: { bsonType: "string" },
+      phone: { bsonType: ["string", "null"] },
+      telegram: { bsonType: ["string", "null"] },
+      whatsapp: { bsonType: ["string", "null"] },
+      city: { bsonType: ["string", "null"] },
+      languages: { bsonType: "array", items: { bsonType: "string" } },
+      vehicle: { bsonType: ["object", "null"] },
+      address: { bsonType: ["string", "null"] },
+      hospitalIds: { bsonType: "array", items: { bsonType: "string" } },
+      distanceKm: { bsonType: ["double", "int", "null"] },
+      checkInTime: { bsonType: ["string", "null"] },
+      checkOutTime: { bsonType: ["string", "null"] },
+      note: { bsonType: ["string", "null"] },
+      active: { bsonType: "bool" },
+      createdAt: { bsonType: ["string", "date"] },
+      updatedAt: { bsonType: ["string", "date", "null"] },
+    }),
+    indexes: [{ key: { kind: 1, name: 1 } }],
+  },
+  {
+    name: "companion_hellos",
+    // One patient said hello to another in Companions. Both directions present
+    // means they are introduced by the desk; no contact details are stored.
+    validator: doc(["from", "to", "at"], {
+      from: { bsonType: "string" },
+      to: { bsonType: "string" },
+      at: { bsonType: ["string", "date"] },
+    }),
+    indexes: [{ key: { from: 1 } }, { key: { to: 1 } }],
   },
   {
     name: "doctor_schedules",
