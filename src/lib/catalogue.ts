@@ -119,6 +119,8 @@ export type HospitalOnboardingFields = {
   pincode?: string | null;
   /** The hospital's public switchboard. */
   phone?: string | null;
+  /** The 24×7 emergency line, shown to its admitted patients. */
+  emergencyPhone?: string | null;
   lat?: number | null;
   lng?: number | null;
   nearestAirport?: string | null;

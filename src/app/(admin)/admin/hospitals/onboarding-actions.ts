@@ -157,6 +157,7 @@ async function saveBasics(hospital: Hospital, formData: FormData) {
       airportDistanceKm: decimal(formData.get("airportDistanceKm"), 0, 2000),
       officialWebsite: url(text(formData.get("officialWebsite"))),
       phone: text(formData.get("phone")),
+      emergencyPhone: text(formData.get("emergencyPhone")),
       about: text(formData.get("about")),
       aboutRu: text(formData.get("aboutRu")),
       aboutUz: text(formData.get("aboutUz")),

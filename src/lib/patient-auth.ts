@@ -99,6 +99,9 @@ export type SignUpDetails = {
   dial: string;
   phone: string;
   locale: string;
+  /** How they want to be reached, chosen at sign-up (Telegram or WhatsApp suggested by country). */
+  channels?: import("./journey-rules").ContactChannel[];
+  mainChannel?: import("./journey-rules").ContactChannel;
 };
 
 /**

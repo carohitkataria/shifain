@@ -573,6 +573,9 @@ body {
    One entry point: the panel opens on options, chat is the first of them.
    Desktop: a floating card. Under 640px: a bottom sheet.
 --------------------------------------------------------------------------- */
+.help-fab[hidden] {
+  display: none;
+}
 .help-fab {
   position: fixed;
   right: 20px;

@@ -29,6 +29,10 @@ export type PartnerUser = {
   referralStats?: { clicks?: number };
   /** The partner bot chat their referral updates go to. */
   telegramChatId?: number | null;
+  /** How patients reach a coordinator. */
+  phone?: string | null;
+  telegram?: string | null;
+  languages?: string[];
   passwordHash: string;
   status: "invited" | "active" | "suspended";
   createdAt: string;

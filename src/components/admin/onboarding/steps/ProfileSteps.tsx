@@ -68,7 +68,8 @@ export function BasicsStep({ hospital, masters, back }: { hospital: Hospital; ma
             <TextField label="Slug" name="slug" span={2} defaultValue={hospital.slug} placeholder="Made from the name if empty" hint="The web address part: /hospitals/<slug>. Lower case and hyphens." />
             <TextField label="Relationship manager" name="assignedRm" span={3} defaultValue={hospital.assignedRm} hint="The Shifain staff member who owns this record." />
             <TextField label="Website" name="officialWebsite" type="url" span={3} defaultValue={hospital.officialWebsite} placeholder="https://" />
-            <TextField label="Public phone" name="phone" type="tel" span={3} defaultValue={hospital.phone} placeholder="+91-124-4511111" hint="The hospital's switchboard, shown on its public profile." />
+            <TextField label="Switchboard" name="phone" type="tel" span={3} defaultValue={hospital.phone} placeholder="+91-124-4511111" hint="For the desk. Patients book through Shifain, so it is not shown on the public profile." />
+            <TextField label="24×7 emergency line" name="emergencyPhone" type="tel" span={3} defaultValue={hospital.emergencyPhone} placeholder="+91-124-…" hint="Shown to this hospital's patients in their app (SOS)." />
           </div>
         </FieldGroup>
 

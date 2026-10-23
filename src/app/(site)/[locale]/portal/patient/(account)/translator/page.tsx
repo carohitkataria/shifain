@@ -1,65 +1,60 @@
-import Link from "next/link";
-import { Panel, PortalFrame, PortalHeading } from "@/components/portal/PortalFrame";
-import { PortalIcon } from "@/components/portal/PortalIcon";
-import { Translator } from "@/components/portal/Translator";
-import { PORTAL_COPY } from "@/lib/portal-patient-copy";
-import { portalPage, withCase, type PortalPageProps } from "@/lib/patient-portal-page";
+import { AppShell } from "@/components/patient-app/AppShell";
+import { TranslatorApp } from "@/components/patient-app/TranslatorApp";
+import { APP } from "@/lib/patient-app-copy";
+import { loadApp, type AppProps } from "@/lib/patient-app";
 import { PORTAL_LANGUAGES } from "@/lib/patient-portal";
 import { t } from "@/lib/localize";
 
 export const dynamic = "force-dynamic";
 
-export default async function PortalTranslator(props: PortalPageProps) {
-  const { locale, content, data } = await portalPage(props);
-  const mine = PORTAL_LANGUAGES.some((item) => item.code === locale) ? locale : "en";
-  const theirs = mine === "en" ? "hi" : "en";
+const CARE_ICONS: Record<string, string> = { pain: "alert", water: "food", washroom: "pin", nurse: "bell", medicine: "pill", allergy: "shield", cold: "moon", hungry: "food", family: "phone" };
+const DRIVER_ICONS: Record<string, string> = { hospital: "hospital", hotel: "bed", wait: "clock", slow: "car", stop: "x", time: "clock" };
+const SHOP_ICONS: Record<string, string> = { price: "wallet", halal: "food", card: "cash", medicine: "pill", water: "food", receipt: "file" };
+
+/** The centre button: speak or type in your language, they hear theirs. */
+export default async function TranslatorPage(props: AppProps) {
+  const app = await loadApp(props);
+  const { locale } = app;
+  const mine = app.portal.account?.locale && PORTAL_LANGUAGES.some((item) => item.code === app.portal.account!.locale) ? app.portal.account!.locale : locale === "en" ? "ru" : locale;
+  const care = Object.keys(APP.phrases).map((key) => ({
+    key,
+    icon: CARE_ICONS[key] ?? "chat",
+    short: t(APP.phraseShort[key as keyof typeof APP.phraseShort], locale),
+    text: t(APP.phrases[key as keyof typeof APP.phrases], locale),
+  }));
+  const pairs = (source: Record<string, readonly [import("@/lib/content-types").L, import("@/lib/content-types").L]>, icons: Record<string, string>) =>
+    Object.entries(source).map(([key, [short, text]]) => ({ key, icon: icons[key] ?? "chat", short: t(short, locale), text: t(text, locale) }));
 
   return (
-    <PortalFrame content={content} locale={locale} data={data} section="translator">
-      <PortalHeading title={t(PORTAL_COPY.translatorTitle, locale)} lead={t(PORTAL_COPY.translatorLead, locale)} />
-
-      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Panel>
-          <Translator
-            languages={PORTAL_LANGUAGES}
-            defaultMine={mine}
-            defaultTheirs={theirs}
-            labels={{
-              iSpeak: t(PORTAL_COPY.iSpeak, locale),
-              theySpeak: t(PORTAL_COPY.theySpeak, locale),
-              me: t(PORTAL_COPY.me, locale),
-              them: t(PORTAL_COPY.them, locale),
-              typeHere: t(PORTAL_COPY.typeHere, locale),
-              translate: t(PORTAL_COPY.translate, locale),
-              listening: t(PORTAL_COPY.listening, locale),
-              readAloud: t(PORTAL_COPY.readAloud, locale),
-              swap: t(PORTAL_COPY.swap, locale),
-              clear: t(PORTAL_COPY.clear, locale),
-              translating: t(PORTAL_COPY.translating, locale),
-              failed: t(PORTAL_COPY.translateFailed, locale),
-              empty: t(PORTAL_COPY.translatorEmpty, locale),
-              speak: t(PORTAL_COPY.speak, locale),
-              play: t(PORTAL_COPY.play, locale),
-            }}
-          />
-        </Panel>
-
-        <Panel className="flex flex-col gap-3 self-start">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-saffron-tint text-[#a35a06]">
-            <PortalIcon name="alert" />
-          </span>
-          <p className="text-[15px] leading-relaxed text-navy">{t(PORTAL_COPY.translatorCaution, locale)}</p>
-          {data.active ? (
-            <Link
-              href={withCase(`/${locale}/portal/patient/schedule`, data.active._id)}
-              className="inline-flex min-h-12 items-center gap-2 self-start rounded-full bg-violet px-6 font-semibold text-white transition hover:bg-brand-deep"
-            >
-              {t(PORTAL_COPY.bookInterpreter, locale)}
-              <PortalIcon name="arrow" />
-            </Link>
-          ) : null}
-        </Panel>
-      </div>
-    </PortalFrame>
+    <AppShell app={app} section="translate">
+      <TranslatorApp
+        languages={PORTAL_LANGUAGES}
+        defaultMine={mine}
+        defaultTheirs={mine === "en" ? "hi" : "en"}
+        uiLocale={locale}
+        modes={[
+          { key: "doctor", label: t(APP.modes.doctor, locale), phrases: care },
+          { key: "nurse", label: t(APP.modes.nurse, locale), phrases: care },
+          { key: "driver", label: t(APP.modes.driver, locale), phrases: pairs(APP.driverPhrases, DRIVER_ICONS) },
+          { key: "shop", label: t(APP.modes.shop, locale), phrases: pairs(APP.shopPhrases, SHOP_ICONS) },
+        ]}
+        labels={{
+          iSpeak: t(APP.iSpeak, locale),
+          theySpeak: t(APP.theySpeak, locale),
+          swap: "⇄",
+          tap: t(APP.tapToSpeak, locale),
+          listening: t(APP.listening, locale),
+          type: t(APP.typeToTranslate, locale),
+          translating: t(APP.translating, locale),
+          failed: t(APP.failed, locale),
+          quick: t(APP.quickPhrases, locale),
+          me: t(APP.me, locale),
+          them: t(APP.them, locale),
+          clear: t(APP.clear, locale),
+          send: t(APP.send, locale),
+          readAloud: t(APP.readAloud, locale),
+        }}
+      />
+    </AppShell>
   );
 }

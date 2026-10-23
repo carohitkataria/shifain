@@ -278,6 +278,7 @@ export const PORTAL_COPY = {
     chat: l("by chat", "через чат", "chat orqali"),
     voice: l("by voice", "голосом", "ovoz bilan"),
     portal: l("here", "здесь", "shu yerda"),
+    coordinator: l("by your coordinator", "координатором", "koordinator tomonidan"),
   },
 
   // Help

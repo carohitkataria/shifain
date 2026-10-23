@@ -7,6 +7,7 @@ import { casesForEmail, casesForPhone, type PatientCase, type PlanEdit } from ".
 import { currentPatient, getPatientAccount, normalisePhone, type PatientAccount, type PatientIdentity } from "./patient-auth";
 import { MAX_REPORT_BYTES, storeReports, type ReportUpload } from "./reports";
 import { getSettings } from "./settings";
+import type { FamilyAccess, FamilyMember, JourneyFields } from "./journey-rules";
 
 /**
  * The patient portal's data: the signed-in patient, their cases, and what
@@ -57,7 +58,10 @@ export const PORTAL_LANGUAGES: { code: string; name: string; native: string; spe
 
 export const languageName = (code: string) => PORTAL_LANGUAGES.find((item) => item.code === code)?.name ?? code;
 
-type CaseWithAppointments = PatientCase & { appointments?: Appointment[] };
+type CaseWithAppointments = PatientCase & JourneyFields & { appointments?: Appointment[] };
+
+/** Who is looking: the patient, or a family member they added (with what they may see). */
+export type Viewer = { role: "patient" } | { role: "family"; member: FamilyMember };
 
 export type PortalData = {
   identity: PatientIdentity;
@@ -65,6 +69,7 @@ export type PortalData = {
   account: PatientAccount | null;
   cases: CaseWithAppointments[];
   active: CaseWithAppointments | null;
+  viewer: Viewer | null;
 };
 
 /** The signed-in patient and their cases, once per request. */
@@ -92,28 +97,52 @@ export async function loadPortal(locale: string, caseParam?: string | null): Pro
     cases.find((item) => item.status !== "closed") ||
     cases[0] ||
     null;
-  return { identity, account, cases, active };
+  return { identity, account, cases, active, viewer: active ? viewerOf(identity, active) : null };
 }
 
-/** Whether this signed-in patient may see or change this case. */
-export function ownsCase(identity: PatientIdentity, record: Pick<PatientCase, "patient" | "accountEmail">): boolean {
+const samePhone = (a: string | null | undefined, digits: string) => {
+  const known = normalisePhone(a ?? "");
+  return digits.length >= 6 && known.length >= 6 && known.endsWith(digits.slice(-9));
+};
+
+/** Who this signed-in person is on this case, if anyone. */
+export function viewerOf(identity: PatientIdentity, record: Pick<PatientCase, "patient" | "accountEmail"> & JourneyFields): Viewer | null {
   if (identity.kind === "email") {
     const email = identity.email.toLowerCase();
-    return (record.patient.email ?? "").toLowerCase() === email || (record.accountEmail ?? "").toLowerCase() === email;
+    if ((record.patient.email ?? "").toLowerCase() === email || (record.accountEmail ?? "").toLowerCase() === email) return { role: "patient" };
+    const member = (record.family ?? []).find((item) => (item.email ?? "").toLowerCase() === email);
+    return member ? { role: "family", member } : null;
   }
-  const known = normalisePhone(record.patient.phone);
-  return identity.digits.length >= 6 && known.length >= 6 && known.endsWith(identity.digits.slice(-9));
+  if (samePhone(record.patient.phone, identity.digits)) return { role: "patient" };
+  const member = (record.family ?? []).find((item) => samePhone(item.phone, identity.digits));
+  return member ? { role: "family", member } : null;
 }
 
-/** The case, only if the signed-in patient owns it. */
-export async function ownedCase(reference: string): Promise<{ identity: PatientIdentity; record: CaseWithAppointments } | null> {
+/** Whether this signed-in person is the patient on this case (and so may change it). */
+export function ownsCase(identity: PatientIdentity, record: Pick<PatientCase, "patient" | "accountEmail"> & JourneyFields): boolean {
+  return viewerOf(identity, record)?.role === "patient";
+}
+
+/** Whether this viewer may see one part of the case. The patient sees everything. */
+export const canSee = (viewer: Viewer | null, part: FamilyAccess) => viewer?.role === "patient" || (viewer?.role === "family" && viewer.member.access.includes(part));
+
+/**
+ * The case, only for its patient — or, when `part` is given, also for a family
+ * member the patient allowed to see that part.
+ */
+export async function ownedCase(
+  reference: string,
+  part?: FamilyAccess,
+): Promise<{ identity: PatientIdentity; record: CaseWithAppointments; viewer: Viewer } | null> {
   if (!isDatabaseConfigured()) return null;
   const identity = await currentPatient().catch(() => null);
   if (!identity) return null;
   const db = await getDb();
   const record = await db.collection<CaseWithAppointments>("cases").findOne({ _id: reference.trim().toUpperCase() });
-  if (!record || !ownsCase(identity, record)) return null;
-  return { identity, record };
+  if (!record) return null;
+  const viewer = viewerOf(identity, record);
+  if (!viewer || (viewer.role === "family" && !(part && canSee(viewer, part)))) return null;
+  return { identity, record, viewer };
 }
 
 const edit = (change: string): PlanEdit => ({ at: new Date().toISOString(), via: "portal", change });

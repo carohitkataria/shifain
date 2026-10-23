@@ -12,6 +12,7 @@ import {
   type SignUpDetails,
 } from "@/lib/patient-auth";
 import { COUNTRIES } from "@/lib/countries";
+import { CHANNELS, type ContactChannel } from "@/lib/journey-rules";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -88,6 +89,12 @@ export async function signUpAction(formData: FormData) {
     phone: field(formData, "phone", 30).replace(/[^\d\s()-]/g, "").trim(),
     locale,
   };
+  const channels = [...new Set(formData.getAll("channels").map(String))].filter((value): value is ContactChannel => (CHANNELS as readonly string[]).includes(value));
+  if (channels.length) {
+    details.channels = channels;
+    const main = String(formData.get("main") ?? "");
+    details.mainChannel = channels.includes(main as ContactChannel) ? (main as ContactChannel) : channels[0];
+  }
   const known = details.country === "Other" || COUNTRIES.some((country) => country.name === details.country);
   const agreed = formData.get("agree") === "yes";
   if (!details.firstName || !known || details.phone.replace(/\D/g, "").length < 5 || !EMAIL.test(email) || !agreed) {

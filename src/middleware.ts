@@ -82,5 +82,5 @@ function rememberReferral(request: NextRequest, response: NextResponse): NextRes
 }
 
 export const config = {
-  matcher: ["/((?!api|admin|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)"],
+  matcher: ["/((?!api|admin|coordinator|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)"],
 };

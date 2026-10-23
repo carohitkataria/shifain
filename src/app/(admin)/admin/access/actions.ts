@@ -34,6 +34,13 @@ export async function savePartnerAction(formData: FormData) {
   const doctorId = String(formData.get("doctorId") ?? "").trim() || null;
   const hospitalId = String(formData.get("hospitalId") ?? "").trim() || null;
   const typed = String(formData.get("password") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim().slice(0, 40) || null;
+  const telegram = String(formData.get("telegram") ?? "").trim().replace(/^@/, "").slice(0, 60) || null;
+  const languages = String(formData.get("languages") ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 8);
 
   if (!email || !name || !["doctor", "hospital", "coordinator"].includes(role)) {
     redirect("/admin/access?error=1");
@@ -53,6 +60,10 @@ export async function savePartnerAction(formData: FormData) {
         role: role as PartnerUser["role"],
         doctorId,
         hospitalId,
+        // Saving the form again keeps contact details already on file unless new ones are typed.
+        ...(phone ? { phone } : {}),
+        ...(telegram ? { telegram } : {}),
+        ...(languages.length ? { languages } : {}),
         passwordHash: hashPassword(password),
         status: "active",
       },

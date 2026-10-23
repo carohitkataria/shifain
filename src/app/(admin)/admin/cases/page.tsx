@@ -192,7 +192,15 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
             <li key={item._id} className="card p-5">
               <div className="flex flex-wrap items-start gap-x-4 gap-y-3">
                 <div className="min-w-0 flex-1 basis-56">
-                  <p className="font-extrabold text-ink">{item.patient.name}</p>
+                  <p className="flex flex-wrap items-center gap-2 font-extrabold text-ink">
+                    {item.patient.name}
+                    <Link href={`/admin/cases/${item._id}`} className="rounded-full bg-brand-tint px-2.5 py-0.5 text-xs font-bold text-brand hover:bg-brand hover:text-white">
+                      Care desk
+                    </Link>
+                    {(item as { care?: { coordinatorId?: string | null } }).care?.coordinatorId ? (
+                      <span className="rounded-full bg-leaf-tint px-2.5 py-0.5 text-xs font-bold text-leaf">coordinator assigned</span>
+                    ) : null}
+                  </p>
                   <p className="mt-0.5 text-sm text-ink-soft">
                     {item.patient.country} · {item.patient.phone}
                     {item.patient.email ? ` · ${item.patient.email}` : ""}
