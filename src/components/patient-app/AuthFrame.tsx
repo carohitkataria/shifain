@@ -4,11 +4,44 @@ import { verifyEmailCodeAction } from "@/app/(site)/[locale]/portal/patient/acti
 import { APP } from "@/lib/patient-app-copy";
 import { t } from "@/lib/localize";
 import type { Locale } from "@/lib/i18n";
+import type { L } from "@/lib/content-types";
+import { Logo } from "@/components/Logo";
+
+const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
+const WHY = {
+  title: l("Your treatment journey, in one place", "Всё о вашем лечении — в одном месте", "Davolanish safaringiz — bir joyda"),
+  points: [
+    { icon: "case", text: l("Your plan, dates and documents", "План, даты и документы", "Reja, sanalar va hujjatlar") },
+    { icon: "user", text: l("A coordinator who speaks your language", "Координатор, который говорит на вашем языке", "Sizning tilingizda gapiradigan koordinator") },
+    { icon: "file", text: l("Reports shared safely with your doctors", "Документы надёжно передаются врачам", "Hujjatlar shifokorlarga xavfsiz yetkaziladi") },
+    { icon: "car", text: l("Pickup, stay and translator when you arrive", "Встреча, проживание и переводчик по приезде", "Kutib olish, turar joy va tarjimon") },
+  ],
+  private: l("Private by design — only you and your care team see your case.", "Конфиденциально — ваш случай видите только вы и ваша команда.", "Maxfiy — holatingizni faqat siz va jamoangiz ko'radi."),
+};
 
 /** Sign in and sign up, in the app's phone frame: the mark, the two tabs, the form. */
 export function AuthFrame({ locale, tab, children }: { locale: Locale; tab: "in" | "up"; children: React.ReactNode }) {
   return (
-    <div className="a-device">
+    <div className="a-device a-authdev">
+      <aside className="a-auth-aside">
+        <Link href={`/${locale}`} aria-label="Shifain">
+          <Logo tone="dark" compact />
+        </Link>
+        <div>
+          <h2>{t(WHY.title, locale)}</h2>
+          <ul>
+            {WHY.points.map((point) => (
+              <li key={point.icon}>
+                <i>
+                  <AppIcon name={point.icon} />
+                </i>
+                {t(point.text, locale)}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <small>{t(WHY.private, locale)}</small>
+      </aside>
       <main className="a-auth">
         <div className="a-logo">
           <i>

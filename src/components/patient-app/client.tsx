@@ -206,3 +206,31 @@ export function UploadButton({ label, className, multiple = false, style }: { la
     </label>
   );
 }
+
+/**
+ * The greeting by the patient's own clock, not the server's: morning 5–12,
+ * afternoon 12–17, evening 17–21, night after that. Until the browser
+ * answers, a plain hello.
+ */
+export function Greeting({ name, labels, locale, children }: { name: string; labels: { hello: string; morning: string; afternoon: string; evening: string; night: string }; locale: string; children?: React.ReactNode }) {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => setNow(new Date()), []);
+  const hour = now?.getHours();
+  const greeting = hour == null ? labels.hello : hour >= 5 && hour < 12 ? labels.morning : hour >= 12 && hour < 17 ? labels.afternoon : hour >= 17 && hour < 21 ? labels.evening : labels.night;
+  return (
+    <div className="a-greet">
+      <h2>
+        {greeting}
+        {name ? (
+          <>
+            , <b>{name}</b>
+          </>
+        ) : null}
+      </h2>
+      <p>
+        <span suppressHydrationWarning>{(now ?? new Date()).toLocaleDateString(locale === "en" ? "en-GB" : locale, { weekday: "long", day: "numeric", month: "long" })}</span>
+        {children}
+      </p>
+    </div>
+  );
+}

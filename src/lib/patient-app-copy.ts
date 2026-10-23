@@ -42,9 +42,11 @@ export const APP = {
   askAssistant: l("Ask the assistant", "Спросить помощника", "Yordamchidan so'rash"),
   caseShort: l("Case", "Случай", "Holat"),
   greeting: {
+    hello: l("Hello", "Здравствуйте", "Assalomu alaykum"),
     morning: l("Good morning", "Доброе утро", "Xayrli tong"),
     afternoon: l("Good afternoon", "Добрый день", "Xayrli kun"),
     evening: l("Good evening", "Добрый вечер", "Xayrli kech"),
+    night: l("Good night", "Доброй ночи", "Xayrli tun"),
   },
   daysToTravel: (n: number) => l(`${n} day${n === 1 ? "" : "s"} to travel`, `${n} дн. до поездки`, `safargacha ${n} kun`),
   travelToday: l("You travel today", "Сегодня в путь", "Bugun yo'lga chiqasiz"),

@@ -1348,3 +1348,250 @@ textarea.a-input {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+
+/* The site runs at 80% zoom on large screens; the app is sized in px for
+ * 100%, and at 80% its full-height layout stops short of the window. */
+@media (min-width: 1280px) {
+  html.site-scale:has(.pa) {
+    zoom: 1;
+  }
+}
+
+/* ---------- computer: sidebar, wide page, centred dialogs ----------
+ * The phone layout above is the app. From 900px the bottom bar and the
+ * More sheet become a sidebar, the screen gets room to breathe, home
+ * splits into two columns and sheets open as centred dialogs. */
+.a-side,
+.a-auth-aside {
+  display: none;
+}
+@media (min-width: 900px) {
+  .pa {
+    background: var(--bg);
+  }
+  .a-device {
+    max-width: none;
+    height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .a-side {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    padding: 18px 14px 20px;
+    overflow-y: auto;
+  }
+  .a-side-logo {
+    display: block;
+    padding: 2px 10px 14px;
+  }
+  .a-side-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    border-top: 1px solid var(--line-2);
+  }
+  .a-side-logo + .a-side-list {
+    border-top: 0;
+  }
+  .a-side-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 11px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: background 0.15s;
+  }
+  .a-side-link:hover {
+    background: var(--line-2);
+  }
+  .a-side-link .a-i {
+    color: var(--muted);
+  }
+  .a-side-link[aria-current="page"] {
+    background: var(--primary-050);
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .a-side-link[aria-current="page"] .a-i {
+    color: var(--primary);
+  }
+  .a-side-link .a-bdg {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    background: var(--rose);
+    border-radius: 20px;
+    padding: 1px 7px;
+  }
+  .a-side-sos {
+    margin-top: auto;
+  }
+
+  .a-top {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 14px 32px;
+  }
+  .a-top .a-back {
+    display: none;
+  }
+  .a-scroll {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 28px 32px 56px;
+  }
+  .a-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .a-scroll::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 8px;
+  }
+  .a-page {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .a-page-wide {
+    max-width: 1160px;
+  }
+  .a-nav {
+    display: none;
+  }
+  .a-help {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+  }
+  .a-toast {
+    position: fixed;
+    bottom: 32px;
+    left: calc(50% + 124px);
+  }
+
+  .a-dim {
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .a-sheet {
+    max-width: 520px;
+    max-height: 86vh;
+    border-radius: 20px;
+    padding: 18px 22px 22px;
+    box-shadow: var(--shadow-lg);
+    animation: a-pop 0.18s ease;
+  }
+  .a-grip {
+    display: none;
+  }
+
+  .a-greet h2 {
+    font-size: 28px;
+  }
+  .a-greet p {
+    font-size: 13.5px;
+  }
+  .a-kgrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .a-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .a-tap:hover {
+    border-color: var(--primary-100);
+  }
+  .a-tile {
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .a-tile:hover {
+    background: var(--primary-050);
+    border-color: var(--primary-100) !important;
+  }
+
+  /* sign in and sign up: the form beside a short why */
+  .a-device.a-authdev {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .a-auth-aside {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 48px 56px;
+    color: #fff;
+    background: radial-gradient(120% 90% at 0% 0%, #8a73f0 0%, var(--primary) 45%, #4b33b8 100%);
+    overflow-y: auto;
+  }
+  .a-auth-aside h2 {
+    font-size: 34px;
+    line-height: 1.15;
+    max-width: 440px;
+  }
+  .a-auth-aside ul {
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+    max-width: 420px;
+  }
+  .a-auth-aside li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .a-auth-aside li i {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.16);
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .a-auth-aside small {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 12.5px;
+  }
+  .a-authdev .a-auth {
+    grid-column: 2;
+    width: 100%;
+    max-width: 460px;
+    justify-self: center;
+    align-self: center;
+    max-height: 100dvh;
+    padding: 40px 8px;
+  }
+}
+@keyframes a-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
