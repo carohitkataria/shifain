@@ -32,6 +32,7 @@ import {
 } from "./referrals";
 import { listReferrals, money } from "./partners";
 import { normalisePhone } from "./patient-auth";
+import { confirmTelegramLogin, pendingTelegramLogin } from "./telegram-login";
 import { casesForPhone, getCase } from "./cases";
 import { createLead } from "./telegram-leads";
 import { isElevenLabsConfigured, transcribeAudio, textToSpeech } from "./elevenlabs";
@@ -439,6 +440,10 @@ async function handlePatientUpdate(update: TgUpdate): Promise<void> {
   }
 
   if (msg.contact?.phone_number) {
+    if (contact.state === "login" && typeof contact.stateData?.token === "string") {
+      await handleLoginContact(chatId, userId, contact.stateData.token, msg.contact, msg.from?.first_name ?? null);
+      return;
+    }
     await handlePhoneShared(chatId, userId, msg.contact.phone_number);
     return;
   }
@@ -475,6 +480,11 @@ async function handlePatientCommand(
     case "/start": {
       // t.me/<bot>?start=ref_CODE arrives as "/start ref_CODE".
       const payload = args[0] ?? "";
+      // t.me/<bot>?start=login_TOKEN: signing in to the website.
+      if (payload.startsWith("login_")) {
+        await startLogin(chatId, userId, payload.slice(6));
+        return;
+      }
       if (payload.startsWith("ref_")) {
         const code = normaliseCode(payload.slice(4));
         if (code && (await partnerByCode(code).catch(() => null))) {
@@ -649,6 +659,75 @@ async function handlePatientCallback(
       }
       break;
   }
+}
+
+/** Sign-in with Telegram, step one: ask for the phone number Telegram itself vouches for. */
+async function startLogin(chatId: number, userId: number, token: string): Promise<void> {
+  if (!(await pendingTelegramLogin(token))) {
+    await sendMessage("patient", {
+      chatId,
+      text: "⌛ This sign-in link has expired. Go back to the ShifaIn website and press <b>Sign in with Telegram</b> again.",
+    });
+    return;
+  }
+  await updateContactState("patient", userId, "login", { token });
+  await sendMessage("patient", {
+    chatId,
+    text:
+      "🔐 <b>Sign in to ShifaIn</b>\n\n" +
+      "Tap <b>Share my phone number</b> below. Telegram confirms the number is yours, and the website signs you in — no code to type.\n\n" +
+      "Didn't try to sign in? Just ignore this message.",
+    requestContact: true,
+  });
+}
+
+/** Step two: the shared contact must be the sender's own, not a card forwarded from someone else. */
+async function handleLoginContact(
+  chatId: number,
+  userId: number,
+  token: string,
+  shared: { phone_number: string; user_id?: number },
+  firstName: string | null,
+): Promise<void> {
+  if (shared.user_id !== userId) {
+    await sendMessage("patient", {
+      chatId,
+      text: "That looks like someone else's contact. Please use the <b>Share my phone number</b> button, which sends your own.",
+      requestContact: true,
+    });
+    return;
+  }
+  const digits = normalisePhone(shared.phone_number);
+  const confirmed = await confirmTelegramLogin(token, { digits, telegramUserId: userId, name: firstName });
+  await handlePhoneSaved(chatId, userId, digits);
+  await sendMessage("patient", {
+    chatId,
+    text: confirmed
+      ? "✅ <b>You're signed in.</b> Go back to your browser — the ShifaIn website is opening your account.\n\nYou can also send me your reports here, and I'll message you when your case moves."
+      : "⌛ This sign-in link has expired. Go back to the ShifaIn website and press <b>Sign in with Telegram</b> again.",
+  });
+}
+
+/** Remembers a verified number on the contact without starting the intake conversation. */
+async function handlePhoneSaved(chatId: number, userId: number, digits: string): Promise<void> {
+  const existing = await getTelegramContact("patient", userId);
+  await upsertTelegramContact({
+    telegramUserId: userId,
+    telegramChatId: chatId,
+    username: existing?.username ?? null,
+    firstName: existing?.firstName ?? "User",
+    lastName: existing?.lastName ?? null,
+    languageCode: existing?.languageCode ?? null,
+    phone: digits,
+    contactType: "patient",
+    contactId: existing?.contactId ?? null,
+    caseReference: existing?.caseReference ?? null,
+    botRole: "patient",
+    state: "ready",
+    stateData: null,
+  });
+  const latest = (await casesForPhone(digits, 1))[0];
+  if (latest && !existing?.caseReference) await linkContactToCase("patient", userId, latest._id, null).catch(() => undefined);
 }
 
 async function handlePhoneShared(chatId: number, userId: number, phone: string): Promise<void> {

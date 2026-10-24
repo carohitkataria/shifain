@@ -4,6 +4,8 @@ import { AppIcon } from "@/components/patient-app/AppIcon";
 import { AuthError, AuthFrame, CodeStep } from "@/components/patient-app/AuthFrame";
 import { currentPatient } from "@/lib/patient-auth";
 import { isGoogleConfigured } from "@/lib/google-auth";
+import { botUsername } from "@/lib/telegram-login";
+import { TelegramSignIn } from "@/components/patient-app/TelegramSignIn";
 import { isDatabaseConfigured } from "@/lib/db";
 import { APP } from "@/lib/patient-app-copy";
 import { t } from "@/lib/localize";
@@ -25,6 +27,7 @@ export default async function PatientLoginPage({ params, searchParams }: { param
   const email = (query.email ?? "").slice(0, 200);
   const here = `/${locale}/portal/patient/login`;
   const google = isGoogleConfigured();
+  const telegram = isDatabaseConfigured() && Boolean(await botUsername().catch(() => null));
 
   return (
     <AuthFrame locale={locale} tab="in">
@@ -32,6 +35,16 @@ export default async function PatientLoginPage({ params, searchParams }: { param
         <CodeStep locale={locale} email={email} from="login" devCode={query.dev} failed={query.error === "code"} back={here} />
       ) : (
         <>
+          {telegram ? (
+            <>
+              <TelegramSignIn locale={locale} />
+              <div className="a-or" aria-hidden="true">
+                <span />
+                <small className="a-tiny a-muted">{t(APP.or, locale)}</small>
+                <span />
+              </div>
+            </>
+          ) : null}
           <div className="a-g3">
             <Link href={here} className={`a-ch ${!byPhone ? "on" : ""}`} aria-current={!byPhone ? "page" : undefined}>
               <AppIcon name="mail" />
@@ -48,7 +61,7 @@ export default async function PatientLoginPage({ params, searchParams }: { param
           </div>
           {query.error && query.error !== "code" ? (
             <div style={{ marginTop: 12 }}>
-              <AuthError>{t(query.error === "mail" ? APP.errors.mail : query.error === "email" ? APP.errors.email : APP.errors.reference, locale)}</AuthError>
+              <AuthError>{t(query.error === "mail" ? APP.errors.mail : query.error === "email" ? APP.errors.email : query.error === "telegram" ? APP.errors.telegram : APP.errors.reference, locale)}</AuthError>
             </div>
           ) : null}
           {byPhone ? (

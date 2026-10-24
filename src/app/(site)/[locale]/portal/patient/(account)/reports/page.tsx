@@ -10,7 +10,7 @@ import { uploadAction } from "../../app-actions";
 
 export const dynamic = "force-dynamic";
 
-const FILTERS = ["all", "hospital", "mine", "prescription", "bill"] as const;
+const FILTERS = ["all", "hospital", "mine", "prescription"] as const;
 const KIND_ICON: Record<string, [string, string]> = {
   report: ["file", "c-teal"],
   prescription: ["pill", "c-amber"],
@@ -18,7 +18,10 @@ const KIND_ICON: Record<string, [string, string]> = {
   document: ["passport", "c-violet"],
 };
 
-/** Every file on the case — the patient's own, and what the hospital and the desk added — to view, download or share. */
+/**
+ * The medical files on the case — the patient's own, and what the hospital and the desk added. Bills live
+ * in Payments and passports, visas and tickets in Travel & stay, so they are not listed here.
+ */
 export default async function ReportsPage(props: AppProps) {
   const app = await loadApp(props);
   const { locale, record, portal } = app;
@@ -30,18 +33,19 @@ export default async function ReportsPage(props: AppProps) {
     );
   }
   const filter = (FILTERS as readonly string[]).includes(app.query.f ?? "") ? (app.query.f as (typeof FILTERS)[number]) : "all";
-  const files = [...record.reports]
+  const medical = record.reports.filter((file) => file.kind !== "bill" && file.kind !== "document" && !file.docKey);
+  const files = [...medical]
     .reverse()
     .filter((file) => {
       const source = file.source ?? "patient";
       const kind = file.kind ?? "report";
       if (filter === "hospital") return source !== "patient";
       if (filter === "mine") return source === "patient";
-      if (filter === "prescription" || filter === "bill") return kind === filter;
+      if (filter === "prescription") return kind === filter;
       return true;
     });
   const count = (key: (typeof FILTERS)[number]) =>
-    key === "all" ? record.reports.length : record.reports.filter((file) => (key === "hospital" ? (file.source ?? "patient") !== "patient" : key === "mine" ? (file.source ?? "patient") === "patient" : file.kind === key)).length;
+    key === "all" ? medical.length : medical.filter((file) => (key === "hospital" ? (file.source ?? "patient") !== "patient" : key === "mine" ? (file.source ?? "patient") === "patient" : file.kind === key)).length;
   const isPatient = portal.viewer?.role === "patient";
 
   return (
@@ -65,7 +69,7 @@ export default async function ReportsPage(props: AppProps) {
       <div className="a-chips a-sec" style={{ marginTop: 14 }}>
         {FILTERS.map((key) => (
           <Link key={key} href={href(app, "reports", key === "all" ? "" : `f=${key}`)} className="a-fchip" aria-current={filter === key ? "page" : undefined}>
-            {key === "hospital" ? <AppIcon name="hospital" /> : key === "mine" ? <AppIcon name="user" /> : key === "prescription" ? <AppIcon name="pill" /> : key === "bill" ? <AppIcon name="wallet" /> : null}
+            {key === "hospital" ? <AppIcon name="hospital" /> : key === "mine" ? <AppIcon name="user" /> : key === "prescription" ? <AppIcon name="pill" /> : null}
             {t(APP.repFilters[key], locale)}
             {key === "all" ? ` · ${count(key)}` : ""}
           </Link>

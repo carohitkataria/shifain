@@ -7,7 +7,7 @@ import { getDb } from "@/lib/db";
 import { createCase, type CaseStatus, type PatientCase } from "@/lib/cases";
 import { addCaseFiles, sendPortalMessage, setCare, setPreferences } from "@/lib/journey";
 import { syncReferralWithCase } from "@/lib/referrals";
-import { sendCoordinatorReply } from "@/lib/telegram-notify";
+import { notifyCase, sendCoordinatorReply } from "@/lib/telegram-notify";
 import { coordinatorReply, setWebIntakeProfileExtras } from "@/lib/web-intake";
 import { currentActor } from "@/lib/onboarding";
 import { getSettings } from "@/lib/settings";
@@ -118,8 +118,10 @@ export async function bulkCasesAction(formData: FormData) {
   if (op === "stage") {
     const status = String(formData.get("status") ?? "") as CaseStatus;
     if (!STATUSES.includes(status)) finish(back, "Pick a stage");
+    const moving = await db.collection<PatientCase>("cases").find({ _id: { $in: ids }, status: { $ne: status } }, { projection: { _id: 1 } }).toArray();
     await db.collection<PatientCase>("cases").updateMany({ _id: { $in: ids } }, { $set: { status, updatedAt: new Date().toISOString() } });
     for (const id of ids) await syncReferralWithCase(id, status).catch(() => undefined);
+    for (const record of moving) await notifyCase(record._id, { kind: "status", status }).catch(() => undefined);
     finish(withoutDrawer(back), `Moved ${ids.length} case${ids.length === 1 ? "" : "s"}`);
   }
   if (op === "message") {
@@ -139,8 +141,9 @@ export async function caseStageAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "") as CaseStatus;
   if (!id || !STATUSES.includes(status)) finish(back, "Pick a stage");
-  await (await getDb()).collection<PatientCase>("cases").updateOne({ _id: id }, { $set: { status, updatedAt: new Date().toISOString() } });
+  const result = await (await getDb()).collection<PatientCase>("cases").updateOne({ _id: id, status: { $ne: status } }, { $set: { status, updatedAt: new Date().toISOString() } });
   await syncReferralWithCase(id, status).catch(() => undefined);
+  if (result.modifiedCount) await notifyCase(id, { kind: "status", status }).catch(() => undefined);
   revalidatePath("/admin/cases");
   finish(back, "Stage saved");
 }

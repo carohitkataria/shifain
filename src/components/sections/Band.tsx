@@ -3,6 +3,9 @@ import { Eyebrow, SectionHeading } from "./Common";
 import { t } from "@/lib/localize";
 import { OpenChatButton } from "../OpenChatButton";
 import { PlanRequestForm } from "../PlanRequestForm";
+import { MESSAGE_US } from "../Header";
+import { TelegramGlyph } from "../TelegramGlyph";
+import { botLink } from "@/lib/telegram-login";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
 
@@ -116,8 +119,9 @@ const waHref = (value: string) => `https://wa.me/${value.replace(/\D/g, "")}`;
  * The page's close and its one form: the real plan request (a case is opened
  * from it), with the chat and WhatsApp as the other ways in.
  */
-export function Closing({ content, locale }: { content: SiteContent; locale: Locale }) {
+export async function Closing({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { closing, hero, specialties, contact } = content;
+  const telegram = await botLink().catch(() => null);
   return (
     <section id="quote-form" className="ui-section scroll-mt-20 bg-hero">
       {/* Phone order: heading, form, other ways in. Wide screens: heading and other ways left, form right. */}
@@ -127,6 +131,17 @@ export function Closing({ content, locale }: { content: SiteContent; locale: Loc
           <p className="ui-lead">{t(closing.body, locale)}</p>
         </div>
         <div className="order-3 flex flex-wrap items-center gap-x-6 gap-y-1 lg:order-none lg:col-start-1 lg:row-start-2 lg:self-start">
+          {telegram ? (
+            <a
+              href={telegram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-2 inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-[#229ed9] px-6 text-[15px] font-semibold text-white transition hover:bg-[#1b8bc0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:w-auto"
+            >
+              <TelegramGlyph className="h-5 w-5" />
+              {t(MESSAGE_US, locale)}
+            </a>
+          ) : null}
           <OpenChatButton className="ui-link">{t(closing.primaryCta, locale)}</OpenChatButton>
           {contact.whatsapp ? (
             <a href={waHref(contact.whatsapp)} className="ui-link">

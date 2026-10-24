@@ -66,8 +66,9 @@ async function act(formData: FormData, change: (reference: string, who: { name: 
   const name = owned.viewer.role === "family" ? owned.viewer.member.name : owned.record.patient.name;
   const done = (await change(owned.record._id, { name, family: owned.viewer.role === "family" })) || "saved";
   const path = `/${locale}/portal/patient${section ? `/${section}` : ""}`;
+  const tab = /^[a-z]{2,12}$/.test(String(formData.get("tab") ?? "")) ? `&tab=${formData.get("tab")}` : "";
   revalidatePath(path);
-  redirect(`${path}?case=${encodeURIComponent(owned.record._id)}&done=${encodeURIComponent(done)}`);
+  redirect(`${path}?case=${encodeURIComponent(owned.record._id)}${tab}&done=${encodeURIComponent(done)}`);
 }
 
 export async function rideAction(formData: FormData) {

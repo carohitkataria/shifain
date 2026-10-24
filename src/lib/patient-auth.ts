@@ -138,6 +138,19 @@ export async function getPatientAccount(email: string): Promise<PatientAccount |
   return db.collection<PatientAccount>("patient_accounts").findOne({ _id: normaliseEmail(email) });
 }
 
+/** The account whose phone number this is, if one has it (matched on the last nine digits, as cases are). */
+export async function accountForPhone(digits: string): Promise<PatientAccount | null> {
+  const tail = normalisePhone(digits).slice(-9);
+  if (tail.length < 6) return null;
+  const db = await getDb();
+  const candidates = await db
+    .collection<PatientAccount>("patient_accounts")
+    .find({ phone: { $regex: `${tail.slice(-4)}$` } })
+    .limit(50)
+    .toArray();
+  return candidates.find((account) => normalisePhone(`${account.dial}${account.phone}`).endsWith(tail)) ?? null;
+}
+
 /** Whether this address may sign in: it has an account, or a case was opened with it. */
 async function isKnownEmail(email: string): Promise<boolean> {
   const db = await getDb();

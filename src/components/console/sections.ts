@@ -62,7 +62,17 @@ export const SECTIONS: Section[] = [
     ],
   },
   { id: "providers", label: "Providers", icon: "car", href: "/admin/providers", match: starts("/admin/providers") },
-  { id: "website", label: "Website", icon: "layout", href: "/admin/website", match: (path) => starts("/admin/website")(path) || groupPaths.includes(path) },
+  {
+    id: "website",
+    label: "Website",
+    icon: "layout",
+    href: "/admin/website",
+    match: (path) => starts("/admin/website", "/admin/faqs")(path) || groupPaths.includes(path),
+    tabs: [
+      { label: "Homepage", href: "/admin/website", match: (path) => starts("/admin/website")(path) || groupPaths.includes(path) },
+      { label: "FAQs", href: "/admin/faqs" },
+    ],
+  },
   { id: "reports", label: "Reports", icon: "chart", href: "/admin/reports", match: starts("/admin/reports") },
   {
     id: "settings",

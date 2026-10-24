@@ -6,6 +6,7 @@ import { Icon } from "@/components/Icon";
 import { BookingPanel } from "@/components/BookingForm";
 import { ServiceTabs, type ServiceGroup } from "@/components/ServiceTabs";
 import { getContent } from "@/lib/store";
+import { toUzCyrillic } from "@/lib/uz-cyrillic";
 import { isDatabaseConfigured } from "@/lib/db";
 import { listCategories, listSpecialties, type Disease, type Doctor } from "@/lib/catalogue";
 import {
@@ -118,7 +119,7 @@ export default async function HospitalProfile({ params }: { params: Promise<{ lo
   const specialtyName = (code: string) => t(specialtyOf(code)?.name, locale) || code;
   const categoryName = (code: string) => t(categories.find((item) => item._id === code)?.name, locale) || code;
 
-  const about = (locale === "ru" ? hospital.aboutRu : locale === "uz" ? hospital.aboutUz : null) || hospital.about;
+  const about = (locale === "ru" ? hospital.aboutRu : locale === "uz" ? hospital.aboutUz : locale === "oz" && hospital.aboutUz ? toUzCyrillic(hospital.aboutUz) : null) || hospital.about;
   const records = hospital.accreditationRecords ?? [];
   const accreditations = records.length
     ? records

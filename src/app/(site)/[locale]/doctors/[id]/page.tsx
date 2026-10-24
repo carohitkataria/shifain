@@ -13,10 +13,11 @@ import { BookingPanel } from "@/components/BookingForm";
 import { HOSPITAL_COPY } from "@/lib/hospital-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
+import type { L } from "@/lib/content-types";
 
 export const dynamic = "force-dynamic";
 
-const DAY_LABEL: Record<string, Record<Locale, string>> = {
+const DAY_LABEL: Record<string, L> = {
   mon: { en: "Mon", ru: "Пн", uz: "Du" },
   tue: { en: "Tue", ru: "Вт", uz: "Se" },
   wed: { en: "Wed", ru: "Ср", uz: "Ch" },
@@ -264,7 +265,7 @@ export default async function DoctorProfile({ params }: { params: Promise<{ loca
                           <ul className="mt-2 flex flex-wrap gap-1.5">
                             {rota.map((row) => (
                               <li key={row._id} className="chip !text-xs">
-                                {row.day ? DAY_LABEL[row.day][locale] : t(DOCTOR_LIST_COPY.anyDay, locale)}
+                                {row.day ? t(DAY_LABEL[row.day], locale) : t(DOCTOR_LIST_COPY.anyDay, locale)}
                                 {row.from || row.to ? ` ${row.from ?? ""}–${row.to ?? ""}` : ""}
                               </li>
                             ))}

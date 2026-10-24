@@ -1,4 +1,4 @@
-import { LOCALES, type Locale } from "./i18n";
+import { CONTENT_LOCALES as LOCALES, type ContentLocale as Locale } from "./i18n";
 import type { L } from "./content-types";
 
 /** Keys that identify a record rather than describe it — not editable copy. */

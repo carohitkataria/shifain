@@ -1,13 +1,15 @@
 import Link from "next/link";
-import { AppShell, SecHead, href } from "@/components/patient-app/AppShell";
+import { AppShell, CASE_TABS, SecHead, href } from "@/components/patient-app/AppShell";
 import { AppIcon } from "@/components/patient-app/AppIcon";
 import { OpenSheet } from "@/components/patient-app/client";
-import { AskSheet, BookSheet, ChangeDoctorSheet } from "@/components/patient-app/sheets";
+import { BookSheet, ChangeDoctorSheet } from "@/components/patient-app/sheets";
 import { fmtDay } from "@/components/patient-app/view";
 import { APP } from "@/lib/patient-app-copy";
 import { doctorOptions, initials, loadApp, mapsHref, telHref, tgHref, type AppProps } from "@/lib/patient-app";
 import { JOURNEY_KINDS } from "@/lib/journey-rules";
 import { t } from "@/lib/localize";
+import { HistoryTab } from "./HistoryTab";
+import { PlanTab } from "./PlanTab";
 
 export const dynamic = "force-dynamic";
 
@@ -27,13 +29,21 @@ const KIND_ICON: Record<string, string> = {
 };
 const STATUS_TONE: Record<string, string> = { pending: "t-due", booked: "t-sch", done: "t-ok", cancelled: "t-off" };
 
-/** The case: the doctor (book, ask, change), the care team, every element of the plan, the hospital. */
+/** My case, in three tabs: the overview, the full plan and estimate, and what happened so far. */
 export default async function CasePage(props: AppProps) {
+  const { tab } = await props.searchParams;
+  if (tab === "plan") return PlanTab(props);
+  if (tab === "history") return HistoryTab(props);
+  return CaseOverview(props);
+}
+
+/** The overview: the doctor (book, ask, change), the care team, every element of the plan, the hospital. */
+async function CaseOverview(props: AppProps) {
   const app = await loadApp(props);
   const { locale, record, ctx, portal } = app;
   if (!record) {
     return (
-      <AppShell app={app} section="case">
+      <AppShell app={app} section="case" tabs={CASE_TABS("overview")}>
         <p className="a-card a-pad">{t(APP.noCase, locale)}</p>
       </AppShell>
     );
@@ -57,23 +67,31 @@ export default async function CasePage(props: AppProps) {
     <AppShell
       app={app}
       section="case"
+      tabs={CASE_TABS("overview")}
       sheets={
         isPatient ? (
           <>
             <BookSheet app={app} section="case" slots={slots} />
             <ChangeDoctorSheet app={app} section="case" peers={peers} />
-            <AskSheet app={app} section="messages" />
           </>
         ) : null
       }
     >
-      {portal.cases.length > 1 ? (
+      {portal.cases.length > 1 || isPatient ? (
         <div className="a-chips" style={{ marginBottom: 12 }}>
-          {portal.cases.map((item) => (
-            <Link key={item._id} href={`/${locale}/portal/patient/case?case=${item._id}`} className={`a-fchip ${item._id === record._id ? "on" : ""}`}>
-              {(item.statedNeed || t(APP.caseShort, locale)).slice(0, 24)} · …{item._id.slice(-4)}
+          {portal.cases.length > 1
+            ? portal.cases.map((item) => (
+                <Link key={item._id} href={`/${locale}/portal/patient/case?case=${item._id}`} className={`a-fchip ${item._id === record._id ? "on" : ""}`}>
+                  {(item.statedNeed || t(APP.caseShort, locale)).slice(0, 24)} · …{item._id.slice(-4)}
+                </Link>
+              ))
+            : null}
+          {isPatient ? (
+            <Link href={`/${locale}/portal/patient/new`} className="a-fchip" aria-label={t(APP.newCase, locale)} title={t(APP.newCase, locale)}>
+              <AppIcon name="plus" />
+              {portal.cases.length > 1 ? null : t(APP.newCase, locale)}
             </Link>
-          ))}
+          ) : null}
         </div>
       ) : null}
 
@@ -84,16 +102,6 @@ export default async function CasePage(props: AppProps) {
         </div>
         <h3 style={{ fontSize: 18, marginTop: 10 }}>{app.names.treatment ?? record.statedNeed ?? t(APP.caseShort, locale)}</h3>
         <p className="a-tiny a-muted">{[app.names.disease, record.plan?.destinationCity].filter(Boolean).join(" · ")}</p>
-        <div className="a-row" style={{ marginTop: 10, gap: 14 }}>
-          <Link href={href(app, "plan")} className="a-link">
-            {t(APP.fullPlan, locale)}
-            <AppIcon name="right" />
-          </Link>
-          <Link href={href(app, "history")} className="a-link">
-            {t(APP.history, locale)}
-            <AppIcon name="right" />
-          </Link>
-        </div>
       </div>
 
       <section className="a-sec">
@@ -132,10 +140,10 @@ export default async function CasePage(props: AppProps) {
                 <AppIcon name="calendar" />
                 {t(APP.book, locale)}
               </OpenSheet>
-              <OpenSheet id="ask" className="a-btn a-btn-t">
+              <Link href={href(app, "messages", "to=doctor")} className="a-btn a-btn-t">
                 <AppIcon name="chat" />
                 {t(APP.ask, locale)}
-              </OpenSheet>
+              </Link>
               <OpenSheet id="changedoc" className="a-btn a-btn-s">
                 <AppIcon name="swapdoc" />
                 {t(APP.change, locale)}

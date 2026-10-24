@@ -236,10 +236,10 @@ export default async function PatientHome(props: AppProps) {
                     <span className="a-t">
                       <b>
                         {arrival ? `${fmtDay(arrival, locale)} · ` : ""}
-                        {record.plan.stay.daysInCountry} {locale === "ru" ? "дн." : locale === "uz" ? "kun" : "days"}
+                        {record.plan.stay.daysInCountry} {t({ en: "days", ru: "дн.", uz: "kun" }, locale)}
                       </b>
                       <small>
-                        {record.plan.stay.inpatientNights} {locale === "ru" ? "ноч. в клинике" : locale === "uz" ? "kecha shifoxonada" : "nights in hospital"}
+                        {record.plan.stay.inpatientNights} {t({ en: "nights in hospital", ru: "ноч. в клинике", uz: "kecha shifoxonada" }, locale)}
                       </small>
                     </span>
                     <AppIcon name="right" />

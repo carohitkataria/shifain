@@ -82,10 +82,10 @@ export async function requestAppointmentAction(formData: FormData) {
     day >= Date.now() &&
     day <= Date.now() + 183 * 86_400_000 &&
     /^[A-Za-z0-9_/+-]{1,64}$/.test(timezone);
-  if (!valid) redirect(back(locale, "schedule", owned.record._id, "error=request"));
+  if (!valid) redirect(back(locale, "messages", owned.record._id, "tab=calls&error=request"));
 
   await requestAppointment(owned.record._id, { kind, window, language, date, timezone, note });
-  redirect(back(locale, "schedule", owned.record._id, "done=requested"));
+  redirect(back(locale, "messages", owned.record._id, "tab=calls&done=requested"));
 }
 
 export async function cancelAppointmentAction(formData: FormData) {
@@ -94,5 +94,5 @@ export async function cancelAppointmentAction(formData: FormData) {
   const owned = await ownedCase(reference);
   if (!owned) redirect(`/${locale}/portal/patient/login`);
   await cancelAppointment(owned.record._id, String(formData.get("id") ?? ""));
-  redirect(back(locale, "schedule", owned.record._id, "done=cancelled"));
+  redirect(back(locale, "messages", owned.record._id, "tab=calls&done=cancelled"));
 }

@@ -29,7 +29,7 @@ export const SEEN_COOKIE = "shifain_seen";
 
 export type AppProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ case?: string; done?: string; error?: string; tab?: string; day?: string; f?: string }>;
+  searchParams: Promise<{ case?: string; done?: string; error?: string; tab?: string; day?: string; f?: string; to?: string }>;
 };
 
 export type AppData = {

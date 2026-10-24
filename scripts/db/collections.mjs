@@ -894,6 +894,22 @@ export const COLLECTIONS = [
     indexes: [{ key: { status: 1, createdAt: -1 } }, { key: { partnerUserId: 1 } }],
   },
   {
+    name: "faqs",
+    // Questions and answers for the FAQ page, the patient app's Help and the
+    // assistant. Seeded once from src/lib/faq-content.ts; the console owns them after.
+    validator: doc(["category", "question", "answer", "order", "published"], {
+      category: { bsonType: "string" },
+      question: localized,
+      answer: localized,
+      keywords: { bsonType: "array", items: { bsonType: "string" } },
+      order: { bsonType: ["int", "long", "double"] },
+      published: { bsonType: "bool" },
+      createdAt: { bsonType: ["string", "null"] },
+      updatedAt: { bsonType: ["string", "null"] },
+    }),
+    indexes: [{ key: { category: 1, order: 1 } }],
+  },
+  {
     name: "site_content",
     // The homepage's words: the published copy the site shows and the draft
     // the website editor is working on. Kept here, not on the server's disk,

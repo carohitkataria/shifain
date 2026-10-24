@@ -598,6 +598,35 @@
   background: var(--primary);
   color: #fff;
 }
+/* Tabs across the top of a screen; they scroll sideways rather than squeeze on a phone. */
+.a-tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 3px;
+  margin-bottom: 14px;
+}
+.a-tabs::-webkit-scrollbar {
+  display: none;
+}
+.a-tabs > a {
+  flex: 1 0 auto;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
+.a-tabs > a[aria-current="page"] {
+  background: var(--primary);
+  color: #fff;
+}
 .a-chips {
   display: flex;
   gap: 7px;
@@ -665,6 +694,11 @@
 .a-btn-tg {
   background: var(--tg-bg) !important;
   color: var(--tg) !important;
+}
+.a-btn-tgs {
+  background: #229ed9 !important;
+  color: #fff !important;
+  box-shadow: 0 6px 14px rgba(34, 158, 217, 0.28);
 }
 .a-btn-wa {
   background: var(--wa-bg) !important;
@@ -1436,7 +1470,7 @@ textarea.a-input {
     border-radius: 20px;
     padding: 1px 7px;
   }
-  .a-side-sos {
+  .a-side-foot {
     margin-top: auto;
   }
 
