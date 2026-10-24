@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Icon } from "../Icon";
 import { PackageBuilder } from "../PackageBuilder";
 import { Section, SectionHeading } from "./Common";
+import { FaqList } from "../FaqList";
+import { listFaqs } from "@/lib/faqs";
 import { t } from "@/lib/localize";
 import type { L, SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -178,26 +180,41 @@ const STORIES_SOON: { title: L; body: L } = {
   },
 };
 
-export function Faq({ content, locale }: { content: SiteContent; locale: Locale }) {
+const VISA_HEADING: L = { en: "Visa & documents", ru: "Виза и документы", uz: "Viza va hujjatlar" };
+const ALL_QUESTIONS: L = { en: "All questions", ru: "Все вопросы", uz: "Barcha savollar" };
+
+export async function Faq({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { faq } = content;
+  const visa = (await listFaqs().catch(() => [])).filter((item) => item.category === "visa").slice(0, 5);
   return (
     <Section id="faq">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
         <div className="lg:sticky lg:top-28 lg:self-start">
           <SectionHeading title={t(faq.title, locale)} body={t(faq.body, locale)} />
         </div>
-        <div className="divide-y divide-[#e6e3f4] border-y border-[#e6e3f4]">
-          {faq.items.map((item) => (
-            <details key={item.id} className="group">
-              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-base font-semibold text-navy sm:text-lg [&::-webkit-details-marker]:hidden">
-                {t(item.question, locale)}
-                <span aria-hidden="true" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-violet-soft text-lg text-violet transition-transform group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <p className="pb-5 pr-12 text-base leading-relaxed text-[#2c3a5e]">{t(item.answer, locale)}</p>
-            </details>
-          ))}
+        <div className="flex flex-col gap-8">
+          <div className="divide-y divide-[#e6e3f4] border-y border-[#e6e3f4]">
+            {faq.items.map((item) => (
+              <details key={item.id} className="group">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-base font-semibold text-navy sm:text-lg [&::-webkit-details-marker]:hidden">
+                  {t(item.question, locale)}
+                  <span aria-hidden="true" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-violet-soft text-lg text-violet transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="pb-5 pr-12 text-base leading-relaxed text-[#2c3a5e]">{t(item.answer, locale)}</p>
+              </details>
+            ))}
+          </div>
+          {visa.length ? (
+            <div>
+              <h3 className="mb-2 text-sm font-bold uppercase tracking-[0.14em] text-violet">{t(VISA_HEADING, locale)}</h3>
+              <FaqList items={visa} locale={locale} />
+              <Link href={`/${locale}/faq#visa`} className="ui-link mt-4 inline-flex">
+                {t(ALL_QUESTIONS, locale)} →
+              </Link>
+            </div>
+          ) : null}
         </div>
       </div>
     </Section>

@@ -1,14 +1,27 @@
 import { COUNTRIES } from "./countries";
 
-export const LOCALES = ["en", "ru", "uz"] as const;
+/** The languages text is written and stored in. */
+export const CONTENT_LOCALES = ["en", "ru", "uz"] as const;
+export type ContentLocale = (typeof CONTENT_LOCALES)[number];
+
+/**
+ * The languages a page can be shown in. "oz" is Uzbek in Cyrillic (the code
+ * Uzbekistan's own government sites use): it is never stored, but made from
+ * the Latin Uzbek as the page renders — see uz-cyrillic.ts.
+ */
+export const LOCALES = ["en", "ru", "uz", "oz"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 
 export const LOCALE_META: Record<Locale, { label: string; english: string; dir: "ltr" | "rtl"; htmlLang: string }> = {
   en: { label: "English", english: "English", dir: "ltr", htmlLang: "en" },
   ru: { label: "Русский", english: "Russian", dir: "ltr", htmlLang: "ru" },
-  uz: { label: "O'zbek", english: "Uzbek", dir: "ltr", htmlLang: "uz" },
+  uz: { label: "Oʻzbekcha", english: "Uzbek (Latin)", dir: "ltr", htmlLang: "uz" },
+  oz: { label: "Ўзбекча", english: "Uzbek (Cyrillic)", dir: "ltr", htmlLang: "uz-Cyrl" },
 };
+
+/** The stored language a page language reads from: Cyrillic Uzbek reads the Latin. */
+export const contentLocale = (locale: Locale): ContentLocale => (locale === "oz" ? "uz" : locale);
 
 /**
  * Country -> language mapping, taken from the country list so there is one
@@ -43,6 +56,7 @@ export function localeFromAcceptLanguage(header: string | undefined | null): Loc
     .sort((a, b) => b.q - a.q);
 
   for (const { tag } of ranked) {
+    if (tag.startsWith("uz-cyrl")) return "oz";
     const base = tag.split("-")[0];
     if (isLocale(base)) return base;
   }

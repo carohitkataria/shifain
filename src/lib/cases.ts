@@ -33,6 +33,8 @@ export type PatientCase = {
   patient: { name: string; phone: string; country: string; email: string | null };
   statedNeed: string | null;
   intakeRoute: IntakeRoute;
+  /** Set when the uploaded files could not be stored, so nobody tells the patient they were kept. */
+  reportsNotStored?: boolean;
   description: string | null;
   answers: Record<string, string> | null;
   reports: CaseReport[];

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { AppIcon } from "./AppIcon";
-import { COUNTRIES, COUNTRY_BY_NAME } from "@/lib/countries";
+import { COUNTRY_BY_NAME, OTHER_COUNTRY, countryOptions } from "@/lib/countries";
+import type { Locale } from "@/lib/i18n";
 import { suggestedMessenger, type ContactChannel } from "@/lib/journey-rules";
 
 /**
@@ -11,8 +12,10 @@ import { suggestedMessenger, type ContactChannel } from "@/lib/journey-rules";
  * (Telegram or WhatsApp), marked "Suggested" — the patient can change it.
  */
 export function SignUpFields({
+  locale,
   labels,
 }: {
+  locale: Locale;
   labels: Record<"country" | "choose" | "phone" | "mobile" | "reachMe" | "tapToChange" | "suggested" | "hintPick" | "hintTelegram" | "hintWhatsapp" | "telegram" | "whatsapp" | "call" | "email", string>;
 }) {
   const [country, setCountry] = useState("");
@@ -59,12 +62,12 @@ export function SignUpFields({
           <option value="" disabled>
             {labels.choose}
           </option>
-          {COUNTRIES.map((item) => (
-            <option key={item.code} value={item.name}>
-              {item.name}
+          {countryOptions(locale).map((item) => (
+            <option key={item.code} value={item.value} suppressHydrationWarning>
+              {item.label}
             </option>
           ))}
-          <option value="Other">Other</option>
+          <option value="Other">{OTHER_COUNTRY[locale]}</option>
         </select>
       </label>
       <label className="a-field">

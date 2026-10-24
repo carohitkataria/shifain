@@ -1,4 +1,4 @@
-import { LOCALES, LOCALE_META } from "@/lib/i18n";
+import { CONTENT_LOCALES as LOCALES, LOCALE_META } from "@/lib/i18n";
 import type { EditorNode } from "@/lib/editor";
 import { AdminIcon } from "./AdminIcon";
 

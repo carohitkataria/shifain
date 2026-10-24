@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { AppShell, Hidden, SecHead, href } from "@/components/patient-app/AppShell";
+import { AppShell, Hidden, STAY_TABS, SecHead, href } from "@/components/patient-app/AppShell";
 import { AppIcon } from "@/components/patient-app/AppIcon";
 import { CopyButton, OpenSheet } from "@/components/patient-app/client";
-import { AskSheet, PickupSheet } from "@/components/patient-app/sheets";
+import { PickupSheet } from "@/components/patient-app/sheets";
 import { fmtDay } from "@/components/patient-app/view";
 import { APP } from "@/lib/patient-app-copy";
 import { initials, loadApp, mapsHref, telHref, tgHref, waHref, type AppProps } from "@/lib/patient-app";
 import { OPEN_RIDE, journeyOf, rideStep } from "@/lib/journey-rules";
 import { t } from "@/lib/localize";
 import { cancelRideAction } from "../../app-actions";
+import { DocumentsTab } from "./DocumentsTab";
 
 export const dynamic = "force-dynamic";
 
@@ -21,13 +22,31 @@ const NEARBY = [
   ["laundry", "bed", "laundry"],
 ] as const;
 
-/** Where the patient stays, the car they can call (and how far along it is), flights, and what is nearby. */
+const TABS = ["documents", "flights", "hotel", "car", "nearby"] as const;
+type StayTab = (typeof TABS)[number];
+
+/**
+ * Travel & stay, in tabs: visa and documents, flights, the hotel, the car and
+ * what is nearby. With no tab chosen it opens on what matters now — the car
+ * after a ride was asked for, the hotel once the patient has checked in, the
+ * paperwork before they travel.
+ */
 export default async function StayPage(props: AppProps) {
+  const app = await loadApp(props);
+  const asked = (TABS as readonly string[]).includes(app.query.tab ?? "") ? (app.query.tab as StayTab) : null;
+  const checkIn = app.ctx?.care?.checkIn ?? null;
+  const tab: StayTab = asked ?? (app.query.done === "ride" || app.query.done === "cancelled" ? "car" : checkIn && checkIn <= app.today ? "hotel" : "documents");
+  if (tab === "documents") return DocumentsTab(props);
+  return StayTabPage(props, tab);
+}
+
+/** Where the patient stays, the car they can call (and how far along it is), flights, and what is nearby. */
+async function StayTabPage(props: AppProps, tab: Exclude<StayTab, "documents">) {
   const app = await loadApp(props);
   const { locale, record, ctx } = app;
   if (!record) {
     return (
-      <AppShell app={app} section="stay">
+      <AppShell app={app} section="stay" tabs={STAY_TABS(tab)}>
         <p className="a-card a-pad">{t(APP.noCase, locale)}</p>
       </AppShell>
     );
@@ -44,8 +63,8 @@ export default async function StayPage(props: AppProps) {
   const isPatient = app.portal.viewer?.role === "patient";
 
   return (
-    <AppShell app={app} section="stay" sheets={isPatient ? <><PickupSheet app={app} section="stay" /><AskSheet app={app} section="messages" /></> : null}>
-      {hotel ? (
+    <AppShell app={app} section="stay" tabs={STAY_TABS(tab)} sheets={isPatient ? <PickupSheet app={app} section="stay" /> : null}>
+      {tab !== "hotel" ? null : hotel ? (
         <div className="a-card a-pad">
           <div className="a-row a-between">
             <span className="a-pill t-ok">{t(APP.confirmed, locale)}</span>
@@ -114,17 +133,18 @@ export default async function StayPage(props: AppProps) {
               <AppIcon name="nav" />
               {t(APP.directions, locale)}
             </a>
-            <OpenSheet id="ask" className="a-btn a-btn-s">
+            <Link href={href(app, "messages", "to=hotel")} className="a-btn a-btn-s">
               <AppIcon name="chat" />
               {t(APP.request, locale)}
-            </OpenSheet>
+            </Link>
           </div>
         </div>
       ) : (
         <p className="a-card a-pad a-tiny a-muted">{t(APP.noHotel, locale)}</p>
       )}
 
-      <section className="a-sec">
+      {tab === "car" ? (
+      <section className="a-sec" style={{ marginTop: 0 }}>
         <SecHead icon="car" title={t(APP.yourVehicle, locale)} action={live.length ? <span className="a-pill t-sch">{t(APP.rideStatus[live[0].status], locale)}</span> : null} />
         <div className="a-card a-pad">
           {driver ? (
@@ -159,7 +179,7 @@ export default async function StayPage(props: AppProps) {
                 </span>
                 {isPatient && ride.status === "requested" ? (
                   <form action={cancelRideAction}>
-                    <Hidden app={app} section="stay" />
+                    <Hidden app={app} section="stay" tab="car" />
                     <input type="hidden" name="id" value={ride.id} />
                     <button className="a-link" style={{ color: "var(--red)" }}>
                       {t(APP.cancel, locale)}
@@ -206,9 +226,10 @@ export default async function StayPage(props: AppProps) {
           ) : null}
         </div>
       </section>
+      ) : null}
 
-      {flightIn || flightOut ? (
-        <section className="a-sec">
+      {tab !== "flights" ? null : flightIn || flightOut ? (
+        <section className="a-sec" style={{ marginTop: 0 }}>
           <SecHead icon="plane" title={t(APP.flights, locale)} />
           <ul className="a-card a-list">
             {[flightIn, flightOut].filter(Boolean).map((flight) => (
@@ -231,10 +252,12 @@ export default async function StayPage(props: AppProps) {
             ))}
           </ul>
         </section>
-      ) : null}
+      ) : (
+        <p className="a-card a-pad a-tiny a-muted">{t(APP.noFlights, locale)}</p>
+      )}
 
-      {near ? (
-        <section className="a-sec">
+      {tab !== "nearby" ? null : near ? (
+        <section className="a-sec" style={{ marginTop: 0 }}>
           <SecHead icon="pin" title={t(APP.nearby, locale)} />
           <div className="a-g3">
             {NEARBY.map(([key, icon, query]) => (
@@ -246,7 +269,9 @@ export default async function StayPage(props: AppProps) {
             ))}
           </div>
         </section>
-      ) : null}
+      ) : (
+        <p className="a-card a-pad a-tiny a-muted">{t(APP.noHotel, locale)}</p>
+      )}
     </AppShell>
   );
 }

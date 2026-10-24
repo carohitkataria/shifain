@@ -32,6 +32,8 @@ import {
 } from "./referrals";
 import { listReferrals, money } from "./partners";
 import { normalisePhone } from "./patient-auth";
+import { confirmTelegramLogin, pendingTelegramLogin } from "./telegram-login";
+import { toUzCyrillic } from "./uz-cyrillic";
 import { casesForPhone, getCase } from "./cases";
 import { createLead } from "./telegram-leads";
 import { isElevenLabsConfigured, transcribeAudio, textToSpeech } from "./elevenlabs";
@@ -439,6 +441,10 @@ async function handlePatientUpdate(update: TgUpdate): Promise<void> {
   }
 
   if (msg.contact?.phone_number) {
+    if (contact.state === "login" && typeof contact.stateData?.token === "string") {
+      await handleLoginContact(chatId, userId, contact.stateData.token, msg.contact, msg.from?.first_name ?? null);
+      return;
+    }
     await handlePhoneShared(chatId, userId, msg.contact.phone_number);
     return;
   }
@@ -475,6 +481,16 @@ async function handlePatientCommand(
     case "/start": {
       // t.me/<bot>?start=ref_CODE arrives as "/start ref_CODE".
       const payload = args[0] ?? "";
+      // t.me/<bot>?start=login_TOKEN: signing in to the website.
+      if (payload.startsWith("login_")) {
+        await startLogin(chatId, userId, payload.slice(6));
+        return;
+      }
+      // t.me/<bot>?start=case_REF: "Follow your case on Telegram", from the plan page.
+      if (payload.startsWith("case_")) {
+        await followCase(chatId, userId, payload.slice(5));
+        return;
+      }
       if (payload.startsWith("ref_")) {
         const code = normaliseCode(payload.slice(4));
         if (code && (await partnerByCode(code).catch(() => null))) {
@@ -482,17 +498,10 @@ async function handlePatientCommand(
         }
       }
       await updateContactState("patient", userId, "welcome");
+      const language = (await getTelegramContact("patient", userId).catch(() => null))?.languageCode?.slice(0, 2);
       await sendMessage("patient", {
         chatId,
-        text:
-          "🏥 <b>Welcome to ShifaIn</b>\n\n" +
-          "I'm the ShifaIn care assistant, and a coordinator is on hand if you'd rather talk to a person. Just tell me what you need — no forms to fill out.\n\n" +
-          "You can:\n" +
-          "• <b>Describe your medical need</b> — I'll ask a few questions and create your treatment plan\n" +
-          "• <b>Send a voice message</b> — speak in any language, I'll understand\n" +
-          "• <b>Send medical reports</b> — photos or PDFs of scans, lab results\n" +
-          "• Check your case status with /status\n\n" +
-          "Simply start by telling me what treatment you're looking for, and I'll guide you through the rest.",
+        text: followText(WELCOME, language === "ru" || language === "uz" ? language : null),
         requestContact: true,
       });
       break;
@@ -649,6 +658,144 @@ async function handlePatientCallback(
       }
       break;
   }
+}
+
+/** The first message, in the language the patient's Telegram is set to. */
+const WELCOME = {
+  en:
+    "🏥 <b>Welcome to ShifaIn</b>\n\n" +
+    "I'm the ShifaIn care assistant, and a coordinator is on hand if you'd rather talk to a person. Just tell me what you need — no forms to fill out.\n\n" +
+    "You can:\n" +
+    "• <b>Describe your medical need</b> — I'll ask a few questions and create your treatment plan\n" +
+    "• <b>Send a voice message</b> — speak in any language, I'll understand\n" +
+    "• <b>Send medical reports</b> — photos or PDFs of scans, lab results\n" +
+    "• Check your case status with /status\n\n" +
+    "Simply start by telling me what treatment you're looking for, and I'll guide you through the rest.",
+  ru:
+    "🏥 <b>Добро пожаловать в ShifaIn</b>\n\n" +
+    "Я помощник ShifaIn по лечению, а если захотите поговорить с человеком — рядом координатор. Просто напишите, что вам нужно, — без анкет.\n\n" +
+    "Вы можете:\n" +
+    "• <b>Описать, что вас беспокоит</b> — я задам пару вопросов и составлю план лечения\n" +
+    "• <b>Отправить голосовое</b> — на любом языке, я пойму\n" +
+    "• <b>Прислать документы</b> — фото или PDF снимков и анализов\n" +
+    "• Узнать статус случая командой /status\n\n" +
+    "Начните с того, какое лечение вы ищете, — дальше я подскажу.",
+  uz:
+    "🏥 <b>ShifaIn ga xush kelibsiz</b>\n\n" +
+    "Men ShifaIn davolanish yordamchisiman, odam bilan gaplashmoqchi bo'lsangiz koordinator ham bor. Nima kerakligini yozing — anketasiz.\n\n" +
+    "Siz:\n" +
+    "• <b>Muammoingizni tasvirlashingiz</b> mumkin — bir necha savol berib, davolash rejasini tuzaman\n" +
+    "• <b>Ovozli xabar yuborishingiz</b> mumkin — istalgan tilda, tushunaman\n" +
+    "• <b>Hujjatlarni yuborishingiz</b> mumkin — tasvir va tahlillarning surati yoki PDF\n" +
+    "• Holatingizni /status buyrug'i bilan tekshirishingiz mumkin\n\n" +
+    "Qanday davolanish izlayotganingizdan boshlang — qolganida yordam beraman.",
+};
+
+/** The words of the case link, in the case's language (Uzbek also in Cyrillic). */
+const FOLLOW_WORDS = {
+  linked: {
+    en: "✅ <b>Your case {ref} is linked.</b>\n\nWe'll message you here when it moves — your plan, the hospital's answer, visa and travel. You can send reports or questions here any time, and a coordinator will answer.",
+    ru: "✅ <b>Ваш случай {ref} привязан.</b>\n\nМы напишем сюда, когда что-то изменится — план, ответ клиники, виза и поездка. Присылайте сюда документы и вопросы в любое время — координатор ответит.",
+    uz: "✅ <b>{ref} holatingiz bog'landi.</b>\n\nHolat o'zgarganda shu yerga yozamiz — reja, shifoxona javobi, viza va safar. Hujjat va savollarni istalgan vaqtda shu yerga yuboring — koordinator javob beradi.",
+  },
+  unknown: {
+    en: "We couldn't find that case. Please open the link from your plan page again, or send your case reference here.",
+    ru: "Мы не нашли этот случай. Откройте ссылку со страницы плана ещё раз или пришлите сюда номер случая.",
+    uz: "Bu holat topilmadi. Reja sahifasidagi havolani qayta oching yoki holat raqamini shu yerga yuboring.",
+  },
+};
+
+function followText(words: { en: string; ru: string; uz: string }, locale: string | null | undefined): string {
+  if (locale === "ru") return words.ru;
+  if (locale === "uz") return words.uz;
+  if (locale === "oz") return toUzCyrillic(words.uz);
+  return words.en;
+}
+
+/**
+ * "Follow your case on Telegram": the reference in the link is the proof — it is
+ * 96 random bits only the patient was shown — so the chat is linked to the case,
+ * and every update reaches it from now on.
+ */
+async function followCase(chatId: number, userId: number, raw: string): Promise<void> {
+  const reference = raw.trim().toUpperCase();
+  const record = /^SH-[A-Z0-9-]{4,40}$/.test(reference) ? await getCase(reference).catch(() => null) : null;
+  if (!record) {
+    await sendMessage("patient", { chatId, text: followText(FOLLOW_WORDS.unknown, null) });
+    return;
+  }
+  await linkContactToCase("patient", userId, record._id, null);
+  await updateContactState("patient", userId, "ready");
+  await sendMessage("patient", { chatId, text: followText(FOLLOW_WORDS.linked, record.locale).replace("{ref}", `<code>${record._id}</code>`) });
+}
+
+/** Sign-in with Telegram, step one: ask for the phone number Telegram itself vouches for. */
+async function startLogin(chatId: number, userId: number, token: string): Promise<void> {
+  if (!(await pendingTelegramLogin(token))) {
+    await sendMessage("patient", {
+      chatId,
+      text: "⌛ This sign-in link has expired. Go back to the ShifaIn website and press <b>Sign in with Telegram</b> again.",
+    });
+    return;
+  }
+  await updateContactState("patient", userId, "login", { token });
+  await sendMessage("patient", {
+    chatId,
+    text:
+      "🔐 <b>Sign in to ShifaIn</b>\n\n" +
+      "Tap <b>Share my phone number</b> below. Telegram confirms the number is yours, and the website signs you in — no code to type.\n\n" +
+      "Didn't try to sign in? Just ignore this message.",
+    requestContact: true,
+  });
+}
+
+/** Step two: the shared contact must be the sender's own, not a card forwarded from someone else. */
+async function handleLoginContact(
+  chatId: number,
+  userId: number,
+  token: string,
+  shared: { phone_number: string; user_id?: number },
+  firstName: string | null,
+): Promise<void> {
+  if (shared.user_id !== userId) {
+    await sendMessage("patient", {
+      chatId,
+      text: "That looks like someone else's contact. Please use the <b>Share my phone number</b> button, which sends your own.",
+      requestContact: true,
+    });
+    return;
+  }
+  const digits = normalisePhone(shared.phone_number);
+  const confirmed = await confirmTelegramLogin(token, { digits, telegramUserId: userId, name: firstName });
+  await handlePhoneSaved(chatId, userId, digits);
+  await sendMessage("patient", {
+    chatId,
+    text: confirmed
+      ? "✅ <b>You're signed in.</b> Go back to your browser — the ShifaIn website is opening your account.\n\nYou can also send me your reports here, and I'll message you when your case moves."
+      : "⌛ This sign-in link has expired. Go back to the ShifaIn website and press <b>Sign in with Telegram</b> again.",
+  });
+}
+
+/** Remembers a verified number on the contact without starting the intake conversation. */
+async function handlePhoneSaved(chatId: number, userId: number, digits: string): Promise<void> {
+  const existing = await getTelegramContact("patient", userId);
+  await upsertTelegramContact({
+    telegramUserId: userId,
+    telegramChatId: chatId,
+    username: existing?.username ?? null,
+    firstName: existing?.firstName ?? "User",
+    lastName: existing?.lastName ?? null,
+    languageCode: existing?.languageCode ?? null,
+    phone: digits,
+    contactType: "patient",
+    contactId: existing?.contactId ?? null,
+    caseReference: existing?.caseReference ?? null,
+    botRole: "patient",
+    state: "ready",
+    stateData: null,
+  });
+  const latest = (await casesForPhone(digits, 1))[0];
+  if (latest && !existing?.caseReference) await linkContactToCase("patient", userId, latest._id, null).catch(() => undefined);
 }
 
 async function handlePhoneShared(chatId: number, userId: number, phone: string): Promise<void> {

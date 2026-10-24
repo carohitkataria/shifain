@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { PortalIcon } from "./PortalIcon";
-import { AppShell, type Section } from "../patient-app/AppShell";
+import { AppShell, type Section, type TabSpec } from "../patient-app/AppShell";
 import { buildApp } from "@/lib/patient-app";
 import { PATIENT_COPY } from "@/lib/patient-copy";
+import { APP } from "@/lib/patient-app-copy";
 import { ACCOUNT_COPY, PORTAL_NAV, type PortalSection } from "@/lib/portal-patient-copy";
 import { t } from "@/lib/localize";
 import type { SiteContent } from "@/lib/content-types";
@@ -63,11 +64,11 @@ export function Notice({ tone, children }: { tone: "good" | "bad"; children: Rea
 
 const SECTION_OF: Record<PortalSection | "new", Section> = {
   overview: "home",
-  plan: "plan",
+  plan: "case",
   reports: "reports",
-  schedule: "schedule",
+  schedule: "messages",
   translator: "translate",
-  history: "history",
+  history: "case",
   help: "help",
   profile: "settings",
   new: "new",
@@ -83,6 +84,7 @@ export async function PortalFrame({
   locale,
   data,
   section,
+  tabs,
   children,
 }: {
   content: SiteContent;
@@ -90,13 +92,15 @@ export async function PortalFrame({
   data: PortalData;
   /** "new" is the start-a-case page, which is not in the section list. */
   section: PortalSection | "new";
+  /** When this page is a tab of a bigger screen (the plan and history of My case, the calls of Messages). */
+  tabs?: TabSpec;
   children: React.ReactNode;
 }) {
   const app = await buildApp(locale, content, data, {});
   const { active, account } = data;
   const name = account?.firstName || (active?.patient.name && active.patient.name !== "Website patient" ? active.patient.name : "");
   return (
-    <AppShell app={app} section={SECTION_OF[section]}>
+    <AppShell app={app} section={SECTION_OF[section]} tabs={tabs} title={tabs ? t(APP.titles[SECTION_OF[section]], locale) : undefined}>
       <div className="a-legacy flex min-w-0 flex-col gap-5">
         {active || section === "help" || section === "translator" || section === "new" || (section === "profile" && account) ? (
           children

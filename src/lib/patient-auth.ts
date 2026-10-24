@@ -20,7 +20,10 @@ function secret(): string {
 const sign = (payload: string) =>
   crypto.createHmac("sha256", secret()).update(payload).digest("base64url");
 
-function safeEqual(a: string, b: string): boolean {
+/** The same keyed hash, for one-time codes kept by sibling modules (phone codes). */
+export const keyedHash = (value: string) => sign(`code:${value}`);
+
+export function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
   if (bufA.length !== bufB.length) return false;
@@ -56,18 +59,26 @@ export async function authenticatePatient(
   return record;
 }
 
-export async function startPatientSession(phone: string): Promise<void> {
-  const digits = normalisePhone(phone);
-  const expires = Date.now() + MAX_AGE_SECONDS * 1000;
-  const payload = `${digits}.${expires}`;
+/** Without "remember me": the cookie ends with the browser, and the session within half a day regardless. */
+const SHORT_SESSION_SECONDS = 60 * 60 * 12;
+
+export type SessionOptions = { remember?: boolean };
+
+async function setSession(subject: string, { remember = true }: SessionOptions): Promise<void> {
+  const expires = Date.now() + (remember ? MAX_AGE_SECONDS : SHORT_SESSION_SECONDS) * 1000;
+  const payload = `${subject}.${expires}`;
   const jar = await cookies();
   jar.set(PATIENT_COOKIE, `${payload}.${sign(payload)}`, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: MAX_AGE_SECONDS,
+    ...(remember ? { maxAge: MAX_AGE_SECONDS } : {}),
   });
+}
+
+export async function startPatientSession(phone: string, options: SessionOptions = {}): Promise<void> {
+  await setSession(normalisePhone(phone), options);
 }
 
 export async function endPatientSession(): Promise<void> {
@@ -113,6 +124,9 @@ export type SignUpDetails = {
 export type PatientAccount = SignUpDetails & {
   _id: string; // the email, lower-cased
   email: string;
+  /** scrypt hash of the password, once the patient has set one (see patient-password.ts). */
+  passwordHash?: string;
+  passwordSetAt?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -136,6 +150,19 @@ export const normaliseEmail = (value: string) => value.trim().toLowerCase();
 export async function getPatientAccount(email: string): Promise<PatientAccount | null> {
   const db = await getDb();
   return db.collection<PatientAccount>("patient_accounts").findOne({ _id: normaliseEmail(email) });
+}
+
+/** The account whose phone number this is, if one has it (matched on the last nine digits, as cases are). */
+export async function accountForPhone(digits: string): Promise<PatientAccount | null> {
+  const tail = normalisePhone(digits).slice(-9);
+  if (tail.length < 6) return null;
+  const db = await getDb();
+  const candidates = await db
+    .collection<PatientAccount>("patient_accounts")
+    .find({ phone: { $regex: `${tail.slice(-4)}$` } })
+    .limit(50)
+    .toArray();
+  return candidates.find((account) => normalisePhone(`${account.dial}${account.phone}`).endsWith(tail)) ?? null;
 }
 
 /** Whether this address may sign in: it has an account, or a case was opened with it. */
@@ -259,7 +286,7 @@ async function saveAccount(email: string, details: SignUpDetails): Promise<void>
 }
 
 /** A patient signing in with Google has proved the address; give them an account if they have none. */
-export async function ensureAccount(email: string, name: string, locale: string): Promise<void> {
+export async function ensureAccount(email: string, name: string, locale: string, from: { country?: string; phone?: string } = {}): Promise<void> {
   const db = await getDb();
   const now = new Date().toISOString();
   const [firstName = "", ...rest] = name.trim().split(/\s+/);
@@ -270,9 +297,10 @@ export async function ensureAccount(email: string, name: string, locale: string)
         email: normaliseEmail(email),
         firstName,
         lastName: rest.join(" "),
-        country: "",
+        country: from.country ?? "",
         dial: "",
-        phone: "",
+        // A case keeps the number whole ("+998 90 …"); accountForPhone reads dial + phone together.
+        phone: from.phone ?? "",
         locale,
         createdAt: now,
         updatedAt: now,
@@ -282,17 +310,8 @@ export async function ensureAccount(email: string, name: string, locale: string)
   );
 }
 
-export async function startPatientEmailSession(email: string): Promise<void> {
-  const expires = Date.now() + MAX_AGE_SECONDS * 1000;
-  const payload = `e:${normaliseEmail(email)}.${expires}`;
-  const jar = await cookies();
-  jar.set(PATIENT_COOKIE, `${payload}.${sign(payload)}`, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: MAX_AGE_SECONDS,
-  });
+export async function startPatientEmailSession(email: string, options: SessionOptions = {}): Promise<void> {
+  await setSession(`e:${normaliseEmail(email)}`, options);
 }
 
 /** The signed-in patient, by whichever route they used. */

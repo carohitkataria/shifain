@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { COUNTRIES, DIAL_BY_NAME } from "@/lib/countries";
-import { INTAKE_COPY, WIZARD_COPY as W } from "@/lib/intake-copy";
+import { COUNTRY_BY_NAME, DIAL_BY_NAME, OTHER_COUNTRY, countryOptions } from "@/lib/countries";
+import { INTAKE_COPY, REACH_COPY, WIZARD_COPY as W } from "@/lib/intake-copy";
 import { INTAKE_QUESTIONS } from "@/lib/ai/plan-questions";
 import { t } from "@/lib/localize";
+import { EnquiryReturned } from "./EnquiryReturned";
+import { ReachChoice } from "./ReachChoice";
 import type { L } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
 
@@ -13,6 +15,8 @@ type Errors = Partial<Record<"need" | "other" | "condition" | "firstName" | "cou
 
 const MAX_FILES = 10;
 const MAX_BYTES = 25 * 1024 * 1024;
+/** Each file is stored for the coordinator, and storage takes up to 14 MB a file. */
+const MAX_FILE_BYTES = 14 * 1024 * 1024;
 const CORE_QUESTIONS = new Set(["problem", "diagnosis", "age", "conditions"]);
 
 const field =
@@ -57,6 +61,7 @@ export function PlanRequestForm({
   const [description, setDescription] = useState("");
   const [answered, setAnswered] = useState(false);
   const [dial, setDial] = useState(defaults?.dial ?? "");
+  const [countryCode, setCountryCode] = useState<string | null>(COUNTRY_BY_NAME.get(defaults?.country ?? "")?.code ?? null);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -84,7 +89,7 @@ export function PlanRequestForm({
   }, [step]);
 
   const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
-  const overLimit = files.length > MAX_FILES || totalBytes > MAX_BYTES;
+  const overLimit = files.length > MAX_FILES || totalBytes > MAX_BYTES || files.some((file) => file.size > MAX_FILE_BYTES);
 
   const addFiles = (list: FileList | null) => {
     if (!list) return;
@@ -115,7 +120,7 @@ export function PlanRequestForm({
       if (!String(data.get("country") ?? "").trim()) next.country = t(W.countryError, locale);
       if (String(data.get("phone") ?? "").replace(/\D/g, "").length < 5) next.phone = t(W.phoneError, locale);
       const email = String(data.get("email") ?? "").trim();
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = t(W.emailError, locale);
+      if ((email || data.get("channel") === "email") && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = t(W.emailError, locale);
     }
     return next;
   };
@@ -174,6 +179,7 @@ export function PlanRequestForm({
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="treatment" value={treatmentValue} />
       <input ref={reportsRef} type="file" name="reports" multiple hidden tabIndex={-1} aria-hidden="true" />
+      <EnquiryReturned locale={locale} />
 
       {/* Progress */}
       <div className="mt-5">
@@ -332,7 +338,7 @@ export function PlanRequestForm({
               id="report-picker"
               type="file"
               multiple
-              accept=".pdf,.jpg,.jpeg,.png,.webp,.heic"
+              accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
               onChange={(e) => addFiles(e.target.files)}
               className="sr-only"
             />
@@ -479,6 +485,7 @@ export function PlanRequestForm({
             aria-describedby={errors.country ? "err-country" : undefined}
             onChange={(e) => {
               setDial(DIAL_BY_NAME[e.target.value] ?? "");
+              setCountryCode(COUNTRY_BY_NAME.get(e.target.value)?.code ?? null);
               setErrors((x) => ({ ...x, country: undefined }));
             }}
             className={field}
@@ -486,19 +493,19 @@ export function PlanRequestForm({
             <option value="" disabled>
               {labels.countryPlaceholder}
             </option>
-            {COUNTRIES.map((country) => (
-              <option key={country.code} value={country.name}>
-                {country.name}
+            {countryOptions(locale).map((item) => (
+              <option key={item.code} value={item.value} suppressHydrationWarning>
+                {item.label}
               </option>
             ))}
-            <option value="Other">Other</option>
+            <option value="Other">{OTHER_COUNTRY[locale]}</option>
           </select>
           <FieldError id="err-country" text={errors.country} />
         </div>
 
         <div>
           <label htmlFor="phone" className={labelCls}>
-            {labels.phone}
+            {t(REACH_COPY.mobile, locale)}
           </label>
           <div className="flex gap-2">
             <input
@@ -519,16 +526,15 @@ export function PlanRequestForm({
               autoComplete="tel-national"
               defaultValue={defaults?.phone}
               aria-invalid={Boolean(errors.phone)}
-              aria-describedby={errors.phone ? "err-phone" : "phone-note"}
+              aria-describedby={errors.phone ? "err-phone" : undefined}
               onInput={() => setErrors((x) => ({ ...x, phone: undefined }))}
               className={`${field.replace("w-full ", "")} flex-1`}
             />
           </div>
           <FieldError id="err-phone" text={errors.phone} />
-          <p id="phone-note" className="mt-1.5 text-xs text-ink-muted">
-            {t(W.contactNote, locale)}
-          </p>
         </div>
+
+        <ReachChoice locale={locale} countryCode={countryCode} />
 
         <div>
           <label htmlFor="email" className={labelCls}>

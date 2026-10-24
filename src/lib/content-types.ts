@@ -1,7 +1,7 @@
-import type { Locale } from "./i18n";
+import type { ContentLocale } from "./i18n";
 
-/** A string that exists in every supported language. */
-export type L = Record<Locale, string>;
+/** A string in every language text is stored in (Cyrillic Uzbek is made from the Latin). */
+export type L = Record<ContentLocale, string>;
 
 export type SectionId =
   | "hero"

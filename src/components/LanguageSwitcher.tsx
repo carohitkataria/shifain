@@ -66,7 +66,7 @@ export function LanguageSwitcher({ locale, path }: { locale: Locale; path: strin
               }`}
             >
               <span>{LOCALE_META[option].label}</span>
-              <span className="text-[0.68rem] uppercase tracking-wider text-ink-muted">{option}</span>
+              <span className="text-[0.68rem] uppercase tracking-wider text-ink-muted">{option === "oz" ? "ЎЗ" : option}</span>
             </a>
           ))}
         </div>

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "node:crypto";
 import { isElevenLabsConfigured, transcribeAudio, cachedSpeech } from "@/lib/elevenlabs";
+import { toUzCyrillic } from "@/lib/uz-cyrillic";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
@@ -143,9 +144,21 @@ export async function POST(request: NextRequest) {
   }
 
 
+  // A Cyrillic Uzbek page is answered in Uzbek, and the answer shown in Cyrillic.
+  const cyrillic = locale === "oz";
+  if (cyrillic) locale = "uz";
+  const script = (payload: Record<string, unknown>): Record<string, unknown> => {
+    if (!cyrillic) return payload;
+    const out: Record<string, unknown> = { ...payload };
+    if (typeof out.reply === "string") out.reply = toUzCyrillic(out.reply);
+    if (Array.isArray(out.suggestions)) out.suggestions = out.suggestions.map((item) => (typeof item === "string" ? toUzCyrillic(item) : item));
+    if (Array.isArray(out.links)) out.links = out.links.map((link) => (link && typeof link === "object" && typeof (link as { label?: unknown }).label === "string" ? { ...link, label: toUzCyrillic((link as { label: string }).label) } : link));
+    return out;
+  };
+
   // Every answer carries what was heard, so a spoken turn shows as text.
   const respond = (payload: Record<string, unknown>, init?: ResponseInit) =>
-    NextResponse.json(heardFromAudio ? { transcript: userMessage, ...payload } : payload, init);
+    NextResponse.json(heardFromAudio ? { transcript: userMessage, ...script(payload) } : script(payload), init);
 
   /** Speech for a reply, when this turn is spoken and natural voices are on. */
   const withSpeech = async (payload: Record<string, unknown>) => {

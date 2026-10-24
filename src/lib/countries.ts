@@ -116,3 +116,36 @@ export const COUNTRY_BY_NAME = new Map(COUNTRIES.map((country) => [country.name,
 export const DIAL_BY_NAME: Record<string, string> = Object.fromEntries(
   COUNTRIES.map((country) => [country.name, `+${country.dial}`]),
 );
+
+const DISPLAY_TAG: Record<Locale, string> = { en: "en", ru: "ru", uz: "uz-Latn", oz: "uz-Cyrl" };
+const namers = new Map<Locale, Intl.DisplayNames | null>();
+
+/**
+ * A country's name in the reader's language ("Узбекистан", "Oʻzbekiston"), from the
+ * browser's or server's own region names. The value sent with a form stays the
+ * English name, which is what cases and the console use.
+ */
+export function countryLabel(country: Country, locale: Locale): string {
+  if (!namers.has(locale)) {
+    try {
+      namers.set(locale, new Intl.DisplayNames([DISPLAY_TAG[locale] ?? "en"], { type: "region" }));
+    } catch {
+      namers.set(locale, null);
+    }
+  }
+  try {
+    return namers.get(locale)?.of(country.code) || country.name;
+  } catch {
+    return country.name;
+  }
+}
+
+/** The countries in the reader's language and alphabet order, for a <select>. */
+export function countryOptions(locale: Locale): { value: string; label: string; code: string }[] {
+  return COUNTRIES.map((country) => ({ value: country.name, label: countryLabel(country, locale), code: country.code })).sort((a, b) =>
+    a.label.localeCompare(b.label, DISPLAY_TAG[locale] ?? "en"),
+  );
+}
+
+/** "Other", for the end of that list. */
+export const OTHER_COUNTRY: Record<Locale, string> = { en: "Other", ru: "Другая страна", uz: "Boshqa", oz: "Бошқа" };

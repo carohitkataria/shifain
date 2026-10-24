@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AppShell, MoreLink, SecHead, href } from "@/components/patient-app/AppShell";
+import { AppShell, MoreLink, SecHead, caseNeed, href } from "@/components/patient-app/AppShell";
 import { AppIcon } from "@/components/patient-app/AppIcon";
 import { Greeting, OpenSheet } from "@/components/patient-app/client";
 import { AskSheet, BookSheet, PickupSheet } from "@/components/patient-app/sheets";
@@ -60,7 +60,7 @@ export default async function PatientHome(props: AppProps) {
       }
     >
       <Greeting name={first} labels={greet} locale={locale}>
-        {days != null ? (
+        {days != null && record.status !== "closed" ? (
           <>
             {" · "}
             <b style={{ color: "var(--primary)" }}>{days > 0 ? t(APP.daysToTravel(days), locale) : days === 0 ? t(APP.travelToday, locale) : t(APP.inIndia, locale)}</b>
@@ -84,6 +84,31 @@ export default async function PatientHome(props: AppProps) {
           ))}
         </div>
       </Link>
+
+      {record.status === "closed" ? (
+        <section className="a-card a-pad a-sec" aria-labelledby="home-title">
+          <h3 id="home-title" style={{ fontSize: 17 }}>
+            {t(APP.homeAgain.title, locale)}
+          </h3>
+          <p className="a-tiny a-muted" style={{ marginTop: 6 }}>
+            {t(APP.homeAgain.body, locale)}
+          </p>
+          <div className="a-actions" style={{ marginTop: 12 }}>
+            <Link href={href(app, "reports")} className="a-btn a-btn-t">
+              <AppIcon name="upload" />
+              {t(APP.homeAgain.reports, locale)}
+            </Link>
+            <Link href={href(app, "messages", "tab=calls")} className="a-btn a-btn-t">
+              <AppIcon name="video" />
+              {t(APP.homeAgain.call, locale)}
+            </Link>
+            <Link href={href(app, "messages")} className="a-btn a-btn-s">
+              <AppIcon name="chat" />
+              {t(APP.homeAgain.write, locale)}
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       <div className="a-kgrid a-sec">
         <Link href={href(app, "calendar")} className="a-card a-kpi a-tap">
@@ -193,7 +218,7 @@ export default async function PatientHome(props: AppProps) {
                     <AppIcon name="heart" />
                   </span>
                   <span className="a-t">
-                    <b>{app.names.disease ?? record.statedNeed ?? t(APP.caseShort, locale)}</b>
+                    <b>{app.names.disease ?? caseNeed(app) ?? t(APP.caseShort, locale)}</b>
                     <small>{app.names.treatment ?? t(APP.fullPlan, locale)}</small>
                   </span>
                   <AppIcon name="right" />
@@ -236,10 +261,10 @@ export default async function PatientHome(props: AppProps) {
                     <span className="a-t">
                       <b>
                         {arrival ? `${fmtDay(arrival, locale)} · ` : ""}
-                        {record.plan.stay.daysInCountry} {locale === "ru" ? "дн." : locale === "uz" ? "kun" : "days"}
+                        {record.plan.stay.daysInCountry} {t({ en: "days", ru: "дн.", uz: "kun" }, locale)}
                       </b>
                       <small>
-                        {record.plan.stay.inpatientNights} {locale === "ru" ? "ноч. в клинике" : locale === "uz" ? "kecha shifoxonada" : "nights in hospital"}
+                        {record.plan.stay.inpatientNights} {t({ en: "nights in hospital", ru: "ноч. в клинике", uz: "kecha shifoxonada" }, locale)}
                       </small>
                     </span>
                     <AppIcon name="right" />

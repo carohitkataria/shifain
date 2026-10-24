@@ -6,6 +6,7 @@ import type { CaseReport, IntakeRoute } from "./cases";
 
 export const MAX_FILES = 10;
 export const MAX_TOTAL_BYTES = 25 * 1024 * 1024;
+export { MAX_REPORT_BYTES as MAX_FILE_BYTES };
 
 /** The file types the planner can actually read. */
 const READABLE = /^(application\/pdf|image\/(png|jpeg|gif|webp))$/;
@@ -45,7 +46,9 @@ export async function readIntake(form: FormData): Promise<Intake> {
     .filter((value): value is File => value instanceof File && value.size > 0);
 
   const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
-  if (files.length > MAX_FILES || totalBytes > MAX_TOTAL_BYTES) {
+  // Each file must also fit what is stored (MAX_REPORT_BYTES): a bigger one would reach the
+  // planner but never be kept for the coordinator, so it is refused up front instead.
+  if (files.length > MAX_FILES || totalBytes > MAX_TOTAL_BYTES || files.some((file) => file.size > MAX_REPORT_BYTES)) {
     return {
       route: "reports",
       statedNeed,

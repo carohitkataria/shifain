@@ -2,8 +2,10 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileMenu } from "./MobileMenu";
+import { TelegramGlyph } from "./TelegramGlyph";
 import { t } from "@/lib/localize";
-import type { SiteContent } from "@/lib/content-types";
+import { botLink } from "@/lib/telegram-login";
+import type { L, SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
 
 const UserIcon = ({ className }: { className?: string }) => (
@@ -13,7 +15,11 @@ const UserIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export function Header({
+export const MESSAGE_US: L = { en: "Message us on Telegram", ru: "Написать нам в Telegram", uz: "Telegramda yozing" };
+const FAQ_NAV: L = { en: "FAQ", ru: "Вопросы", uz: "Savollar" };
+const TELEGRAM_SHORT: L = { en: "Telegram", ru: "Telegram", uz: "Telegram" };
+
+export async function Header({
   content,
   locale,
   path = "",
@@ -33,8 +39,10 @@ export function Header({
     { href: `${home}#why-india`, label: t(content.nav.whyIndia, locale) },
     { href: `${home}#costs`, label: t(content.nav.costEstimate, locale) },
     { href: `${home}#about`, label: t(content.nav.aboutUs, locale) },
+    { href: `${home}/faq`, label: t(FAQ_NAV, locale) },
   ];
   const login = { href: `${home}/portal/patient`, label: account ?? t(content.nav.loginSignup, locale) };
+  const telegram = await botLink().catch(() => null);
 
   return (
     <header className="sticky top-0 z-40 bg-hero/95 backdrop-blur">
@@ -61,6 +69,20 @@ export function Header({
 
         <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2 xl:ml-0">
           <LanguageSwitcher locale={locale} path={path} />
+
+          {telegram ? (
+            <a
+              href={telegram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t(MESSAGE_US, locale)}
+              title={t(MESSAGE_US, locale)}
+              className="inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-[#229ed9] px-3 text-[15px] font-semibold text-white transition hover:bg-[#1b8bc0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:min-h-12 lg:px-5"
+            >
+              <TelegramGlyph className="h-5 w-5" />
+              <span className="hidden lg:inline">{t(TELEGRAM_SHORT, locale)}</span>
+            </a>
+          ) : null}
 
           <Link
             href={login.href}

@@ -112,6 +112,8 @@ export const PLAN_COPY = {
   ),
   working: {
     title: l("Reading your reports", "Читаем ваши документы", "Hujjatlaringiz o'qilmoqda"),
+    /** When they described the problem or answered questions instead of uploading. */
+    titleNoFiles: l("Preparing your plan", "Готовим ваш план", "Rejangiz tayyorlanmoqda"),
     body: l(
       "This takes about a minute. The page refreshes itself — you do not need to do anything.",
       "Это займёт около минуты. Страница обновится сама — ничего делать не нужно.",
@@ -121,10 +123,32 @@ export const PLAN_COPY = {
   failed: {
     title: l("A coordinator is taking this one", "Этим займётся координатор", "Buni koordinator oladi"),
     body: l(
-      "We could not finish the automatic plan for your reports, so a person is picking it up. You will hear from us on the number you gave, and nothing you uploaded is lost.",
-      "Не удалось завершить автоматический план по вашим документам — им занимается человек. Мы свяжемся с вами по указанному номеру, всё загруженное сохранено.",
-      "Hujjatlaringiz bo'yicha avtomatik reja yakunlanmadi — buni odam oladi. Siz qoldirgan raqam orqali bog'lanamiz, yuklagan hech narsangiz yo'qolmadi.",
+      "We could not finish the automatic plan, so a coordinator is preparing it by hand. You will hear from us the way you chose.",
+      "Не удалось завершить автоматический план — координатор готовит его вручную. Мы свяжемся с вами так, как вы выбрали.",
+      "Avtomatik reja yakunlanmadi — koordinator uni qo'lda tayyorlamoqda. Siz tanlagan usulda bog'lanamiz.",
     ),
+    filesKept: l("Your files are kept safely for 30 days.", "Ваши файлы надёжно хранятся 30 дней.", "Fayllaringiz 30 kun xavfsiz saqlanadi."),
+    filesNotKept: l(
+      "We could not keep your files — please send them again when your coordinator writes.",
+      "Не удалось сохранить ваши файлы — пожалуйста, пришлите их снова, когда напишет координатор.",
+      "Fayllaringizni saqlab bo'lmadi — koordinator yozganda ularni qayta yuboring.",
+    ),
+  },
+  next: {
+    title: l("What happens next", "Что дальше", "Keyin nima bo'ladi"),
+    steps: [
+      l("A coordinator who speaks {language} reviews your case — usually within 24 hours.", "Координатор, говорящий на {language}, изучит ваш случай — обычно в течение 24 часов.", "{language} tilida gapiradigan koordinator holatingizni ko'rib chiqadi — odatda 24 soat ichida."),
+      l("The treating hospital confirms the plan and the price within 48 hours.", "Клиника подтверждает план и стоимость в течение 48 часов.", "Shifoxona reja va narxni 48 soat ichida tasdiqlaydi."),
+      l("Then we arrange your visa invitation, travel, stay and a translator.", "Затем мы оформляем приглашение для визы, поездку, проживание и переводчика.", "So'ng viza taklifnomasi, safar, turar joy va tarjimonni tashkil qilamiz."),
+    ],
+    language: { en: l("English", "английском", "ingliz"), ru: l("Russian", "русском", "rus"), uz: l("Uzbek", "узбекском", "o'zbek") },
+    follow: l("Follow your case", "Следите за своим случаем", "Holatingizni kuzating"),
+    telegram: l("Get updates on Telegram", "Обновления в Telegram", "Telegramda yangiliklar"),
+    telegramHint: l("Your case is linked when you open the bot — no forms.", "Случай привяжется, как только вы откроете бота — без анкет.", "Botni ochganingizda holatingiz bog'lanadi — anketasiz."),
+    account: l("Open your patient account", "Открыть кабинет пациента", "Bemor kabinetini ochish"),
+    accountHint: l("Your plan, messages, documents and travel — in one place.", "План, сообщения, документы и поездка — в одном месте.", "Reja, xabarlar, hujjatlar va safar — bir joyda."),
+    emailed: l("We’ll also email updates to {email}.", "Мы также будем присылать новости на {email}.", "Yangiliklarni {email} manziliga ham yuboramiz."),
+    keepRef: l("Keep your reference — with your phone number, it opens your account.", "Сохраните номер — вместе с телефоном он открывает ваш кабинет.", "Raqamni saqlang — telefon bilan birga u kabinetingizni ochadi."),
   },
   redFlag: l("Please read this first", "Пожалуйста, прочитайте это в первую очередь", "Iltimos, avval buni o'qing"),
   reference: l("Your reference", "Ваш номер обращения", "Murojaat raqamingiz"),

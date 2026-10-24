@@ -4,6 +4,7 @@ import { PortalIcon } from "@/components/portal/PortalIcon";
 import { PORTAL_COPY } from "@/lib/portal-patient-copy";
 import { portalPage, type PortalPageProps } from "@/lib/patient-portal-page";
 import { t } from "@/lib/localize";
+import { groupFaqs, listFaqs } from "@/lib/faqs";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ const waHref = (value: string) => `https://wa.me/${value.replace(/\D/g, "")}`;
 
 export default async function PortalHelp(props: PortalPageProps) {
   const { locale, content, data } = await portalPage(props);
+  const groups = groupFaqs(await listFaqs().catch(() => []));
   const subject = data.active ? `?subject=${encodeURIComponent(`Case ${data.active._id}`)}` : "";
 
   return (
@@ -19,6 +21,7 @@ export default async function PortalHelp(props: PortalPageProps) {
       <PortalHeading title={t(PORTAL_COPY.helpTitle, locale)} lead={t(PORTAL_COPY.helpLead, locale)} />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="flex min-w-0 flex-col gap-6">
         <Panel className="!p-2 sm:!p-3">
           {PORTAL_COPY.faqs.map((item) => (
             <details key={item.q.en} className="group rounded-2xl px-4 py-1 open:bg-surface-muted sm:px-5">
@@ -32,6 +35,27 @@ export default async function PortalHelp(props: PortalPageProps) {
             </details>
           ))}
         </Panel>
+        {groups.map((group) => (
+          <section key={group.key} id={group.key} aria-labelledby={`faq-${group.key}`} className="scroll-mt-24">
+            <h2 id={`faq-${group.key}`} className="mb-3 px-1 text-lg font-bold text-navy">
+              {t(group.label, locale)}
+            </h2>
+            <Panel className="!p-2 sm:!p-3">
+              {group.items.map((item) => (
+                <details key={item._id} className="group rounded-2xl px-4 py-1 open:bg-surface-muted sm:px-5">
+                  <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold text-navy [&::-webkit-details-marker]:hidden">
+                    {t(item.question, locale)}
+                    <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-violet-soft text-violet transition group-open:rotate-45" aria-hidden="true">
+                      +
+                    </span>
+                  </summary>
+                  <p className="whitespace-pre-line pb-4 text-[15px] leading-relaxed text-[#2c3a5e]">{t(item.answer, locale)}</p>
+                </details>
+              ))}
+            </Panel>
+          </section>
+        ))}
+        </div>
 
         <div className="flex flex-col gap-6">
           <Panel className="flex flex-col gap-3">
@@ -41,15 +65,19 @@ export default async function PortalHelp(props: PortalPageProps) {
               <PortalIcon name="chat" />
               {t(PORTAL_COPY.chatNow, locale)}
             </OpenChatButton>
-            <a href={waHref(content.contact.whatsapp)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-leaf-tint px-6 font-semibold text-[#1f6b31] hover:bg-[#d9f0df]">
+            {content.contact.whatsapp ? (
+              <a href={waHref(content.contact.whatsapp)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-leaf-tint px-6 font-semibold text-[#1f6b31] hover:bg-[#d9f0df]">
               <PortalIcon name="whatsapp" />
               {t(PORTAL_COPY.whatsapp, locale)}
             </a>
-            <div className="grid grid-cols-2 gap-2">
-              <a href={telHref(content.contact.phone)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-surface-muted font-semibold text-navy hover:bg-[#efeafd]">
-                <PortalIcon name="phone" />
-                {t(PORTAL_COPY.call, locale)}
-              </a>
+            ) : null}
+            <div className={`grid gap-2 ${content.contact.phone ? "grid-cols-2" : "grid-cols-1"}`}>
+              {content.contact.phone ? (
+                <a href={telHref(content.contact.phone)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-surface-muted font-semibold text-navy hover:bg-[#efeafd]">
+                  <PortalIcon name="phone" />
+                  {t(PORTAL_COPY.call, locale)}
+                </a>
+              ) : null}
               <a href={`mailto:${content.contact.email}${subject}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-surface-muted font-semibold text-navy hover:bg-[#efeafd]">
                 <PortalIcon name="mail" />
                 {t(PORTAL_COPY.email, locale)}

@@ -8,6 +8,7 @@ import { linkCaseToAccount, newReference, type CaseRequest } from "@/lib/cases";
 import { listedDoctor, listedHospital } from "@/lib/directory";
 import { currentPatient, getPatientAccount } from "@/lib/patient-auth";
 import { setPreferences } from "@/lib/journey";
+import { CHANNELS, type ContactChannel } from "@/lib/journey-rules";
 import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
 import { openCase } from "@/lib/case-flow";
 import { attributeFromCookie } from "@/lib/referrals";
@@ -54,8 +55,10 @@ export async function POST(request: NextRequest) {
   const locale = isLocale(localeField) ? localeField : DEFAULT_LOCALE;
   // A hospital or doctor page sends the patient back to its own form, not the homepage's.
   const from = String(form.get("from") ?? "");
-  const page = /^\/(en|ru|uz)\/(hospitals|doctors)\/[\w-]+$/.test(from) ? `${from}#book` : `/${locale}#quote-form`;
-  const back = NextResponse.redirect(publicUrl(request, page), 303);
+  const onPage = /^\/(en|ru|uz|oz)\/(hospitals|doctors)\/[\w-]+$/.test(from);
+  // Back to the form with the reason, which the form shows: never a silent bounce.
+  const back = (why: "missing" | "files" | "empty") =>
+    NextResponse.redirect(publicUrl(request, `${onPage ? from : `/${locale}`}?enquiry=${why}${onPage ? "#book" : "#quote-form"}`), 303);
 
   // Name arrives as title + first + last; older callers may still send `name`.
   const name = (
@@ -73,10 +76,11 @@ export async function POST(request: NextRequest) {
   const email = String(form.get("email") ?? "").trim().toLowerCase() || accountEmail;
   const phone = [dial, local].filter(Boolean).join(" ").trim();
 
-  if (!name || !phone || !country) return back;
+  if (!name || !phone || !country) return back("missing");
 
   const intake = await readIntake(form);
-  if (intake.tooLarge || !hasSomethingToPlanFrom(intake)) return back;
+  if (intake.tooLarge) return back("files");
+  if (!hasSomethingToPlanFrom(intake)) return back("empty");
 
   const patient = { name, phone, country, email };
 
@@ -105,7 +109,15 @@ export async function POST(request: NextRequest) {
     if (accountEmail && accountEmail !== email) await linkCaseToAccount(record._id, accountEmail).catch(() => undefined);
     // The ways to reach them chosen at sign-up travel with every case they open.
     const account = accountEmail ? await getPatientAccount(accountEmail).catch(() => null) : null;
-    if (account?.channels?.length) await setPreferences(record._id, { channels: account.channels, mainChannel: account.mainChannel ?? account.channels[0] }).catch(() => undefined);
+    // What they picked on this form wins; otherwise what they chose at sign-up.
+    const picked = String(form.get("channel") ?? "");
+    if ((CHANNELS as readonly string[]).includes(picked)) {
+      const channel = picked as ContactChannel;
+      const others = (account?.channels ?? []).filter((item) => item !== channel);
+      await setPreferences(record._id, { channels: [channel, ...others], mainChannel: channel }).catch(() => undefined);
+    } else if (account?.channels?.length) {
+      await setPreferences(record._id, { channels: account.channels, mainChannel: account.mainChannel ?? account.channels[0] }).catch(() => undefined);
+    }
     return NextResponse.redirect(publicUrl(request, `/${locale}/plan/${record._id}`), 303);
   } catch (error) {
     console.error("[shifain] could not open a case", error);

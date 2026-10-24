@@ -6,6 +6,7 @@ import { noteFailure, available, withGeminiModel, geminiBaseUrl, noteSuccess, no
 import { COMMAND_NAMES, type CommandName } from "./voice/intents";
 import { getAssistantConfig } from "./assistant/config";
 import { knowledgeForPrompt } from "./assistant/knowledge";
+import { faqKnowledge } from "./faqs";
 
 export { pauseDuration, rankGeminiModels } from "./ai/providers";
 
@@ -128,7 +129,8 @@ Commands: ${COMMAND_NAMES.join(", ")}.`;
 
 async function systemFor(input: TurnInput): Promise<string> {
   const config = await getAssistantConfig();
-  const knowledge = knowledgeForPrompt(input.message, config.entries);
+  // The team's own entries first; the published FAQs (visa and the rest) after them.
+  const knowledge = knowledgeForPrompt(input.message, [...config.entries, ...(await faqKnowledge())]);
   return [
     BASE_SYSTEM,
     stageText(input.stage, input.commands),
@@ -140,7 +142,7 @@ command: an app action or "none".
 Fields — fill only with what the patient said in this conversation, otherwise leave empty:
 ${FIELD_KEYS.map((key) => `${key}: ${FIELD_HELP[key]}`).join("\n")}`,
     config.instructions.trim() ? `INSTRUCTIONS FROM THE SHIFAIN TEAM (follow these)\n${config.instructions.trim()}` : "",
-    knowledge ? `KNOWLEDGE (facts from the ShifaIn team)\n${knowledge}` : "",
+    knowledge ? `KNOWLEDGE (facts from the ShifaIn team; the questions also live on the site's FAQ page, /faq, and under Help in the patient's account)\n${knowledge}` : "",
     input.language ? `The patient's language code is "${input.language}". Reply in that language.` : "",
   ]
     .filter(Boolean)

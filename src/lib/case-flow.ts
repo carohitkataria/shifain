@@ -7,7 +7,8 @@ import { generatePlan } from "./ai/plan";
 import { expiryFromNow, listReports, readReport, storeReports } from "./reports";
 import { getSettings } from "./settings";
 import { notifyOps } from "./mailer";
-import { sendCaseUpdate } from "./telegram-notify";
+import { notifyCase, sendCaseUpdate } from "./telegram-notify";
+import { alertTeam } from "./team-alerts";
 import type { Intake } from "./intake";
 import type { Locale } from "./i18n";
 
@@ -61,12 +62,17 @@ export async function openCase(input: {
       "",
       "Open it in the console under Patient cases. Nothing clinical is in this email.",
     ]);
+    // The patient's own receipt, with the reference: by email (and Telegram, once linked).
+    await notifyCase(record._id, { kind: "status", status: "received" }).catch(() => undefined);
 
     if (intake.uploads.length > 0) {
-      await storeReports(record._id, intake.uploads, settings.reportRetentionDays).catch((error) =>
-        // The plan matters more than the archive, so this never blocks it.
-        console.error("[shifain] could not store reports for", record._id, error),
-      );
+      await storeReports(record._id, intake.uploads, settings.reportRetentionDays).catch(async (error) => {
+        // The plan matters more than the archive, so this never blocks it — but the case says so,
+        // the patient is not told their files were kept, and the team hears about it.
+        console.error("[shifain] could not store reports for", record._id, error);
+        await (await getDb()).collection<PatientCase>("cases").updateOne({ _id: record._id }, { $set: { reportsNotStored: true } }).catch(() => undefined);
+        await alertTeam(record._id, "The uploaded files could not be stored. Ask the patient to send them again.").catch(() => undefined);
+      });
     }
 
     if (!settings.plannerEnabled) {
@@ -75,6 +81,7 @@ export async function openCase(input: {
         record._id,
         "Automatic planning is switched off. A coordinator is preparing this plan by hand.",
       ).catch(() => undefined);
+      await alertTeam(record._id, "Automatic planning is switched off — this plan is to be prepared by hand.").catch(() => undefined);
       return;
     }
 
@@ -101,6 +108,8 @@ export async function openCase(input: {
         record._id,
         error instanceof Error ? error.message : "The planner did not complete.",
       ).catch(() => undefined);
+      // The patient's page says a coordinator has it; make sure one does.
+      await alertTeam(record._id, "The automatic plan failed — please prepare it by hand.").catch(() => undefined);
     }
   });
 
@@ -117,7 +126,7 @@ export type ReplanResult = "started" | "busy" | "limit" | "missing" | "off";
  * results, a preferred city. Their own package choices are laid back over
  * the new plan, so asking for an update never undoes "no hotel, please".
  */
-export async function replanCase(reference: string): Promise<ReplanResult> {
+export async function replanCase(reference: string, { force = false }: { force?: boolean } = {}): Promise<ReplanResult> {
   const record = await getCase(reference);
   if (!record) return "missing";
   if (record.status === "planning") return "busy";
@@ -127,7 +136,8 @@ export async function replanCase(reference: string): Promise<ReplanResult> {
 
   const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
   const recent = (record.replans ?? []).filter((at) => Date.parse(at) > dayAgo);
-  if (recent.length >= REPLANS_PER_DAY) return "limit";
+  // The daily cap protects against a patient's repeated taps; a coordinator retrying a failed plan is not that.
+  if (!force && recent.length >= REPLANS_PER_DAY) return "limit";
 
   const now = new Date().toISOString();
   const db = await getDb();
@@ -186,6 +196,7 @@ export async function replanCase(reference: string): Promise<ReplanResult> {
             : { $set: { status: "plan-failed", planError: "The planner did not complete." } },
         )
         .catch(() => undefined);
+      if (!record.plan) await alertTeam(reference, "Re-planning failed and there is no earlier plan — please prepare it by hand.").catch(() => undefined);
     }
   });
 

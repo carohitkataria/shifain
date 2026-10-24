@@ -4,6 +4,7 @@ import { getDb, readOr } from "./db";
 import { MAX_REPORT_BYTES, storeReports, type ReportUpload } from "./reports";
 import { getSettings } from "./settings";
 import { saveMessage, type CrmMessage } from "./crm-messages";
+import { notifyCase } from "./telegram-notify";
 import { computeSlots, type Slot } from "./onboarding-rules";
 import type { CaseReport, PatientCase, PlanEdit } from "./cases";
 import type { Doctor, DoctorSchedule, Hospital } from "./catalogue";
@@ -184,6 +185,8 @@ export async function sendPortalMessage(reference: string, from: { name: string;
     metadata: to ? { to } : null,
     status: "delivered",
   });
+  // What the care team writes in the app also reaches the patient's Telegram, if they use it.
+  if (from.direction === "outbound") await notifyCase(reference, { kind: "message", from: from.name.slice(0, 80), text: clean }).catch(() => undefined);
 }
 
 // ---------------------------------------------------------------- files
@@ -379,6 +382,7 @@ export async function setRideStatus(reference: string, rideId: string, status: R
     rides.map((ride) => (ride.id === rideId ? { ...ride, status, note: note ?? ride.note, driverId: driverId ?? ride.driverId, updatedAt: now() } : ride)),
     edit(`Car ${status}`, via),
   );
+  await notifyCase(reference, { kind: "ride", status }).catch(() => undefined);
 }
 
 export async function addTask(reference: string, input: Pick<CaseTask, "title" | "detail" | "due" | "owner" | "section">, via: PlanEdit["via"]) {

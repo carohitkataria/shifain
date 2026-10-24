@@ -6,7 +6,13 @@ import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
 
 /** Dark footer with the tricolour rule above it, as in the design. */
+const FAQ_LINK = { id: "faq", label: { en: "Visa & FAQ", ru: "Виза и вопросы", uz: "Viza va savollar" }, href: "/faq" };
+
 export function Footer({ content, locale }: { content: SiteContent; locale: Locale }) {
+  // The FAQ page is always linked, whatever the editor has done to the columns.
+  const columns = content.footer.columns.map((column, index) =>
+    index === 0 && !content.footer.columns.some((one) => one.links.some((link) => link.href.includes("/faq"))) ? { ...column, links: [...column.links, FAQ_LINK] } : column,
+  );
   return (
     <footer id="about" className="scroll-mt-24">
       <div className="tricolour-rule" />
@@ -22,16 +28,15 @@ export function Footer({ content, locale }: { content: SiteContent; locale: Loca
 
               <ul className="mt-5 flex flex-wrap gap-2">
                 <li className="chip bg-white/10 text-white/80">JCI / NABH network</li>
-                <li className="chip bg-white/10 text-white/80">ISO 27001</li>
               </ul>
 
               <div className="mt-5 space-y-1 text-sm font-semibold text-white/75">
-                <p>{content.contact.phone}</p>
-                <p>{content.contact.email}</p>
+                {content.contact.phone ? <p>{content.contact.phone}</p> : null}
+                {content.contact.email ? <p>{content.contact.email}</p> : null}
               </div>
             </div>
 
-            {content.footer.columns.map((column) => (
+            {columns.map((column) => (
               <div key={column.id}>
                 <h3 className="text-base font-bold text-white">
                   {t(column.title, locale)}

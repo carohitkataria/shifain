@@ -264,6 +264,8 @@ export type Stage = (typeof STAGES)[number];
 
 /** How many stages are behind the patient, from what is booked and today's date. */
 export function stagesDone(record: CaseView, today: string): number {
+  // A closed case is over, whatever was or was not booked through the app.
+  if (record.status === "closed") return STAGES.length;
   const doneBy = (kind: JourneyKind) => {
     const item = journeyOf(record, kind);
     return Boolean(item && (item.status === "done" || (item.date && item.date < today) || (item.date === today && item.status === "booked" && kind !== "flight-out")));

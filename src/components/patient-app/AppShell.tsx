@@ -42,22 +42,47 @@ const DONE: Record<string, L> = {
   "upload-failed": l("Nothing uploaded — PDF or photo, up to 14 MB", "Ничего не загружено — PDF или фото до 14 МБ", "Hech narsa yuklanmadi — PDF yoki rasm, 14 MB gacha"),
   pay: APP.payRequested,
   hello: APP.saidHi,
+  password: APP.password.saved,
   missing: l("A detail was missing — try again", "Не хватает данных — попробуйте ещё раз", "Ma'lumot yetishmadi — qayta urinib ko'ring"),
 };
 
 /** The hidden fields every app form posts: language, case and the screen to come back to. */
-export function Hidden({ app, section }: { app: AppData; section: Section | "" }) {
+export function Hidden({ app, section, tab }: { app: AppData; section: Section | ""; /** The tab of that screen to come back to. */ tab?: string }) {
   return (
     <>
       <input type="hidden" name="locale" value={app.locale} />
       <input type="hidden" name="reference" value={app.record?._id ?? ""} />
       <input type="hidden" name="section" value={section === "home" ? "" : section} />
+      {tab ? <input type="hidden" name="tab" value={tab} /> : null}
     </>
   );
 }
 
+/** Pages that became tabs of another screen: old names still work everywhere a link is built. */
+const MOVED: Record<string, [string, string]> = {
+  plan: ["case", "tab=plan"],
+  history: ["case", "tab=history"],
+  documents: ["stay", "tab=documents"],
+  notifications: ["messages", "tab=alerts"],
+  schedule: ["messages", "tab=calls"],
+};
+
+/**
+ * What the case is about, in the patient's language: the planned treatment, else the
+ * specialty they picked on the form (stored as its slug, "cardiac-care"), else their own words.
+ */
+export function caseNeed(app: AppData): string | null {
+  const stated = app.record?.statedNeed ?? null;
+  if (app.names.treatment) return app.names.treatment;
+  const specialty = stated ? app.content.specialties.items.find((item) => item.slug === stated) : null;
+  return specialty ? t(specialty.title, app.locale) : stated;
+}
+
 /** A link to another app screen that keeps the chosen case. */
-export const href = (app: AppData, section: string, extra = "") => {
+export const href = (app: AppData, to: string, more = "") => {
+  const moved = MOVED[to];
+  const section = moved ? moved[0] : to;
+  const extra = moved ? [moved[1], more].filter(Boolean).join("&") : more;
   const base = `/${app.locale}/portal/patient${section && section !== "home" ? `/${section}` : ""}`;
   const params = new URLSearchParams();
   if (app.record && app.portal.cases.length > 1) params.set("case", app.record._id);
@@ -71,14 +96,60 @@ export const href = (app: AppData, section: string, extra = "") => {
  * bell), the screen, the help button, and the bottom bar with the translator
  * in the middle. The More and SOS sheets live here so every screen has them.
  */
-export function AppShell({ app, section, title, children, sheets, wide = false, fill = false }: { app: AppData; section: Section; title?: string; children: React.ReactNode; sheets?: React.ReactNode; wide?: boolean; /** The screen fills the window and scrolls inside itself (the translator). */ fill?: boolean }) {
+/** Tabs across the top of a screen that holds several pages (My case, Messages, Travel & stay). */
+export type TabSpec = { path: string; current: string; items: { key: string; label: L }[] };
+
+export const CASE_TABS = (current: string): TabSpec => ({
+  path: "case",
+  current,
+  items: [
+    { key: "overview", label: APP.tabs.overview },
+    { key: "plan", label: APP.tabs.plan },
+    { key: "history", label: APP.tabs.history },
+  ],
+});
+export const MESSAGE_TABS = (current: string): TabSpec => ({
+  path: "messages",
+  current,
+  items: [
+    { key: "chats", label: APP.tabs.chats },
+    { key: "calls", label: APP.tabs.calls },
+    { key: "alerts", label: APP.tabs.alerts },
+  ],
+});
+export const STAY_TABS = (current: string): TabSpec => ({
+  path: "stay",
+  current,
+  items: [
+    { key: "documents", label: APP.tabs.documents },
+    { key: "flights", label: APP.tabs.flights },
+    { key: "hotel", label: APP.tabs.hotel },
+    { key: "car", label: APP.tabs.car },
+    { key: "nearby", label: APP.tabs.nearby },
+  ],
+});
+
+export function AppTabs({ app, tabs }: { app: AppData; tabs: TabSpec }) {
+  return (
+    <nav className="a-tabs" aria-label={t(APP.titles[tabs.path as Section] ?? APP.nav.more, app.locale)}>
+      {tabs.items.map((item) => (
+        <Link key={item.key} href={href(app, tabs.path, `tab=${item.key}`)} aria-current={tabs.current === item.key ? "page" : undefined}>
+          {t(item.label, app.locale)}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+export function AppShell({ app, section, title, children, sheets, tabs, wide = false, fill = false }: { app: AppData; section: Section; title?: string; children: React.ReactNode; sheets?: React.ReactNode; tabs?: TabSpec; wide?: boolean; /** The screen fills the window and scrolls inside itself (the translator). */ fill?: boolean }) {
   const { locale, record, ctx, portal } = app;
   const account = portal.account;
   const name = (account ? [account.firstName, account.lastName].filter(Boolean).join(" ") : "") || (record?.patient.name && record.patient.name !== "Website patient" ? record.patient.name : "") || "Shifain";
   const viewerName = portal.viewer?.role === "family" ? portal.viewer.member.name : name;
   const home = section === "home";
   const heading = title ?? t(APP.titles[section], locale);
-  const sub = record ? `${t(APP.caseShort, locale)} …${record._id.slice(-4)}${home && record.statedNeed ? ` · ${record.statedNeed}` : ""}` : "";
+  const need = caseNeed(app);
+  const sub = record ? `${t(APP.caseShort, locale)} …${record._id.slice(-4)}${home && need ? ` · ${need}` : ""}` : "";
   const done = app.query.done ? DONE[app.query.done] ?? APP.saved : null;
   const emergency = ctx?.hospital?.emergencyPhone || ctx?.hospital?.phone || null;
   const nav: { key: Section; icon: string; label: L }[] = [
@@ -87,29 +158,40 @@ export function AppShell({ app, section, title, children, sheets, wide = false, 
   ];
 
   // On a computer the bottom bar and the More sheet become this sidebar: every screen one click away.
+  // Ten places in three groups, then Settings and Help; the More sheet on a phone lists the same.
   const side: { key: Section; icon: string; label: L; path?: string }[][] = [
     [
       { key: "home", icon: "home", label: APP.nav.home },
-      { key: "case", icon: "case", label: APP.nav.case },
-      { key: "calendar", icon: "calendar", label: APP.nav.calendar },
-      { key: "translate", icon: "translate", label: APP.nav.translate, path: "translator" },
-      { key: "messages", icon: "chat", label: APP.quickTiles.messages },
-    ],
-    [
-      { key: "reports", icon: "file", label: APP.quickTiles.reports },
-      { key: "documents", icon: "passport", label: APP.quickTiles.documents },
-      { key: "payments", icon: "wallet", label: APP.quickTiles.payments },
       { key: "tasks", icon: "alert", label: APP.quickTiles.tasks },
-      { key: "plan", icon: "shield", label: APP.quickTiles.plan },
+      { key: "calendar", icon: "calendar", label: APP.nav.calendar },
+      { key: "messages", icon: "chat", label: APP.quickTiles.messages },
+      { key: "translate", icon: "translate", label: APP.nav.translate, path: "translator" },
     ],
     [
-      { key: "stay", icon: "bed", label: APP.quickTiles.stay },
+      { key: "case", icon: "case", label: APP.nav.case },
+      { key: "reports", icon: "file", label: APP.quickTiles.reports },
+      { key: "payments", icon: "wallet", label: APP.quickTiles.payments },
+    ],
+    [
+      { key: "stay", icon: "plane", label: APP.quickTiles.stay },
       { key: "family", icon: "family", label: APP.quickTiles.family },
       { key: "companions", icon: "users", label: APP.quickTiles.companions },
-      { key: "notifications", icon: "bell", label: APP.quickTiles.alerts },
-      { key: "settings", icon: "gear", label: APP.quickTiles.settings },
     ],
   ];
+  const footer: { key: Section; icon: string; label: L }[] = [
+    { key: "settings", icon: "gear", label: APP.quickTiles.settings },
+    { key: "help", icon: "chat", label: APP.quickTiles.help },
+  ];
+  const link = (item: { key: Section; icon: string; label: L; path?: string }) => (
+    <li key={item.key}>
+      <Link href={href(app, item.path ?? item.key)} className="a-side-link" aria-current={section === item.key ? "page" : undefined}>
+        <AppIcon name={item.icon} />
+        <span>{t(item.label, locale)}</span>
+        {item.key === "messages" && app.unread ? <span className="a-bdg">{app.unread > 9 ? "9+" : app.unread}</span> : null}
+        {item.key === "tasks" && app.todo.length ? <span className="a-bdg">{app.todo.length}</span> : null}
+      </Link>
+    </li>
+  );
 
   const tile = (key: string, icon: string, label: L, to?: string, red?: boolean) =>
     to ? (
@@ -132,24 +214,10 @@ export function AppShell({ app, section, title, children, sheets, wide = false, 
         </Link>
         {side.map((group, index) => (
           <ul key={index} className="a-side-list">
-            {group.map((item) => (
-              <li key={item.key}>
-                <Link href={href(app, item.path ?? item.key)} className="a-side-link" aria-current={section === item.key ? "page" : undefined}>
-                  <AppIcon name={item.icon} />
-                  <span>{t(item.label, locale)}</span>
-                  {item.key === "notifications" && app.unread ? <span className="a-bdg">{app.unread > 9 ? "9+" : app.unread}</span> : null}
-                  {item.key === "tasks" && app.todo.length ? <span className="a-bdg">{app.todo.length}</span> : null}
-                </Link>
-              </li>
-            ))}
+            {group.map(link)}
           </ul>
         ))}
-        {record ? (
-          <OpenSheet id="sos" className="a-btn a-btn-red a-w a-side-sos">
-            <AppIcon name="phone" />
-            {t(APP.emergency, locale)}
-          </OpenSheet>
-        ) : null}
+        <ul className="a-side-list a-side-foot">{footer.map(link)}</ul>
       </aside>
 
       <header className="a-top">
@@ -171,7 +239,7 @@ export function AppShell({ app, section, title, children, sheets, wide = false, 
             {t(APP.sos, locale)}
           </OpenSheet>
         ) : null}
-        <Link href={href(app, "notifications")} className="a-ibtn" aria-label={`${t(APP.bell, locale)}${app.unread ? ` · ${app.unread}` : ""}`}>
+        <Link href={href(app, "messages", "tab=alerts")} className="a-ibtn" aria-label={`${t(APP.bell, locale)}${app.unread ? ` · ${app.unread}` : ""}`}>
           <AppIcon name="bell" />
           {app.unread ? <span className="a-dot">{app.unread > 9 ? "9+" : app.unread}</span> : null}
         </Link>
@@ -186,7 +254,10 @@ export function AppShell({ app, section, title, children, sheets, wide = false, 
             </span>
           </p>
         ) : null}
-        <div className={`a-page ${wide ? "a-page-wide" : ""}`}>{children}</div>
+        <div className={`a-page ${wide ? "a-page-wide" : ""}`}>
+          {tabs ? <AppTabs app={app} tabs={tabs} /> : null}
+          {children}
+        </div>
       </main>
 
       <HelpButton label={t(APP.askAssistant, locale)} />
@@ -213,18 +284,15 @@ export function AppShell({ app, section, title, children, sheets, wide = false, 
 
       <Sheet id="more" title={t(APP.nav.more, locale)}>
         <div className="a-g3">
-          {tile("reports", "file", APP.quickTiles.reports, href(app, "reports"))}
-          {tile("stay", "bed", APP.quickTiles.stay, href(app, "stay"))}
-          {tile("messages", "chat", APP.quickTiles.messages, href(app, "messages"))}
-          {tile("companions", "users", APP.quickTiles.companions, href(app, "companions"))}
-          {tile("family", "family", APP.quickTiles.family, href(app, "family"))}
-          {tile("payments", "wallet", APP.quickTiles.payments, href(app, "payments"))}
-          {tile("documents", "passport", APP.quickTiles.documents, href(app, "documents"))}
           {tile("tasks", "alert", APP.quickTiles.tasks, href(app, "tasks"))}
-          {tile("plan", "case", APP.quickTiles.plan, href(app, "plan"))}
-          {tile("notifications", "bell", APP.quickTiles.alerts, href(app, "notifications"))}
+          {tile("messages", "chat", APP.quickTiles.messages, href(app, "messages"))}
+          {tile("reports", "file", APP.quickTiles.reports, href(app, "reports"))}
+          {tile("payments", "wallet", APP.quickTiles.payments, href(app, "payments"))}
+          {tile("stay", "plane", APP.quickTiles.stay, href(app, "stay"))}
+          {tile("family", "family", APP.quickTiles.family, href(app, "family"))}
+          {tile("companions", "users", APP.quickTiles.companions, href(app, "companions"))}
           {tile("settings", "gear", APP.quickTiles.settings, href(app, "settings"))}
-          {record ? tile("sos", "phone", APP.quickTiles.emergency, undefined, true) : tile("history", "clock", APP.quickTiles.history, href(app, "history"))}
+          {tile("help", "chat", APP.quickTiles.help, href(app, "help"))}
         </div>
       </Sheet>
 

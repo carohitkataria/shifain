@@ -8,6 +8,7 @@ import type { CaseStatus, PatientCase } from "@/lib/cases";
 import type { PartnerUser } from "@/lib/partner-auth";
 import { attributeCase, syncReferralWithCase, updateReferral } from "@/lib/referrals";
 import { answerAppointment } from "@/lib/patient-portal";
+import { notifyCase } from "@/lib/telegram-notify";
 
 const STATUSES: CaseStatus[] = [
   "new",
@@ -62,13 +63,14 @@ export async function setCaseStatusAction(formData: FormData) {
   if (!id || !STATUSES.includes(status as CaseStatus)) redirect("/admin/cases");
 
   const db = await getDb();
-  await db
+  const result = await db
     .collection<PatientCase>("cases")
     .updateOne(
-      { _id: id },
+      { _id: id, status: { $ne: status as CaseStatus } },
       { $set: { status: status as CaseStatus, updatedAt: new Date().toISOString() } },
     );
   await syncReferralWithCase(id, status as CaseStatus).catch(() => undefined);
+  if (result.modifiedCount) await notifyCase(id, { kind: "status", status }).catch(() => undefined);
 
   revalidatePath("/admin/cases");
   redirect(backTo(formData));

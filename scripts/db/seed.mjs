@@ -74,8 +74,15 @@ async function main() {
     } else {
       await db.createCollection(name, { validator, validationLevel: "moderate" });
     }
-    for (const index of indexes) {
-      await db.collection(name).createIndex(index.key, index.options ?? {});
+    for (const index of indexes ?? []) {
+      // The app may already have made the same index under another name (85/86: options or key conflict).
+      await db
+        .collection(name)
+        .createIndex(index.key, index.options ?? {})
+        .catch((error) => {
+          if (error?.code === 85 || error?.code === 86) console.warn(`${name}: keeping existing index on ${JSON.stringify(index.key)}`);
+          else throw error;
+        });
     }
   }
 
