@@ -3,10 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { checkPassword, endSession, isAuthenticated, startSession } from "@/lib/auth";
-import { getContent, resetContent, saveContent } from "@/lib/store";
+import { getContent, saveContent } from "@/lib/store";
 import { addListItem, buildEditor, collectBooleanPaths, removeListItem, setAtPath } from "@/lib/editor";
 import { findGroup } from "@/lib/admin-groups";
-import { SECTION_IDS, type SectionId } from "@/lib/content-types";
 
 /** Static pages are prerendered per locale, so publishing has to refresh them. */
 function refreshSite() {
@@ -89,30 +88,4 @@ export async function saveGroupAction(formData: FormData) {
   await saveContent(content);
   refreshSite();
   redirect(`/admin/${group.key}?saved=${verb === "add" ? "added" : verb === "remove" ? "removed" : "1"}`);
-}
-
-export async function saveSectionsAction(formData: FormData) {
-  if (!(await isAuthenticated())) redirect("/admin/login");
-
-  const content = await getContent();
-  const next = { ...content.sections };
-
-  SECTION_IDS.forEach((id: SectionId, index) => {
-    const order = Number(formData.get(`order.${id}`));
-    next[id] = {
-      enabled: formData.get(`enabled.${id}`) === "on",
-      order: Number.isFinite(order) ? order : index,
-    };
-  });
-
-  await saveContent({ ...content, sections: next });
-  refreshSite();
-  redirect("/admin?saved=1");
-}
-
-export async function resetAction() {
-  if (!(await isAuthenticated())) redirect("/admin/login");
-  await resetContent();
-  refreshSite();
-  redirect("/admin?reset=1");
 }

@@ -72,7 +72,7 @@ export default async function ReferralsPage({
 
   return (
     <AdminShell
-      title="Referrals"
+      title="Partners"
       subtitle="Every patient a partner sent, how they arrived, and what it earns"
     >
       {!isDatabaseConfigured() && <NotConfigured />}

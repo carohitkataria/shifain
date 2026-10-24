@@ -47,7 +47,8 @@ export default async function ImportPage({
 
   return (
     <AdminShell
-      title="Import a sheet"
+      title="Catalogue"
+      subtitle="Hospitals, doctors and what patients can see"
     >
       {!isDatabaseConfigured() && (
         <p className="mb-6 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">

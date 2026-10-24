@@ -191,7 +191,8 @@ export default async function OffersPage({
 
   return (
     <AdminShell
-      title="Referral offers"
+      title="Partners"
+      subtitle="Referring doctors, hospitals and agents"
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "deleted" ? "offer removed" : undefined} /> : null}

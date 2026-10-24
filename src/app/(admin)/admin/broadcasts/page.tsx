@@ -37,7 +37,8 @@ export default async function BroadcastsPage({
 
   return (
     <AdminShell
-      title="Broadcasts"
+      title="Partners"
+      subtitle="Notices in the partner portal"
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "deleted" ? "notice removed" : "sent"} /> : null}

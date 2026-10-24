@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { CIcon } from "@/components/console/CIcon";
+import { Chip, Empty, FChip, Note, Pill, TableWrap, btn, field, td, th } from "@/components/console/ui";
 import { isDatabaseConfigured, readOr } from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
+import { allCases } from "@/lib/console";
 import { accreditationLabels, type Hospital } from "@/lib/catalogue";
 import { StatusPill } from "@/components/admin/onboarding/Wizard";
 import { ONBOARDING_STATUSES, STATUS_LABEL, type OnboardingStatus } from "@/lib/onboarding-rules";
@@ -29,100 +32,88 @@ export default async function HospitalsPage({
   else if (status === "draft") query.$or = [{ "onboarding.status": "draft" }, { onboarding: { $exists: false }, "publication.state": { $ne: "published" } }];
   else if (status) query["onboarding.status"] = status;
 
-  const [hospitals, cities] = await Promise.all([
-    readOr<Hospital[]>([], (db) =>
-      db.collection<Hospital>("hospitals").find(query).sort({ city: 1, name: 1 }).limit(300).toArray(),
-    ),
-    readOr<string[]>([], async (db) =>
-      (await db.collection("hospitals").distinct("city")).sort() as string[],
-    ),
+  const [hospitals, cities, doctorCounts, caseCounts] = await Promise.all([
+    readOr<Hospital[]>([], (db) => db.collection<Hospital>("hospitals").find(query).sort({ city: 1, name: 1 }).limit(300).toArray()),
+    readOr<string[]>([], async (db) => (await db.collection("hospitals").distinct("city")).sort() as string[]),
+    readOr<{ _id: string; n: number }[]>([], (db) => db.collection("hospital_doctor_map").aggregate<{ _id: string; n: number }>([{ $group: { _id: "$hospitalId", n: { $sum: 1 } } }]).toArray()),
+    allCases(),
   ]);
+  const doctors = new Map(doctorCounts.map((row) => [row._id, row.n]));
+  const cases = new Map<string, number>();
+  for (const record of caseCounts) {
+    const id = record.care?.hospitalId ?? record.requested?.hospitalId;
+    if (id) cases.set(id, (cases.get(id) ?? 0) + 1);
+  }
+  const link = (patch: { city?: string; status?: string }) => {
+    const params = new URLSearchParams();
+    const next = { q, city, status, ...patch };
+    for (const [key, value] of Object.entries(next)) if (value) params.set(key, value);
+    return params.toString() ? `/admin/hospitals?${params}` : "/admin/hospitals";
+  };
 
   return (
     <AdminShell
-      title="Hospitals"
+      title="Catalogue"
+      subtitle="Hospitals, doctors and what patients can see"
+      action={
+        <details className="relative">
+          <summary className={`${btn.primary} cursor-pointer list-none`}>
+            <CIcon name="plus" size={16} />
+            Add hospital
+          </summary>
+          <form action={createHospitalAction} className="absolute right-0 z-20 mt-2 w-[320px] rounded-2xl border border-line bg-white p-4 shadow-xl">
+            <label className="mb-2 block text-xs font-bold text-ink-soft">
+              Hospital name
+              <input name="name" required placeholder="Hospital name" className={`${field} mt-1`} />
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="block text-xs font-bold text-ink-soft">
+                City
+                <input name="city" required className={`${field} mt-1`} />
+              </label>
+              <label className="block text-xs font-bold text-ink-soft">
+                State
+                <input name="state" className={`${field} mt-1`} />
+              </label>
+            </div>
+            <button type="submit" className={`${btn.primary} mt-3 w-full`}>
+              Add and open the profile
+            </button>
+            <p className="mt-2 text-xs text-ink-muted">
+              Bulk instead?{" "}
+              <Link href="/admin/import" className="font-semibold text-brand hover:underline">
+                Import a sheet
+              </Link>
+              .
+            </p>
+          </form>
+        </details>
+      }
     >
-      {!isDatabaseConfigured() && (
-        <p className="mb-6 rounded-lg bg-saffron/15 px-3 py-2 text-sm font-semibold text-ink">
-          MONGODB_URI is not set on this deployment, so the catalogue cannot be read yet.
-        </p>
-      )}
-
+      {!isDatabaseConfigured() && <Note tone="amber">MONGODB_URI is not set on this deployment, so the catalogue cannot be read yet.</Note>}
       {saved ? (
-        <p className="mb-6 rounded-lg bg-leaf/10 px-3 py-2 text-sm font-semibold text-leaf">
-          Hospital {saved}.
-        </p>
+        <div className="mb-4">
+          <Note tone="green" icon="check">
+            Hospital {saved}.
+          </Note>
+        </div>
       ) : null}
 
-      <form action={createHospitalAction} className="card mb-4 flex flex-wrap items-end gap-3 p-5">
-        <label className="min-w-0 flex-1 basis-52">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">
-            Add a hospital
-          </span>
-          <input
-            name="name"
-            required
-            placeholder="Hospital name"
-            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
-          />
-        </label>
-        <label className="min-w-0 basis-40">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">City</span>
-          <input
-            name="city"
-            required
-            placeholder="Delhi"
-            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
-          />
-        </label>
-        <label className="min-w-0 basis-36">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">State</span>
-          <input
-            name="state"
-            placeholder="Delhi"
-            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
-          />
-        </label>
-        <button type="submit" className="btn btn-primary !py-2.5 text-sm">Add</button>
-        <p className="basis-full text-sm text-ink-soft">
-          Bulk instead? <Link href="/admin/import" className="font-semibold text-brand hover:underline">Import a sheet</Link>.
-        </p>
-      </form>
-
-      <form className="card mb-6 flex flex-wrap items-end gap-3 p-5">
-        <label className="min-w-0 flex-1 basis-48">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">
-            Search by name
-          </span>
-          <input
-            name="q"
-            defaultValue={q}
-            placeholder="Apollo, Medanta…"
-            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
-          />
-        </label>
-        <label className="min-w-0 basis-40">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">City</span>
-          <select
-            name="city"
-            defaultValue={city}
-            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
-          >
-            <option value="">All cities</option>
-            {cities.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="min-w-0 basis-40">
-          <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">Onboarding</span>
-          <select
-            name="status"
-            defaultValue={status}
-            className="w-full rounded-lg border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
-          >
+      <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
+        <form action="/admin/hospitals" className="flex h-[38px] min-w-[220px] items-center gap-2 rounded-[11px] border border-line bg-white px-3 text-ink-muted">
+          {city ? <input type="hidden" name="city" value={city} /> : null}
+          {status ? <input type="hidden" name="status" value={status} /> : null}
+          <CIcon name="search" size={16} />
+          <input name="q" defaultValue={q} placeholder="Search hospitals" aria-label="Search hospitals" className="w-full bg-transparent text-[13px] text-ink outline-none" />
+        </form>
+        <FChip label="All cities" href={link({ city: "" })} on={!city} />
+        {cities.slice(0, 8).map((name) => (
+          <FChip key={name} label={name} href={link({ city: name })} on={city === name} />
+        ))}
+        <form action="/admin/hospitals" className="ml-auto">
+          {q ? <input type="hidden" name="q" value={q} /> : null}
+          {city ? <input type="hidden" name="city" value={city} /> : null}
+          <select name="status" defaultValue={status} aria-label="Onboarding" className={`${field} !h-[38px] !w-44`}>
             <option value="">Any status</option>
             {ONBOARDING_STATUSES.map((value) => (
               <option key={value} value={value}>
@@ -130,37 +121,49 @@ export default async function HospitalsPage({
               </option>
             ))}
           </select>
-        </label>
-        <button type="submit" className="btn btn-primary !py-2.5 text-sm">
-          Filter
-        </button>
-      </form>
+          <button className={`${btn.ghost} ${btn.sm} ml-2 !h-[38px]`}>Filter</button>
+        </form>
+      </div>
 
-      <p className="mb-3 text-sm text-ink-soft">{hospitals.length} shown</p>
-
-      <ul className="space-y-2">
-        {hospitals.map((hospital) => (
-          <li key={hospital._id}>
-            <Link
-              href={`/admin/hospitals/${hospital._id}`}
-              className="card link-card flex flex-wrap items-center gap-x-4 gap-y-2 p-4"
-            >
-              <span className="min-w-0 flex-1 basis-56">
-                <span className="block font-semibold text-ink">{hospital.name}</span>
-                <span className="mt-0.5 block text-sm text-ink-soft">
-                  {hospital.city}
-                  {accreditationLabels(hospital).length ? ` · ${accreditationLabels(hospital).join(", ")}` : ""}
-                  {hospital.specialtyCodes?.length
-                    ? ` · ${hospital.specialtyCodes.length} specialties`
-                    : " · specialties not mapped"}
-                  {hospital.assignedRm ? ` · RM ${hospital.assignedRm}` : ""}
-                </span>
-              </span>
-              <StatusPill status={statusOf(hospital)} />
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <TableWrap>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              {["Hospital", "City", "Accreditation", "Tie-up", "Onboarding", "On site", "Doctors", "Cases"].map((name) => (
+                <th key={name} className={th}>
+                  {name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {hospitals.map((hospital) => (
+              <tr key={hospital._id} className="hover:bg-[#fafafd]">
+                <td className={td}>
+                  <Link href={`/admin/hospitals/${hospital._id}`} className="flex items-center gap-2.5">
+                    <Chip icon="hospital" tone="rose" small />
+                    <span>
+                      <b className="block hover:text-brand">{hospital.name}</b>
+                      <small className="text-xs text-ink-muted">{hospital.specialtyCodes?.length ? `${hospital.specialtyCodes.length} specialties` : "Specialties not mapped"}{hospital.assignedRm ? ` · RM ${hospital.assignedRm}` : ""}</small>
+                    </span>
+                  </Link>
+                </td>
+                <td className={td}>{hospital.city}</td>
+                <td className={`${td} max-w-[180px] truncate`}>{accreditationLabels(hospital).join(", ") || "—"}</td>
+                <td className={td}>{hospital.publication?.tieupId ? <Pill tone="green">Signed</Pill> : <Pill>Prospect</Pill>}</td>
+                <td className={td}>
+                  <StatusPill status={statusOf(hospital)} />
+                </td>
+                <td className={td}>{hospital.publication?.state === "published" ? <Pill tone="brand">Live</Pill> : <Pill tone="amber">Research</Pill>}</td>
+                <td className={td}>{doctors.get(hospital._id) ?? 0}</td>
+                <td className={td}>{cases.get(hospital._id) ?? 0}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {hospitals.length === 0 ? <Empty>No hospitals match.</Empty> : null}
+      </TableWrap>
+      <p className="mt-2 text-xs text-ink-muted">{hospitals.length} shown</p>
     </AdminShell>
   );
 }
