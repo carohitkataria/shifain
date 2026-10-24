@@ -67,6 +67,17 @@ const MOVED: Record<string, [string, string]> = {
   schedule: ["messages", "tab=calls"],
 };
 
+/**
+ * What the case is about, in the patient's language: the planned treatment, else the
+ * specialty they picked on the form (stored as its slug, "cardiac-care"), else their own words.
+ */
+export function caseNeed(app: AppData): string | null {
+  const stated = app.record?.statedNeed ?? null;
+  if (app.names.treatment) return app.names.treatment;
+  const specialty = stated ? app.content.specialties.items.find((item) => item.slug === stated) : null;
+  return specialty ? t(specialty.title, app.locale) : stated;
+}
+
 /** A link to another app screen that keeps the chosen case. */
 export const href = (app: AppData, to: string, more = "") => {
   const moved = MOVED[to];
@@ -137,7 +148,8 @@ export function AppShell({ app, section, title, children, sheets, tabs, wide = f
   const viewerName = portal.viewer?.role === "family" ? portal.viewer.member.name : name;
   const home = section === "home";
   const heading = title ?? t(APP.titles[section], locale);
-  const sub = record ? `${t(APP.caseShort, locale)} …${record._id.slice(-4)}${home && record.statedNeed ? ` · ${record.statedNeed}` : ""}` : "";
+  const need = caseNeed(app);
+  const sub = record ? `${t(APP.caseShort, locale)} …${record._id.slice(-4)}${home && need ? ` · ${need}` : ""}` : "";
   const done = app.query.done ? DONE[app.query.done] ?? APP.saved : null;
   const emergency = ctx?.hospital?.emergencyPhone || ctx?.hospital?.phone || null;
   const nav: { key: Section; icon: string; label: L }[] = [

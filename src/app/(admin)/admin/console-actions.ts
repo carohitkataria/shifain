@@ -169,3 +169,56 @@ export async function caseCoordinatorAction(formData: FormData) {
   revalidatePath("/admin/cases");
   finish(back, "Coordinator saved");
 }
+
+const lines = (formData: FormData, name: string) =>
+  String(formData.get(name) ?? "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 12);
+/** A whole number from the form, or null when left empty (then the catalogue decides). */
+const count = (formData: FormData, name: string) => {
+  const raw = text(formData, name, 4);
+  if (raw === null) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 0 && value < 400 ? value : null;
+};
+
+/** The planner could not finish (or was wrong): the coordinator writes the plan, and the patient is told it is ready. */
+export async function writePlanAction(formData: FormData) {
+  await guard();
+  const back = backOf(formData);
+  const id = String(formData.get("id") ?? "");
+  const understanding = text(formData, "understanding", 3000);
+  if (!id || !understanding) finish(back, "Write what you understood first");
+  const { writePlanByHand } = await import("@/lib/manual-plan");
+  const ok = await writePlanByHand(
+    id,
+    {
+      understanding: understanding!,
+      diseaseCode: text(formData, "diseaseCode", 40),
+      treatmentCode: text(formData, "treatmentCode", 40),
+      city: text(formData, "city", 80),
+      inpatientNights: count(formData, "inpatientNights"),
+      daysInCountry: count(formData, "daysInCountry"),
+      packages: formData.getAll("packages").map(String),
+      questions: lines(formData, "questions"),
+      missing: lines(formData, "missing"),
+      redFlag: text(formData, "redFlag", 600),
+    },
+    (await currentActor()) || "a coordinator",
+  );
+  revalidatePath("/admin/cases");
+  finish(back, ok ? "Plan saved — the patient has been told" : "Case not found");
+}
+
+/** Runs the automatic planner again, without the patient's daily limit. */
+export async function rerunPlannerAction(formData: FormData) {
+  await guard();
+  const back = backOf(formData);
+  const id = String(formData.get("id") ?? "");
+  const { replanCase } = await import("@/lib/case-flow");
+  const result = id ? await replanCase(id, { force: true }) : "missing";
+  const note = { started: "Planning again — refresh in a minute", busy: "Already planning", limit: "Limit reached", missing: "Case not found", off: "The planner is switched off in Settings" }[result];
+  finish(back, note);
+}

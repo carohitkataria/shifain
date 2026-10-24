@@ -65,15 +65,19 @@ export default async function PortalHelp(props: PortalPageProps) {
               <PortalIcon name="chat" />
               {t(PORTAL_COPY.chatNow, locale)}
             </OpenChatButton>
-            <a href={waHref(content.contact.whatsapp)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-leaf-tint px-6 font-semibold text-[#1f6b31] hover:bg-[#d9f0df]">
+            {content.contact.whatsapp ? (
+              <a href={waHref(content.contact.whatsapp)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-leaf-tint px-6 font-semibold text-[#1f6b31] hover:bg-[#d9f0df]">
               <PortalIcon name="whatsapp" />
               {t(PORTAL_COPY.whatsapp, locale)}
             </a>
-            <div className="grid grid-cols-2 gap-2">
-              <a href={telHref(content.contact.phone)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-surface-muted font-semibold text-navy hover:bg-[#efeafd]">
-                <PortalIcon name="phone" />
-                {t(PORTAL_COPY.call, locale)}
-              </a>
+            ) : null}
+            <div className={`grid gap-2 ${content.contact.phone ? "grid-cols-2" : "grid-cols-1"}`}>
+              {content.contact.phone ? (
+                <a href={telHref(content.contact.phone)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-surface-muted font-semibold text-navy hover:bg-[#efeafd]">
+                  <PortalIcon name="phone" />
+                  {t(PORTAL_COPY.call, locale)}
+                </a>
+              ) : null}
               <a href={`mailto:${content.contact.email}${subject}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-surface-muted font-semibold text-navy hover:bg-[#efeafd]">
                 <PortalIcon name="mail" />
                 {t(PORTAL_COPY.email, locale)}

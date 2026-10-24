@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import {
   accountForPhone,
   currentPatient,
+  ensureAccount,
   getPatientAccount,
   authenticatePatient,
   endPatientSession,
@@ -16,6 +17,7 @@ import {
   type SignUpDetails,
 } from "@/lib/patient-auth";
 import { MIN_PASSWORD, checkPassword, setAccountPassword } from "@/lib/patient-password";
+import { casesForEmail } from "@/lib/cases";
 import { requestPhoneCode, verifyPhoneCode, type PhoneCodeRequest } from "@/lib/phone-codes";
 import { allowHit } from "@/lib/rate-limit";
 import { COUNTRIES } from "@/lib/countries";
@@ -146,14 +148,13 @@ async function clientIp(): Promise<string> {
 }
 
 /**
- * The main sign-in: email address or mobile number, and a password. Wrong
+ * The main sign-in: one field for an email address or a mobile number, and a password. Wrong
  * address, no password set yet and wrong password all get the same answer.
  * Ten tries per account and thirty per network in fifteen minutes.
  */
 export async function passwordLoginAction(formData: FormData) {
   const locale = localeOf(formData);
-  const by = formData.get("by") === "mobile" ? "mobile" : "email";
-  const page = `/${locale}/portal/patient/login${by === "mobile" ? "?with=mobile&" : "?"}`;
+  const page = `/${locale}/portal/patient/login?`;
   const identifier = field(formData, "identifier", 200);
   const password = String(formData.get("password") ?? "").slice(0, 200);
   const remember = formData.get("remember") === "yes";
@@ -218,8 +219,18 @@ export async function setPasswordAction(formData: FormData) {
   const page = `/${locale}/portal/patient/settings`;
   const identity = await currentPatient().catch(() => null);
   if (!identity) redirect(`/${locale}/portal/patient/login`);
-  const account =
+  let account =
     identity.kind === "email" ? await getPatientAccount(identity.email).catch(() => null) : await accountForPhone(identity.digits).catch(() => null);
+  // Signed in by an email code but never signed up (the case came from the enquiry form): the
+  // address is proven, so the account is made from their latest case. Not for a phone sign-in —
+  // an email typed into a form proves nothing about who owns it.
+  if (!account && identity.kind === "email") {
+    const latest = (await casesForEmail(identity.email).catch(() => []))[0];
+    if (latest) {
+      await ensureAccount(identity.email, latest.patient.name, latest.locale, { country: latest.patient.country, phone: latest.patient.phone }).catch(() => undefined);
+      account = await getPatientAccount(identity.email).catch(() => null);
+    }
+  }
   if (!account) redirect(`${page}?error=noaccount#password`);
 
   const password = String(formData.get("password") ?? "");

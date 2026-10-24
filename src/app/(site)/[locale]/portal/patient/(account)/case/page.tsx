@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AppShell, CASE_TABS, SecHead, href } from "@/components/patient-app/AppShell";
+import { AppShell, CASE_TABS, SecHead, caseNeed, href } from "@/components/patient-app/AppShell";
 import { AppIcon } from "@/components/patient-app/AppIcon";
 import { OpenSheet } from "@/components/patient-app/client";
 import { BookSheet, ChangeDoctorSheet } from "@/components/patient-app/sheets";
@@ -100,7 +100,7 @@ async function CaseOverview(props: AppProps) {
           <span className="a-pill t-sch">{record._id}</span>
           {record.status === "confirmed" || record.status === "planned" ? <span className="a-pill t-ok">{t(APP.confirmedPlan, locale)}</span> : null}
         </div>
-        <h3 style={{ fontSize: 18, marginTop: 10 }}>{app.names.treatment ?? record.statedNeed ?? t(APP.caseShort, locale)}</h3>
+        <h3 style={{ fontSize: 18, marginTop: 10 }}>{caseNeed(app) ?? t(APP.caseShort, locale)}</h3>
         <p className="a-tiny a-muted">{[app.names.disease, record.plan?.destinationCity].filter(Boolean).join(" · ")}</p>
       </div>
 

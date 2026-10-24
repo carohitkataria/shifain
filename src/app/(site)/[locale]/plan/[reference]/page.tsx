@@ -5,6 +5,8 @@ import { Footer } from "@/components/Footer";
 import { Icon } from "@/components/Icon";
 import { PlanPackage, type PlanLine } from "@/components/PlanPackage";
 import { PlanWaiting } from "@/components/PlanWaiting";
+import { PlanNextSteps } from "@/components/PlanNextSteps";
+import { botLink } from "@/lib/telegram-login";
 import { getContent } from "@/lib/store";
 import { getCase } from "@/lib/cases";
 import { isDatabaseConfigured } from "@/lib/db";
@@ -39,15 +41,23 @@ export default async function PlanPage({
   const record = await getCase(reference).catch(() => null);
   if (!record) notFound();
 
-  const shell = (body: React.ReactNode) => (
+  const shell = (body: React.ReactNode, after?: React.ReactNode) => (
     <>
       <Header content={content} locale={locale} path={`/plan/${reference}`} />
       <main className="bg-surface-muted px-4 py-12 sm:py-16">
-        <div className="mx-auto w-full max-w-3xl">{body}</div>
+        <div className="mx-auto w-full max-w-3xl">
+          {body}
+          {after}
+        </div>
       </main>
       <Footer content={content} locale={locale} />
     </>
   );
+
+  // "Follow your case on Telegram": the bot links this chat to the case from the start payload.
+  const telegram = await botLink(`case_${record._id}`).catch(() => null);
+  const next = <PlanNextSteps record={record} locale={locale} telegram={telegram} />;
+  const hadFiles = record.intakeRoute === "reports" && (record.reports?.length ?? 0) > 0;
 
   const referenceLine = (
     <p className="mt-4 text-sm text-ink-soft">
@@ -62,12 +72,13 @@ export default async function PlanPage({
         <div className="flex items-center gap-3">
           <PlanWaiting reference={record._id} />
           <h1 className="text-2xl font-extrabold tracking-tight text-ink">
-            {t(PLAN_COPY.working.title, locale)}
+            {t(hadFiles ? PLAN_COPY.working.title : PLAN_COPY.working.titleNoFiles, locale)}
           </h1>
         </div>
         <p className="mt-3 leading-relaxed text-ink-soft">{t(PLAN_COPY.working.body, locale)}</p>
         {referenceLine}
       </div>,
+      next,
     );
   }
 
@@ -77,12 +88,13 @@ export default async function PlanPage({
         <h1 className="text-2xl font-extrabold tracking-tight text-ink">
           {t(PLAN_COPY.failed.title, locale)}
         </h1>
-        <p className="mt-3 leading-relaxed text-ink-soft">{t(PLAN_COPY.failed.body, locale)}</p>
+        <p className="mt-3 leading-relaxed text-ink-soft">
+          {t(PLAN_COPY.failed.body, locale)}
+          {hadFiles ? ` ${t(record.reportsNotStored ? PLAN_COPY.failed.filesNotKept : PLAN_COPY.failed.filesKept, locale)}` : ""}
+        </p>
         {referenceLine}
-        <Link href={`/${locale}`} className="btn btn-secondary mt-6">
-          {t(PLAN_COPY.back, locale)}
-        </Link>
       </div>,
+      next,
     );
   }
 
@@ -342,9 +354,7 @@ export default async function PlanPage({
         </p>
       </div>
 
-      <Link href={`/${locale}`} className="btn btn-secondary mt-6">
-        {t(PLAN_COPY.back, locale)}
-      </Link>
+      {next}
     </>,
   );
 }

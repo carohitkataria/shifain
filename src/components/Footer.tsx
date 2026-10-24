@@ -28,12 +28,11 @@ export function Footer({ content, locale }: { content: SiteContent; locale: Loca
 
               <ul className="mt-5 flex flex-wrap gap-2">
                 <li className="chip bg-white/10 text-white/80">JCI / NABH network</li>
-                <li className="chip bg-white/10 text-white/80">ISO 27001</li>
               </ul>
 
               <div className="mt-5 space-y-1 text-sm font-semibold text-white/75">
-                <p>{content.contact.phone}</p>
-                <p>{content.contact.email}</p>
+                {content.contact.phone ? <p>{content.contact.phone}</p> : null}
+                {content.contact.email ? <p>{content.contact.email}</p> : null}
               </div>
             </div>
 

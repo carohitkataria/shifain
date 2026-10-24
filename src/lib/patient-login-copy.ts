@@ -34,6 +34,8 @@ export const LOGIN = {
   byMobile: l("Mobile number", "Номер телефона", "Telefon raqami"),
   mobile: l("Mobile number you gave us", "Телефон, который вы указали", "Bizga bergan telefon raqamingiz"),
   mobilePlaceholder: l("+ country code and number", "+ код страны и номер", "+ mamlakat kodi va raqam"),
+  identifier: l("Email or mobile number", "Почта или номер телефона", "Pochta yoki telefon raqami"),
+  identifierPlaceholder: l("you@example.com or +country code and number", "you@example.com или +код страны и номер", "you@example.com yoki +mamlakat kodi va raqam"),
   password: l("Password", "Пароль", "Parol"),
   passwordPlaceholder: l("Enter your password", "Введите пароль", "Parolingizni kiriting"),
   showPassword: l("Show password", "Показать пароль", "Parolni koʻrsatish"),

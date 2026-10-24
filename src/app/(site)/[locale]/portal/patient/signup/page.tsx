@@ -53,6 +53,7 @@ export default async function PatientSignUpPage({ params, searchParams }: { para
             </div>
           </div>
           <SignUpFields
+            locale={locale}
             labels={{
               country: t(APP.country, locale),
               choose: t(APP.choose, locale),

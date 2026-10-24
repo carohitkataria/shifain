@@ -48,7 +48,8 @@ export default async function SettingsPage(props: AppProps) {
       <section className="a-sec" id="password">
         <SecHead icon="lock" title={t(APP.password.title, locale)} action={account?.passwordHash ? <span className="a-pill t-ok">{t(APP.password.isSet, locale)}</span> : null} />
         <div className="a-card a-pad">
-          {account ? (
+          {/* Email sign-ins can always set one: the account is made from their case if needed. */}
+          {account || portal.identity.kind === "email" ? (
             <form action={setPasswordAction}>
               <input type="hidden" name="locale" value={locale} />
               <p className="a-tiny a-muted" style={{ marginTop: 0 }}>
@@ -60,7 +61,7 @@ export default async function SettingsPage(props: AppProps) {
                   <span>{t(app.query.error === "short" ? APP.password.short : app.query.error === "mismatch" ? APP.password.mismatch : APP.password.noAccount, locale)}</span>
                 </p>
               ) : null}
-              <input type="text" name="username" autoComplete="username" defaultValue={account.email} hidden readOnly />
+              <input type="text" name="username" autoComplete="username" defaultValue={account?.email ?? email ?? ""} hidden readOnly />
               <label className="a-field">
                 <span>{t(APP.password.fresh, locale)}</span>
                 <input className="a-input" name="password" type="password" required minLength={8} maxLength={200} autoComplete="new-password" autoFocus={app.query.set === "password"} />

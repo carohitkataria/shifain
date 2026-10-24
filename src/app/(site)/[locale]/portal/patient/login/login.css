@@ -87,9 +87,9 @@
   flex: 1;
 }
 
-/* ---------- story card ---------- */
+/* ---------- story card (computer only: a phone opens straight on the form) ---------- */
 .pl-story-card {
-  display: flex;
+  display: none;
   flex-direction: column;
   overflow: hidden;
   border-radius: 16px;
@@ -267,32 +267,6 @@
 }
 .pl-dev b {
   letter-spacing: 3px;
-}
-
-/* Email or mobile number */
-.pl-switch {
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid var(--pl-line);
-  border-radius: 10px;
-  background: #fff;
-}
-.pl-switch a {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-height: 40px;
-  border-radius: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--pl-muted);
-}
-.pl-switch a[aria-current="page"] {
-  background: var(--pl-tint);
-  color: var(--pl-purple);
 }
 
 .pl-form {
@@ -699,6 +673,7 @@
     padding: 0 48px;
   }
   .pl-story-card {
+    display: flex;
     flex: 0 1 624px;
     min-width: 0;
     min-height: 872px;

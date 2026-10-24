@@ -52,10 +52,13 @@ let ttlReady: Promise<void> | null = null;
 function ensureRetention(): Promise<void> {
   ttlReady ??= (async () => {
     const db = await getDb();
-    await db
-      .collection("case_reports")
-      .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0, name: "expiresAt_ttl" });
-    await db.collection("case_reports").createIndex({ reference: 1 });
+    const reports = db.collection("case_reports");
+    // The seed script makes the same index under MongoDB's default name (expiresAt_1). Creating it
+    // again under another name is refused — which used to fail every upload — so use whichever exists.
+    const existing = await reports.indexes().catch(() => []);
+    const hasTtl = existing.some((index) => index.key?.expiresAt === 1 && typeof index.expireAfterSeconds === "number");
+    if (!hasTtl) await reports.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+    await reports.createIndex({ reference: 1 });
   })().catch((error) => {
     // Retry on the next upload rather than leaving files without an expiry.
     ttlReady = null;

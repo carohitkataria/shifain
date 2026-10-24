@@ -29,7 +29,9 @@ import type { Appointment } from "@/lib/patient-portal";
 import { logoutAction } from "@/app/(admin)/admin/actions";
 import { attributeCaseAction, deleteCaseAction, saveCaseAction } from "@/app/(admin)/admin/cases/actions";
 import { saveBroadcastAction, saveLeadAction } from "@/app/(admin)/admin/partners/actions";
-import { caseCoordinatorAction, caseNoteAction, caseStageAction, handBackAction, inboxReplyAction, newCaseAction } from "@/app/(admin)/admin/console-actions";
+import { caseCoordinatorAction, caseNoteAction, caseStageAction, handBackAction, inboxReplyAction, newCaseAction, rerunPlannerAction, writePlanAction } from "@/app/(admin)/admin/console-actions";
+import { listCities, listDiseases, listTreatments } from "@/lib/catalogue";
+import { PLAN_PACKAGE_OPTIONS } from "@/lib/ai/plan-schema";
 import { deskCallAction, deskChangeAction, deskFamilyAction, deskNewRideAction, deskPaymentAction, deskRideAction, deskUploadAction } from "@/lib/desk-actions";
 import { CIcon } from "./CIcon";
 import { CountryChannel, DrawerKeys, QuickReply, ScrollToEnd } from "./client";
@@ -495,8 +497,103 @@ async function CaseDrawer({ url, close, reference, tab }: { url: string; close: 
 
   if (tab === "plan") {
     const plan = record.plan;
+    const [diseases, treatments, cities] = await Promise.all([listDiseases().catch(() => []), listTreatments().catch(() => []), listCities().catch(() => [])]);
     body = (
       <div className="space-y-3">
+        {record.status === "plan-failed" || record.status === "new" || !plan ? (
+          <form action={rerunPlannerAction} className="flex flex-wrap items-center gap-2">
+            <input type="hidden" name="id" value={record._id} />
+            <input type="hidden" name="back" value={here} />
+            <button className={btn.soft}>
+              <CIcon name="repeat" size={16} />
+              Run the planner again
+            </button>
+            <span className="text-xs text-ink-muted">Or write the plan yourself below.</span>
+          </form>
+        ) : null}
+        <details open={!plan} className="rounded-2xl border border-line bg-white p-4">
+          <summary className="cursor-pointer text-[13.5px] font-bold">{plan ? "Edit the plan by hand" : "Write the plan by hand"}</summary>
+          <form action={writePlanAction} className="mt-3">
+            <input type="hidden" name="id" value={record._id} />
+            <input type="hidden" name="back" value={here} />
+            <label className={label}>
+              What we understood — the patient reads this, in their language ({record.locale})
+              <textarea name="understanding" required defaultValue={plan?.understanding ?? ""} className={area} />
+            </label>
+            <div className="grid gap-x-3 sm:grid-cols-3">
+              <label className={label}>
+                Condition
+                <select name="diseaseCode" defaultValue={plan?.diseaseCode ?? ""} className={field}>
+                  <option value="">Not sure yet</option>
+                  {diseases.map((item) => (
+                    <option key={item._id} value={item._id}>
+                      {item.name.en}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className={label}>
+                Treatment
+                <select name="treatmentCode" defaultValue={plan?.recommendedTreatmentCode ?? ""} className={field}>
+                  <option value="">Not decided yet</option>
+                  {treatments.map((item) => (
+                    <option key={item._id} value={item._id}>
+                      {item.name.en}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className={label}>
+                City
+                <select name="city" defaultValue={plan?.destinationCity ?? ""} className={field}>
+                  <option value="">Not decided yet</option>
+                  {cities.map((item) => (
+                    <option key={item._id} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className={label}>
+                Nights in hospital
+                <input name="inpatientNights" type="number" min={0} defaultValue={plan?.stay.inpatientNights ?? ""} placeholder="From the catalogue" className={field} />
+              </label>
+              <label className={label}>
+                Days in the country
+                <input name="daysInCountry" type="number" min={0} defaultValue={plan?.stay.daysInCountry ?? ""} placeholder="From the catalogue" className={field} />
+              </label>
+            </div>
+            <fieldset className={label}>
+              Package
+              <div className="mt-1.5 flex flex-wrap gap-3 text-[13px] font-medium text-ink">
+                {PLAN_PACKAGE_OPTIONS.map((item) => (
+                  <label key={item} className="flex items-center gap-1.5">
+                    <input type="checkbox" name="packages" value={item} defaultChecked={plan ? plan.suggestedPackage.includes(item) : ["visa-support", "airport-transfers", "accommodation", "interpreter"].includes(item)} />
+                    {item}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <div className="grid gap-x-3 sm:grid-cols-2">
+              <label className={label}>
+                Questions for the patient (one per line)
+                <textarea name="questions" defaultValue={plan?.questionsForPatient.join("\n") ?? ""} className={area} />
+              </label>
+              <label className={label}>
+                Reports still needed (one per line)
+                <textarea name="missing" defaultValue={plan?.missingReports.join("\n") ?? ""} className={area} />
+              </label>
+            </div>
+            <label className={label}>
+              Urgent warning for the patient (only if they should see a doctor now)
+              <input name="redFlag" defaultValue={plan?.redFlag?.present ? plan.redFlag.message : ""} className={field} />
+            </label>
+            <button className={btn.primary}>
+              <CIcon name="check" size={16} />
+              Save the plan and tell the patient
+            </button>
+          </form>
+        </details>
         {plan ? (
           <Panel>
             <Sect>What the planner understood</Sect>

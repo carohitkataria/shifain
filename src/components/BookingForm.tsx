@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { COUNTRIES, DIAL_BY_NAME } from "@/lib/countries";
+import { COUNTRY_BY_NAME, DIAL_BY_NAME, countryOptions } from "@/lib/countries";
 import { BOOKING_COPY as B } from "@/lib/directory-copy";
-import { INTAKE_COPY } from "@/lib/intake-copy";
+import { INTAKE_COPY, REACH_COPY } from "@/lib/intake-copy";
 import { t } from "@/lib/localize";
 import type { Locale } from "@/lib/i18n";
+import { EnquiryReturned } from "./EnquiryReturned";
+import { ReachChoice } from "./ReachChoice";
 
 const field =
   "w-full min-w-0 min-h-11 rounded-xl border border-line bg-white px-3.5 text-base text-ink placeholder:text-ink-muted transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-tint sm:text-sm";
@@ -32,6 +34,7 @@ export function BookingForm({
   specialties: string[];
 }) {
   const [dial, setDial] = useState("");
+  const [countryCode, setCountryCode] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [hasFiles, setHasFiles] = useState(false);
 
@@ -41,6 +44,7 @@ export function BookingForm({
       <input type="hidden" name="from" value={from} />
       {hospitalId ? <input type="hidden" name="hospitalId" value={hospitalId} /> : null}
       {doctorId ? <input type="hidden" name="doctorId" value={doctorId} /> : null}
+      <EnquiryReturned locale={locale} />
 
       <div>
         <label htmlFor="book-name" className={labelCls}>
@@ -59,15 +63,18 @@ export function BookingForm({
           required
           defaultValue=""
           autoComplete="country-name"
-          onChange={(event) => setDial(DIAL_BY_NAME[event.target.value] ?? dial)}
+          onChange={(event) => {
+            setDial(DIAL_BY_NAME[event.target.value] ?? dial);
+            setCountryCode(COUNTRY_BY_NAME.get(event.target.value)?.code ?? null);
+          }}
           className={field}
         >
           <option value="" disabled>
             {t(B.countryPlaceholder, locale)}
           </option>
-          {COUNTRIES.map((country) => (
-            <option key={country.code} value={country.name}>
-              {country.name}
+          {countryOptions(locale).map((item) => (
+            <option key={item.code} value={item.value} suppressHydrationWarning>
+              {item.label}
             </option>
           ))}
         </select>
@@ -75,7 +82,7 @@ export function BookingForm({
 
       <div>
         <label htmlFor="book-phone" className={labelCls}>
-          {t(B.phone, locale)}
+          {t(REACH_COPY.mobile, locale)}
         </label>
         <div className="flex gap-2">
           <input
@@ -90,6 +97,8 @@ export function BookingForm({
           <input id="book-phone" name="phone" type="tel" required minLength={5} autoComplete="tel-national" inputMode="tel" className={field} />
         </div>
       </div>
+
+      <ReachChoice locale={locale} countryCode={countryCode} />
 
       <div>
         <label htmlFor="book-email" className={labelCls}>
@@ -140,7 +149,7 @@ export function BookingForm({
           name="reports"
           type="file"
           multiple
-          accept="application/pdf,image/*"
+          accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
           onChange={(event) => setHasFiles(Boolean(event.target.files?.length))}
           aria-describedby="book-reports-hint"
           className="block w-full text-sm text-ink-soft file:mr-3 file:rounded-lg file:border-0 file:bg-brand-tint file:px-3 file:py-2 file:text-sm file:font-semibold file:text-brand hover:file:bg-violet-soft"

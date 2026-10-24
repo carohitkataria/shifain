@@ -3,6 +3,7 @@ import { sendMessage, isTelegramConfigured, type BotRole } from "./telegram";
 import { saveMessage, type TelegramContact } from "./crm-messages";
 import { readOr, getDb } from "./db";
 import { toUzCyrillic } from "./uz-cyrillic";
+import { send } from "./mailer";
 import type { PatientCase } from "./cases";
 
 /**
@@ -113,6 +114,11 @@ export async function broadcastToPartners(text: string): Promise<number> {
 type Words = { en: string; ru: string; uz: string };
 
 const STATUS_WORDS: Record<string, Words> = {
+  received: {
+    en: "📨 <b>We have your request.</b> A coordinator who speaks your language will review it — usually within 24 hours — and the treating hospital confirms the plan and price within 48 hours.",
+    ru: "📨 <b>Мы получили ваш запрос.</b> Координатор, говорящий на вашем языке, изучит его — обычно в течение 24 часов, — а клиника подтвердит план и стоимость в течение 48 часов.",
+    uz: "📨 <b>So'rovingizni oldik.</b> Tilingizda gapiradigan koordinator uni ko'rib chiqadi — odatda 24 soat ichida — shifoxona esa reja va narxni 48 soat ichida tasdiqlaydi.",
+  },
   planning: {
     en: "📋 <b>We're reading your reports.</b> Your treatment plan is being prepared.",
     ru: "📋 <b>Мы изучаем ваши документы.</b> Готовим план лечения.",
@@ -143,6 +149,7 @@ const RIDE_WORDS: Record<string, Words> = {
 
 const MESSAGE_WORDS: Words = { en: "💬 <b>New message from {name}</b>", ru: "💬 <b>Новое сообщение от {name}</b>", uz: "💬 <b>{name} dan yangi xabar</b>" };
 const CASE_WORDS: Words = { en: "Case", ru: "Случай", uz: "Holat" };
+const SUBJECT_WORDS: Words = { en: "Update on your Shifain case", ru: "Новости по вашему случаю Shifain", uz: "Shifain holatingiz bo'yicha yangilik" };
 const OPEN_WORDS: Words = { en: "Open your account", ru: "Открыть аккаунт", uz: "Akkauntni ochish" };
 
 const escapeHtml = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -153,14 +160,13 @@ export type CaseUpdate =
   | { kind: "message"; from: string; text: string };
 
 /**
- * Tells the patient on Telegram that their case moved, in their language
- * (Uzbek in Cyrillic when that is what they read). Silent when they have no
- * chat with the bot or nothing worth saying changed.
+ * Tells the patient their case moved, in their language (Uzbek in Cyrillic
+ * when that is what they read): on Telegram if they linked the bot, and by
+ * email if we have their address. Silent when nothing worth saying changed.
  */
 export async function notifyCase(caseReference: string, update: CaseUpdate): Promise<boolean> {
-  if (!isTelegramConfigured("patient")) return false;
-  const record = await readOr<Pick<PatientCase, "_id" | "patient" | "locale"> | null>(null, (db) =>
-    db.collection<PatientCase>("cases").findOne({ _id: caseReference }, { projection: { patient: 1, locale: 1 } }),
+  const record = await readOr<Pick<PatientCase, "_id" | "patient" | "locale" | "accountEmail"> | null>(null, (db) =>
+    db.collection<PatientCase>("cases").findOne({ _id: caseReference }, { projection: { patient: 1, locale: 1, accountEmail: 1 } }),
   );
   if (!record) return false;
 
@@ -173,8 +179,27 @@ export async function notifyCase(caseReference: string, update: CaseUpdate): Pro
   if (!lead) return false;
 
   const base = (process.env.BASE_URL || "https://shifain.com").replace(/\/$/, "");
-  const text = `${lead}\n\n${pick(CASE_WORDS)}: <code>${caseReference}</code>\n<a href="${base}/${locale}/portal/patient">${pick(OPEN_WORDS)}</a>`;
-  return notifyPatient({ phone: record.patient?.phone ?? null, email: record.patient?.email ?? null, caseReference, text });
+  const account = `${base}/${locale}/portal/patient`;
+  const text = `${lead}\n\n${pick(CASE_WORDS)}: <code>${caseReference}</code>\n<a href="${account}">${pick(OPEN_WORDS)}</a>`;
+  const byTelegram = await notifyPatient({ phone: record.patient?.phone ?? null, email: record.patient?.email ?? null, caseReference, text });
+
+  // The same news by email, for patients who never found the bot — most of them.
+  const to = record.patient?.email || record.accountEmail || null;
+  let byEmail = false;
+  // A car on its way is news for the next minute, not for an inbox.
+  if (to && update.kind !== "ride") {
+    const plain = lead.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+    const subject = `${pick(SUBJECT_WORDS)} ${caseReference}`;
+    const body = `${plain}\n\n${pick(CASE_WORDS)}: ${caseReference}\n${pick(OPEN_WORDS)}: ${account}\n\n— Shifain`;
+    const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#0a1a47;max-width:520px;margin:0 auto;padding:24px;line-height:1.55">
+<p style="font-size:20px;font-weight:700;color:#722be4;margin:0 0 16px">Shifain</p>
+<p style="font-size:15px;margin:0 0 16px;white-space:pre-line">${lead}</p>
+<p style="font-size:13px;color:#3f4a69;margin:0 0 20px">${pick(CASE_WORDS)}: <b>${caseReference}</b></p>
+<a href="${account}" style="display:inline-block;background:#722be4;color:#fff;text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px">${pick(OPEN_WORDS)}</a>
+</div>`;
+    byEmail = await send(to, subject, body, html).catch(() => false);
+  }
+  return byTelegram || byEmail;
 }
 
 /** Kept for the planner's callers: a stage change, told to the patient. */

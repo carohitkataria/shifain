@@ -45,9 +45,11 @@ export const defaultContent: SiteContent = {
     wordmarkTagline: l("Trusted medical journey", "Надёжный путь к лечению", "Ishonchli tibbiy sayohat"),
   },
 
+  // Left empty until the real numbers are entered in the website editor: a made-up
+  // number on a "Call us" or WhatsApp button is worse than no button.
   contact: {
-    phone: "+91 11 4000 0000",
-    whatsapp: "+91 11 4000 0000",
+    phone: "",
+    whatsapp: "",
     email: "care@shifain.com",
   },
 

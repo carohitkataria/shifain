@@ -66,7 +66,7 @@ export const APP = {
     arrival: l("Arrival", "Прилёт", "Kelish"),
     balance: l("Balance due", "К оплате", "To'lov qoldig'i"),
     estimate: l("Estimate", "Смета", "Hisob"),
-    reports: l("Reports", "Документы", "Hujjatlar"),
+    reports: l("Reports", "Мед. документы", "Tibbiy hujjatlar"),
     todo: l("To do", "Дела", "Vazifalar"),
     notSet: l("—", "—", "—"),
   },
@@ -116,6 +116,18 @@ export const APP = {
     nearby: l("Nearby", "Рядом", "Yaqinda"),
   },
   newCase: l("New case", "Новый случай", "Yangi holat"),
+  /** A closed case: the patient is home, and aftercare goes on. */
+  homeAgain: {
+    title: l("Welcome home", "С возвращением домой", "Uyga xush kelibsiz"),
+    body: l(
+      "Your treatment journey is complete. Your coordinator and doctor stay with you: send new reports, book a follow-up call, or write any time.",
+      "Ваше лечение завершено. Координатор и врач остаются на связи: присылайте новые анализы, записывайтесь на контрольный звонок или пишите в любое время.",
+      "Davolanish safaringiz yakunlandi. Koordinator va shifokor siz bilan: yangi tahlillarni yuboring, nazorat qo'ng'irog'iga yoziling yoki istalgan vaqtda yozing.",
+    ),
+    reports: l("Send new reports", "Прислать анализы", "Tahlil yuborish"),
+    call: l("Follow-up call", "Контрольный звонок", "Nazorat qo'ng'irog'i"),
+    write: l("Write to us", "Написать нам", "Bizga yozish"),
+  },
   password: {
     title: l("Password", "Пароль", "Parol"),
     lead: l(

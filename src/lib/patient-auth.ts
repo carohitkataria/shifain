@@ -286,7 +286,7 @@ async function saveAccount(email: string, details: SignUpDetails): Promise<void>
 }
 
 /** A patient signing in with Google has proved the address; give them an account if they have none. */
-export async function ensureAccount(email: string, name: string, locale: string): Promise<void> {
+export async function ensureAccount(email: string, name: string, locale: string, from: { country?: string; phone?: string } = {}): Promise<void> {
   const db = await getDb();
   const now = new Date().toISOString();
   const [firstName = "", ...rest] = name.trim().split(/\s+/);
@@ -297,9 +297,10 @@ export async function ensureAccount(email: string, name: string, locale: string)
         email: normaliseEmail(email),
         firstName,
         lastName: rest.join(" "),
-        country: "",
+        country: from.country ?? "",
         dial: "",
-        phone: "",
+        // A case keeps the number whole ("+998 90 …"); accountForPhone reads dial + phone together.
+        phone: from.phone ?? "",
         locale,
         createdAt: now,
         updatedAt: now,

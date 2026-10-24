@@ -137,11 +137,21 @@ function reportBlocks(reports: PlanReport[]): Anthropic.ContentBlockParam[] {
 
 export class PlanUnavailableError extends Error {}
 
+/** The language the patient reads the site in, for every line of the plan they see. */
+const WRITE_IN: Record<string, string> = {
+  en: "English",
+  ru: "Russian",
+  uz: "Uzbek, in the Latin alphabet",
+  oz: "Uzbek, in the Cyrillic alphabet",
+};
+
 function patientPrompt(input: PlanInput, usable: PlanReport[]): string {
   const answered = Object.entries(input.answers ?? {}).filter(([, value]) => value?.trim());
   const questionText = new Map(INTAKE_QUESTIONS.map((q) => [q.id, q.question]));
+  const language = WRITE_IN[input.locale] ?? "English";
   return [
     `The patient is travelling from ${input.country}.`,
+    `They read ${language}. Write every text the patient sees — understanding, redFlag.message, each treatment's "why", the itinerary titles and details, questionsForPatient and missingReports — in ${language}. Codes and city names stay as they are in the catalogue.`,
     input.statedNeed ? `What they are seeking: "${input.statedNeed}".` : "",
     input.requested
       ? `They asked for ${input.requested}, a ShifaIn partner. Plan around it (its city) unless what they describe clearly needs care it does not offer; if so, say why in "understanding".`

@@ -120,6 +120,7 @@ export function environmentCheck(): EnvCheck[] {
     { name: "TELEGRAM_PATIENT_BOT_TOKEN", set: has("TELEGRAM_PATIENT_BOT_TOKEN"), required: false, what: "Patient-facing Telegram bot. Falls back to TELEGRAM_BOT_TOKEN." },
     { name: "TELEGRAM_PARTNER_BOT_TOKEN", set: has("TELEGRAM_PARTNER_BOT_TOKEN"), required: false, what: "Partner/doctor-facing Telegram bot. Falls back to TELEGRAM_BOT_TOKEN." },
     { name: "TELEGRAM_PATIENT_BOT_USERNAME", set: has("TELEGRAM_PATIENT_BOT_USERNAME"), required: false, what: "The patient bot's @username for “Message us on Telegram” and Telegram sign-in. Read from Telegram when not set." },
+    { name: "OPS_EMAIL", set: has("OPS_EMAIL"), required: false, what: "Where “action needed” alerts go (failed plans, unsaved files) if no ops email is set in Settings." },
     { name: "WHATSAPP_ACCESS_TOKEN", set: has("WHATSAPP_ACCESS_TOKEN"), required: false, what: "WhatsApp Cloud API token. With WHATSAPP_PHONE_NUMBER_ID, patients can get sign-in codes on WhatsApp." },
     { name: "WHATSAPP_PHONE_NUMBER_ID", set: has("WHATSAPP_PHONE_NUMBER_ID"), required: false, what: "The WhatsApp Business number that sends sign-in codes." },
     { name: "WHATSAPP_OTP_TEMPLATE", set: has("WHATSAPP_OTP_TEMPLATE"), required: false, what: "Name of the approved Authentication template for sign-in codes (default shifain_login_code)." },

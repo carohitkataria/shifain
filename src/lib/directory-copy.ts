@@ -86,7 +86,7 @@ export const BOOKING_COPY = {
     "Tashxis, belgilar va shu paytgacha olingan davolash.",
   ),
   reports: l("Attach reports (optional)", "Прикрепить заключения (необязательно)", "Tahlillarni biriktirish (ixtiyoriy)"),
-  reportsHint: l("PDF or photos, up to 10 files.", "PDF или фото, до 10 файлов.", "PDF yoki rasm, 10 tagacha fayl."),
+  reportsHint: l("PDF or photos, up to 10 files, 14 MB each.", "PDF или фото, до 10 файлов, до 14 МБ каждый.", "PDF yoki rasm, 10 tagacha fayl, har biri 14 MB gacha."),
   submit: l("Get my free plan and quote", "Получить бесплатный план и смету", "Bepul reja va narxni olish"),
   sending: l("Sending…", "Отправляем…", "Yuborilmoqda…"),
   privacy: l(

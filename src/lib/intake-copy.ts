@@ -129,27 +129,32 @@ export const WIZARD_COPY = {
   addFiles: l("Add reports", "Добавить документы", "Hujjat qo'shish"),
   addMore: l("Add more", "Добавить ещё", "Yana qo'shish"),
   fileHint: l(
-    "PDF, JPG or PNG · up to 10 files, 25 MB in total",
-    "PDF, JPG или PNG · до 10 файлов, всего 25 МБ",
-    "PDF, JPG yoki PNG · 10 tagacha fayl, jami 25 MB",
+    "PDF, JPG or PNG · up to 10 files, 14 MB each, 25 MB in total",
+    "PDF, JPG или PNG · до 10 файлов, до 14 МБ каждый, всего 25 МБ",
+    "PDF, JPG yoki PNG · 10 tagacha fayl, har biri 14 MB gacha, jami 25 MB",
   ),
   remove: l("Remove", "Удалить", "O'chirish"),
   tooMany: l(
-    "That is more than 10 files or 25 MB — please send the most recent ones.",
-    "Это больше 10 файлов или 25 МБ — отправьте самые свежие.",
-    "Bu 10 tadan ko'p fayl yoki 25 MB dan ortiq — eng so'nggilarini yuboring.",
+    "That is more than 10 files, a file over 14 MB, or 25 MB in total — please send the most recent ones, or a smaller scan.",
+    "Это больше 10 файлов, файл больше 14 МБ или всего больше 25 МБ — отправьте самые свежие или скан поменьше.",
+    "Bu 10 tadan ko'p fayl, 14 MB dan katta fayl yoki jami 25 MB dan ortiq — eng so'nggilarini yoki kichikroq skanni yuboring.",
   ),
+  /** Shown when the server sent the form back (?enquiry=…), e.g. with JavaScript off. */
+  returned: {
+    missing: l("Please add your name, country and phone number, then send again.", "Укажите имя, страну и номер телефона и отправьте ещё раз.", "Ismingiz, mamlakatingiz va telefon raqamingizni kiriting va qayta yuboring."),
+    files: l(
+      "Your files were too large: up to 10 files, 14 MB each and 25 MB in total. Please send the most recent ones.",
+      "Файлы слишком большие: до 10 файлов, до 14 МБ каждый и всего 25 МБ. Отправьте самые свежие.",
+      "Fayllar juda katta: 10 tagacha, har biri 14 MB gacha va jami 25 MB. Eng so'nggilarini yuboring.",
+    ),
+    empty: l("Add a report, a short description, or answer a question, then send again.", "Добавьте документ, короткое описание или ответьте на вопрос и отправьте ещё раз.", "Hujjat, qisqa tavsif qo'shing yoki savolga javob bering va qayta yuboring."),
+  },
   conditionError: l(
     "Add at least one report, a short description, or answer one question.",
     "Добавьте хотя бы один документ, короткое описание или ответьте на один вопрос.",
     "Kamida bitta hujjat, qisqa tavsif yoki bitta savolga javob qo'shing.",
   ),
   moreQuestions: l("More questions (optional)", "Ещё вопросы (необязательно)", "Qo'shimcha savollar (ixtiyoriy)"),
-  contactNote: l(
-    "Your coordinator will message you on WhatsApp or call this number — nobody else sees it.",
-    "Координатор напишет в WhatsApp или позвонит на этот номер — больше его никто не увидит.",
-    "Koordinator WhatsApp orqali yozadi yoki shu raqamga qo'ng'iroq qiladi — boshqa hech kim ko'rmaydi.",
-  ),
   nameError: l("Please enter a first name.", "Введите имя.", "Ismni kiriting."),
   countryError: l("Choose the country you live in.", "Выберите страну проживания.", "Yashash mamlakatingizni tanlang."),
   phoneError: l(
@@ -179,4 +184,21 @@ export const TOUR_COPY = {
   fullDay: l("Full day", "Целый день", "To'liq kun"),
   travel: l("away", "в пути", "yo'lda"),
   hours: l("h", "ч", "s"),
+};
+
+/** "How should we reach you?" on the enquiry forms. */
+export const REACH_COPY = {
+  legend: l("How should your coordinator reach you?", "Как координатору с вами связаться?", "Koordinator siz bilan qanday bog'lansin?"),
+  telegram: l("Telegram", "Telegram", "Telegram"),
+  whatsapp: l("WhatsApp", "WhatsApp", "WhatsApp"),
+  call: l("Phone call", "Звонок", "Qo'ng'iroq"),
+  email: l("Email", "Почта", "Pochta"),
+  suggested: l("Popular", "Чаще всего", "Ko'pchilik"),
+  note: {
+    telegram: l("We’ll message you on Telegram at this number — nobody else sees it.", "Напишем вам в Telegram на этот номер — больше его никто не увидит.", "Shu raqamga Telegramda yozamiz — uni boshqa hech kim ko'rmaydi."),
+    whatsapp: l("We’ll message you on WhatsApp at this number — nobody else sees it.", "Напишем вам в WhatsApp на этот номер — больше его никто не увидит.", "Shu raqamga WhatsAppda yozamiz — uni boshqa hech kim ko'rmaydi."),
+    call: l("We’ll call you on this number — nobody else sees it.", "Мы позвоним на этот номер — больше его никто не увидит.", "Shu raqamga qo'ng'iroq qilamiz — uni boshqa hech kim ko'rmaydi."),
+    email: l("We’ll write to your email below; the number is only for urgent matters.", "Мы напишем на почту ниже; номер — только для срочных вопросов.", "Quyidagi pochtangizga yozamiz; raqam faqat shoshilinch holatlar uchun."),
+  },
+  mobile: l("Mobile number", "Номер телефона", "Telefon raqami"),
 };

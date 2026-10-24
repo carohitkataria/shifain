@@ -21,6 +21,7 @@ import {
   MessageCircle,
   ShieldCheck,
   Smartphone,
+  UserRound,
   UserRoundCheck,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
@@ -100,7 +101,6 @@ export default async function PatientLoginPage({ params, searchParams }: { param
   const reset = query.then === "password" || view === "forgot";
   const thenField = reset ? <input type="hidden" name="then" value="password" /> : null;
   const thenQuery = reset ? "&then=password" : "";
-  const byMobile = query.with === "mobile";
   const email = (query.email ?? "").slice(0, 200);
   const phone = (query.phone ?? "").slice(0, 30);
   const id = (query.id ?? "").slice(0, 200);
@@ -256,29 +256,14 @@ export default async function PatientLoginPage({ params, searchParams }: { param
 
           {view === "password" ? (
             <>
-              <nav className="pl-switch" aria-label={t(APP.signIn, locale)}>
-                <Link href={here} aria-current={!byMobile ? "page" : undefined}>
-                  <Mail size={15} strokeWidth={1.75} aria-hidden="true" />
-                  {t(LOGIN.byEmail, locale)}
-                </Link>
-                <Link href={`${here}?with=mobile`} aria-current={byMobile ? "page" : undefined}>
-                  <Smartphone size={15} strokeWidth={1.75} aria-hidden="true" />
-                  {t(LOGIN.byMobile, locale)}
-                </Link>
-              </nav>
-
               <form action={passwordLoginAction} className="pl-form">
                 <input type="hidden" name="locale" value={locale} />
-                <input type="hidden" name="by" value={byMobile ? "mobile" : "email"} />
+                {/* One field for both: an address with @ is an email, anything else a mobile number. */}
                 <label className="pl-field">
-                  <span className="pl-label">{t(byMobile ? LOGIN.byMobile : LOGIN.email, locale)}</span>
+                  <span className="pl-label">{t(LOGIN.identifier, locale)}</span>
                   <span className="pl-input">
-                    {byMobile ? <Smartphone size={18} strokeWidth={1.75} aria-hidden="true" /> : <Mail size={18} strokeWidth={1.75} aria-hidden="true" />}
-                    {byMobile ? (
-                      <input key="mobile" name="identifier" type="tel" inputMode="tel" required autoComplete="tel" defaultValue={id} placeholder={t(LOGIN.mobilePlaceholder, locale)} />
-                    ) : (
-                      <input key="email" name="identifier" type="email" required autoComplete="email" defaultValue={id} placeholder="you@example.com" />
-                    )}
+                    <UserRound size={18} strokeWidth={1.75} aria-hidden="true" />
+                    <input name="identifier" type="text" inputMode="email" required autoComplete="username" autoCapitalize="none" spellCheck={false} defaultValue={id} placeholder={t(LOGIN.identifierPlaceholder, locale)} />
                   </span>
                 </label>
                 <div className="pl-field">
