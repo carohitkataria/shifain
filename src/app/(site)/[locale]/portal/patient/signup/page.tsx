@@ -39,6 +39,19 @@ export default async function PatientSignUpPage({ params, searchParams }: { para
               <input className="a-input" name="lastName" autoComplete="family-name" />
             </label>
           </div>
+          <div className="a-field">
+            <span>
+              {t(APP.iAm, locale)} <small className="a-muted">· {t(APP.optional, locale)}</small>
+            </span>
+            <div className="a-g3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+              {(["female", "male"] as const).map((value) => (
+                <label key={value} className="a-ch" style={{ flexDirection: "row", justifyContent: "center", minHeight: 44 }}>
+                  <input type="radio" name="gender" value={value} />
+                  {t(APP[value], locale)}
+                </label>
+              ))}
+            </div>
+          </div>
           <SignUpFields
             labels={{
               country: t(APP.country, locale),

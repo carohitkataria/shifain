@@ -95,6 +95,8 @@ export async function signUpAction(formData: FormData) {
     const main = String(formData.get("main") ?? "");
     details.mainChannel = channels.includes(main as ContactChannel) ? (main as ContactChannel) : channels[0];
   }
+  const gender = String(formData.get("gender") ?? "");
+  if (gender === "male" || gender === "female") details.gender = gender;
   const known = details.country === "Other" || COUNTRIES.some((country) => country.name === details.country);
   const agreed = formData.get("agree") === "yes";
   if (!details.firstName || !known || details.phone.replace(/\D/g, "").length < 5 || !EMAIL.test(email) || !agreed) {

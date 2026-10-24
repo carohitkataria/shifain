@@ -3,21 +3,9 @@ import { currentPatient } from "@/lib/patient-auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { translateLine } from "@/lib/ai/translate";
 import { PORTAL_LANGUAGES } from "@/lib/patient-portal";
+import { allowHit } from "@/lib/rate-limit";
 
-/** Eighty lines per ten minutes per signed-in patient — plenty for a conversation, not enough to run up a bill. */
-const WINDOW_MS = 10 * 60_000;
-const LIMIT = 80;
-const recent = new Map<string, number[]>();
-
-function allow(key: string): boolean {
-  const now = Date.now();
-  const hits = (recent.get(key) ?? []).filter((at) => now - at < WINDOW_MS);
-  if (hits.length >= LIMIT) return false;
-  hits.push(now);
-  recent.set(key, hits);
-  return true;
-}
-
+/** Translates one line. Eighty lines per ten minutes per signed-in patient — plenty for a conversation, not enough to run up a bill. */
 export async function POST(request: Request) {
   if (!isDatabaseConfigured()) return NextResponse.json({ error: "Unavailable" }, { status: 503 });
   const identity = await currentPatient().catch(() => null);
@@ -30,7 +18,7 @@ export async function POST(request: Request) {
   if (!text || !from || !to) return NextResponse.json({ error: "Nothing to translate." }, { status: 400 });
 
   const key = identity.kind === "email" ? identity.email : identity.digits;
-  if (!allow(key)) return NextResponse.json({ error: "Too many lines at once. Wait a minute and try again." }, { status: 429 });
+  if (!allowHit(`translate:${key}`, 80, 10 * 60_000)) return NextResponse.json({ error: "Too many lines at once. Wait a minute and try again." }, { status: 429 });
 
   if (from.code === to.code) return NextResponse.json({ translation: text });
   const translation = await translateLine(text, from.name, to.name);

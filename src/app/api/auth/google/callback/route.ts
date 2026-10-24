@@ -2,9 +2,8 @@ import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { publicOrigin, publicUrl } from "@/lib/origin";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
-import { emailFromCode } from "@/lib/google-auth";
+import { OAUTH_COOKIE, emailFromCode } from "@/lib/google-auth";
 import { ensureAccount, startPatientEmailSession } from "@/lib/patient-auth";
-import { OAUTH_COOKIE } from "../route";
 
 export async function GET(request: NextRequest) {
   const jar = await cookies();

@@ -267,3 +267,15 @@ export async function helloAction(formData: FormData) {
     return "hello";
   });
 }
+
+/** The patient's gender, from the translator's settings, so their translated words are read in a matching voice. */
+export async function saveGenderAction(gender: string): Promise<boolean> {
+  if (gender !== "male" && gender !== "female") return false;
+  const { currentPatient } = await import("@/lib/patient-auth");
+  const { getDb } = await import("@/lib/db");
+  const identity = await currentPatient().catch(() => null);
+  if (!identity || identity.kind !== "email") return false;
+  const db = await getDb();
+  const result = await db.collection<{ _id: string; gender?: string; updatedAt: string }>("patient_accounts").updateOne({ _id: identity.email }, { $set: { gender, updatedAt: new Date().toISOString() } });
+  return result.matchedCount > 0;
+}
