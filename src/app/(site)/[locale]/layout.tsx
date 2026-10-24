@@ -13,6 +13,12 @@ const jakarta = Plus_Jakarta_Sans({
   fallback: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
 });
 
+/**
+ * Published edits refresh these pages at once (the editor revalidates them);
+ * this is the safety net if a build ever rendered them without the database.
+ */
+export const revalidate = 600;
+
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }

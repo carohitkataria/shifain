@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALES, LOCALE_COOKIE, isLocale, resolveLocale } from "@/lib/i18n";
+import { ADMIN_URL_HEADER } from "@/lib/console-url";
 
 /** Pages that must never be indexed regardless of which deployment this is. */
 const PRIVATE = /^\/[a-z]{2}\/(plan|portal)\//;
@@ -22,6 +23,15 @@ function applyIndexingPolicy(response: NextResponse, pathname: string): NextResp
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // The console opens its drawers (a case, the inbox, a quick action) from the
+  // query string, on whatever page is showing. Server components cannot read
+  // the URL, so it rides along as a request header.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    const headers = new Headers(request.headers);
+    headers.set(ADMIN_URL_HEADER, `${pathname}${request.nextUrl.search}`);
+    return NextResponse.next({ request: { headers } });
+  }
 
   const hasLocale = LOCALES.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
@@ -82,5 +92,5 @@ function rememberReferral(request: NextRequest, response: NextResponse): NextRes
 }
 
 export const config = {
-  matcher: ["/((?!api|admin|coordinator|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)"],
+  matcher: ["/admin", "/admin/:path*", "/((?!api|admin|coordinator|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)"],
 };

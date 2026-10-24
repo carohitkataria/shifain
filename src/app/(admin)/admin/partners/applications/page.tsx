@@ -31,7 +31,8 @@ export default async function ApplicationsPage({
 
   return (
     <AdminShell
-      title="Partner applications"
+      title="Partners"
+      subtitle="Referring doctors, hospitals and agents"
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "declined" ? "declined" : saved} /> : null}

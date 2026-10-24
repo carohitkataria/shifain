@@ -894,6 +894,23 @@ export const COLLECTIONS = [
     indexes: [{ key: { status: 1, createdAt: -1 } }, { key: { partnerUserId: 1 } }],
   },
   {
+    name: "site_content",
+    // The homepage's words: the published copy the site shows and the draft
+    // the website editor is working on. Kept here, not on the server's disk,
+    // so a deploy never wipes an edit.
+    validator: {
+      $jsonSchema: {
+        bsonType: "object",
+        required: ["_id"],
+        properties: {
+          published: { bsonType: ["object", "null"] },
+          draft: { bsonType: ["object", "null"] },
+          draftUpdatedAt: { bsonType: ["string", "null"] },
+        },
+      },
+    },
+  },
+  {
     name: "site_settings",
     validator: {
       $jsonSchema: {

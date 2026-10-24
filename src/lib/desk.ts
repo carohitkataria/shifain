@@ -32,8 +32,13 @@ export async function deskCase(reference: string): Promise<{ actor: DeskActor; r
   return { actor, record };
 }
 
-/** The desk page a form came from, so an action returns there; never anywhere else. */
+/**
+ * The desk page a form came from, so an action returns there; never anywhere
+ * else. The owner console may come back to any of its pages, drawer open.
+ */
 export const deskBack = (value: FormDataEntryValue | null, reference: string) => {
   const back = String(value ?? "");
-  return /^\/(admin\/cases|coordinator)\/[A-Z0-9-]+$/.test(back) ? back : `/coordinator/${reference}`;
+  if (/^\/(admin\/cases|coordinator)\/[A-Z0-9-]+$/.test(back)) return back;
+  if (/^\/admin(\/[\w-]+)*(\?[\w=&%.:+-]*)?$/.test(back)) return back;
+  return `/coordinator/${reference}`;
 };

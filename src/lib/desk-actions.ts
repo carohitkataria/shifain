@@ -61,8 +61,11 @@ async function work(formData: FormData, change: (record: JourneyCase, actor: Des
   const back = deskBack(formData.get("back"), reference);
   if (!found) redirect(back.startsWith("/admin") ? "/admin/login" : "/coordinator/login");
   const note = (await change(found.record, found.actor)) || "saved";
-  revalidatePath(back);
-  redirect(`${back}?done=${encodeURIComponent(note)}#${String(formData.get("anchor") ?? "top")}`);
+  revalidatePath(back.split("?")[0]);
+  const [path, query = ""] = back.split("?");
+  const params = new URLSearchParams(query);
+  params.set("done", note);
+  redirect(`${path}?${params}#${String(formData.get("anchor") ?? "top")}`);
 }
 
 const via = () => "coordinator" as const;

@@ -29,7 +29,8 @@ export default async function PartnersPage() {
 
   return (
     <AdminShell
-      title="Approved partners"
+      title="Partners"
+      subtitle="Referring doctors, hospitals and agents"
     >
       {!isDatabaseConfigured() && <NotConfigured />}
 

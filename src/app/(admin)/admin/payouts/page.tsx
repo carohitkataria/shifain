@@ -69,7 +69,8 @@ export default async function PayoutsPage({
 
   return (
     <AdminShell
-      title="Commissions & payouts"
+      title="Partners"
+      subtitle="Commissions and payouts"
     >
       {!isDatabaseConfigured() && <NotConfigured />}
       {saved ? <Saved what={saved === "drafted" ? "statement drawn" : undefined} /> : null}
