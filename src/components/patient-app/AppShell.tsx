@@ -71,7 +71,7 @@ export const href = (app: AppData, section: string, extra = "") => {
  * bell), the screen, the help button, and the bottom bar with the translator
  * in the middle. The More and SOS sheets live here so every screen has them.
  */
-export function AppShell({ app, section, title, children, sheets, wide = false }: { app: AppData; section: Section; title?: string; children: React.ReactNode; sheets?: React.ReactNode; wide?: boolean }) {
+export function AppShell({ app, section, title, children, sheets, wide = false, fill = false }: { app: AppData; section: Section; title?: string; children: React.ReactNode; sheets?: React.ReactNode; wide?: boolean; /** The screen fills the window and scrolls inside itself (the translator). */ fill?: boolean }) {
   const { locale, record, ctx, portal } = app;
   const account = portal.account;
   const name = (account ? [account.firstName, account.lastName].filter(Boolean).join(" ") : "") || (record?.patient.name && record.patient.name !== "Website patient" ? record.patient.name : "") || "Shifain";
@@ -177,7 +177,7 @@ export function AppShell({ app, section, title, children, sheets, wide = false }
         </Link>
       </header>
 
-      <main className="a-scroll" id="main">
+      <main className={`a-scroll ${fill ? "a-fill" : ""}`} id="main">
         {portal.viewer?.role === "family" ? (
           <p className="a-hint" style={{ marginTop: 0, marginBottom: 12 }}>
             <AppIcon name="family" />

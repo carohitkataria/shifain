@@ -69,3 +69,6 @@ export async function emailFromCode(code: string, origin: string): Promise<strin
   const verified = claims.email_verified === true || claims.email_verified === "true";
   return claims.email && verified ? claims.email.toLowerCase() : null;
 }
+
+/** Holds the sign-in nonce and page language between the redirect to Google and the way back. */
+export const OAUTH_COOKIE = "shifain_g_oauth";

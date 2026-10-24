@@ -1595,3 +1595,226 @@ textarea.a-input {
     transform: none;
   }
 }
+
+/* ---------- translator: a fixed screen, chat scrolling inside it ----------
+ * Like a messenger: languages and Auto on top, the conversation in the
+ * middle, quick phrases folding out above a one-row bar at the bottom. */
+.a-scroll.a-fill {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 92px;
+}
+.a-fill > .a-page {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+/* The translator has its own bar at the bottom; the assistant button would sit on it. */
+.a-device:has(.a-fill) .a-help {
+  display: none;
+}
+.a-tr-speed input[type="range"] {
+  width: 100%;
+  accent-color: var(--primary);
+}
+.a-tr {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.a-tr .a-lang .a-ibtn {
+  width: 38px;
+  height: 38px;
+}
+.a-tr .a-lang select {
+  text-overflow: ellipsis;
+}
+.a-tr-auto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+}
+.a-tr-auto .a-tog-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  cursor: pointer;
+}
+.a-tr-auto .a-tog-label input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.a-tr-auto b {
+  font-size: 13.5px;
+}
+.a-tr-status {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.a-tr-status .a-muted {
+  font-weight: 500;
+  white-space: normal;
+  line-height: 1.3;
+  font-size: 11.5px;
+}
+.a-tr-level {
+  width: 4px;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--rose);
+  flex: none;
+  transition: transform 0.08s;
+}
+.a-tr-turn {
+  max-width: 100%;
+}
+.a-tr-chat {
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background: #efecf7;
+  border-radius: 16px;
+  overscroll-behavior: contain;
+}
+.a-tr-empty {
+  margin: auto;
+  max-width: 260px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.a-tr-play {
+  display: inline-grid;
+  place-items: center;
+  margin-left: 6px;
+  vertical-align: middle;
+  color: inherit;
+  opacity: 0.85;
+}
+.a-tr-play .a-i {
+  width: 15px;
+  height: 15px;
+}
+.a-tr-phrases {
+  flex: none;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 10px;
+  max-height: 42%;
+  overflow-y: auto;
+}
+.a-tr-phrases .a-chips {
+  margin-bottom: 8px;
+}
+.a-tr-phrase-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.a-tr-phrase {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  border: 1px solid var(--line) !important;
+  background: var(--line-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-align: left;
+}
+.a-tr-phrase .a-i {
+  width: 15px;
+  height: 15px;
+  color: var(--primary);
+}
+.a-tr-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 5px;
+  box-shadow: var(--shadow);
+}
+.a-tr-input {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  outline: none;
+  background: transparent;
+  font-size: 14.5px;
+  padding: 8px 4px;
+}
+.a-tr-side {
+  flex: none;
+  height: 30px;
+  min-width: 34px;
+  padding: 0 7px;
+  border-radius: 15px;
+  background: var(--primary-050);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+}
+.a-tr-round {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: #fff;
+}
+.a-tr-round:disabled {
+  opacity: 0.45;
+}
+.a-tr-round.ghost {
+  width: 38px;
+  height: 38px;
+  background: var(--line-2);
+  color: var(--ink-soft);
+}
+.a-tr-round.ghost.on {
+  background: var(--primary-050);
+  color: var(--primary);
+}
+.a-tr-round.rec {
+  background: var(--rose);
+  animation: a-pulse 1.4s infinite;
+}
+.a-tr-voice .a-seg button {
+  padding: 8px 6px;
+}
+@media (min-width: 900px) {
+  .a-scroll.a-fill {
+    padding-bottom: 24px;
+  }
+}

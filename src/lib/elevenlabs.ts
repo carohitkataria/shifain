@@ -29,6 +29,8 @@ export type TranscriptionResult = {
 export async function transcribeAudio(
   audioBuffer: Buffer,
   filename = "voice.ogg",
+  /** A language to expect; left out, the language is detected. */
+  languageCode?: string,
 ): Promise<TranscriptionResult> {
   const key = apiKey();
   if (!key) throw new Error("ELEVENLABS_API_KEY is not set.");
@@ -36,6 +38,7 @@ export async function transcribeAudio(
   const form = new FormData();
   form.append("file", new Blob([new Uint8Array(audioBuffer)]), filename);
   form.append("model_id", "scribe_v1");
+  if (languageCode) form.append("language_code", languageCode);
 
   const res = await fetch(`${API}/speech-to-text`, {
     method: "POST",
