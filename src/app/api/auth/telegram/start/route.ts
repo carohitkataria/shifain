@@ -20,7 +20,9 @@ export async function GET(request: NextRequest) {
   if (!token || !link) return NextResponse.redirect(failed);
 
   const jar = await cookies();
-  jar.set(TG_LOGIN_COOKIE, `${token}.${locale}`, {
+  // "then=password": the forgot-password route, which ends on Settings to choose a new one.
+  const then = request.nextUrl.searchParams.get("then") === "password" ? ".password" : "";
+  jar.set(TG_LOGIN_COOKIE, `${token}.${locale}${then}`, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

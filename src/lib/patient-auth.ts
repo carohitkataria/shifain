@@ -20,7 +20,10 @@ function secret(): string {
 const sign = (payload: string) =>
   crypto.createHmac("sha256", secret()).update(payload).digest("base64url");
 
-function safeEqual(a: string, b: string): boolean {
+/** The same keyed hash, for one-time codes kept by sibling modules (phone codes). */
+export const keyedHash = (value: string) => sign(`code:${value}`);
+
+export function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
   if (bufA.length !== bufB.length) return false;
@@ -56,18 +59,26 @@ export async function authenticatePatient(
   return record;
 }
 
-export async function startPatientSession(phone: string): Promise<void> {
-  const digits = normalisePhone(phone);
-  const expires = Date.now() + MAX_AGE_SECONDS * 1000;
-  const payload = `${digits}.${expires}`;
+/** Without "remember me": the cookie ends with the browser, and the session within half a day regardless. */
+const SHORT_SESSION_SECONDS = 60 * 60 * 12;
+
+export type SessionOptions = { remember?: boolean };
+
+async function setSession(subject: string, { remember = true }: SessionOptions): Promise<void> {
+  const expires = Date.now() + (remember ? MAX_AGE_SECONDS : SHORT_SESSION_SECONDS) * 1000;
+  const payload = `${subject}.${expires}`;
   const jar = await cookies();
   jar.set(PATIENT_COOKIE, `${payload}.${sign(payload)}`, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: MAX_AGE_SECONDS,
+    ...(remember ? { maxAge: MAX_AGE_SECONDS } : {}),
   });
+}
+
+export async function startPatientSession(phone: string, options: SessionOptions = {}): Promise<void> {
+  await setSession(normalisePhone(phone), options);
 }
 
 export async function endPatientSession(): Promise<void> {
@@ -113,6 +124,9 @@ export type SignUpDetails = {
 export type PatientAccount = SignUpDetails & {
   _id: string; // the email, lower-cased
   email: string;
+  /** scrypt hash of the password, once the patient has set one (see patient-password.ts). */
+  passwordHash?: string;
+  passwordSetAt?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -295,17 +309,8 @@ export async function ensureAccount(email: string, name: string, locale: string)
   );
 }
 
-export async function startPatientEmailSession(email: string): Promise<void> {
-  const expires = Date.now() + MAX_AGE_SECONDS * 1000;
-  const payload = `e:${normaliseEmail(email)}.${expires}`;
-  const jar = await cookies();
-  jar.set(PATIENT_COOKIE, `${payload}.${sign(payload)}`, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: MAX_AGE_SECONDS,
-  });
+export async function startPatientEmailSession(email: string, options: SessionOptions = {}): Promise<void> {
+  await setSession(`e:${normaliseEmail(email)}`, options);
 }
 
 /** The signed-in patient, by whichever route they used. */

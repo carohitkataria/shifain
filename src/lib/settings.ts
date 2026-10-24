@@ -119,6 +119,10 @@ export function environmentCheck(): EnvCheck[] {
     { name: "TELEGRAM_BOT_TOKEN", set: has("TELEGRAM_BOT_TOKEN"), required: false, what: "Shared Telegram bot token (used when separate patient/partner tokens are not set)." },
     { name: "TELEGRAM_PATIENT_BOT_TOKEN", set: has("TELEGRAM_PATIENT_BOT_TOKEN"), required: false, what: "Patient-facing Telegram bot. Falls back to TELEGRAM_BOT_TOKEN." },
     { name: "TELEGRAM_PARTNER_BOT_TOKEN", set: has("TELEGRAM_PARTNER_BOT_TOKEN"), required: false, what: "Partner/doctor-facing Telegram bot. Falls back to TELEGRAM_BOT_TOKEN." },
+    { name: "TELEGRAM_PATIENT_BOT_USERNAME", set: has("TELEGRAM_PATIENT_BOT_USERNAME"), required: false, what: "The patient bot's @username for “Message us on Telegram” and Telegram sign-in. Read from Telegram when not set." },
+    { name: "WHATSAPP_ACCESS_TOKEN", set: has("WHATSAPP_ACCESS_TOKEN"), required: false, what: "WhatsApp Cloud API token. With WHATSAPP_PHONE_NUMBER_ID, patients can get sign-in codes on WhatsApp." },
+    { name: "WHATSAPP_PHONE_NUMBER_ID", set: has("WHATSAPP_PHONE_NUMBER_ID"), required: false, what: "The WhatsApp Business number that sends sign-in codes." },
+    { name: "WHATSAPP_OTP_TEMPLATE", set: has("WHATSAPP_OTP_TEMPLATE"), required: false, what: "Name of the approved Authentication template for sign-in codes (default shifain_login_code)." },
     { name: "ELEVENLABS_API_KEY", set: has("ELEVENLABS_API_KEY"), required: false, what: "Natural voices and server transcription. Without it the assistant speaks with the patient's device voice, for free." },
     { name: "GEMINI_API_KEY", set: has("GEMINI_API_KEY"), required: false, what: "Google Gemini for the voice conversation engine (free tier). Used when ANTHROPIC_API_KEY is not set." },
   ];

@@ -11,7 +11,7 @@ import { TG_LOGIN_COOKIE, readTelegramLogin, spendTelegramLogin } from "@/lib/te
  */
 export async function GET() {
   const jar = await cookies();
-  const [token = "", storedLocale] = (jar.get(TG_LOGIN_COOKIE)?.value ?? "").split(".");
+  const [token = "", storedLocale, then] = (jar.get(TG_LOGIN_COOKIE)?.value ?? "").split(".");
   const locale = isLocale(storedLocale) ? storedLocale : DEFAULT_LOCALE;
   if (!token) return NextResponse.json({ status: "none" });
 
@@ -27,5 +27,5 @@ export async function GET() {
   if (account) await startPatientEmailSession(account.email);
   else await startPatientSession(login.digits);
   jar.delete({ name: TG_LOGIN_COOKIE, path: "/api/auth/telegram" });
-  return NextResponse.json({ status: "done", redirect: `/${locale}/portal/patient` });
+  return NextResponse.json({ status: "done", redirect: then === "password" ? `/${locale}/portal/patient/settings?set=password#password` : `/${locale}/portal/patient` });
 }

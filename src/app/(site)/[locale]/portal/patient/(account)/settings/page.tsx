@@ -9,7 +9,7 @@ import { COUNTRY_BY_NAME } from "@/lib/countries";
 import { LOCALES, LOCALE_META } from "@/lib/i18n";
 import { t } from "@/lib/localize";
 import { channelsAction, homeContactAction, privacyAction } from "../../app-actions";
-import { patientLogoutAction } from "../../actions";
+import { patientLogoutAction, setPasswordAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +44,44 @@ export default async function SettingsPage(props: AppProps) {
           </div>
         </div>
       </div>
+
+      <section className="a-sec" id="password">
+        <SecHead icon="lock" title={t(APP.password.title, locale)} action={account?.passwordHash ? <span className="a-pill t-ok">{t(APP.password.isSet, locale)}</span> : null} />
+        <div className="a-card a-pad">
+          {account ? (
+            <form action={setPasswordAction}>
+              <input type="hidden" name="locale" value={locale} />
+              <p className="a-tiny a-muted" style={{ marginTop: 0 }}>
+                {t(app.query.set === "password" ? APP.password.resetNow : APP.password.lead, locale)}
+              </p>
+              {app.query.error === "short" || app.query.error === "mismatch" || app.query.error === "noaccount" ? (
+                <p className="a-hint a-alert" role="alert">
+                  <AppIcon name="alert" />
+                  <span>{t(app.query.error === "short" ? APP.password.short : app.query.error === "mismatch" ? APP.password.mismatch : APP.password.noAccount, locale)}</span>
+                </p>
+              ) : null}
+              <input type="text" name="username" autoComplete="username" defaultValue={account.email} hidden readOnly />
+              <label className="a-field">
+                <span>{t(APP.password.fresh, locale)}</span>
+                <input className="a-input" name="password" type="password" required minLength={8} maxLength={200} autoComplete="new-password" autoFocus={app.query.set === "password"} />
+              </label>
+              <label className="a-field">
+                <span>{t(APP.password.again, locale)}</span>
+                <input className="a-input" name="confirm" type="password" required minLength={8} maxLength={200} autoComplete="new-password" />
+              </label>
+              <p className="a-tiny a-muted">{t(APP.password.min, locale)}</p>
+              <button className="a-btn a-btn-p a-w" style={{ marginTop: 10 }}>
+                <AppIcon name="lock" />
+                {t(APP.password.save, locale)}
+              </button>
+            </form>
+          ) : (
+            <p className="a-tiny a-muted" style={{ margin: 0 }}>
+              {t(APP.password.noAccount, locale)}
+            </p>
+          )}
+        </div>
+      </section>
 
       {record && isPatient ? (
         <section className="a-sec">

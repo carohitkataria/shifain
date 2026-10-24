@@ -1,0 +1,742 @@
+/*
+ * The patient sign-in page, from the Figma design "patient login — Purple
+ * variation" (1440 × 1080). Sizes are px, like the rest of the patient app.
+ * Phone first; from 900px the story card and the form sit side by side.
+ * Everything is scoped under .pl.
+ */
+.pl {
+  --pl-bg: #faf9f6;
+  --pl-sand: #f3f1ea;
+  --pl-ink: #203c39;
+  --pl-muted: #6c7773;
+  --pl-line: #dfe4df;
+  --pl-purple: #722be4;
+  --pl-purple-deep: #5f1fcc;
+  --pl-tint: #f3eeff;
+  --pl-green: #21675c;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--pl-bg);
+  color: var(--pl-ink);
+  font-family: var(--pa-body), Inter, system-ui, sans-serif;
+}
+.pl a {
+  color: inherit;
+  text-decoration: none;
+}
+.pl :focus-visible {
+  outline: 2px solid var(--pl-purple);
+  outline-offset: 2px;
+}
+/* Fields show focus on their box (the ring below), not as a second outline. */
+.pl .pl-input input:focus-visible,
+.pl .pl-small-input:focus-visible {
+  outline: none;
+}
+
+/* ---------- navigation ---------- */
+.pl-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 64px;
+  padding: 0 16px;
+}
+.pl-brand {
+  display: flex;
+  min-width: 0;
+}
+.pl-support {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pl-help-q {
+  display: none;
+  font-size: 13px;
+  color: var(--pl-muted);
+}
+.pl-care {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: var(--pl-green);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pl-care-label,
+.pl-care-arrow {
+  display: none;
+}
+
+/* ---------- layout ---------- */
+.pl-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 16px;
+  flex: 1;
+}
+
+/* ---------- story card ---------- */
+.pl-story-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--pl-sand);
+}
+.pl-story {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 236px;
+  padding: 18px;
+  overflow: hidden;
+}
+.pl-photo {
+  object-fit: cover;
+}
+.pl-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(21, 62, 52, 0.05) 0%, rgba(21, 62, 52, 0) 61.538%, rgba(114, 43, 228, 0.5) 100%);
+}
+/* No photo yet: the purple wash on its own, deep enough for white type. */
+.pl-scrim-solid {
+  background: linear-gradient(160deg, #8b54ea 0%, #722be4 55%, #4b1aa3 100%);
+}
+.pl-promise {
+  position: relative;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.91);
+  color: var(--pl-purple);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.pl-editorial {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.pl-story-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--pl-serif), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.1;
+  color: #fff;
+}
+.pl-story-body {
+  display: none;
+  margin: 0;
+  max-width: 470px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #e7ddf8;
+}
+.pl-journey {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  padding: 26px 32px;
+}
+.pl-caps {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pl-muted);
+}
+.pl-benefits {
+  display: flex;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pl-benefits li {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pl-benefits b {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pl-ink);
+}
+.pl-benefits b svg {
+  color: var(--pl-purple);
+  flex: none;
+}
+.pl-benefits span {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--pl-muted);
+}
+
+/* ---------- sign-in column ---------- */
+.pl-login {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+  padding-bottom: 8px;
+}
+.pl-welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pl-eyebrow {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pl-purple);
+}
+.pl-title {
+  margin: 0;
+  font-family: var(--pl-serif), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 1.1;
+  color: var(--pl-ink);
+}
+.pl-lead {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--pl-muted);
+  overflow-wrap: anywhere;
+}
+.pl-lead b {
+  color: var(--pl-ink);
+}
+.pl-alert {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fdecec;
+  color: #8f1d1d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.pl-alert svg {
+  flex: none;
+  margin-top: 2px;
+}
+.pl-dev {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--pl-tint);
+  font-size: 12px;
+  color: var(--pl-ink);
+}
+.pl-dev b {
+  letter-spacing: 3px;
+}
+
+/* Email or mobile number */
+.pl-switch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--pl-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.pl-switch a {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pl-muted);
+}
+.pl-switch a[aria-current="page"] {
+  background: var(--pl-tint);
+  color: var(--pl-purple);
+}
+
+.pl-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.pl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.pl-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pl-ink);
+}
+.pl-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  border: 1px solid var(--pl-line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--pl-muted);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pl-input:focus-within {
+  border-color: var(--pl-purple);
+  box-shadow: 0 0 0 3px rgba(114, 43, 228, 0.12);
+}
+.pl-input svg {
+  flex: none;
+}
+.pl-input input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: none;
+  font: inherit;
+  font-size: 16px; /* 16px keeps phones from zooming in */
+  color: var(--pl-ink);
+}
+.pl-input input::placeholder,
+.pl-small-input::placeholder {
+  color: var(--pl-muted);
+  opacity: 1;
+}
+.pl-upper {
+  text-transform: uppercase;
+}
+.pl-upper::placeholder {
+  text-transform: none;
+}
+.pl-otp {
+  letter-spacing: 8px;
+  font-weight: 600;
+}
+.pl-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pl-forgot {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--pl-purple) !important;
+}
+.pl-eye {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: -8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--pl-muted);
+  cursor: pointer;
+}
+.pl-eye:hover {
+  color: var(--pl-ink);
+}
+.pl-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  align-self: flex-start;
+  min-height: 24px;
+  font-size: 12px;
+  color: var(--pl-muted);
+  cursor: pointer;
+}
+.pl-check input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  border-radius: 3px;
+  accent-color: var(--pl-purple);
+}
+.pl-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  min-height: 32px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pl-muted) !important;
+}
+.pl-back:hover {
+  color: var(--pl-ink) !important;
+}
+.pl-row-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.pl-hint {
+  margin: -8px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--pl-muted);
+}
+.pl-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 52px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--pl-purple);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.pl-primary:hover {
+  background: var(--pl-purple-deep);
+}
+.pl-text-link {
+  color: var(--pl-purple) !important;
+  font-weight: 600;
+}
+.pl-center {
+  align-self: center;
+  font-size: 13px;
+}
+
+/* Other ways in */
+.pl-alt {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pl-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.pl-divider span {
+  flex: 1;
+  height: 1px;
+  background: var(--pl-line);
+}
+.pl-divider small {
+  font-size: 11px;
+  color: var(--pl-muted);
+  white-space: nowrap;
+}
+.pl-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pl-tile {
+  flex: 1 0 0;
+  min-width: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 68px;
+  border: 1px solid var(--pl-line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--pl-ink) !important;
+  font-size: 12px;
+  font-weight: 500;
+  transition: border-color 0.15s, background 0.15s;
+}
+.pl-tile:hover {
+  border-color: var(--pl-purple);
+  background: #fdfbff;
+}
+.pl-tile svg {
+  color: var(--pl-purple);
+}
+.pl-g {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 19px;
+  color: var(--pl-purple);
+}
+.pl-tile-status {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--pl-purple);
+}
+.pl-note {
+  margin: 0;
+  font-size: 10px;
+  text-align: center;
+  color: var(--pl-muted);
+}
+
+/* Case reference */
+.pl-case {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--pl-tint);
+}
+.pl-case-intro {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.pl-case-intro svg {
+  flex: none;
+  color: var(--pl-purple);
+}
+.pl-case-intro h2 {
+  margin: 0 0 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pl-ink);
+}
+.pl-case-intro p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--pl-muted);
+}
+.pl-case-row {
+  display: flex;
+  gap: 10px;
+  height: 44px;
+}
+.pl-small-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--pl-line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 16px;
+  color: var(--pl-ink);
+  outline: 0;
+}
+.pl-small-input:focus {
+  border-color: var(--pl-purple);
+  box-shadow: 0 0 0 3px rgba(114, 43, 228, 0.12);
+}
+.pl-outline {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--pl-purple);
+  border-radius: 8px;
+  background: none;
+  color: var(--pl-purple);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pl-outline:hover {
+  background: #fff;
+}
+
+/* Account and privacy */
+.pl-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  font-size: 13px;
+  color: var(--pl-muted);
+}
+.pl-account p {
+  margin: 0;
+}
+.pl-privacy {
+  display: flex;
+  gap: 8px;
+  max-width: 374px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.pl-privacy svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* ---------- footer ---------- */
+.pl-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 16px 28px;
+  font-size: 11px;
+  color: var(--pl-muted);
+  text-align: center;
+}
+.pl-footer p {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pl-foot-mark {
+  color: var(--pl-purple);
+}
+.pl-footer nav {
+  display: flex;
+  gap: 24px;
+}
+.pl-footer nav a:hover {
+  color: var(--pl-ink);
+}
+
+/* ---------- tablet ---------- */
+@media (min-width: 600px) {
+  .pl-nav,
+  .pl-main,
+  .pl-footer {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .pl-story {
+    min-height: 300px;
+    padding: 28px;
+  }
+  .pl-story-title {
+    font-size: 38px;
+  }
+  .pl-story-body {
+    display: block;
+  }
+  .pl-login {
+    max-width: 480px;
+    align-self: center;
+  }
+}
+
+/* ---------- computer: the design at 1440 × 1080 ---------- */
+@media (min-width: 900px) {
+  .pl-nav {
+    height: 104px;
+    padding: 0 48px;
+  }
+  .pl-support {
+    gap: 28px;
+  }
+  .pl-help-q,
+  .pl-care-label,
+  .pl-care-arrow {
+    display: inline;
+  }
+  .pl-care {
+    min-width: 0;
+  }
+  .pl-main {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: clamp(40px, 6.7vw, 96px);
+    padding: 0 48px;
+  }
+  .pl-story-card {
+    flex: 0 1 624px;
+    min-width: 0;
+    min-height: 872px;
+    border-radius: 20px;
+  }
+  .pl-story {
+    flex: 1;
+    min-height: 600px;
+    padding: 40px;
+  }
+  .pl-story-title {
+    font-size: 47px;
+  }
+  .pl-journey {
+    display: flex;
+    min-height: 160px;
+  }
+  .pl-login {
+    flex: 0 1 480px;
+    max-width: 480px;
+    padding-top: 22px;
+    gap: 26px;
+  }
+  .pl-title {
+    font-size: 42px;
+  }
+  /* The design's 13px; phones keep 16px so they don't zoom into the field. */
+  .pl-input input {
+    font-size: 13px;
+  }
+  .pl-small-input {
+    font-size: 12px;
+  }
+  .pl-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    height: 88px;
+    padding: 0 48px;
+    text-align: left;
+  }
+}

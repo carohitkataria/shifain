@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { APP } from "@/lib/patient-app-copy";
+import { Send } from "lucide-react";
+import { LOGIN } from "@/lib/patient-login-copy";
 import { t } from "@/lib/localize";
 import type { Locale } from "@/lib/i18n";
-import { TelegramGlyph } from "@/components/TelegramGlyph";
 
 /**
- * Opens the patient bot in a new tab (or the Telegram app on a phone) and waits
- * here: once the patient shares their number in the bot, this page is signed in.
+ * The Telegram option on the sign-in page. It opens the patient bot in a new
+ * tab (or the Telegram app on a phone) and waits here: once the patient shares
+ * their number in the bot, this page is signed in.
  */
-export function TelegramSignIn({ locale }: { locale: Locale }) {
+export function TelegramTile({ locale, className, statusClassName, reset = false }: { locale: Locale; className: string; statusClassName: string; /** Forgot password: sign in, then choose a new one. */ reset?: boolean }) {
   const [state, setState] = useState<"idle" | "waiting" | "expired">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -33,24 +34,25 @@ export function TelegramSignIn({ locale }: { locale: Locale }) {
   };
 
   return (
-    <div>
+    <>
       <a
-        href={`/api/auth/telegram/start?locale=${locale}`}
+        href={`/api/auth/telegram/start?locale=${locale}${reset ? "&then=password" : ""}`}
         target="_blank"
         rel="noopener"
-        className="a-btn a-w a-btn-tgs"
+        className={className}
+        aria-describedby="tg-status"
         onClick={() => {
           if (timer.current) clearTimeout(timer.current);
           setState("waiting");
           poll(Date.now());
         }}
       >
-        <TelegramGlyph />
-        {t(APP.tgSignIn, locale)}
+        <Send size={19} strokeWidth={1.75} aria-hidden="true" />
+        Telegram
       </a>
-      <p className="a-tiny a-muted" role="status" aria-live="polite" style={{ marginTop: 6, textAlign: "center" }}>
-        {t(state === "waiting" ? APP.telegramWaiting : state === "expired" ? APP.telegramExpired : APP.telegramHint, locale)}
+      <p id="tg-status" className={statusClassName} role="status" aria-live="polite" hidden={state === "idle"}>
+        {state === "waiting" ? t(LOGIN.tgWaiting, locale) : state === "expired" ? t(LOGIN.tgExpired, locale) : ""}
       </p>
-    </div>
+    </>
   );
 }

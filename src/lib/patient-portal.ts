@@ -4,7 +4,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getDb, isDatabaseConfigured } from "./db";
 import { casesForEmail, casesForPhone, type PatientCase, type PlanEdit } from "./cases";
-import { currentPatient, getPatientAccount, normalisePhone, type PatientAccount, type PatientIdentity } from "./patient-auth";
+import { accountForPhone, currentPatient, getPatientAccount, normalisePhone, type PatientAccount, type PatientIdentity } from "./patient-auth";
 import { MAX_REPORT_BYTES, storeReports, type ReportUpload } from "./reports";
 import { getSettings } from "./settings";
 import type { FamilyAccess, FamilyMember, JourneyFields } from "./journey-rules";
@@ -80,7 +80,7 @@ const loadCases = cache(
     if (!identity) return null;
     const [cases, account] = await Promise.all([
       (identity.kind === "email" ? casesForEmail(identity.email) : casesForPhone(identity.digits)).catch(() => []),
-      identity.kind === "email" ? getPatientAccount(identity.email).catch(() => null) : null,
+      (identity.kind === "email" ? getPatientAccount(identity.email) : accountForPhone(identity.digits)).catch(() => null),
     ]);
     return { identity, account, cases: cases as CaseWithAppointments[] };
   },

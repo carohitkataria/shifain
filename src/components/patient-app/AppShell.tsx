@@ -42,6 +42,7 @@ const DONE: Record<string, L> = {
   "upload-failed": l("Nothing uploaded — PDF or photo, up to 14 MB", "Ничего не загружено — PDF или фото до 14 МБ", "Hech narsa yuklanmadi — PDF yoki rasm, 14 MB gacha"),
   pay: APP.payRequested,
   hello: APP.saidHi,
+  password: APP.password.saved,
   missing: l("A detail was missing — try again", "Не хватает данных — попробуйте ещё раз", "Ma'lumot yetishmadi — qayta urinib ko'ring"),
 };
 
