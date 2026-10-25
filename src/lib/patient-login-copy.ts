@@ -4,7 +4,6 @@ const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
 
 /** Words of the patient sign-in page (the Figma "patient login — purple" design, in Shifain's words). */
 export const LOGIN = {
-  helpQuestion: l("A little help along the way?", "Нужна помощь?", "Yordam kerakmi?"),
   talkToTeam: l("Talk to our care team", "Связаться с командой", "Jamoamiz bilan bogʻlanish"),
   promise: l("With you, at every step", "С вами на каждом шаге", "Har qadamda siz bilan"),
   storyTitle: [l("A world of care.", "Забота без границ.", "Chegarasiz gʻamxoʻrlik."), l("A team by your side.", "Команда рядом с вами.", "Yoningizda jamoa.")],
@@ -21,11 +20,6 @@ export const LOGIN = {
   ],
   eyebrow: l("Your patient space", "Ваш кабинет пациента", "Bemor kabineti"),
   title: l("Welcome back.", "С возвращением.", "Xush kelibsiz."),
-  lead: l(
-    "Your care plans, appointments and travel details — together in one secure place.",
-    "Планы лечения, приёмы и детали поездки — вместе, в одном защищённом месте.",
-    "Davolash rejalari, qabullar va safar tafsilotlari — bir xavfsiz joyda.",
-  ),
   email: l("Email address", "Электронная почта", "Elektron pochta"),
   sendCode: l("Email me a sign-in code", "Получить код на почту", "Kirish kodini olish"),
   tgWaiting: l("Waiting… In the bot, tap “Share my phone number”.", "Ждём… В боте нажмите «Поделиться номером».", "Kutilmoqda… Botda “Raqamni ulashish” ni bosing."),
@@ -36,6 +30,8 @@ export const LOGIN = {
   mobilePlaceholder: l("+ country code and number", "+ код страны и номер", "+ mamlakat kodi va raqam"),
   identifier: l("Email or mobile number", "Почта или номер телефона", "Pochta yoki telefon raqami"),
   identifierPlaceholder: l("you@example.com or +country code and number", "you@example.com или +код страны и номер", "you@example.com yoki +mamlakat kodi va raqam"),
+  countryCode: l("Code", "Код", "Kod"),
+  mobileNumber: l("Number", "Номер", "Raqam"),
   password: l("Password", "Пароль", "Parol"),
   passwordPlaceholder: l("Enter your password", "Введите пароль", "Parolingizni kiriting"),
   showPassword: l("Show password", "Показать пароль", "Parolni koʻrsatish"),

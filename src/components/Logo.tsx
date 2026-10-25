@@ -83,7 +83,8 @@ export function Logo({ tagline, className = "", markClassName, wordmarkClassName
     <span className={`flex items-center gap-2.5 ${className}`}>
       <LogoMark className={markClassName ?? (compact ? "h-9" : "h-12")} tone={tone} priority />
       <span className="flex flex-col justify-center leading-none">
-        <Wordmark className={wordmarkClassName ?? (compact ? "h-6" : "h-8")} tone={tone} title="ShifaIn" priority />
+        {/* self-start: in this column a longer strapline would otherwise stretch the wordmark sideways. */}
+        <Wordmark className={`self-start ${wordmarkClassName ?? (compact ? "h-6" : "h-8")}`} tone={tone} title="ShifaIn" priority />
         {tagline ? (
           <span
             className={`mt-1 hidden whitespace-nowrap text-[0.6rem] font-semibold uppercase leading-none tracking-[0.2em] md:block ${
