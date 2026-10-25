@@ -4,7 +4,6 @@ const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
 
 /** Words of the patient sign-in page (the Figma "patient login — purple" design, in Shifain's words). */
 export const LOGIN = {
-  talkToTeam: l("Talk to our care team", "Связаться с командой", "Jamoamiz bilan bogʻlanish"),
   promise: l("With you, at every step", "С вами на каждом шаге", "Har qadamda siz bilan"),
   storyTitle: [l("A world of care.", "Забота без границ.", "Chegarasiz gʻamxoʻrlik."), l("A team by your side.", "Команда рядом с вами.", "Yoningizda jamoa.")],
   storyBody: l(
@@ -39,7 +38,7 @@ export const LOGIN = {
   forgot: l("Forgot password?", "Забыли пароль?", "Parolni unutdingizmi?"),
   remember: l("Remember me on this device", "Запомнить меня на этом устройстве", "Bu qurilmada eslab qolish"),
   login: l("Log in securely", "Войти", "Xavfsiz kirish"),
-  otpDivider: l("Or log in with a one-time code", "Или войдите по одноразовому коду", "Yoki bir martalik kod bilan kiring"),
+  otpDivider: l("Or sign in without a password", "Или войдите без пароля", "Yoki parolsiz kiring"),
   otpNote: l("Receive a secure one-time code. No password needed.", "Получите одноразовый код. Пароль не нужен.", "Bir martalik kod oling. Parol kerak emas."),
   otpEmailTitle: l("Sign in with a code", "Вход по коду", "Kod bilan kirish"),
   otpEmailLead: l("Enter your email address and we’ll send you a 6-digit code.", "Укажите почту — мы пришлём 6-значный код.", "Pochtangizni kiriting — 6 xonali kod yuboramiz."),
@@ -62,15 +61,9 @@ export const LOGIN = {
   errSlow: l("Too many tries. Wait a few minutes, or use a one-time code.", "Слишком много попыток. Подождите несколько минут или войдите по коду.", "Juda koʻp urinish. Bir necha daqiqa kuting yoki kod bilan kiring."),
   errPhone: l("Check the mobile number — with the country code.", "Проверьте номер — вместе с кодом страны.", "Raqamni tekshiring — mamlakat kodi bilan."),
   errWhatsApp: l("We couldn’t send a WhatsApp message to that number. Try Telegram or email.", "Не удалось отправить сообщение в WhatsApp. Попробуйте Telegram или почту.", "WhatsAppga xabar yuborilmadi. Telegram yoki pochtani sinab koʻring."),
-  caseTitle: l("Have a case file reference number?", "Есть номер вашего случая?", "Holat raqamingiz bormi?"),
-  caseBody: l(
-    "Use the reference shared by your care coordinator.",
-    "Введите номер, который прислал ваш координатор.",
-    "Koordinatoringiz yuborgan raqamni kiriting.",
-  ),
+  caseTile: l("Case number", "Номер случая", "Holat raqami"),
   reference: l("Case reference", "Номер случая", "Holat raqami"),
   phone: l("Phone number", "Номер телефона", "Telefon raqami"),
-  continue: l("Continue", "Продолжить", "Davom etish"),
   newHere: l("New to Shifain?", "Впервые в Shifain?", "Shifain da yangimisiz?"),
   signUp: l("Sign up", "Зарегистрироваться", "Roʻyxatdan oʻtish"),
   privacy: l(

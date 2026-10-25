@@ -8,12 +8,10 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
-  ArrowUpRight,
   ClipboardCheck,
   Cross,
   FolderHeart,
   Hash,
-  Headset,
   HeartHandshake,
   KeyRound,
   Languages,
@@ -25,13 +23,13 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { OpenChatButton } from "@/components/OpenChatButton";
 import { PasswordInput } from "@/components/patient-app/PasswordInput";
 import { LoginIdentifier } from "@/components/patient-app/LoginIdentifier";
 import { TelegramTile } from "@/components/patient-app/TelegramSignIn";
 import { currentPatient } from "@/lib/patient-auth";
 import { canSendPhoneCodes } from "@/lib/phone-codes";
 import { isDatabaseConfigured } from "@/lib/db";
+import { getContent } from "@/lib/store";
 import { botUsername } from "@/lib/telegram-login";
 import { APP } from "@/lib/patient-app-copy";
 import { LOGIN } from "@/lib/patient-login-copy";
@@ -107,6 +105,7 @@ export default async function PatientLoginPage({ params, searchParams }: { param
   const ref = (query.ref ?? "").toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 40);
   const whatsapp = canSendPhoneCodes();
   const telegram = isDatabaseConfigured() && Boolean(await botUsername().catch(() => null));
+  const { brand } = await getContent();
   // Never in production: there a code only ever travels by email or WhatsApp.
   const devCode = process.env.NODE_ENV !== "production" && /^\d{6}$/.test(query.dev ?? "") ? query.dev : null;
   const error = query.error ? ERRORS[query.error] ?? APP.errors.reference : null;
@@ -139,9 +138,14 @@ export default async function PatientLoginPage({ params, searchParams }: { param
     </Link>
   );
 
-  /** The three one-time-code doors; on "Forgot password?" each ends on Settings. */
+  /**
+   * The ways in without a password: a one-time code by WhatsApp, Telegram or
+   * email, or the case number. On "Forgot password?" each code ends on
+   * Settings, and the case number is left out.
+   */
+  const tileCount = Number(whatsapp) + Number(telegram) + 1 + Number(!reset);
   const codeTiles = (
-    <div className="pl-tiles">
+    <div className={`pl-tiles ${tileCount === 4 ? "pl-tiles-4" : ""}`}>
       {whatsapp ? (
         <Link href={`${here}?otp=whatsapp${thenQuery}`} className="pl-tile">
           <MessageCircle size={19} strokeWidth={1.75} aria-hidden="true" />
@@ -153,6 +157,12 @@ export default async function PatientLoginPage({ params, searchParams }: { param
         <Mail size={19} strokeWidth={1.75} aria-hidden="true" />
         {t(LOGIN.byEmail, locale)}
       </Link>
+      {reset ? null : (
+        <Link href={`${here}?with=reference`} className="pl-tile">
+          <FolderHeart size={19} strokeWidth={1.75} aria-hidden="true" />
+          {t(LOGIN.caseTile, locale)}
+        </Link>
+      )}
     </div>
   );
 
@@ -190,16 +200,11 @@ export default async function PatientLoginPage({ params, searchParams }: { param
     <div className={`pl ${serif.variable}`}>
       <header className="pl-nav">
         <Link href={`/${locale}`} className="pl-brand" aria-label="Shifain">
-          <Logo compact tagline={t(APP.appTagline, locale)} />
+          {/* The strapline is part of the logo: the same words as the site header. */}
+          <Logo compact tagline={t(brand.wordmarkTagline, locale)} />
         </Link>
-        <div className="pl-support">
-          <OpenChatButton className="pl-care" label={t(LOGIN.talkToTeam, locale)}>
-            <Headset size={18} strokeWidth={1.75} aria-hidden="true" />
-            <span className="pl-care-label">{t(LOGIN.talkToTeam, locale)}</span>
-            <ArrowUpRight size={15} strokeWidth={1.75} aria-hidden="true" className="pl-care-arrow" />
-          </OpenChatButton>
-          <LanguageSwitcher locale={locale} path="/portal/patient/login" />
-        </div>
+        {/* Talking to the team is the floating "Need help?" button, as on the rest of the site. */}
+        <LanguageSwitcher locale={locale} path="/portal/patient/login" />
       </header>
 
       <div className="pl-main">
@@ -297,27 +302,7 @@ export default async function PatientLoginPage({ params, searchParams }: { param
                   <span />
                 </div>
                 {codeTiles}
-                <p className="pl-note">{t(LOGIN.otpNote, locale)}</p>
               </div>
-
-              <section className="pl-case" aria-labelledby="case-title">
-                <div className="pl-case-intro">
-                  <FolderHeart size={21} strokeWidth={1.75} aria-hidden="true" />
-                  <div>
-                    <h2 id="case-title">{t(LOGIN.caseTitle, locale)}</h2>
-                    <p>{t(LOGIN.caseBody, locale)}</p>
-                  </div>
-                </div>
-                {/* The reference first; the next step asks for the mobile number that goes with it. */}
-                <form action={here} method="get" className="pl-case-row">
-                  <input type="hidden" name="with" value="reference" />
-                  <input name="ref" required autoComplete="off" autoCapitalize="characters" aria-label={t(LOGIN.reference, locale)} placeholder="e.g. SH-XXXX-XXXX" className="pl-small-input pl-upper" />
-                  <button className="pl-outline">
-                    {t(LOGIN.continue, locale)}
-                    <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
-                  </button>
-                </form>
-              </section>
             </>
           ) : null}
 

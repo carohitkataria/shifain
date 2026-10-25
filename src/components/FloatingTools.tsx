@@ -313,7 +313,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       if (action.type === "navigate" && action.href.startsWith("/")) {
         router.push(action.href);
       } else if (action.type === "locale") {
-        const rest = pathname.replace(/^\/(en|ru|uz)(?=\/|$)/, "");
+        const rest = pathname.replace(/^\/(en|ru|uz|oz)(?=\/|$)/, "");
         router.push(`/${action.locale}${rest || ""}`);
       } else if (action.type === "voice") {
         if (action.openPicker) {
@@ -742,8 +742,8 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       <button
         ref={fabRef}
         type="button"
-        // The patient app has its own help button (bottom right, above its tab bar).
-        hidden={!open && /^\/(en|ru|uz)\/portal\/patient(\/|$)/.test(pathname)}
+        // The patient app has its own help button (bottom right, above its tab bar); sign-in and sign-up keep this one.
+        hidden={!open && /^\/(en|ru|uz|oz)\/portal\/patient(?!\/(login|signup)(\/|$))(\/|$)/.test(pathname)}
         className={`help-fab ${open ? "help-fab-open" : ""}`}
         aria-expanded={open}
         aria-label={open ? "Close help" : "Need help? Chat with us"}
