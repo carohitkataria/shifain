@@ -21,13 +21,13 @@ import {
   MessageCircle,
   ShieldCheck,
   Smartphone,
-  UserRound,
   UserRoundCheck,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { OpenChatButton } from "@/components/OpenChatButton";
 import { PasswordInput } from "@/components/patient-app/PasswordInput";
+import { LoginIdentifier } from "@/components/patient-app/LoginIdentifier";
 import { TelegramTile } from "@/components/patient-app/TelegramSignIn";
 import { currentPatient } from "@/lib/patient-auth";
 import { canSendPhoneCodes } from "@/lib/phone-codes";
@@ -112,7 +112,7 @@ export default async function PatientLoginPage({ params, searchParams }: { param
   const error = query.error ? ERRORS[query.error] ?? APP.errors.reference : null;
 
   const heading: Record<View, [L, React.ReactNode]> = {
-    password: [LOGIN.title, t(LOGIN.lead, locale)],
+    password: [LOGIN.title, null],
     "otp-email": [reset ? LOGIN.forgotTitle : LOGIN.otpEmailTitle, t(LOGIN.otpEmailLead, locale)],
     "code-email": [
       LOGIN.codeTitle,
@@ -193,7 +193,6 @@ export default async function PatientLoginPage({ params, searchParams }: { param
           <Logo compact tagline={t(APP.appTagline, locale)} />
         </Link>
         <div className="pl-support">
-          <span className="pl-help-q">{t(LOGIN.helpQuestion, locale)}</span>
           <OpenChatButton className="pl-care" label={t(LOGIN.talkToTeam, locale)}>
             <Headset size={18} strokeWidth={1.75} aria-hidden="true" />
             <span className="pl-care-label">{t(LOGIN.talkToTeam, locale)}</span>
@@ -244,7 +243,7 @@ export default async function PatientLoginPage({ params, searchParams }: { param
           <div className="pl-welcome">
             <p className="pl-eyebrow">{t(LOGIN.eyebrow, locale)}</p>
             <h1 className="pl-title">{t(title, locale)}</h1>
-            <p className="pl-lead">{lead}</p>
+            {lead ? <p className="pl-lead">{lead}</p> : null}
           </div>
 
           {error ? (
@@ -258,14 +257,18 @@ export default async function PatientLoginPage({ params, searchParams }: { param
             <>
               <form action={passwordLoginAction} className="pl-form">
                 <input type="hidden" name="locale" value={locale} />
-                {/* One field for both: an address with @ is an email, anything else a mobile number. */}
-                <label className="pl-field">
-                  <span className="pl-label">{t(LOGIN.identifier, locale)}</span>
-                  <span className="pl-input">
-                    <UserRound size={18} strokeWidth={1.75} aria-hidden="true" />
-                    <input name="identifier" type="text" inputMode="email" required autoComplete="username" autoCapitalize="none" spellCheck={false} defaultValue={id} placeholder={t(LOGIN.identifierPlaceholder, locale)} />
-                  </span>
-                </label>
+                <LoginIdentifier
+                  locale={locale}
+                  initial={id}
+                  labels={{
+                    email: t(LOGIN.byEmail, locale),
+                    mobile: t(LOGIN.byMobile, locale),
+                    emailLabel: t(LOGIN.email, locale),
+                    mobileLabel: t(LOGIN.byMobile, locale),
+                    code: t(LOGIN.countryCode, locale),
+                    number: t(LOGIN.mobileNumber, locale),
+                  }}
+                />
                 <div className="pl-field">
                   <div className="pl-label-row">
                     <label htmlFor="pl-password" className="pl-label">

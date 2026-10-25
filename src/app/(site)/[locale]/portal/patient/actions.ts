@@ -155,7 +155,11 @@ async function clientIp(): Promise<string> {
 export async function passwordLoginAction(formData: FormData) {
   const locale = localeOf(formData);
   const page = `/${locale}/portal/patient/login?`;
-  const identifier = field(formData, "identifier", 200);
+  // Mobile mode sends the country code apart from the number.
+  const dial = field(formData, "dial", 6).replace(/\D/g, "");
+  const typed = field(formData, "identifier", 200);
+  // A number typed whole ("+998…") already has its code; a local one loses its trunk 0.
+  const identifier = dial && !typed.includes("@") && !typed.startsWith("+") ? `+${dial}${typed.replace(/^0+/, "")}` : typed;
   const password = String(formData.get("password") ?? "").slice(0, 200);
   const remember = formData.get("remember") === "yes";
   const keep = `id=${encodeURIComponent(identifier)}`;
