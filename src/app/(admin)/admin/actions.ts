@@ -1,8 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { checkPassword, endSession, isAuthenticated, startSession } from "@/lib/auth";
+import { checkAdmin, endSession, isAuthenticated, startSession } from "@/lib/auth";
+import { isDatabaseConfigured } from "@/lib/db";
+import { authenticate, startPartnerSession } from "@/lib/partner-auth";
+import { allowHit } from "@/lib/rate-limit";
 import { getContent, saveContent } from "@/lib/store";
 import { addListItem, buildEditor, collectBooleanPaths, removeListItem, setAtPath } from "@/lib/editor";
 import { findGroup } from "@/lib/admin-groups";
@@ -12,13 +16,35 @@ function refreshSite() {
   revalidatePath("/", "layout");
 }
 
+/**
+ * One door for the team. The owner signs in with the admin ID and password
+ * and lands in the console; a coordinator signs in with the email and
+ * password from Partner logins and lands on the coordinator desk.
+ */
 export async function loginAction(formData: FormData) {
-  const password = String(formData.get("password") ?? "");
-  if (!checkPassword(password)) {
-    redirect("/admin/login?error=1");
+  const id = String(formData.get("id") ?? "").trim().slice(0, 200);
+  const password = String(formData.get("password") ?? "").slice(0, 200);
+  const ip = ((await headers()).get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+  if (!allowHit(`admin-id:${id.toLowerCase()}`, 10, 15 * 60_000) || !allowHit(`admin-ip:${ip}`, 30, 15 * 60_000)) {
+    redirect("/admin/login?error=slow");
   }
-  await startSession();
-  redirect("/admin");
+
+  if (checkAdmin(id, password)) {
+    await startSession();
+    redirect("/admin");
+  }
+
+  if (id.includes("@") && isDatabaseConfigured()) {
+    const user = await authenticate(id, password).catch((error) => {
+      console.error("[shifain] team sign-in failed", error);
+      return null;
+    });
+    if (user?.role === "coordinator") {
+      await startPartnerSession(user);
+      redirect("/coordinator");
+    }
+  }
+  redirect("/admin/login?error=1");
 }
 
 export async function logoutAction() {

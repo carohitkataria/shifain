@@ -26,6 +26,21 @@ function safeEqual(a: string, b: string): boolean {
   return crypto.timingSafeEqual(bufA, bufB);
 }
 
+/**
+ * The owner's sign-in ID: ADMIN_ID, or "admin" until one is set. Compared
+ * without case, so "Admin" works as well.
+ */
+export function adminId(): string {
+  return (process.env.ADMIN_ID || "admin").trim().toLowerCase();
+}
+
+/** The owner's ID and password, both right. */
+export function checkAdmin(id: string, password: string): boolean {
+  // Both are always compared, so a wrong ID takes as long as a wrong password.
+  const idMatches = safeEqual(id.trim().toLowerCase(), adminId());
+  return checkPassword(password) && idMatches;
+}
+
 export function checkPassword(candidate: string): boolean {
   const expected = process.env.ADMIN_PASSWORD;
   if (!expected) {

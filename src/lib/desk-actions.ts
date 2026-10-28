@@ -59,7 +59,7 @@ async function work(formData: FormData, change: (record: JourneyCase, actor: Des
   const reference = String(formData.get("reference") ?? "").trim().toUpperCase();
   const found = await deskCase(reference);
   const back = deskBack(formData.get("back"), reference);
-  if (!found) redirect(back.startsWith("/admin") ? "/admin/login" : "/coordinator/login");
+  if (!found) redirect("/admin/login");
   const note = (await change(found.record, found.actor)) || "saved";
   revalidatePath(back.split("?")[0]);
   const [path, query = ""] = back.split("?");
