@@ -96,7 +96,7 @@ type Ctx = {
 const SIGN_IN_TRIES = 5;
 const SIGN_IN_WINDOW_MS = 60 * 60_000;
 function mayTrySignIn(ctx: Ctx): boolean {
-  return allowHit(`signin-chat:${ctx.sessionId}`, SIGN_IN_TRIES, SIGN_IN_WINDOW_MS) && allowHit(`signin-ip:${ctx.ip ?? "unknown"}`, SIGN_IN_TRIES, SIGN_IN_WINDOW_MS);
+  return allowHit(`signin-ip:${ctx.ip ?? "unknown"}`, SIGN_IN_TRIES, SIGN_IN_WINDOW_MS) && allowHit(`signin-chat:${ctx.sessionId}`, SIGN_IN_TRIES, SIGN_IN_WINDOW_MS);
 }
 
 export function isCommandName(value: unknown): value is CommandName {

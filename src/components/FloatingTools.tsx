@@ -406,10 +406,9 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
   );
 
   const voiceAudio = useCallback(
-    async (audio: Blob, seconds?: number): Promise<VoiceTurnResult> => {
+    async (audio: Blob): Promise<VoiceTurnResult> => {
       const form = new FormData();
       form.append("audio", audio, "voice.webm");
-      if (seconds) form.append("seconds", seconds.toFixed(1));
       form.append("voice", "1");
       for (const [key, value] of Object.entries(turnContext())) form.append(key, String(value));
       const data = await post(form);

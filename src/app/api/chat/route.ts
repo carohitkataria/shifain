@@ -10,6 +10,7 @@ import { getOrCreateWebIntake, storeWebIntakeFile, findWebIntake } from "@/lib/w
 import { handleWebTurn } from "@/lib/assistant/web-turn";
 import { DEFAULT_NATURAL_VOICE, VOICE_ID_PATTERN, naturalVoice } from "@/lib/voice/voices";
 import { allowHit } from "@/lib/rate-limit";
+import { audioSeconds } from "@/lib/audio-duration";
 import { MAX_REPORT_BYTES } from "@/lib/reports";
 
 const SESSION_COOKIE = "shifain_chat";
@@ -81,9 +82,9 @@ const LIMIT_WORDS: Record<"slow" | "audio" | "file", Record<Lang, string>> = {
     uz: "Xabarlar men javob berishga ulgurganimdan tezroq kelyapti. Bir necha daqiqa kutib, qayta urinib ko'ring.",
   },
   audio: {
-    en: "That voice message is too long for me. Please keep it under a minute, or type it.",
-    ru: "Это голосовое сообщение слишком длинное. Пожалуйста, говорите не дольше минуты или напишите текстом.",
-    uz: "Bu ovozli xabar juda uzun. Iltimos, bir daqiqadan oshirmang yoki yozib yuboring.",
+    en: "I couldn't take that voice message. Please keep it under a minute, or type it.",
+    ru: "Не получилось принять это голосовое сообщение. Говорите не дольше минуты или напишите текстом.",
+    uz: "Bu ovozli xabarni qabul qila olmadim. Bir daqiqadan oshirmang yoki yozib yuboring.",
   },
   file: {
     en: "I can take reports as PDF or photos (JPG, PNG, WEBP, HEIC), up to 14 MB each. Please send it in one of those.",
@@ -160,11 +161,14 @@ export async function POST(request: NextRequest) {
     readCommon((name) => form.get(name));
     if (!allowTurn(sessionId, ip)) return refuse("slow", 429);
 
-    if (audio && (audio.size > CHAT_LIMITS.audioBytes || Number(form.get("seconds")) > CHAT_LIMITS.audioSeconds)) return refuse("audio", 413);
+    if (audio && audio.size > CHAT_LIMITS.audioBytes) return refuse("audio", 413);
     if (file && file.size > 0 && (file.size > CHAT_LIMITS.fileBytes || !CHAT_LIMITS.fileTypes.test(file.type))) return refuse("file", 415);
 
     if (audio && isElevenLabsConfigured()) {
       const buffer = Buffer.from(await audio.arrayBuffer());
+      // The length is measured from the clip itself, never taken from the caller: transcription is paid by the minute.
+      const seconds = audioSeconds(buffer);
+      if (seconds === null || seconds > CHAT_LIMITS.audioSeconds) return refuse("audio", 413);
       const transcription = await transcribeAudio(buffer, audio.name || "voice.webm");
       userMessage = transcription.text.trim();
       detectedLanguage = transcription.language_code;
@@ -264,10 +268,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/** One more turn for this conversation and this address, within the limits. */
+/**
+ * One more turn for this conversation and this address, within the limits.
+ * The address first: a caller who changes the chat cookie every time is
+ * stopped there before a new conversation key is ever stored.
+ */
 function allowTurn(sessionId: string, ip: string): boolean {
   return (
-    allowHit(`chat-session:${sessionId}`, CHAT_LIMITS.turnsPerSession, CHAT_LIMITS.windowMs) &&
-    allowHit(`chat-ip:${ip}`, CHAT_LIMITS.turnsPerAddress, CHAT_LIMITS.windowMs)
+    allowHit(`chat-ip:${ip}`, CHAT_LIMITS.turnsPerAddress, CHAT_LIMITS.windowMs) &&
+    allowHit(`chat-session:${sessionId}`, CHAT_LIMITS.turnsPerSession, CHAT_LIMITS.windowMs)
   );
 }

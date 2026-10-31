@@ -15,7 +15,7 @@ import {
   viewerOf,
   type Identity,
 } from "../../src/lib/access-rules.ts";
-import { allowHit } from "../../src/lib/rate-limit.ts";
+import { allowHit, trackedKeys } from "../../src/lib/rate-limit.ts";
 import type { FamilyMember } from "../../src/lib/journey-rules.ts";
 
 // ---------------------------------------------------------------- A2: a phone tail is not a phone number
@@ -83,5 +83,12 @@ const results = Array.from({ length: 31 }, () => allowHit(key, 30, 10 * 60_000))
 assert.equal(results.slice(0, 30).every(Boolean), true);
 assert.equal(results[30], false, "the 31st turn is refused");
 assert.equal(allowHit(`${key}-other`, 30, 10 * 60_000), true, "another conversation is unaffected");
+
+// A caller who changes their chat cookie every time cannot grow the limiter without bound.
+for (let i = 0; i < 120_000; i++) allowHit(`flood-${i}`, 30, 10 * 60_000);
+assert.ok(trackedKeys() <= 50_001, `the limiter holds ${trackedKeys()} keys`);
+const after = `after-flood-${Date.now()}`;
+const again = Array.from({ length: 31 }, () => allowHit(after, 30, 10 * 60_000));
+assert.equal(again[30], false, "limits still hold after a flood");
 
 console.log("access: phone matching, case numbers, family invites, plan access and the chat limit pass");

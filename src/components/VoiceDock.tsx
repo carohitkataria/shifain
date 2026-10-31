@@ -74,8 +74,7 @@ export function VoiceDock({
   /** Browser-heard text: add it to the chat and return the reply. */
   onSpokenText: (text: string, lang: string) => Promise<VoiceTurnResult>;
   /** Recorded audio for the server to hear: add the transcript to the chat and return the reply. */
-  /** The recording, and how long it ran in seconds (the server refuses one much over a minute). */
-  onSpokenAudio: (audio: Blob, seconds?: number) => Promise<VoiceTurnResult>;
+  onSpokenAudio: (audio: Blob) => Promise<VoiceTurnResult>;
   onClose: () => void;
 }) {
   const [phase, setPhase] = useState<Phase>("starting");
@@ -208,7 +207,7 @@ export function VoiceDock({
       }
       setPhase("thinking");
       const blob = new Blob(chunks, { type: rec.mimeType || "audio/webm" });
-      const result = await onSpokenAudio(blob, (performance.now() - started) / 1000);
+      const result = await onSpokenAudio(blob);
       if (mine === turn.current) speak(result, speechLang());
     };
 
