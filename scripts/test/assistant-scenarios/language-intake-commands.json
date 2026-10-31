@@ -1,0 +1,323 @@
+[
+ {
+  "id": "language-oz-cyrillic",
+  "category": "language",
+  "locale": "oz",
+  "turns": [
+   {
+    "say": "Салом, менга тизза операцияси керак",
+    "ai": [
+     {
+      "respond": {
+       "reply": "Tushunarli, tizza operatsiyasi. Qachondan beri og'riyapti va shifokor nima degan?",
+       "treatment": "knee replacement",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "cyrillic": true,
+    "must": [
+     "тизза"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "language-uz-cyrillic-on-latin-page",
+  "category": "language",
+  "locale": "uz",
+  "turns": [
+   {
+    "say": "Ассалому алайкум, визага ёрдам берасизми?",
+    "via": "instant",
+    "must": [
+     "tibbiy viza"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "language-ru-on-en-page",
+  "category": "language",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "Здравствуйте, нужна ли виза для лечения?",
+    "via": "instant",
+    "must": [
+     "медицинскую визу"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "language-voice-uz",
+  "category": "language",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "operator bilan gaplashmoqchiman",
+    "voice": "uz",
+    "via": "command",
+    "must": [
+     "koordinator"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "intake-knee-en",
+  "category": "intake",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "I need a knee replacement",
+    "ai": [
+     {
+      "respond": {
+       "reply": "A knee replacement is very common. How long have you had knee pain, and what has your doctor said?",
+       "treatment": "knee replacement",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "via": "ai",
+    "must": [
+     "knee"
+    ]
+   },
+   {
+    "say": "Two years, and my doctor said both knees need replacing",
+    "ai": [
+     {
+      "respond": {
+       "reply": "Thank you. I'll take a few quick details to prepare your free plan.",
+       "treatment": "knee replacement",
+       "condition": "Knee pain for two years; doctor advised replacing both knees.",
+       "ready": true,
+       "command": "none"
+      }
+     }
+    ],
+    "must": [
+     "name"
+    ]
+   },
+   {
+    "say": "Anna Petrova",
+    "via": "profile",
+    "must": [
+     "phone|number|WhatsApp"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "intake-heart-ru",
+  "category": "intake",
+  "locale": "ru",
+  "turns": [
+   {
+    "say": "Отцу нужна операция на сердце, у него три стента",
+    "ai": [
+     {
+      "respond": {
+       "reply": "Понимаю. Что сказали врачи после последнего обследования и когда ставили стенты?",
+       "treatment": "heart bypass surgery",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "via": "ai",
+    "must": [
+     "врач"
+    ]
+   },
+   {
+    "say": "Полгода назад, теперь опять боли при нагрузке, врач советует шунтирование",
+    "ai": [
+     {
+      "respond": {
+       "reply": "Спасибо. Задам пару вопросов, чтобы подготовить бесплатный план.",
+       "treatment": "heart bypass surgery",
+       "condition": "Боли при нагрузке через полгода после стентирования; рекомендовано шунтирование.",
+       "ready": true,
+       "command": "none"
+      }
+     }
+    ],
+    "must": [
+     "зовут|имя"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "intake-why-number-en",
+  "category": "intake",
+  "locale": "en",
+  "state": {
+   "intake": {
+    "state": "collecting_profile",
+    "fields": {
+     "treatment": "knee replacement",
+     "condition": "Knee pain for two years",
+     "name": "Anna Petrova",
+     "phone": null,
+     "country": null
+    }
+   }
+  },
+  "turns": [
+   {
+    "say": "Why do you need my phone number?",
+    "ai": [
+     {
+      "respond": {
+       "reply": "So a coordinator can reach you about your free plan — we never share it.",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "must": [
+     "coordinator",
+     "phone|number|WhatsApp"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "intake-no-ai-en",
+  "category": "intake",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "I have had back pain for a year and the physiotherapy is not helping",
+    "ai": [
+     {
+      "respond": {
+       "reply": "I'm sorry to hear that. What did your doctor say, and have you had an MRI?",
+       "treatment": "spine surgery",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "via": "ai",
+    "mustNot": [
+     "\\$\\d",
+     "you have a (herniated|slipped)"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "command-human-en",
+  "category": "commands",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "I want to talk to a person",
+    "via": "command",
+    "must": [
+     "coordinator"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "command-human-ru",
+  "category": "commands",
+  "locale": "ru",
+  "turns": [
+   {
+    "say": "Соедините с координатором",
+    "via": "command",
+    "must": [
+     "координатор"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "language-oz-free-question",
+  "category": "language",
+  "locale": "oz",
+  "turns": [
+   {
+    "say": "Ҳиндистонда даволаниш қанча вақт олади?",
+    "ai": [
+     {
+      "respond": {
+       "reply": "Bu davolash turiga bog'liq: ko'pchilik bemorlar 2–3 hafta qoladi. Qaysi davolash kerakligini aytsangiz, aniqroq aytaman.",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "via": "ai",
+    "cyrillic": true,
+    "must": [
+     "ҳафта"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "command-case-status-none-en",
+  "category": "commands",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "what is my case status",
+    "via": "command",
+    "mustNot": [
+     "UZ48213",
+     "UZ55501"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "command-status-own-case-en",
+  "category": "commands",
+  "locale": "en",
+  "state": {
+   "intake": {
+    "complete": true,
+    "state": "complete",
+    "caseReference": "UZ55501"
+   }
+  },
+  "turns": [
+   {
+    "say": "what is my case status",
+    "via": "command",
+    "mustNot": [
+     "UZ48213",
+     "Aziz"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "language-voice-oz",
+  "category": "language",
+  "locale": "oz",
+  "turns": [
+   {
+    "say": "vizaga yordam berasizmi",
+    "voice": "uz",
+    "via": "instant",
+    "cyrillic": true,
+    "must": [
+     "тиббий виза"
+    ]
+   }
+  ]
+ }
+]

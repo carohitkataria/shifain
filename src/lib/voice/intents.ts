@@ -278,6 +278,12 @@ const short = (pattern: RegExp, maxWords = 6) => (value: string) => wordCount(va
 
 /** Phrases that mean "show me / take me to / find". */
 const SHOW = /\b(show|open|see|view|find|search|list|browse|look (for|at|up)|go to|take me to)\b|покажи|открой|найди|подбери|посмотреть|перейди|ko'rsat|\boch\b|qidir/;
+/**
+ * "…at Artemis", "в клинике Артемис", "Artemisdagi", "Artemis kasalxonasida":
+ * a particular hospital. The assistant answers those from its tools; opening
+ * the whole directory would not. ("Hospitals in Delhi" still opens the page.)
+ */
+const PLACE = /(?<!look )\bat\s+\p{L}|\sв\s+(больниц|клиник|госпитал|центр)|\p{L}(dagi|sida)\b/u;
 
 /**
  * Order matters: the first rule that fits wins, so the narrow ones
@@ -368,8 +374,8 @@ const RULES: Rule[] = [
     name: "cost",
     test: has(/\b(how much|cost|costs|price|prices|pricing|fees?|charges?|expensive|cheap|budget)\b|сколько стоит|стоимость|цен[аыу]|расценк|почем|qancha turadi|narx|qiymat|qancha pul/),
   },
-  { name: "hospitals", test: (value) => /hospitals?|clinics?|больниц|клиник|госпитал|shifoxona|kasalxona|klinika/.test(value) && SHOW.test(value) },
-  { name: "doctors", test: (value) => /doctors?|surgeons?|specialists?|врач|доктор|хирург|специалист|shifokor|doktor|vrach|jarroh/.test(value) && SHOW.test(value) },
+  { name: "hospitals", test: (value) => /hospitals?|clinics?|больниц|клиник|госпитал|shifoxona|kasalxona|klinika/.test(value) && SHOW.test(value) && !PLACE.test(value) },
+  { name: "doctors", test: (value) => /doctors?|surgeons?|specialists?|врач|доктор|хирург|специалист|shifokor|doktor|vrach|jarroh/.test(value) && SHOW.test(value) && !PLACE.test(value) },
   { name: "treatments", test: (value) => /treatments?|procedures?|surgeries|лечени|процедур|операци|davolash|muolaja/.test(value) && SHOW.test(value) && wordCount(value) <= 7 },
   { name: "conditions", test: (value) => /conditions|diseases|illnesses|заболевани|болезн|kasallik/.test(value) && SHOW.test(value) && wordCount(value) <= 7 },
   { name: "portal", test: short(/\bmy (account|dashboard|portal|profile|cabinet)\b|личный кабинет|мой кабинет|мой профиль|shaxsiy kabinet|hisobim/, 7) },

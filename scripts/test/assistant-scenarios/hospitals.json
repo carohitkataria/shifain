@@ -1,0 +1,30 @@
+[
+  { "id": "hospital-switch-en", "category": "hospital", "locale": "en", "turns": [
+    { "say": "Which cardiologists are at Artemis?", "ai": [{ "call": "list_doctors", "args": { "specialty": "cardiologist" } }, { "respond": { "reply": "At this hospital: {{result}}." } }],
+      "scriptedOnly": { "must": ["Dr Artemis Cardio", "mon, wed"], "mustNot": ["Dr Medanta", "Dr Unlisted"] } },
+    { "say": "Actually, what about Medanta? Which cardiologists there?", "ai": [{ "call": "list_doctors", "args": { "specialty": "cardiology" } }, { "respond": { "reply": "At this hospital: {{result}}." } }],
+      "scriptedOnly": { "must": ["Dr Medanta Cardio"], "mustNot": ["Dr Artemis"] } }
+  ] },
+  { "id": "hospital-unlisted-doctor-en", "category": "hospital", "locale": "en", "turns": [
+    { "say": "List all heart doctors at Artemis Hospital", "ai": [{ "call": "list_doctors", "args": { "specialty": "cardiology" } }, { "respond": { "reply": "{{result}}" } }],
+      "mustNot": ["Dr Unlisted Heart"] }
+  ] },
+  { "id": "hospital-research-never-en", "category": "hospital", "locale": "en", "turns": [
+    { "say": "Which hospitals in Delhi do you work with?", "ai": [{ "call": "list_hospitals", "args": { "city": "Delhi" } }, { "respond": { "reply": "{{result}}" } }],
+      "mustNot": ["Apollo", "Dr Apollo"], "scriptedOnly": { "must": ["no hospitals found"] } },
+    { "say": "What about Apollo? Which cardiologists does it have?", "ai": [{ "call": "list_doctors", "args": { "specialty": "cardiology" } }, { "respond": { "reply": "{{result}}" } }],
+      "mustNot": ["Dr Apollo Research"] }
+  ] },
+  { "id": "hospital-page-context-ru", "category": "hospital", "locale": "ru", "state": { "pageHospitalId": "h-medanta" }, "turns": [
+    { "say": "Какие кардиологи здесь принимают?", "ai": [{ "call": "list_doctors", "args": { "specialty": "cardiologist", "language": "Russian" } }, { "respond": { "reply": "{{result}}" } }],
+      "scriptedOnly": { "must": ["Dr Medanta Cardio", "tue"] }, "mustNot": ["Dr Artemis"] }
+  ] },
+  { "id": "hospital-list-cardiology-uz", "category": "hospital", "locale": "uz", "turns": [
+    { "say": "Yurak jarrohligi uchun qaysi kasalxonalar bor?", "ai": [{ "call": "list_hospitals", "args": { "treatment": "cardiology" } }, { "respond": { "reply": "Biz ishlaydigan kasalxonalar: {{result}}." } }],
+      "mustNot": ["Apollo"], "scriptedOnly": { "must": ["Artemis Hospital, Gurugram", "Medanta"] } }
+  ] },
+  { "id": "hospital-no-choice-en", "category": "hospital", "locale": "en", "turns": [
+    { "say": "Which doctors do you have?", "ai": [{ "call": "list_doctors", "args": {} }, { "respond": { "reply": "{{result}}" } }],
+      "mustNot": ["Dr Artemis", "Dr Medanta", "Dr Apollo"], "scriptedOnly": { "must": ["No hospital chosen yet"] } }
+  ] }
+]

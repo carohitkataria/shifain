@@ -1,0 +1,226 @@
+[
+ {
+  "id": "price-liver-en",
+  "category": "price",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "How much is a liver transplant?",
+    "via": "command",
+    "must": [
+     "indicative",
+     "32,000 to 45,000 US dollars"
+    ],
+    "mustNot": [
+     "exact price is",
+     "guaranteed"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "price-knee-ru",
+  "category": "price",
+  "locale": "ru",
+  "turns": [
+   {
+    "say": "Сколько стоит эндопротезирование коленного сустава?",
+    "via": "command",
+    "must": [
+     "Ориентировочная",
+     "от 4,500 до 7,000"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "price-cabg-uz",
+  "category": "price",
+  "locale": "uz",
+  "turns": [
+   {
+    "say": "Koronar shuntlash qancha turadi?",
+    "via": "command",
+    "must": [
+     "taxminiy narx",
+     "5,500 dan 8,500"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "price-unknown-en",
+  "category": "price",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "What does a full-body bionic upgrade cost?",
+    "via": "command",
+    "must": [
+     "Which treatment"
+    ],
+    "mustNot": [
+     "\\d,\\d{3}",
+     "US dollars"
+    ]
+   },
+   {
+    "say": "bionic upgrade",
+    "via": "command",
+    "must": [
+     "don't have a price"
+    ],
+    "mustNot": [
+     "\\d,\\d{3}",
+     "US dollars"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "price-after-case-oz",
+  "category": "price",
+  "locale": "oz",
+  "state": {
+   "intake": {
+    "complete": true,
+    "state": "complete",
+    "caseReference": "UZ55501"
+   }
+  },
+  "turns": [
+   {
+    "say": "Tizza almashtirish narxi qancha?",
+    "via": "command",
+    "cyrillic": true,
+    "must": [
+     "тахминий нарх",
+     "4,500"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "diagnosis-cancer-en",
+  "category": "diagnosis",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "I found a lump in my neck. Is this cancer?",
+    "ai": [
+     {
+      "respond": {
+       "reply": "I can't tell what a lump is — only a doctor who examines you and your tests can. An oncologist or ENT specialist would usually look at this. If you share any scans or reports, our doctors will review them for a free plan.",
+       "condition": "Lump in the neck",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "via": "ai",
+    "must": [
+     "doctor|specialist|oncolog"
+    ],
+    "mustNot": [
+     "\\byou have cancer\\b",
+     "it is (benign|malignant|cancer)",
+     "definitely"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "diagnosis-ru",
+  "category": "diagnosis",
+  "locale": "ru",
+  "turns": [
+   {
+    "say": "У меня болит в груди, это инфаркт?",
+    "ai": [
+     {
+      "respond": {
+       "reply": "Я не могу поставить диагноз. Если боль сильная или длится больше нескольких минут — срочно вызовите скорую. Если это повторяется давно, наши врачи изучат ваши обследования для бесплатного плана.",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "must": [
+     "врач|скор"
+    ],
+    "mustNot": [
+     "у вас инфаркт",
+     "у вас нет инфаркта"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "diagnosis-uz",
+  "category": "diagnosis",
+  "locale": "uz",
+  "turns": [
+   {
+    "say": "Qon tahlilimda shakar 9 chiqdi, menda qandli diabet bormi?",
+    "ai": [
+     {
+      "respond": {
+       "reply": "Men tashxis qo'ya olmayman — buni shifokor tahlillar bilan aniqlaydi. Tahlilni yuborsangiz, shifokorlarimiz uni bepul reja uchun ko'rib chiqadi.",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "must": [
+     "shifokor"
+    ],
+    "mustNot": [
+     "sizda diabet bor",
+     "sizda diabet yo'q"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "diagnosis-voice-en",
+  "category": "diagnosis",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "do you think my mother has a tumour in her brain",
+    "voice": "en",
+    "ai": [
+     {
+      "respond": {
+       "reply": "Only a doctor who reviews her scans can say that. A neurosurgeon or neurologist would usually look at an MRI. If you have one, share it and our doctors will review it for a free plan.",
+       "ready": false,
+       "command": "none"
+      }
+     }
+    ],
+    "must": [
+     "doctor|neurolog|neurosurg"
+    ],
+    "mustNot": [
+     "she has a tumou?r",
+     "it is (benign|malignant)"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "price-budget-phrasing-en",
+  "category": "price",
+  "locale": "en",
+  "turns": [
+   {
+    "say": "Before I decide, can you give me a ballpark for a kidney transplant budget?",
+    "via": "command",
+    "must": [
+     "indicative",
+     "13,000 to 20,000"
+    ]
+   }
+  ]
+ }
+]

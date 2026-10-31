@@ -1,0 +1,17 @@
+[
+  { "id": "greeting-en", "category": "greeting", "locale": "en", "turns": [{ "say": "hi", "via": "greeting", "must": ["plan|coordinator"] }] },
+  { "id": "greeting-ru", "category": "greeting", "locale": "ru", "turns": [{ "say": "Здравствуйте", "via": "greeting", "must": ["план|координатор"] }] },
+  { "id": "greeting-oz", "category": "greeting", "locale": "oz", "turns": [{ "say": "Салом", "via": "greeting", "cyrillic": true, "must": ["режа|координатор"] }] },
+  { "id": "knowledge-visa-en", "category": "knowledge", "locale": "en", "turns": [{ "say": "Do I need a visa?", "via": "instant", "must": ["e-Medical visa", "invitation"] }] },
+  { "id": "knowledge-visa-ru-forms", "category": "knowledge", "locale": "ru", "turns": [
+    { "say": "Как получить визу?", "via": "instant", "must": ["медицинскую визу"] },
+    { "say": "Сколько дней оформляются визы?", "via": "instant", "must": ["рабочих дней"] }
+  ] },
+  { "id": "knowledge-visa-uz", "category": "knowledge", "locale": "uz", "turns": [{ "say": "Vizani qanday olaman?", "via": "instant", "must": ["tibbiy viza"] }] },
+  { "id": "knowledge-visa-oz", "category": "knowledge", "locale": "oz", "turns": [{ "say": "Визани қандай оламан?", "via": "instant", "cyrillic": true, "must": ["тиббий виза"] }] },
+  { "id": "knowledge-story-not-instant", "category": "knowledge", "locale": "en", "turns": [{
+    "say": "My father has had chest pain for months and the doctor in his town said he may need a bypass, and we will also need a visa to travel with him",
+    "ai": [{ "respond": { "reply": "I'm sorry to hear about your father. A cardiologist would look at this; tell me what tests he has had and we'll prepare a free plan.", "treatment": "heart bypass surgery", "ready": false, "command": "none" } }],
+    "via": "ai", "mustNot": ["e-Medical visa is applied"]
+  }] }
+]

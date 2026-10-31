@@ -27,6 +27,14 @@ const SPOKEN_TREATMENTS: [string, RegExp][] = [
   ["cochlear-implant", /cochlear|кохлеар/],
 ];
 
+const GENERIC_WORDS = new Set([
+  "full", "body", "total", "partial", "complete", "surgery", "surgical", "treatment", "operation", "procedure", "therapy", "care",
+  "cost", "costs", "price", "much", "does", "what", "with", "from", "need", "want", "have", "this", "that", "about", "your", "india",
+  "replacement", "transplant", "repair", "removal", "implant", "upgrade", "advanced", "robotic", "minimally", "invasive",
+  "операция", "операции", "лечение", "лечения", "стоимость", "сколько", "стоит", "полная", "полное", "замена", "пересадка", "индии",
+  "operatsiya", "davolash", "narxi", "qancha", "turadi", "almashtirish", "hindiston", "hindistonda",
+]);
+
 /** The catalogue treatment a spoken phrase names, if one clearly does. */
 export function matchTreatment<T extends NamedTreatment>(phrase: string, treatments: T[]): T | null {
   const value = phrase.toLowerCase();
@@ -37,7 +45,9 @@ export function matchTreatment<T extends NamedTreatment>(phrase: string, treatme
       if (found) return found;
     }
   }
-  const words = value.split(/[^\p{L}\p{N}]+/u).filter((word) => word.length >= 4);
+  // Only words that say which treatment: "full", "surgery" or "cost" alone
+  // must not turn an unknown treatment into a price for a different one.
+  const words = value.split(/[^\p{L}\p{N}']+/u).filter((word) => word.length >= 4 && !GENERIC_WORDS.has(word));
   if (words.length === 0) return null;
   let best: { item: T; score: number } | null = null;
   for (const item of treatments) {

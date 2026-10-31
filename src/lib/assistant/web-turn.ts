@@ -22,7 +22,7 @@ import { parseCommand, slotsFor } from "../voice/intents";
 import { continueCommand, runCommand, type ClientAction, type CommandOutcome, type ReplyLink } from "../voice/commands";
 import { STATUS_WORDS, sayLang, type SayLang } from "../voice/command-copy";
 import { getAssistantConfig } from "./config";
-import { countAnswer, rememberQuestion, type AnswerPath } from "./stats";
+import { countAnswer, rememberQuestion, rememberUnanswered, type AnswerPath } from "./stats";
 import { listTreatments } from "../catalogue";
 import { differentTreatments, newTreatmentRequest } from "../voice/treatments";
 import { markHumanRequested, setUploadReading, setWebIntakeHospital, switchWebIntakeTreatment } from "../web-intake";
@@ -88,7 +88,7 @@ const CASE_OPENED: Record<SayLang, string> = {
 };
 
 const GREETING =
-  /^(hi|hii+|hello|hey|hola|good (morning|afternoon|evening)|salom|assalomu alaykum|assalom|привет|здравствуйте|здравствуй|добрый (день|вечер)|салам|намасте|namaste)[!. ]*$/i;
+  /^(hi|hii+|hello|hey|hola|good (morning|afternoon|evening)|salom|assalomu alaykum|assalom|привет|здравствуйте|здравствуй|добрый (день|вечер)|салам|салом|ассалому алайкум|ассалом|намасте|namaste)[!. ]*$/i;
 
 const NO_AI_FOLLOWUP: Record<SayLang, string> = {
   en: "Thank you — I've passed this to your coordinator, who will reply here shortly. You can also say “show my plan” or “case status” any time.",
@@ -180,11 +180,15 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
     await setWebIntakeProfileExtras(sessionId, { locale: intake.locale ?? locale, ...(guessed ? { language: guessed } : {}) });
   }
 
+  /** The AI chose to pass this message to a coordinator: listed for the team as unanswered. */
+  let handedOver = false;
   const done = async (reply: TurnReply): Promise<TurnReply> => {
     if (reply.reply) await pushWebIntakeMessage(sessionId, "assistant", reply.reply);
     if (!input.dryRun) {
       await countAnswer(reply.via);
       if (reply.via === "ai") await rememberQuestion(text, reply.reply, lang);
+      if (reply.via === "scripted") await rememberUnanswered(text, lang, "no_answer");
+      else if (handedOver) await rememberUnanswered(text, lang, "handed_over");
     }
     return reply;
   };
@@ -277,6 +281,7 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
       tools,
     });
     if (named) {
+      handedOver = named === "human";
       const outcome = await runCommand({ ...ctx, intake }, { name: named, slots: slotsFor(named, text, cities) });
       return done(await afterCommand(input, outcome, lang));
     }
@@ -290,6 +295,7 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
 
   const turn = await generateIntakeReply(text, history, intake.fields, aiLanguage, { commands: true, tools });
   if (turn.command) {
+    handedOver = turn.command === "human";
     const outcome = await runCommand({ ...ctx, intake }, { name: turn.command, slots: slotsFor(turn.command, text, cities) });
     return done(await afterCommand(input, outcome, lang));
   }
