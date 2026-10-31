@@ -6,12 +6,19 @@
 
 export type UnansweredReason = "no_answer" | "handed_over";
 
-/** Phone numbers, emails and case numbers never reach the list. */
+/**
+ * Phone numbers, emails and case numbers never reach the list — in every form
+ * the app accepts a case number: "UZ48213", "uz48213", "U Z 48 213", or an
+ * old "SH-…" reference. Over-masking (any two letters and five digits) is fine.
+ */
 export function maskContacts(text: string): string {
   return text
     .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "[email]")
+    .replace(/\bSH[\s-]*[A-Z0-9]{4}(?:[\s-]*[A-Z0-9]{4}){2,3}\b/gi, "[case]")
+    .replace(/\b[A-Z0-9]{16}\b/gi, (value) => (/\d/.test(value) && /[A-Z]/i.test(value) ? "[case]" : value))
+    .replace(/(?<![A-Za-z])[A-Za-z][\s.-]?[A-Za-z][\s.-]*(?:\d[\s.-]*){4}\d(?!\d)/g, "[case]")
     .replace(/\+?\d[\d\s().-]{5,}\d/g, "[number]")
-    .replace(/\b[A-Z]{2}\d{5}\b/g, "[case]")
+    .replace(/\d{5,}/g, "[number]")
     .trim()
     .slice(0, 300);
 }

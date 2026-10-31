@@ -125,6 +125,9 @@ assert.equal(isGeneralQuestion("My father has had chest pain for three months an
 // Unanswered questions: contacts masked, keywords suggested.
 assert.equal(maskContacts("Call me on +998 90 123 45 67 or a.b@mail.uz about UZ48213"), "Call me on [number] or [email] about [case]");
 assert.equal(maskContacts("Is surgery possible at 72?"), "Is surgery possible at 72?", "a short number stays");
+for (const said of ["my case uz48213", "my case U Z 48 213", "my case UZ 48213", "my case SH-AB12-CD34-EF56-GH78", "my case sh ab12 cd34 ef56 gh78", "my case AB12CD34EF56GH78", "my case 48213"]) {
+  assert.doesNotMatch(maskContacts(said), /48\s?213|AB12|ab12|GH78/i, said);
+}
 assert.ok(worthListing("Do you arrange hotels?"));
 assert.ok(!worthListing("ok"));
 assert.deepEqual(suggestKeywords("Do you arrange hotels for my family?"), ["arrange", "hotels", "family"]);
