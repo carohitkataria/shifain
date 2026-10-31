@@ -7,6 +7,9 @@ import { LOCALES, LOCALE_COOKIE, LOCALE_META, type Locale } from "@/lib/i18n";
  * Language is picked automatically from the visitor's country, but always
  * changeable here. The choice is remembered in a cookie so it wins next time.
  */
+/** The short code on the button: the full name is in the menu and read to screen readers. */
+const SHORT: Record<Locale, string> = { en: "EN", ru: "RU", uz: "UZ", oz: "ЎЗ" };
+
 export function LanguageSwitcher({ locale, path }: { locale: Locale; path: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -38,14 +41,16 @@ export function LanguageSwitcher({ locale, path }: { locale: Locale; path: strin
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-semibold text-navy transition hover:bg-white/70 hover:text-violet focus-visible:outline-2 focus-visible:outline-brand"
+        aria-label={`Language: ${LOCALE_META[locale].label}`}
+        title={LOCALE_META[locale].label}
+        className="flex min-h-11 items-center gap-1 rounded-full px-1.5 text-sm sm:px-2.5 font-semibold text-navy transition hover:bg-white/70 hover:text-violet focus-visible:outline-2 focus-visible:outline-brand"
       >
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+        <svg viewBox="0 0 24 24" className="h-[1.15rem] w-[1.15rem]" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
           <circle cx="12" cy="12" r="9" />
           <path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18" />
         </svg>
-        {LOCALE_META[locale].label}
-        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+        <span aria-hidden="true">{SHORT[locale]}</span>
+        <svg viewBox="0 0 24 24" className="hidden h-3.5 w-3.5 sm:block" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
           <path d="m6 9 6 6 6-6" />
         </svg>
       </button>

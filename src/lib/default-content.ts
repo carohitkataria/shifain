@@ -73,7 +73,7 @@ export const defaultContent: SiteContent = {
     // No badge above the headline; set one here and it appears.
     eyebrow: l("", "", ""),
     headline: l(
-      "Your trusted medical journey to India",
+      "Your Trusted Medical Journey to India",
       "Ваш надёжный путь к лечению в Индии",
       "Hindistonga ishonchli tibbiy safaringiz",
     ),

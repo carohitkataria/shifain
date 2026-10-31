@@ -3,6 +3,7 @@ import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MobileMenu } from "./MobileMenu";
 import { TelegramGlyph } from "./TelegramGlyph";
+import { WhatsAppGlyph } from "./WhatsAppGlyph";
 import { t } from "@/lib/localize";
 import { botLink } from "@/lib/telegram-login";
 import type { L, SiteContent } from "@/lib/content-types";
@@ -17,7 +18,9 @@ const UserIcon = ({ className }: { className?: string }) => (
 
 export const MESSAGE_US: L = { en: "Message us on Telegram", ru: "Написать нам в Telegram", uz: "Telegramda yozing" };
 const FAQ_NAV: L = { en: "FAQ", ru: "Вопросы", uz: "Savollar" };
-const TELEGRAM_SHORT: L = { en: "Telegram", ru: "Telegram", uz: "Telegram" };
+const WHATSAPP_US: L = { en: "Message us on WhatsApp", ru: "Написать нам в WhatsApp", uz: "WhatsAppda yozing" };
+/** Round icon buttons for the messengers: the brand colour says which is which, the label says it to screen readers. */
+const MESSENGER = "inline-flex h-10 w-10 flex-none items-center justify-center rounded-full text-white transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:h-11 sm:w-11 lg:h-12 lg:w-12";
 
 export async function Header({
   content,
@@ -43,15 +46,16 @@ export async function Header({
   ];
   const login = { href: `${home}/portal/patient`, label: account ?? t(content.nav.loginSignup, locale) };
   const telegram = await botLink().catch(() => null);
+  const whatsapp = content.contact.whatsapp ? `https://wa.me/${content.contact.whatsapp.replace(/\D/g, "")}` : null;
 
   return (
     <header className="sticky top-0 z-40 bg-hero/95 backdrop-blur">
-      <div className="mx-auto flex max-w-[100rem] items-center gap-3 px-4 py-3 sm:px-6 lg:px-12 lg:py-4">
+      <div className="mx-auto flex max-w-[100rem] items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:px-12 lg:py-4">
         <Link href={home} className="shrink-0 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
           <Logo
             tagline={t(content.brand.wordmarkTagline, locale)}
-            markClassName="h-10 sm:h-14"
-            wordmarkClassName="h-7 sm:h-9"
+            markClassName="h-9 sm:h-14"
+            wordmarkClassName="h-6 sm:h-9"
           />
         </Link>
 
@@ -77,10 +81,21 @@ export async function Header({
               rel="noopener noreferrer"
               aria-label={t(MESSAGE_US, locale)}
               title={t(MESSAGE_US, locale)}
-              className="inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-[#229ed9] px-3 text-[15px] font-semibold text-white transition hover:bg-[#1b8bc0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:min-h-12 lg:px-5"
+              className={`${MESSENGER} bg-[#229ed9] hover:bg-[#1b8bc0]`}
             >
-              <TelegramGlyph className="h-5 w-5" />
-              <span className="hidden lg:inline">{t(TELEGRAM_SHORT, locale)}</span>
+              <TelegramGlyph className="h-5 w-5 lg:h-[1.35rem] lg:w-[1.35rem]" />
+            </a>
+          ) : null}
+          {whatsapp ? (
+            <a
+              href={whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t(WHATSAPP_US, locale)}
+              title={t(WHATSAPP_US, locale)}
+              className={`${MESSENGER} bg-[#25d366] hover:bg-[#1ebe5b]`}
+            >
+              <WhatsAppGlyph className="h-[1.35rem] w-[1.35rem] lg:h-6 lg:w-6" />
             </a>
           ) : null}
 

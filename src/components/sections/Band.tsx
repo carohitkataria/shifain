@@ -2,9 +2,9 @@ import { Icon } from "../Icon";
 import { Eyebrow, SectionHeading } from "./Common";
 import { t } from "@/lib/localize";
 import { OpenChatButton } from "../OpenChatButton";
-import { PlanRequestForm } from "../PlanRequestForm";
 import { MESSAGE_US } from "../Header";
 import { TelegramGlyph } from "../TelegramGlyph";
+import { PlanForm } from "./Hero";
 import { botLink } from "@/lib/telegram-login";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -116,53 +116,56 @@ export function Tracker({ content, locale }: { content: SiteContent; locale: Loc
 const waHref = (value: string) => `https://wa.me/${value.replace(/\D/g, "")}`;
 
 /**
- * The page's close and its one form: the real plan request (a case is opened
- * from it), with the chat and WhatsApp as the other ways in.
+ * The page's close: the plan request is in the hero, so this sends the
+ * patient back up to it, with the chat, Telegram and WhatsApp as the other
+ * ways in. With the hero switched off, the form is here instead, so links to
+ * #quote-form always have somewhere to land.
  */
 export async function Closing({ content, locale }: { content: SiteContent; locale: Locale }) {
-  const { closing, hero, specialties, contact } = content;
+  const { closing, hero, contact } = content;
   const telegram = await botLink().catch(() => null);
+  const formInHero = content.sections.hero?.enabled !== false;
   return (
-    <section id="quote-form" className="ui-section scroll-mt-20 bg-hero">
-      {/* Phone order: heading, form, other ways in. Wide screens: heading and other ways left, form right. */}
-      <div className="ui-container grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:gap-y-6">
-        <div className="order-1 lg:order-none lg:col-start-1 lg:row-start-1">
+    <section id="get-started" className="ui-section scroll-mt-20 bg-hero">
+      <div className="ui-container flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+        <div className="max-w-2xl">
           <h2 className="ui-h2">{t(closing.title, locale)}</h2>
           <p className="ui-lead">{t(closing.body, locale)}</p>
         </div>
-        <div className="order-3 flex flex-wrap items-center gap-x-6 gap-y-1 lg:order-none lg:col-start-1 lg:row-start-2 lg:self-start">
+        <div className="flex w-full flex-wrap items-center gap-x-6 gap-y-3 lg:w-auto lg:justify-end">
+          {formInHero ? (
+            <a href="#quote-form" className="ui-btn ui-btn-primary w-full sm:w-auto">
+              {t(hero.primaryCta, locale)}
+            </a>
+          ) : null}
           {telegram ? (
             <a
               href={telegram}
               target="_blank"
               rel="noopener noreferrer"
-              className="mb-2 inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-[#229ed9] px-6 text-[15px] font-semibold text-white transition hover:bg-[#1b8bc0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-[#229ed9] px-6 text-[15px] font-semibold text-white transition hover:bg-[#1b8bc0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:w-auto"
             >
               <TelegramGlyph className="h-5 w-5" />
               {t(MESSAGE_US, locale)}
             </a>
           ) : null}
-          <OpenChatButton className="ui-link">{t(closing.primaryCta, locale)}</OpenChatButton>
-          {contact.whatsapp ? (
-            <a href={waHref(contact.whatsapp)} className="ui-link">
-              {t(closing.secondaryCta, locale)}
-            </a>
-          ) : null}
-        </div>
-        <div className="order-2 min-w-0 rounded-[1.25rem] bg-white p-5 ring-1 ring-[#e6e3f4] sm:p-8 lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1">
-          <PlanRequestForm
-            locale={locale}
-            treatments={specialties.items.map((item) => ({ slug: item.slug, title: item.title }))}
-            labels={{
-              submit: t(hero.form.submit, locale),
-              country: t(hero.form.countryLabel, locale),
-              countryPlaceholder: t(hero.form.countryPlaceholder, locale),
-              phone: t(hero.form.phoneLabel, locale),
-              privacy: t(hero.form.privacy, locale),
-            }}
-          />
+          <span className="flex basis-full flex-wrap gap-x-6 gap-y-1 lg:justify-end">
+            <OpenChatButton className="ui-link">{t(closing.primaryCta, locale)}</OpenChatButton>
+            {contact.whatsapp ? (
+              <a href={waHref(contact.whatsapp)} target="_blank" rel="noopener noreferrer" className="ui-link">
+                {t(closing.secondaryCta, locale)}
+              </a>
+            ) : null}
+          </span>
         </div>
       </div>
+      {formInHero ? null : (
+        <div id="quote-form" className="ui-container mt-8 scroll-mt-24">
+          <div className="min-w-0 rounded-[1.25rem] bg-white p-5 ring-1 ring-[#e6e3f4] sm:p-8 lg:ml-auto lg:max-w-3xl">
+            <PlanForm content={content} locale={locale} />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
