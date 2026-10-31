@@ -147,18 +147,26 @@ export function profileSuggestions(step: ProfileStep, lang: Lang): string[] {
   return [];
 }
 
-const UZBEK_LATIN = /\b(men|meni|menga|kerak|rahmat|salom|assalomu|qanday|qancha|nima|uchun|bilan|emas|yo'q|o'zbek|shifokor|kasal|og'riq|davolash|yordam)\b|[og]'[a-z]/i;
+const UZBEK_LATIN =
+  /\b(men|meni|menga|kerak|rahmat|salom|assalomu|qanday|qancha|nima|uchun|bilan|emas|yo'q|o'zbek|shifokor|kasal|og'riq|davolash|yordam|otam|onam|iltimos|juda|qayerda|qachon|necha|bormi|hozir|bugun|ertaga|narxi|xarajat|operatsiya|nafas)\b|[og]'[a-z]|\b\w+(yapman|yapti|yapsiz|yapmiz|moqchiman|ganman|ganmiz|asizmi|isizmi|ingizni|imizni|lardan)\b/i;
+/**
+ * Uzbek in Cyrillic: its own letters (ў қ ғ ҳ), or common words Russian does
+ * not have. Without this, every Cyrillic message read as Russian.
+ */
+const UZBEK_CYRILLIC =
+  /[ўқғҳ]|(?<!\p{L})(салом|ассалому|керак|рахмат|нима|учун|билан|менга|мени|ёрдам|шифокор|касал|даволаш|канча|қанча|қандай|кандай|берасизми|борми|илтимос|отам|онам|жуда)(?!\p{L})/iu;
 
 /**
  * The language a message is written in, when it is clear: Cyrillic is read
- * as Russian, a few common Uzbek words as Uzbek, plain Latin as English.
+ * as Russian unless it is plainly Uzbek, common Uzbek words and endings as
+ * Uzbek, plain Latin as English.
  * Short or mixed messages (a name, a number) say nothing.
  */
 export function guessLanguage(text: string): Lang | null {
   const letters = text.replace(/[^\p{L}]/gu, "");
   if (letters.length < 4) return null;
   const cyrillic = (letters.match(/\p{Script=Cyrillic}/gu) ?? []).length;
-  if (cyrillic / letters.length > 0.5) return "ru";
+  if (cyrillic / letters.length > 0.5) return UZBEK_CYRILLIC.test(text) ? "uz" : "ru";
   if (UZBEK_LATIN.test(text)) return "uz";
   if (/^[a-z]+$/i.test(letters) && text.trim().split(/\s+/).length >= 3) return "en";
   return null;

@@ -5,9 +5,10 @@ import { AssistantTester } from "@/components/admin/AssistantTester";
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getAssistantConfig, type KnowledgeEntry } from "@/lib/assistant/config";
-import { recentStats, topQuestions, type AnswerPath } from "@/lib/assistant/stats";
+import { recentStats, topQuestions, unansweredQuestions, type AnswerPath } from "@/lib/assistant/stats";
+import { suggestKeywords } from "@/lib/assistant/unanswered-rules";
 import { providerHealth } from "@/lib/ai/providers";
-import { deleteEntryAction, dismissQuestionAction, saveEntryAction, saveInstructionsAction } from "./actions";
+import { deleteEntryAction, dismissQuestionAction, dismissUnansweredAction, saveEntryAction, saveInstructionsAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -40,13 +41,13 @@ function EntryForm({
 }: {
   entry?: KnowledgeEntry;
   /** Prefilled from a question patients asked, not yet saved. */
-  draft?: { questionId: string; entry: KnowledgeEntry };
+  draft?: { questionId: string; entry: KnowledgeEntry; from?: "answered" | "unanswered" };
 }) {
   const shown = entry ?? draft?.entry;
   return (
     <form action={saveEntryAction} className="grid gap-3">
       {entry ? <input type="hidden" name="id" value={entry.id} /> : null}
-      {draft ? <input type="hidden" name="fromQuestion" value={draft.questionId} /> : null}
+      {draft ? <input type="hidden" name={draft.from === "unanswered" ? "fromUnanswered" : "fromQuestion"} value={draft.questionId} /> : null}
       <label>
         <span className={adminLabel}>Topic</span>
         <input name="title" defaultValue={shown?.title} placeholder="e.g. Payment and deposits" className={adminField} required />
@@ -104,7 +105,7 @@ function EntryForm({
 export default async function AssistantPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
   if (!(await isAuthenticated())) redirect("/admin/login");
   const { saved, error } = await searchParams;
-  const [config, stats, questions] = await Promise.all([getAssistantConfig(), recentStats(7), topQuestions(12)]);
+  const [config, stats, questions, unanswered] = await Promise.all([getAssistantConfig(), recentStats(7), topQuestions(12), unansweredQuestions(7)]);
   const health = providerHealth();
   const free = stats.total - stats.byPath.ai;
   const freeShare = stats.total ? Math.round((free / stats.total) * 100) : null;
@@ -215,6 +216,60 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
           </ul>
         </Card>
       </div>
+
+      {unanswered.length > 0 ? (
+        <div className="mb-6">
+          <Card
+            title="Questions the assistant couldn't answer"
+            hint="The last 7 days: no AI could reply, or the AI handed the patient to a coordinator. Write the answer once and the assistant gives it next time. Phone numbers and emails are hidden."
+          >
+            <ul className="divide-y divide-line">
+              {unanswered.map((question) => (
+                <li key={question._id} className="py-3">
+                  <details>
+                    <summary className="flex cursor-pointer list-none items-start gap-3">
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-semibold text-ink">{question.text}</span>
+                        <span className="mt-0.5 block text-xs text-ink-soft">
+                          {question.reason === "handed_over" ? "Handed to a coordinator" : "No AI could answer"} · {question.lang.toUpperCase()} ·{" "}
+                          {new Date(question.lastAt).toLocaleString("en-GB")}
+                        </span>
+                      </span>
+                      {question.count > 1 ? (
+                        <span className="shrink-0 rounded-full bg-saffron/15 px-2 py-0.5 text-xs font-bold text-saffron">×{question.count}</span>
+                      ) : null}
+                      <span className="shrink-0 text-sm font-semibold text-brand">Turn into knowledge entry</span>
+                    </summary>
+                    <div className="mt-4 rounded-xl bg-surface-muted p-4">
+                      <p className="mb-3 text-sm text-ink-soft">Write the answer, check the keywords, and save.</p>
+                      <EntryForm
+                        draft={{
+                          from: "unanswered",
+                          questionId: question._id,
+                          entry: {
+                            id: "",
+                            title: question.text.replace(/\?$/, "").slice(0, 160),
+                            answer: { en: "" },
+                            keywords: suggestKeywords(question.text),
+                            instant: false,
+                            enabled: true,
+                          },
+                        }}
+                      />
+                      <form action={dismissUnansweredAction} className="mt-2">
+                        <input type="hidden" name="id" value={question._id} />
+                        <button type="submit" className="text-sm font-semibold text-ink-soft hover:underline">
+                          Dismiss this question
+                        </button>
+                      </form>
+                    </div>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+      ) : null}
 
       {questions.length > 0 ? (
         <div className="mb-6">

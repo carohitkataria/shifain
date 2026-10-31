@@ -1,6 +1,7 @@
 import "server-only";
 import crypto from "node:crypto";
 import { getDb, readOr } from "../db";
+import { maskContacts, worthListing, type UnansweredReason } from "./unanswered-rules";
 
 /**
  * How the assistant answers, counted per day, and the questions it needed the
@@ -87,4 +88,48 @@ export async function topQuestions(limit = 12): Promise<AskedQuestion[]> {
 export async function forgetQuestion(id: string): Promise<void> {
   const db = await getDb();
   await db.collection<AskedQuestion>("assistant_questions").deleteOne({ _id: id });
+}
+
+// ---------------------------------------------------------------- unanswered
+
+export type UnansweredQuestion = {
+  _id: string;
+  text: string;
+  count: number;
+  lang: string;
+  reason: UnansweredReason;
+  lastAt: string;
+};
+
+/**
+ * A question no AI could answer, or that the AI handed to a coordinator.
+ * Listed under AI assistant for seven days, so the team can turn it into a
+ * knowledge entry. Contact details are masked before anything is stored.
+ */
+export async function rememberUnanswered(text: string, lang: string, reason: UnansweredReason): Promise<void> {
+  if (!worthListing(text)) return;
+  const masked = maskContacts(text);
+  const key = crypto.createHash("sha1").update(normalise(masked)).digest("hex").slice(0, 20);
+  try {
+    const db = await getDb();
+    await db.collection<UnansweredQuestion>("assistant_unanswered").updateOne(
+      { _id: key },
+      { $set: { text: masked, lang, reason, lastAt: new Date().toISOString() }, $inc: { count: 1 } },
+      { upsert: true },
+    );
+  } catch {
+    /* not listed */
+  }
+}
+
+export async function unansweredQuestions(days = 7, limit = 30): Promise<UnansweredQuestion[]> {
+  const since = new Date(Date.now() - days * 86_400_000).toISOString();
+  return readOr<UnansweredQuestion[]>([], (db) =>
+    db.collection<UnansweredQuestion>("assistant_unanswered").find({ lastAt: { $gte: since } }).sort({ lastAt: -1 }).limit(limit).toArray(),
+  );
+}
+
+export async function forgetUnanswered(id: string): Promise<void> {
+  const db = await getDb();
+  await db.collection<UnansweredQuestion>("assistant_unanswered").deleteOne({ _id: id });
 }

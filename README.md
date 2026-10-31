@@ -230,7 +230,13 @@ npm run build      # production build
 npm start          # serve the production build
 npm run typecheck  # TypeScript, no emit
 npm run lint       # ESLint
-npm test           # the planner's contract: schema, catalogue codes, price bands
+npm test           # the planner's contract, the rules, and the assistant's test conversations
+
+# The assistant's 54 test conversations (scripts/test/assistant-scenarios/),
+# on an in-memory database: scripted AI replies by default, real ones with --live.
+npm run test:assistant
+npm run test:assistant -- --live              # needs GEMINI_API_KEY and/or ANTHROPIC_API_KEY
+npm run test:assistant -- --only price --verbose
 
 # The owner console, driven in a real browser (needs a running server):
 npm i --no-save playwright-core

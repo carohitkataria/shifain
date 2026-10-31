@@ -170,7 +170,18 @@ const spoken: [string, string | null][] = [
   ["cochlear implant", "cochlear-implant"],
   ["mastectomy", "mastectomy"],
   ["something unrelated", null],
+  // A generic word alone ("full", "surgery") must not price a different treatment.
+  ["full-body bionic upgrade", null],
+  ["eye surgery", null],
+  ["full mouth rehabilitation", "full-mouth-rehab"],
+  ["total hip replacement", "total-hip-replacement"],
 ];
+// A particular hospital goes to the assistant's tools, not the directory page.
+assert.equal(parseCommand("Show me doctors at Medanta", ["Delhi"]), null);
+assert.equal(parseCommand("покажи врачей в клинике Меданта", ["Delhi"]), null);
+assert.equal(parseCommand("Artemisdagi shifokorlarni ko'rsat", ["Delhi"]), null);
+assert.equal(parseCommand("look at hospitals", ["Delhi"])?.name, "hospitals");
+assert.equal(parseCommand("open the doctors page", ["Delhi"])?.name, "doctors");
 for (const [phrase, code] of spoken) {
   assert.equal(matchTreatment(phrase, treatments)?._id ?? null, code, `"${phrase}" should be ${code}`);
 }

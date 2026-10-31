@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { getAssistantConfig, newEntryId, saveAssistantConfig, type KnowledgeEntry } from "@/lib/assistant/config";
-import { forgetQuestion } from "@/lib/assistant/stats";
+import { forgetQuestion, forgetUnanswered } from "@/lib/assistant/stats";
 
 async function guard() {
   if (!(await isAuthenticated())) redirect("/admin/login");
@@ -44,6 +44,8 @@ export async function saveEntryAction(form: FormData) {
   if (!entry.answer.en && !entry.answer.ru && !entry.answer.uz) redirect("/admin/assistant?error=answer");
   const fromQuestion = text(form, "fromQuestion", 40);
   if (fromQuestion) await forgetQuestion(fromQuestion);
+  const fromUnanswered = text(form, "fromUnanswered", 40);
+  if (fromUnanswered) await forgetUnanswered(fromUnanswered);
   const exists = config.entries.some((item) => item.id === id);
   const entries = exists ? config.entries.map((item) => (item.id === id ? entry : item)) : [entry, ...config.entries];
   await saveAssistantConfig({ ...config, entries });
@@ -63,6 +65,13 @@ export async function deleteEntryAction(form: FormData) {
 export async function dismissQuestionAction(form: FormData) {
   await guard();
   await forgetQuestion(text(form, "id", 40));
+  revalidatePath("/admin/assistant");
+  redirect("/admin/assistant");
+}
+
+export async function dismissUnansweredAction(form: FormData) {
+  await guard();
+  await forgetUnanswered(text(form, "id", 40));
   revalidatePath("/admin/assistant");
   redirect("/admin/assistant");
 }

@@ -1,0 +1,348 @@
+{
+ "hospitals": [
+  {
+   "_id": "h-artemis",
+   "name": "Artemis Hospital",
+   "legalName": null,
+   "city": "Gurugram",
+   "state": "Haryana",
+   "country": "India",
+   "nearestAirportIata": "DEL",
+   "hospitalType": "multi-speciality",
+   "beds": 400,
+   "icuBeds": null,
+   "accreditations": [
+    {
+     "body": "JCI",
+     "reference": null,
+     "validUntil": null,
+     "verifiedAt": null
+    },
+    "NABH"
+   ],
+   "specialtyCodes": [
+    "cardiology",
+    "orthopaedics",
+    "oncology"
+   ],
+   "capabilities": [],
+   "officialWebsite": null,
+   "partnerStatus": "signed",
+   "publication": {
+    "state": "published",
+    "publishedAt": "2026-09-01T00:00:00Z",
+    "tieupId": null
+   }
+  },
+  {
+   "_id": "h-medanta",
+   "name": "Medanta – The Medicity",
+   "legalName": null,
+   "city": "Gurugram",
+   "state": "Haryana",
+   "country": "India",
+   "nearestAirportIata": "DEL",
+   "hospitalType": "multi-speciality",
+   "beds": 1250,
+   "icuBeds": null,
+   "accreditations": [
+    "JCI"
+   ],
+   "specialtyCodes": [
+    "cardiology",
+    "gastroenterology",
+    "hepatology"
+   ],
+   "capabilities": [],
+   "officialWebsite": null,
+   "partnerStatus": "signed",
+   "publication": {
+    "state": "published",
+    "publishedAt": "2026-09-01T00:00:00Z",
+    "tieupId": null
+   }
+  },
+  {
+   "_id": "h-apollo",
+   "name": "Indraprastha Apollo Hospital",
+   "legalName": null,
+   "city": "Delhi",
+   "state": "Delhi",
+   "country": "India",
+   "nearestAirportIata": "DEL",
+   "hospitalType": "multi-speciality",
+   "beds": 700,
+   "icuBeds": null,
+   "accreditations": [
+    "JCI"
+   ],
+   "specialtyCodes": [
+    "cardiology",
+    "hepatology"
+   ],
+   "capabilities": [],
+   "officialWebsite": null,
+   "partnerStatus": "research",
+   "publication": {
+    "state": "research",
+    "publishedAt": null,
+    "tieupId": null
+   }
+  }
+ ],
+ "doctors": [
+  {
+   "_id": "d-a1",
+   "name": "Dr Artemis Cardio",
+   "specialtyCode": "cardiology",
+   "specialties": [
+    {
+     "code": "cardiology",
+     "subSpecialty": null
+    }
+   ],
+   "languages": [
+    "en",
+    "ru"
+   ],
+   "consentToList": true,
+   "partnerStatus": "signed",
+   "publication": {
+    "state": "published",
+    "publishedAt": null,
+    "tieupId": null
+   }
+  },
+  {
+   "_id": "d-a2",
+   "name": "Dr Artemis Ortho",
+   "specialtyCode": "orthopaedics",
+   "specialties": [
+    {
+     "code": "orthopaedics",
+     "subSpecialty": null
+    }
+   ],
+   "languages": [
+    "en"
+   ],
+   "consentToList": true,
+   "partnerStatus": "signed",
+   "publication": {
+    "state": "published",
+    "publishedAt": null,
+    "tieupId": null
+   }
+  },
+  {
+   "_id": "d-a3",
+   "name": "Dr Unlisted Heart",
+   "specialtyCode": "cardiology",
+   "specialties": [
+    {
+     "code": "cardiology",
+     "subSpecialty": null
+    }
+   ],
+   "languages": [
+    "en"
+   ],
+   "consentToList": false,
+   "partnerStatus": "signed",
+   "publication": {
+    "state": "published",
+    "publishedAt": null,
+    "tieupId": null
+   }
+  },
+  {
+   "_id": "d-m1",
+   "name": "Dr Medanta Cardio",
+   "specialtyCode": "cardiology",
+   "specialties": [
+    {
+     "code": "cardiology",
+     "subSpecialty": null
+    }
+   ],
+   "languages": [
+    "en",
+    "ru",
+    "uz"
+   ],
+   "consentToList": true,
+   "partnerStatus": "signed",
+   "publication": {
+    "state": "published",
+    "publishedAt": null,
+    "tieupId": null
+   }
+  },
+  {
+   "_id": "d-p1",
+   "name": "Dr Apollo Research",
+   "specialtyCode": "cardiology",
+   "specialties": [
+    {
+     "code": "cardiology",
+     "subSpecialty": null
+    }
+   ],
+   "languages": [
+    "en"
+   ],
+   "consentToList": true,
+   "partnerStatus": "research",
+   "publication": {
+    "state": "research",
+    "publishedAt": null,
+    "tieupId": null
+   }
+  }
+ ],
+ "hospital_doctor_map": [
+  {
+   "_id": "l1",
+   "hospitalId": "h-artemis",
+   "doctorId": "d-a1",
+   "current": true
+  },
+  {
+   "_id": "l2",
+   "hospitalId": "h-artemis",
+   "doctorId": "d-a2",
+   "current": true
+  },
+  {
+   "_id": "l3",
+   "hospitalId": "h-artemis",
+   "doctorId": "d-a3",
+   "current": true
+  },
+  {
+   "_id": "l4",
+   "hospitalId": "h-medanta",
+   "doctorId": "d-m1",
+   "current": true
+  },
+  {
+   "_id": "l5",
+   "hospitalId": "h-apollo",
+   "doctorId": "d-p1",
+   "current": true
+  }
+ ],
+ "doctor_schedules": [
+  {
+   "_id": "s1",
+   "hospitalId": "h-artemis",
+   "doctorId": "d-a1",
+   "day": "mon",
+   "from": "10:00",
+   "to": "14:00"
+  },
+  {
+   "_id": "s2",
+   "hospitalId": "h-artemis",
+   "doctorId": "d-a1",
+   "day": "wed",
+   "from": "10:00",
+   "to": "14:00"
+  },
+  {
+   "_id": "s3",
+   "hospitalId": "h-medanta",
+   "doctorId": "d-m1",
+   "day": "tue",
+   "from": "09:00",
+   "to": "13:00"
+  }
+ ],
+ "cases": [
+  {
+   "_id": "UZ48213",
+   "status": "planned",
+   "createdAt": "2026-10-01T00:00:00Z",
+   "updatedAt": null,
+   "locale": "en",
+   "patient": {
+    "name": "Aziz Karimov",
+    "phone": "+998901112233",
+    "country": "Uzbekistan",
+    "email": "aziz@example.com"
+   },
+   "statedNeed": "Liver transplant",
+   "intakeRoute": "chat",
+   "description": "Paid deposit 12400 USD.",
+   "answers": null,
+   "reports": [],
+   "reportsExpireAt": null,
+   "plan": null,
+   "planError": null,
+   "referredBy": null
+  },
+  {
+   "_id": "UZ55501",
+   "status": "planning",
+   "createdAt": "2026-10-20T00:00:00Z",
+   "updatedAt": null,
+   "locale": "en",
+   "patient": {
+    "name": "Dilnoza Test",
+    "phone": "+998907778899",
+    "country": "Uzbekistan",
+    "email": "dilnoza@example.com"
+   },
+   "statedNeed": "Knee replacement",
+   "intakeRoute": "chat",
+   "description": "Knee pain.",
+   "answers": null,
+   "reports": [],
+   "reportsExpireAt": null,
+   "plan": null,
+   "planError": null,
+   "referredBy": null
+  }
+ ],
+ "assistant_config": [
+  {
+   "_id": "assistant",
+   "instructions": "",
+   "updatedAt": "2026-10-01T00:00:00Z",
+   "entries": [
+    {
+     "id": "visa",
+     "title": "Medical visa",
+     "answer": {
+      "en": "India's e-Medical visa is applied for online with a hospital's invitation letter, which your coordinator arranges. It usually takes 3–5 working days.",
+      "ru": "Электронную медицинскую визу в Индию оформляют онлайн по приглашению больницы — его готовит ваш координатор. Обычно это 3–5 рабочих дней.",
+      "uz": "Hindistonning elektron tibbiy vizasi kasalxona taklifnomasi bilan onlayn rasmiylashtiriladi — uni koordinatoringiz tayyorlaydi. Odatda 3–5 ish kuni."
+     },
+     "keywords": [
+      "visa",
+      "medical visa",
+      "виза",
+      "viza"
+     ],
+     "instant": true,
+     "enabled": true
+    },
+    {
+     "id": "payment",
+     "title": "Payment",
+     "answer": {
+      "en": "You pay the hospital directly; ShifaIn's planning is free."
+     },
+     "keywords": [
+      "payment",
+      "pay",
+      "оплата",
+      "to'lov"
+     ],
+     "instant": false,
+     "enabled": true
+    }
+   ]
+  }
+ ]
+}
