@@ -5,6 +5,7 @@ import { publicUrl } from "@/lib/origin";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { linkCaseToAccount, newReference, type CaseRequest } from "@/lib/cases";
+import { OPENED_COOKIE, openedCookie } from "@/lib/case-access";
 import { listedDoctor, listedHospital } from "@/lib/directory";
 import { currentPatient, getPatientAccount } from "@/lib/patient-auth";
 import { setPreferences } from "@/lib/journey";
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
   const patient = { name, phone, country, email };
 
   if (!isDatabaseConfigured()) {
-    const reference = newReference();
+    const reference = newReference(patient);
     await recordToDisk({
       reference,
       receivedAt: new Date().toISOString(),
@@ -118,10 +119,14 @@ export async function POST(request: NextRequest) {
     } else if (account?.channels?.length) {
       await setPreferences(record._id, { channels: account.channels, mainChannel: account.mainChannel ?? account.channels[0] }).catch(() => undefined);
     }
-    return NextResponse.redirect(publicUrl(request, `/${locale}/plan/${record._id}`), 303);
+    // This browser opened the case, so it may see the plan without signing in.
+    const response = NextResponse.redirect(publicUrl(request, `/${locale}/plan/${record._id}`), 303);
+    const opened = openedCookie(request.cookies.get(OPENED_COOKIE)?.value, record._id);
+    response.cookies.set(opened.name, opened.value, opened.options);
+    return response;
   } catch (error) {
     console.error("[shifain] could not open a case", error);
-    const fallback = newReference();
+    const fallback = newReference(patient);
     await recordToDisk({
       reference: fallback,
       receivedAt: new Date().toISOString(),

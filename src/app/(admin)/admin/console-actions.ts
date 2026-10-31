@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { createCase, type CaseStatus, type PatientCase } from "@/lib/cases";
+import { isCaseReference } from "@/lib/access-rules";
 import { addCaseFiles, sendPortalMessage, setCare, setPreferences } from "@/lib/journey";
 import { syncReferralWithCase } from "@/lib/referrals";
 import { notifyCase, sendCoordinatorReply } from "@/lib/telegram-notify";
@@ -106,7 +107,7 @@ export async function newCaseAction(formData: FormData) {
 export async function bulkCasesAction(formData: FormData) {
   await guard();
   const back = backOf(formData);
-  const ids = formData.getAll("ids").map(String).filter((id) => /^SH-[A-Z0-9-]{4,40}$/.test(id)).slice(0, 200);
+  const ids = formData.getAll("ids").map(String).filter((id) => isCaseReference(id)).slice(0, 200);
   const op = String(formData.get("op") ?? "");
   if (!ids.length) finish(back, "Tick at least one case");
   const db = await getDb();

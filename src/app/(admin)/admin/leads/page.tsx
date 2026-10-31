@@ -205,7 +205,7 @@ export default async function LeadsPage({
                       <input
                         name="caseReference"
                         defaultValue={lead.caseReference ?? ""}
-                        placeholder="SH-…"
+                        placeholder="UZ48213"
                         className={adminField}
                       />
                     </label>

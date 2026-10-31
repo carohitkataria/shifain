@@ -59,14 +59,14 @@ const BENEFIT_ICON = { user: UserRoundCheck, plan: ClipboardCheck, languages: La
 type Query = { with?: string; otp?: string; sent?: string; email?: string; phone?: string; id?: string; ref?: string; dev?: string; error?: string; then?: string; forgot?: string };
 
 /** What the right-hand column shows. */
-type View = "password" | "otp-email" | "code-email" | "otp-whatsapp" | "code-whatsapp" | "forgot" | "reference";
+type View = "password" | "otp-email" | "code-email" | "otp-whatsapp" | "code-whatsapp" | "forgot" | "reference" | "code-reference";
 
 function viewOf(query: Query): View {
   if (query.otp === "whatsapp") return query.sent && query.phone ? "code-whatsapp" : "otp-whatsapp";
   if (query.sent && query.email) return "code-email";
   if (query.otp === "email") return "otp-email";
   if (query.forgot) return "forgot";
-  if (query.with === "reference") return "reference";
+  if (query.with === "reference") return query.sent ? "code-reference" : "reference";
   return "password";
 }
 
@@ -79,6 +79,7 @@ const ERRORS: Record<string, L> = {
   mail: APP.errors.mail,
   email: APP.errors.email,
   telegram: APP.errors.telegram,
+  plan: LOGIN.errPlan,
   "1": APP.errors.reference,
 };
 
@@ -128,6 +129,7 @@ export default async function PatientLoginPage({ params, searchParams }: { param
     ],
     forgot: [LOGIN.forgotTitle, t(LOGIN.forgotLead, locale)],
     reference: [LOGIN.refTitle, t(LOGIN.refLead, locale)],
+    "code-reference": [LOGIN.caseCodeTitle, t(LOGIN.caseCodeLead, locale)],
   };
   const [title, lead] = heading[view];
 
@@ -365,6 +367,8 @@ export default async function PatientLoginPage({ params, searchParams }: { param
 
           {view === "code-whatsapp" ? codeForm(verifyPhoneCodeAction, <input type="hidden" name="phone" value={phone} />, `${here}?otp=whatsapp${thenQuery}`) : null}
 
+          {view === "code-reference" ? codeForm(patientLoginAction, <input type="hidden" name="reference" value={ref} />, `${here}?with=reference&ref=${encodeURIComponent(ref)}`) : null}
+
           {view === "reference" ? (
             <form action={patientLoginAction} className="pl-form">
               <input type="hidden" name="locale" value={locale} />
@@ -372,7 +376,7 @@ export default async function PatientLoginPage({ params, searchParams }: { param
                 <span className="pl-label">{t(LOGIN.reference, locale)}</span>
                 <span className="pl-input">
                   <Hash size={18} strokeWidth={1.75} aria-hidden="true" />
-                  <input name="reference" required autoComplete="off" autoCapitalize="characters" defaultValue={ref} autoFocus={!ref} placeholder="SH-XXXX-XXXX-XXXX" className="pl-upper" />
+                  <input name="reference" required autoComplete="off" autoCapitalize="characters" defaultValue={ref} autoFocus={!ref} placeholder={t(LOGIN.referencePlaceholder, locale)} className="pl-upper" />
                 </span>
               </label>
               <label className="pl-field">

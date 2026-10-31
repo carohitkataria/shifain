@@ -34,7 +34,8 @@ import { listReferrals, money } from "./partners";
 import { normalisePhone } from "./patient-auth";
 import { confirmTelegramLogin, pendingTelegramLogin } from "./telegram-login";
 import { toUzCyrillic } from "./uz-cyrillic";
-import { casesForPhone, getCase } from "./cases";
+import { casesForPhone, getCase, type PatientCase } from "./cases";
+import { isCaseReference, phonesMatch } from "./access-rules";
 import { createLead } from "./telegram-leads";
 import { isElevenLabsConfigured, transcribeAudio, textToSpeech } from "./elevenlabs";
 import { generateReply, generateIntakeReply, type ConversationMessage } from "./voice-agent";
@@ -445,6 +446,15 @@ async function handlePatientUpdate(update: TgUpdate): Promise<void> {
       await handleLoginContact(chatId, userId, contact.stateData.token, msg.contact, msg.from?.first_name ?? null);
       return;
     }
+    // A contact card forwarded from someone else is not this person's number.
+    if (msg.contact.user_id !== userId) {
+      await sendMessage("patient", { chatId, text: NOT_YOUR_CONTACT, requestContact: true });
+      return;
+    }
+    if (contact.state === "follow" && typeof contact.stateData?.reference === "string") {
+      await handleFollowContact(chatId, userId, contact.stateData.reference, msg.contact.phone_number);
+      return;
+    }
     await handlePhoneShared(chatId, userId, msg.contact.phone_number);
     return;
   }
@@ -512,7 +522,7 @@ async function handlePatientCommand(
       if (!ref) {
         await sendMessage("patient", {
           chatId,
-          text: "Please provide your case reference:\n<code>/status SH-XXXX-XXXX-XXXX-XXXX</code>",
+          text: "Please send your case number:\n<code>/status UZ48213</code>",
         });
         return;
       }
@@ -629,7 +639,7 @@ async function handlePatientCallback(
           } else {
             await sendMessage("patient", {
               chatId,
-              text: "Send your case reference:\n<code>/status SH-XXXX-XXXX-XXXX-XXXX</code>\n\nOr share your phone number to find your case.",
+              text: "Share your phone number to find your case — the button below sends your own.",
               requestContact: true,
             });
           }
@@ -703,7 +713,30 @@ const FOLLOW_WORDS = {
     ru: "Мы не нашли этот случай. Откройте ссылку со страницы плана ещё раз или пришлите сюда номер случая.",
     uz: "Bu holat topilmadi. Reja sahifasidagi havolani qayta oching yoki holat raqamini shu yerga yuboring.",
   },
+  share: {
+    en: "To link your case, tap <b>Share my phone number</b> below. We check it is the number on the case before linking.",
+    ru: "Чтобы привязать случай, нажмите <b>Поделиться номером</b> ниже. Мы проверим, что это номер из вашего случая.",
+    uz: "Holatingizni bog'lash uchun pastdagi <b>Raqamni ulashish</b> tugmasini bosing. Bog'lashdan oldin bu holatdagi raqam ekanini tekshiramiz.",
+  },
+  mismatch: {
+    en: "We couldn't link that case to this Telegram number. If you gave us a different number, please ask your coordinator.",
+    ru: "Не удалось привязать случай к этому номеру Telegram. Если вы указывали другой номер, обратитесь к координатору.",
+    uz: "Holatni bu Telegram raqamiga bog'lab bo'lmadi. Boshqa raqam bergan bo'lsangiz, koordinatoringizga murojaat qiling.",
+  },
 };
+
+const NOT_YOUR_CONTACT = "That looks like someone else's contact. Please use the <b>Share my phone number</b> button, which sends your own.";
+
+/**
+ * This Telegram chat may act on the case: it is linked to it already, or its
+ * number — vouched for by Telegram — is the case's own. A case number alone,
+ * which is short and could be guessed, never links anything.
+ */
+async function chatMayFollow(userId: number, record: PatientCase): Promise<boolean> {
+  const contact = await getTelegramContact("patient", userId);
+  if (contact?.caseReference === record._id) return true;
+  return Boolean(contact?.phoneVerified && phonesMatch(contact.phone, record.patient.phone));
+}
 
 function followText(words: { en: string; ru: string; uz: string }, locale: string | null | undefined): string {
   if (locale === "ru") return words.ru;
@@ -713,19 +746,36 @@ function followText(words: { en: string; ru: string; uz: string }, locale: strin
 }
 
 /**
- * "Follow your case on Telegram": the reference in the link is the proof — it is
- * 96 random bits only the patient was shown — so the chat is linked to the case,
- * and every update reaches it from now on.
+ * "Follow your case on Telegram". The case number in the link only names the
+ * case: the chat is linked once its number, shared with Telegram's own button,
+ * is the number on the case. Then every update reaches it.
  */
 async function followCase(chatId: number, userId: number, raw: string): Promise<void> {
   const reference = raw.trim().toUpperCase();
-  const record = /^SH-[A-Z0-9-]{4,40}$/.test(reference) ? await getCase(reference).catch(() => null) : null;
+  const record = isCaseReference(reference) ? await getCase(reference).catch(() => null) : null;
   if (!record) {
     await sendMessage("patient", { chatId, text: followText(FOLLOW_WORDS.unknown, null) });
     return;
   }
+  if (await chatMayFollow(userId, record)) {
+    await linkContactToCase("patient", userId, record._id, null);
+    await updateContactState("patient", userId, "ready");
+    await sendMessage("patient", { chatId, text: followText(FOLLOW_WORDS.linked, record.locale).replace("{ref}", `<code>${record._id}</code>`) });
+    return;
+  }
+  await updateContactState("patient", userId, "follow", { reference: record._id });
+  await sendMessage("patient", { chatId, text: followText(FOLLOW_WORDS.share, record.locale), requestContact: true });
+}
+
+/** The number for a follow link arrived (already checked to be the sender's own). */
+async function handleFollowContact(chatId: number, userId: number, reference: string, phone: string): Promise<void> {
+  await handlePhoneSaved(chatId, userId, normalisePhone(phone));
+  const record = await getCase(reference).catch(() => null);
+  if (!record || !phonesMatch(phone, record.patient.phone)) {
+    await sendMessage("patient", { chatId, text: followText(FOLLOW_WORDS.mismatch, record?.locale) });
+    return;
+  }
   await linkContactToCase("patient", userId, record._id, null);
-  await updateContactState("patient", userId, "ready");
   await sendMessage("patient", { chatId, text: followText(FOLLOW_WORDS.linked, record.locale).replace("{ref}", `<code>${record._id}</code>`) });
 }
 
@@ -758,11 +808,7 @@ async function handleLoginContact(
   firstName: string | null,
 ): Promise<void> {
   if (shared.user_id !== userId) {
-    await sendMessage("patient", {
-      chatId,
-      text: "That looks like someone else's contact. Please use the <b>Share my phone number</b> button, which sends your own.",
-      requestContact: true,
-    });
+    await sendMessage("patient", { chatId, text: NOT_YOUR_CONTACT, requestContact: true });
     return;
   }
   const digits = normalisePhone(shared.phone_number);
@@ -787,6 +833,7 @@ async function handlePhoneSaved(chatId: number, userId: number, digits: string):
     lastName: existing?.lastName ?? null,
     languageCode: existing?.languageCode ?? null,
     phone: digits,
+    phoneVerified: true,
     contactType: "patient",
     contactId: existing?.contactId ?? null,
     caseReference: existing?.caseReference ?? null,
@@ -798,6 +845,7 @@ async function handlePhoneSaved(chatId: number, userId: number, digits: string):
   if (latest && !existing?.caseReference) await linkContactToCase("patient", userId, latest._id, null).catch(() => undefined);
 }
 
+/** The sender's own number (the caller checked the contact is theirs). */
 async function handlePhoneShared(chatId: number, userId: number, phone: string): Promise<void> {
   const digits = normalisePhone(phone);
   await upsertTelegramContact({
@@ -808,6 +856,7 @@ async function handlePhoneShared(chatId: number, userId: number, phone: string):
     lastName: null,
     languageCode: null,
     phone: digits,
+    phoneVerified: true,
     contactType: "patient",
     contactId: null,
     caseReference: null,
@@ -960,12 +1009,15 @@ async function handlePatientText(
   }
 }
 
-async function lookupCaseStatus(chatId: number, userId: number, reference: string): Promise<void> {
-  const record = await getCase(reference);
-  if (!record) {
+/** A case's status, only for the chat linked to it or verified with its number; to anyone else it does not exist. */
+async function lookupCaseStatus(chatId: number, userId: number, raw: string): Promise<void> {
+  const reference = raw.trim().toUpperCase();
+  const record = isCaseReference(reference) ? await getCase(reference).catch(() => null) : null;
+  if (!record || !(await chatMayFollow(userId, record))) {
     await sendMessage("patient", {
       chatId,
-      text: `❌ No case found with reference <code>${reference}</code>.\n\nPlease check and try again.`,
+      text: `❌ No case found with number <code>${reference.replace(/[<>&]/g, "")}</code> for this Telegram number.\n\nTap below to share your phone number and find your cases.`,
+      requestContact: true,
     });
     return;
   }

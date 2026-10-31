@@ -55,7 +55,7 @@ export const SAY = {
 
   // who you are
   needSignIn: {
-    en: "If you already have a case with us, I need to know it's you: tell me the email you gave us, or say “reference” to use your case reference and phone. If you're new, say “make me a plan” — it's free.",
+    en: "If you already have a case with us, I need to know it's you: tell me the email you gave us, or say “case number” to use your case number and phone. If you're new, say “make me a plan” — it's free.",
     ru: "Если у вас уже есть заявка, нужно убедиться, что это вы: назовите email, который вы указывали, или скажите «номер заявки». Если вы впервые — скажите «составь план», это бесплатно.",
     uz: "Agar sizda ariza bo'lsa, bu siz ekaningizni bilishim kerak: bergan emailingizni ayting yoki «ariza raqami» deng. Yangi bo'lsangiz — «reja tuz» deng, bu bepul.",
   },
@@ -77,20 +77,40 @@ export const SAY = {
     uz: "Kod mos kelmadi. Oxirgi xatni tekshirib qayta urinib ko'ring yoki «bekor» deng.",
   },
   askReference: {
-    en: "Read me your case reference — it starts with S H, then four groups of letters and numbers.",
-    ru: "Продиктуйте номер заявки — он начинается с S H, затем четыре группы букв и цифр.",
-    uz: "Ariza raqamini ayting — u S H bilan boshlanadi, keyin to'rtta harf va raqamlar guruhi.",
+    en: "Read me your case number — two letters and five digits, like U Z 4 8 2 1 3.",
+    ru: "Продиктуйте номер заявки — две буквы и пять цифр, например U Z 4 8 2 1 3.",
+    uz: "Ariza raqamini ayting — ikki harf va besh raqam, masalan U Z 4 8 2 1 3.",
   },
   referenceAgain: {
-    en: "I didn't get the whole reference. It's S H and then sixteen letters and numbers — you can type it instead.",
-    ru: "Не получилось разобрать номер целиком. Это S H и шестнадцать букв и цифр — можно напечатать.",
-    uz: "Raqamni to'liq tushunmadim. Bu S H va o'n olti harf va raqam — yozib yuborishingiz mumkin.",
+    en: "I didn't get the whole case number. It's two letters and five digits — you can type it instead.",
+    ru: "Не получилось разобрать номер целиком. Это две буквы и пять цифр — можно напечатать.",
+    uz: "Raqamni to'liq tushunmadim. Bu ikki harf va besh raqam — yozib yuborishingiz mumkin.",
   },
   askPhone: { en: "And the phone number you gave us?", ru: "И номер телефона, который вы указывали?", uz: "Va bergan telefon raqamingiz?" },
-  signInFailed: {
-    en: "That reference and phone number don't match. Please check them, or say “talk to a coordinator”.",
-    ru: "Номер заявки и телефон не совпадают. Проверьте их или скажите «соедини с координатором».",
-    uz: "Ariza raqami va telefon mos kelmadi. Tekshirib ko'ring yoki «koordinator bilan gaplashmoqchiman» deng.",
+  caseCodeSent: {
+    en: "If those details match a case, a six-digit code is on its way to the Telegram, WhatsApp or email already on that case. Type or read it to me when it arrives. Nothing in a minute? Say “talk to a coordinator”.",
+    ru: "Если данные совпадают с заявкой, шестизначный код уже отправлен в Telegram, WhatsApp или на почту, указанные в этой заявке. Напишите или продиктуйте его, когда придёт. Ничего нет через минуту? Скажите «соедини с координатором».",
+    uz: "Agar ma'lumotlar arizaga mos kelsa, olti xonali kod shu arizadagi Telegram, WhatsApp yoki emailga yuborildi. Kelganda yozing yoki ayting. Bir daqiqada kelmasa — «koordinator bilan gaplashmoqchiman» deng.",
+  },
+  ownCaseCodeSent: {
+    en: "I've sent a six-digit code to the Telegram, WhatsApp or email on your case. Type or read it to me when it arrives.",
+    ru: "Я отправил шестизначный код в Telegram, WhatsApp или на почту, указанные в вашей заявке. Напишите или продиктуйте его, когда придёт.",
+    uz: "Arizangizdagi Telegram, WhatsApp yoki emailga olti xonali kod yubordim. Kelganda yozing yoki ayting.",
+  },
+  caseCodeNoChannel: {
+    en: "I can't send a code to your case just now — there's no email on it yet and the other ways aren't set up. Your coordinator will help you sign in; say “talk to a coordinator”.",
+    ru: "Сейчас не получается отправить код — в заявке нет почты, а другие способы не настроены. Координатор поможет войти: скажите «соедини с координатором».",
+    uz: "Hozir kod yubora olmayman — arizada email yo'q, boshqa usullar sozlanmagan. Koordinator kirishga yordam beradi: «koordinator bilan gaplashmoqchiman» deng.",
+  },
+  caseCodeWrong: {
+    en: "That code didn't work. Check the latest message and try again, or say “cancel”.",
+    ru: "Код не подошёл. Проверьте последнее сообщение и попробуйте ещё раз, или скажите «отмена».",
+    uz: "Kod mos kelmadi. Oxirgi xabarni tekshirib qayta urinib ko'ring yoki «bekor» deng.",
+  },
+  tooManyTries: {
+    en: "That's too many tries for now. Please wait an hour and try again, or say “talk to a coordinator”.",
+    ru: "Слишком много попыток. Подождите час и попробуйте снова или скажите «соедини с координатором».",
+    uz: "Urinishlar juda ko'p. Bir soat kutib qayta urinib ko'ring yoki «koordinator bilan gaplashmoqchiman» deng.",
   },
   signedIn: { en: "You're signed in.", ru: "Вы вошли.", uz: "Tizimga kirdingiz." },
   signedOut: { en: "You're signed out on this device.", ru: "Вы вышли на этом устройстве.", uz: "Bu qurilmada tizimdan chiqdingiz." },

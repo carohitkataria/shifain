@@ -4,6 +4,9 @@ import { cookies } from "next/headers";
 import { getDb } from "./db";
 import { isMailConfigured, send } from "./mailer";
 import { emailMatcher, type PatientCase } from "./cases";
+import { normalisePhone, phonesMatch } from "./access-rules";
+
+export { normalisePhone };
 
 export const PATIENT_COOKIE = "shifain_patient";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -30,33 +33,16 @@ export function safeEqual(a: string, b: string): boolean {
   return crypto.timingSafeEqual(bufA, bufB);
 }
 
-/** Digits only, so "+998 90 123" and "00998901 23" compare the same. */
-export function normalisePhone(phone: string): string {
-  return phone.replace(/\D/g, "").replace(/^00/, "");
-}
-
 /**
- * A patient signs in with their case reference and the phone number they gave
- * us. There is no password to forget and no email to wait for, which matters
- * when someone is anxious and abroad — and the reference is 96 bits of
- * randomness, so it is not something anyone guesses their way into.
+ * The case a patient means by its number and the phone number they gave us.
+ * This only finds the case: it proves nothing, since both can be known to
+ * someone else. Access follows a one-time code sent to a contact already on
+ * the case (case-codes.ts).
  */
-export async function authenticatePatient(
-  reference: string,
-  phone: string,
-): Promise<PatientCase | null> {
+export async function findCaseForSignIn(reference: string, phone: string): Promise<PatientCase | null> {
   const db = await getDb();
-  const record = await db
-    .collection<PatientCase>("cases")
-    .findOne({ _id: reference.trim().toUpperCase() });
-  if (!record) return null;
-
-  const given = normalisePhone(phone);
-  const known = normalisePhone(record.patient.phone);
-  // The last nine digits: the country code is often typed inconsistently, the
-  // subscriber number is not.
-  if (given.length < 6 || !known.endsWith(given.slice(-9))) return null;
-  return record;
+  const record = await db.collection<PatientCase>("cases").findOne({ _id: reference.trim().toUpperCase() });
+  return record && phonesMatch(record.patient.phone, phone) ? record : null;
 }
 
 /** Without "remember me": the cookie ends with the browser, and the session within half a day regardless. */
@@ -152,17 +138,17 @@ export async function getPatientAccount(email: string): Promise<PatientAccount |
   return db.collection<PatientAccount>("patient_accounts").findOne({ _id: normaliseEmail(email) });
 }
 
-/** The account whose phone number this is, if one has it (matched on the last nine digits, as cases are). */
+/** The account whose phone number this is, if one has it (the whole number, with or without its country code). */
 export async function accountForPhone(digits: string): Promise<PatientAccount | null> {
   const tail = normalisePhone(digits).slice(-9);
-  if (tail.length < 6) return null;
+  if (tail.length < 9) return null;
   const db = await getDb();
   const candidates = await db
     .collection<PatientAccount>("patient_accounts")
     .find({ phone: { $regex: `${tail.slice(-4)}$` } })
     .limit(50)
     .toArray();
-  return candidates.find((account) => normalisePhone(`${account.dial}${account.phone}`).endsWith(tail)) ?? null;
+  return candidates.find((account) => phonesMatch(`${account.dial}${account.phone}`, digits)) ?? null;
 }
 
 /** Whether this address may sign in: it has an account, or a case was opened with it. */

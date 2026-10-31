@@ -1,4 +1,5 @@
 import "server-only";
+import { phonesMatch } from "./access-rules";
 import { sendMessage, isTelegramConfigured, type BotRole } from "./telegram";
 import { saveMessage, type TelegramContact } from "./crm-messages";
 import { readOr, getDb } from "./db";
@@ -21,8 +22,11 @@ async function findContact(
     const contacts = db.collection<TelegramContact>("telegram_contacts");
     const linked = caseReference ? await contacts.findOne({ botRole, caseReference }) : null;
     if (linked) return linked;
-    const tail = (phone ?? "").replace(/\D/g, "").slice(-9);
-    return tail.length >= 6 ? contacts.findOne({ botRole, phone: { $regex: `${tail}$` } }) : null;
+    // By number, only a chat whose number Telegram vouched for, and only the whole number.
+    const tail = (phone ?? "").replace(/\D/g, "").slice(-4);
+    if (tail.length < 4) return null;
+    const candidates = await contacts.find({ botRole, phoneVerified: true, phone: { $regex: `${tail}$` } }).limit(20).toArray();
+    return candidates.find((contact) => phonesMatch(contact.phone, phone)) ?? null;
   });
 }
 
