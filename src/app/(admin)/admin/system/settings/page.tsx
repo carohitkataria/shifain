@@ -131,7 +131,7 @@ export default async function SettingsPage({
                 <Switch
                   name="serverListening"
                   label="Always transcribe on the server"
-                  hint="Off: patients' browsers transcribe speech for free, and the server (ElevenLabs) only listens when a browser can't. On: every spoken turn is transcribed by ElevenLabs — better for rare languages, but paid per minute."
+                  hint="Off: patients' browsers transcribe speech for free; the server (ElevenLabs) listens when a browser can't, and always for Uzbek, Kazakh, Kyrgyz and Tajik, which browsers hear badly. On: every spoken turn is transcribed by ElevenLabs — better for rare languages, but paid per minute."
                   on={settings.serverListening}
                 />
               </div>

@@ -77,12 +77,16 @@ export function noteError(provider: Provider, model: string | null, error: unkno
 
 export function providerHealth() {
   const now = Date.now();
+  const chatPinned = process.env.GEMINI_CHAT_MODEL?.trim() || null;
+  const chatOrder = geminiModelCache ? orderFor(geminiModelCache.models, "chat") : [];
   return {
     gemini: {
       configured: Boolean(process.env.GEMINI_API_KEY),
       pausedUntil: pausedUntil.gemini > now ? new Date(pausedUntil.gemini).toISOString() : null,
       models: geminiModelCache?.models ?? [],
-      chatOrder: geminiModelCache ? orderFor(geminiModelCache.models, "chat") : [],
+      /** GEMINI_CHAT_MODEL: always tried first for chat. */
+      chatPinned,
+      chatOrder: chatPinned ? [chatPinned, ...chatOrder.filter((model) => model !== chatPinned)] : chatOrder,
       busy: [...busyUntil.entries()].filter(([, until]) => until > now).map(([model]) => model),
       ...health.gemini,
     },
@@ -143,6 +147,22 @@ export function orderFor(models: string[], tier: GeminiTier): string[] {
     return (lite(name) ? 0 : 1000) + version(name) + (name === "gemini-flash-latest" ? 100 : 0) + dated;
   };
   return [...models].sort((a, b) => score(b) - score(a));
+}
+
+/**
+ * The models to try, in order. A pinned model always goes first, even while
+ * resting after a busy spell — pinning means "this one". The others skip
+ * models resting for three minutes; if every one is resting, try the first
+ * anyway rather than not at all.
+ */
+export function pickCandidates(
+  all: string[],
+  opts: { pinned: string | null; busyUntil: Map<string, number>; now: number; attempts: number },
+): string[] {
+  const rest = all.filter((model) => model !== opts.pinned);
+  const ready = rest.filter((model) => (opts.busyUntil.get(model) ?? 0) <= opts.now);
+  const others = ready.length > 0 || opts.pinned ? ready : rest;
+  return [...(opts.pinned ? [opts.pinned] : []), ...others].slice(0, opts.attempts);
 }
 
 async function geminiModels(tier: GeminiTier, preferred?: string): Promise<string[]> {
@@ -211,9 +231,8 @@ export async function withGeminiModel<T>(
   const attempts = opts.attempts ?? (tier === "chat" ? 2 : 4);
   const now = Date.now();
   const all = await geminiModels(tier, opts.preferred);
-  const ready = all.filter((model) => (busyUntil.get(model) ?? 0) <= now);
-  // If every model is resting, try the first anyway rather than not at all.
-  const candidates = (ready.length > 0 ? ready : all).slice(0, attempts);
+  const pinned = opts.preferred?.trim() || (tier === "chat" ? process.env.GEMINI_CHAT_MODEL?.trim() : process.env.GEMINI_MODEL?.trim()) || null;
+  const candidates = pickCandidates(all, { pinned, busyUntil, now, attempts });
 
   let lastError: unknown = new Error("No Gemini model available.");
   for (const model of candidates) {

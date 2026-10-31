@@ -14,21 +14,31 @@ const SWEEP_EVERY = 1_000;
 const MAX_KEYS = 50_000;
 let calls = 0;
 
-function sweep(now: number): void {
+/** Forgets keys whose window has run out. O(keys), so only every SWEEP_EVERY calls. */
+function dropExpired(now: number): void {
   for (const [key, bucket] of buckets) {
     const last = bucket.hits[bucket.hits.length - 1] ?? 0;
     if (now - last >= bucket.windowMs) buckets.delete(key);
   }
-  // Still too many live keys: drop the oldest (a Map keeps insertion order).
+}
+
+/**
+ * At the cap, drop the oldest tenth in one go (a Map keeps insertion order),
+ * so a flood of new keys costs a trim every few thousand calls, not a scan
+ * of every key on every call.
+ */
+function trimOldest(): void {
+  const target = Math.floor(MAX_KEYS * 0.9);
   for (const key of buckets.keys()) {
-    if (buckets.size <= MAX_KEYS) break;
+    if (buckets.size <= target) break;
     buckets.delete(key);
   }
 }
 
 export function allowHit(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
-  if (++calls % SWEEP_EVERY === 0 || buckets.size > MAX_KEYS) sweep(now);
+  if (++calls % SWEEP_EVERY === 0) dropExpired(now);
+  if (buckets.size >= MAX_KEYS && !buckets.has(key)) trimOldest();
   const hits = (buckets.get(key)?.hits ?? []).filter((at) => now - at < windowMs);
   if (hits.length >= limit) return false;
   hits.push(now);

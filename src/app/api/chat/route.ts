@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "node:crypto";
-import { isElevenLabsConfigured, transcribeAudio, cachedSpeech } from "@/lib/elevenlabs";
+import { isElevenLabsConfigured, transcribeAudio, cachedSpeech, playbackRate } from "@/lib/elevenlabs";
 import { toUzCyrillic } from "@/lib/uz-cyrillic";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
@@ -15,6 +15,7 @@ import { speakable } from "@/lib/access-levels";
 import { sayLang } from "@/lib/voice/command-copy";
 import { MAX_REPORT_BYTES } from "@/lib/reports";
 import { hospitalOnPage } from "@/lib/assistant/tool-rules";
+import { forScreen } from "@/lib/voice/reply-script";
 
 const SESSION_COOKIE = "shifain_chat";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days, so "what's my status" works when they come back
@@ -207,14 +208,8 @@ export async function POST(request: NextRequest) {
   // A Cyrillic Uzbek page is answered in Uzbek, and the answer shown in Cyrillic.
   const cyrillic = locale === "oz";
   if (cyrillic) locale = "uz";
-  const script = (payload: Record<string, unknown>): Record<string, unknown> => {
-    if (!cyrillic) return payload;
-    const out: Record<string, unknown> = { ...payload };
-    if (typeof out.reply === "string") out.reply = toUzCyrillic(out.reply);
-    if (Array.isArray(out.suggestions)) out.suggestions = out.suggestions.map((item) => (typeof item === "string" ? toUzCyrillic(item) : item));
-    if (Array.isArray(out.links)) out.links = out.links.map((link) => (link && typeof link === "object" && typeof (link as { label?: unknown }).label === "string" ? { ...link, label: toUzCyrillic((link as { label: string }).label) } : link));
-    return out;
-  };
+  // The screen gets Cyrillic; `speech` stays the Latin it was made from (see forScreen).
+  const script = (payload: Record<string, unknown>) => forScreen(payload, cyrillic);
 
   // Every answer carries what was heard, so a spoken turn shows as text.
   const respond = (payload: Record<string, unknown>, init?: ResponseInit) =>
@@ -231,13 +226,16 @@ export async function POST(request: NextRequest) {
     const settings = await getSettings();
     if (settings.voiceEngine !== "natural" || requestedVoice === "device") return spoken;
     try {
-      const speech = await cachedSpeech({
+      const request = {
         text: spoken.speech.slice(0, 1200),
         languageCode: detectedLanguage ?? locale,
         voiceId: allowedVoice(requestedVoice, settings.voiceId),
         speed: rate,
-      });
-      return { ...spoken, audioBase64: speech.toString("base64") };
+      };
+      const speech = await cachedSpeech(request);
+      // A model that cannot change speed (Eleven v3, for Uzbek) leaves the rate to the player.
+      const audioRate = playbackRate(request);
+      return { ...spoken, audioBase64: speech.toString("base64"), ...(audioRate !== 1 ? { audioRate } : {}) };
     } catch (error) {
       console.error("[shifain] speech failed; the browser reads it instead", error);
       return spoken;

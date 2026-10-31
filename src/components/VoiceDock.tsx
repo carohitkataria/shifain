@@ -2,21 +2,24 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { pickDeviceVoice, type VoicePrefs } from "@/lib/voice/voices";
+import { listensOnServer } from "@/lib/voice/engine-rules";
 
 /**
  * Hands-free voice conversation, like ChatGPT's talk mode: listen until the
  * patient pauses, send what they said, read the answer aloud, listen again.
  *
  * Hearing: the browser's own speech recognition, which is free; the server
- * (ElevenLabs, any language, paid) only when the browser has none or the
- * admin asked for it. Speaking: the server's natural voice when it sends
+ * (ElevenLabs, any language, paid) when the browser has none, for Uzbek,
+ * Kazakh, Kyrgyz and Tajik (which browsers hear badly), or when the admin
+ * asked for it everywhere. Speaking: the server's natural voice when it sends
  * audio, otherwise the best voice this device has, as the patient chose.
  * Half-duplex on purpose — the microphone is off while the answer plays, so
  * the speaker is never heard as the patient. Tapping the orb interrupts.
  */
 
 /** `speech` is the reply as it may be read aloud (no whole phone, email or case number); the screen shows `reply`. */
-export type VoiceTurnResult = { reply?: string; speech?: string; audioBase64?: string; heardNothing?: boolean; error?: string };
+/** `audioRate`: the patient's speed, when the voice could not be made at that speed and the player applies it. */
+export type VoiceTurnResult = { reply?: string; speech?: string; audioBase64?: string; audioRate?: number; heardNothing?: boolean; error?: string };
 
 type Phase = "starting" | "listening" | "hearing" | "thinking" | "speaking" | "error";
 
@@ -99,8 +102,13 @@ export function VoiceDock({
   const turn = useRef(0);
   /** Turns in a row with nothing heard; voice pauses rather than listening forever. */
   const quietTurns = useRef(0);
-  const useServer =
-    serverVoice && typeof MediaRecorder !== "undefined" && (serverListening || recognitionCtor() === null);
+  const useServer = listensOnServer({
+    serverVoice,
+    canRecord: typeof MediaRecorder !== "undefined",
+    hasRecogniser: recognitionCtor() !== null,
+    forceServer: serverListening,
+    languages: typeof document === "undefined" ? [] : [document.documentElement.lang, navigator.language],
+  });
   const prefsRef = useRef(prefs);
   useEffect(() => {
     prefsRef.current = prefs;
@@ -155,7 +163,10 @@ export function VoiceDock({
 
       if (result.audioBase64 && audioEl.current) {
         const el = audioEl.current;
+        const rate = result.audioRate && result.audioRate > 0 ? result.audioRate : 1;
+        el.defaultPlaybackRate = rate;
         el.src = `data:audio/mpeg;base64,${result.audioBase64}`;
+        el.playbackRate = rate;
         el.onended = next;
         el.play().catch(next);
         return;
