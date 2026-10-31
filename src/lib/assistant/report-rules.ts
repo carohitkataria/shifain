@@ -99,6 +99,14 @@ export function hospitalList(hospitals: { name: string; city: string }[]): strin
     .join(", ");
 }
 
+/** What the patient typed with a file, kept in the intake's condition. */
+export function withNote(current: string | null | undefined, note: string | null | undefined): string {
+  const before = (current ?? "").trim();
+  const said = (note ?? "").trim().slice(0, 500);
+  if (!said || before.includes(said)) return before;
+  return [before, said].filter(Boolean).join(" ").slice(0, 1000);
+}
+
 /** The intake's condition after a report: what the patient said, then what each report shows. */
 export function mergeCondition(current: string | null | undefined, fromReport: string): string {
   const before = (current ?? "").trim();

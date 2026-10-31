@@ -5,7 +5,7 @@
  *   node --experimental-strip-types scripts/test/report-reading.test.mts
  */
 import assert from "node:assert/strict";
-import { hospitalList, mergeCondition, readReportResult, reportPrompt } from "../../src/lib/assistant/report-rules.ts";
+import { hospitalList, mergeCondition, readReportResult, reportPrompt, withNote } from "../../src/lib/assistant/report-rules.ts";
 
 const specialties = [
   { code: "cardiology", name: "Cardiology" },
@@ -69,5 +69,11 @@ assert.equal(mergeCondition(null, "High LDL."), "Report: High LDL.");
 assert.equal(mergeCondition("Chest pain when walking.", "High LDL."), "Chest pain when walking. Report: High LDL.");
 assert.equal(mergeCondition("Chest pain. Report: High LDL.", "High LDL."), "Chest pain. Report: High LDL.");
 assert.equal(mergeCondition("Chest pain.", ""), "Chest pain.");
+
+// What the patient typed with the file is kept, once.
+assert.equal(withNote(null, "Chest pain for two months, doctor wants an angiogram"), "Chest pain for two months, doctor wants an angiogram");
+assert.equal(withNote("Chest pain.", "  "), "Chest pain.");
+assert.equal(withNote("Chest pain.", "Chest pain."), "Chest pain.");
+assert.equal(mergeCondition(withNote(null, "Chest pain."), "High LDL."), "Chest pain. Report: High LDL.");
 
 console.log("report reading: prompt, checks and reply pieces pass");

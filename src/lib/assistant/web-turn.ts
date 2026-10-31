@@ -2,7 +2,7 @@ import "server-only";
 import { listCities, listSpecialties, publishedHospitals } from "../catalogue";
 import { addCaseFiles } from "../journey";
 import { readReport, type ReportFile } from "./report-reader";
-import { REPORT_WORDS, hospitalList, mergeCondition } from "./report-rules";
+import { REPORT_WORDS, hospitalList, mergeCondition, withNote } from "./report-rules";
 import { getCase } from "../cases";
 import type { Locale } from "../i18n";
 import { generateChatReply, generateIntakeReply, type ConversationMessage } from "../voice-agent";
@@ -376,14 +376,17 @@ export async function handleReportTurn(input: TurnInput & { file: ReportFile; up
     });
   }
 
+  // What they typed with the file is theirs to keep, whatever the file turns out to be.
+  const said = withNote(intake.fields.condition, input.text);
   if (!reading?.isMedical) {
+    if (said && said !== (intake.fields.condition ?? "")) await updateWebIntakeFields(sessionId, { condition: said });
     return done({ reply: reading ? lead : `${lead} ${REPORT_WORDS.whichTreatment[lang]}`, state: intake.state, via });
   }
 
   // What the report shows becomes the medical part of the intake.
   await updateWebIntakeFields(sessionId, {
     treatment: intake.fields.treatment || reading.treatment || undefined,
-    condition: mergeCondition(intake.fields.condition, reading.condition) || undefined,
+    condition: mergeCondition(said, reading.condition) || undefined,
   });
   intake = await getOrCreateWebIntake(sessionId);
   if (intake.fields.treatment && intake.fields.condition) {

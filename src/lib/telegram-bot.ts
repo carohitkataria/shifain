@@ -40,7 +40,7 @@ import { createLead } from "./telegram-leads";
 import { listSpecialties, publishedHospitals } from "./catalogue";
 import { addCaseFiles } from "./journey";
 import { canReadReport, readReport } from "./assistant/report-reader";
-import { REPORT_WORDS, hospitalList, mergeCondition, type ReplyLang } from "./assistant/report-rules";
+import { REPORT_WORDS, hospitalList, mergeCondition, withNote, type ReplyLang } from "./assistant/report-rules";
 import { isElevenLabsConfigured, transcribeAudio, textToSpeech } from "./elevenlabs";
 import { generateReply, generateIntakeReply, type ConversationMessage } from "./voice-agent";
 import {
@@ -216,11 +216,15 @@ async function answerReport(
 
   const intake = await getOrCreateIntake(userId, chatId);
   await pushIntakeMessage(userId, "user", `📎 ${file.fileName}${note ? ` — ${note}` : ""}`);
+  // The caption is the patient's own words: it joins the intake whatever the file turns out to be.
+  const said = withNote(intake.fields.condition, note);
   if (reading?.isMedical) {
     await updateIntakeFields(userId, {
       ...(intake.fields.treatment ? {} : reading.treatment ? { treatment: reading.treatment } : {}),
-      condition: mergeCondition(intake.fields.condition, reading.condition),
+      condition: mergeCondition(said, reading.condition),
     });
+  } else if (said && said !== (intake.fields.condition ?? "")) {
+    await updateIntakeFields(userId, { condition: said });
   }
   const after = await getOrCreateIntake(userId, chatId);
   const ready = Boolean(after.fields.treatment && after.fields.condition);

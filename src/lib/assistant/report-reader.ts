@@ -20,7 +20,9 @@ const CLAUDE_MODEL = process.env.ANTHROPIC_CHAT_MODEL?.trim() || process.env.ANT
 const READ_TIMEOUT_MS = 20_000;
 const MAX_TOKENS = 700;
 
-const READABLE = /^(application\/pdf|image\/(png|jpeg|webp|gif))$/;
+const READABLE = /^(application\/pdf|image\/(png|jpeg|webp|gif|heic|heif))$/;
+/** Claude takes PDFs and these images; HEIC/HEIF photos (iPhone) are read by Gemini only. */
+const CLAUDE_READABLE = /^(application\/pdf|image\/(png|jpeg|webp|gif))$/;
 
 export const canReadReport = (mimeType: string) => READABLE.test(mimeType);
 
@@ -74,6 +76,7 @@ async function readWithGemini(model: string, input: ReadInput, timeoutMs: number
 }
 
 async function readWithClaude(input: ReadInput): Promise<ReportReading | null> {
+  if (!CLAUDE_READABLE.test(input.file.mimeType)) return null;
   const prompt = reportPrompt(input.language, input.specialties, input.note);
   const data = input.file.data.toString("base64");
   const document: Anthropic.ContentBlockParam =
