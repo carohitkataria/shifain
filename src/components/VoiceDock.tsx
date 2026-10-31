@@ -15,7 +15,8 @@ import { pickDeviceVoice, type VoicePrefs } from "@/lib/voice/voices";
  * the speaker is never heard as the patient. Tapping the orb interrupts.
  */
 
-export type VoiceTurnResult = { reply?: string; audioBase64?: string; heardNothing?: boolean; error?: string };
+/** `speech` is the reply as it may be read aloud (no whole phone, email or case number); the screen shows `reply`. */
+export type VoiceTurnResult = { reply?: string; speech?: string; audioBase64?: string; heardNothing?: boolean; error?: string };
 
 type Phase = "starting" | "listening" | "hearing" | "thinking" | "speaking" | "error";
 
@@ -160,7 +161,7 @@ export function VoiceDock({
         return;
       }
       if (typeof speechSynthesis !== "undefined") {
-        const utterance = new SpeechSynthesisUtterance(result.reply);
+        const utterance = new SpeechSynthesisUtterance(result.speech ?? result.reply);
         const voice = pickDeviceVoice(speechSynthesis.getVoices(), lang, prefsRef.current);
         if (voice) utterance.voice = voice;
         utterance.lang = voice?.lang ?? lang;

@@ -219,21 +219,24 @@ export async function POST(request: NextRequest) {
   /** Speech for a reply, when this turn is spoken and natural voices are on. */
   const withSpeech = async (payload: Record<string, unknown>) => {
     const reply = typeof payload.reply === "string" ? payload.reply : "";
-    if (!(wantsVoice || heardFromAudio) || !reply || !isElevenLabsConfigured()) return payload;
+    if (!(wantsVoice || heardFromAudio) || !reply) return payload;
+    // Spoken aloud — by the natural voice or the device's own — never a whole
+    // phone number, email or case number; the screen keeps them.
+    const spoken = { ...payload, speech: speakable(reply, sayLang(detectedLanguage ?? locale)) };
+    if (!isElevenLabsConfigured()) return spoken;
     const settings = await getSettings();
-    if (settings.voiceEngine !== "natural" || requestedVoice === "device") return payload;
+    if (settings.voiceEngine !== "natural" || requestedVoice === "device") return spoken;
     try {
       const speech = await cachedSpeech({
-        // Spoken aloud: never a whole phone number, email or case number (the screen keeps them).
-        text: speakable(reply, sayLang(detectedLanguage ?? locale)).slice(0, 1200),
+        text: spoken.speech.slice(0, 1200),
         languageCode: detectedLanguage ?? locale,
         voiceId: allowedVoice(requestedVoice, settings.voiceId),
         speed: rate,
       });
-      return { ...payload, audioBase64: speech.toString("base64") };
+      return { ...spoken, audioBase64: speech.toString("base64") };
     } catch (error) {
       console.error("[shifain] speech failed; the browser reads it instead", error);
-      return payload;
+      return spoken;
     }
   };
 

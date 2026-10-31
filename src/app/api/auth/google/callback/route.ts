@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
 
   // The state must match the nonce we set, or this is not a flow we started.
   if (!code || !state || !nonce || state !== nonce) {
+    await audit({ session: "web", method: "google", reference: null, result: "failed", ip: null });
     loginUrl.searchParams.set("error", "1");
     return NextResponse.redirect(loginUrl);
   }
@@ -28,6 +29,7 @@ export async function GET(request: NextRequest) {
     return null;
   });
   if (!email) {
+    await audit({ session: "web", method: "google", reference: null, result: "failed", ip: null });
     loginUrl.searchParams.set("error", "1");
     return NextResponse.redirect(loginUrl);
   }
