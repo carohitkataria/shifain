@@ -15,6 +15,7 @@ import { speakable } from "@/lib/access-levels";
 import { sayLang } from "@/lib/voice/command-copy";
 import { MAX_REPORT_BYTES } from "@/lib/reports";
 import { hospitalOnPage } from "@/lib/assistant/tool-rules";
+import { forScreen } from "@/lib/voice/reply-script";
 
 const SESSION_COOKIE = "shifain_chat";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days, so "what's my status" works when they come back
@@ -207,14 +208,8 @@ export async function POST(request: NextRequest) {
   // A Cyrillic Uzbek page is answered in Uzbek, and the answer shown in Cyrillic.
   const cyrillic = locale === "oz";
   if (cyrillic) locale = "uz";
-  const script = (payload: Record<string, unknown>): Record<string, unknown> => {
-    if (!cyrillic) return payload;
-    const out: Record<string, unknown> = { ...payload };
-    if (typeof out.reply === "string") out.reply = toUzCyrillic(out.reply);
-    if (Array.isArray(out.suggestions)) out.suggestions = out.suggestions.map((item) => (typeof item === "string" ? toUzCyrillic(item) : item));
-    if (Array.isArray(out.links)) out.links = out.links.map((link) => (link && typeof link === "object" && typeof (link as { label?: unknown }).label === "string" ? { ...link, label: toUzCyrillic((link as { label: string }).label) } : link));
-    return out;
-  };
+  // The screen gets Cyrillic; `speech` stays the Latin it was made from (see forScreen).
+  const script = (payload: Record<string, unknown>) => forScreen(payload, cyrillic);
 
   // Every answer carries what was heard, so a spoken turn shows as text.
   const respond = (payload: Record<string, unknown>, init?: ResponseInit) =>

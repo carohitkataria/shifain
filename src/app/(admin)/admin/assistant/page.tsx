@@ -199,6 +199,13 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
                       <span className="text-red-700">{item.lastError}</span>
                     </p>
                   ) : null}
+                  {"chatPinned" in item && item.chatPinned ? (
+                    <p className="mt-1 flex flex-wrap items-center gap-2 text-ink-soft">
+                      Chat model <b className="text-ink">{item.chatPinned}</b>
+                      <span className="rounded-full bg-leaf/10 px-2 py-0.5 text-[11px] font-bold text-leaf">Pinned</span>
+                      <span className="text-xs text-ink-muted">GEMINI_CHAT_MODEL — always tried first</span>
+                    </p>
+                  ) : null}
                   {"chatOrder" in item && item.chatOrder.length ? (
                     <p className="mt-1 text-xs text-ink-muted">Chat tries, in order: {item.chatOrder.slice(0, 4).join(" → ")}</p>
                   ) : null}

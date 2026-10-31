@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { Binary } from "mongodb";
 import { getDb, isDatabaseConfigured } from "./db";
 import { DEFAULT_NATURAL_VOICE } from "./voice/voices";
+import { baseLanguage, takesLanguageCode, ttsModelFor } from "./voice/engine-rules";
 
 const API = "https://api.elevenlabs.io/v1";
 
@@ -61,22 +62,29 @@ export async function transcribeAudio(
 
 // ------------------------------------------------------------------ TTS
 
-/**
- * Flash is ElevenLabs' cheapest and fastest model (half the credits of the
- * multilingual one) and still natural; ELEVENLABS_MODEL overrides it.
- */
-const DEFAULT_MODEL = process.env.ELEVENLABS_MODEL?.trim() || "eleven_flash_v2_5";
 /** 64 kbps is plenty for a voice and half the bytes of 128. */
 const OUTPUT_FORMAT = "mp3_44100_64";
 
 export type TTSOptions = {
   text: string;
   voiceId?: string;
+  /** Leave empty: the model follows the language (ttsModelFor). */
   modelId?: string;
   languageCode?: string;
   /** 0.7 (slower) to 1.2 (faster). */
   speed?: number;
 };
+
+/**
+ * The model and language code a request really uses: Flash v2.5 for the
+ * languages it speaks, Eleven v3 (ELEVENLABS_MODEL_WIDE) for Uzbek and the
+ * rest; language_code only for models that take it.
+ */
+export function speechModel(opts: Pick<TTSOptions, "modelId" | "languageCode">): { modelId: string; languageCode?: string } {
+  if (!opts.modelId) return ttsModelFor(opts.languageCode, { ELEVENLABS_MODEL: process.env.ELEVENLABS_MODEL, ELEVENLABS_MODEL_WIDE: process.env.ELEVENLABS_MODEL_WIDE });
+  const base = baseLanguage(opts.languageCode);
+  return base && takesLanguageCode(opts.modelId) ? { modelId: opts.modelId, languageCode: base } : { modelId: opts.modelId };
+}
 
 /**
  * Generates speech from text using ElevenLabs TTS.
@@ -90,15 +98,13 @@ export async function textToSpeech(opts: TTSOptions): Promise<Buffer> {
   const voiceId = opts.voiceId ?? DEFAULT_NATURAL_VOICE;
   const speed = Math.min(1.2, Math.max(0.7, opts.speed ?? 1));
 
+  const model = speechModel(opts);
   const body: Record<string, unknown> = {
     text: opts.text,
-    model_id: opts.modelId ?? DEFAULT_MODEL,
+    model_id: model.modelId,
     voice_settings: { stability: 0.5, similarity_boost: 0.75, speed },
   };
-
-  if (opts.languageCode) {
-    body.language_code = opts.languageCode;
-  }
+  if (model.languageCode) body.language_code = model.languageCode;
 
   const res = await fetch(`${API}/text-to-speech/${voiceId}?output_format=${OUTPUT_FORMAT}`, {
     method: "POST",
@@ -133,9 +139,11 @@ let cacheIndex: Promise<unknown> | null = null;
  */
 export async function cachedSpeech(opts: TTSOptions): Promise<Buffer> {
   if (!isDatabaseConfigured()) return textToSpeech(opts);
+  // The model is part of the key: changing ELEVENLABS_MODEL(_WIDE) never replays the old voice.
+  const model = speechModel(opts);
   const key = crypto
     .createHash("sha256")
-    .update([opts.voiceId ?? DEFAULT_NATURAL_VOICE, opts.modelId ?? DEFAULT_MODEL, opts.languageCode ?? "", opts.speed ?? 1, opts.text].join("|"))
+    .update([opts.voiceId ?? DEFAULT_NATURAL_VOICE, model.modelId, model.languageCode ?? baseLanguage(opts.languageCode), opts.speed ?? 1, opts.text].join("|"))
     .digest("base64url");
 
   try {
