@@ -21,7 +21,7 @@ export function MobileMenu({
     <>
       <button
         onClick={() => setOpen(!open)}
-        className="flex h-11 w-11 items-center justify-center rounded-lg text-ink transition hover:bg-surface-muted xl:hidden"
+        className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-ink transition hover:bg-surface-muted sm:mr-0 sm:h-11 sm:w-11 xl:hidden"
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
       >

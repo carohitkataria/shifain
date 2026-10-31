@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { OpenChatButton } from "../OpenChatButton";
+import { PlanRequestForm } from "../PlanRequestForm";
 import { t } from "@/lib/localize";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -93,7 +94,6 @@ const HeartFilled = ({ className }: IconProps) => (
     <path d="M12 21s-8.5-5.1-8.5-11.4A4.8 4.8 0 0 1 12 6.8a4.8 4.8 0 0 1 8.5 2.8C20.5 15.9 12 21 12 21z" />
   </svg>
 );
-const Check = ({ className }: IconProps) => svg(className, <path d="m6 12.5 4 4 8-9" />, 2.6);
 
 /** Icons for the three promises under the buttons, in order. */
 const TRUST = [
@@ -109,13 +109,24 @@ const VALUES = [
 ];
 
 export function Hero({ content, locale }: { content: SiteContent; locale: Locale }) {
-  const { hero } = content;
+  const { hero, closing, specialties } = content;
 
   return (
     <>
       <section id="quote" aria-labelledby="hero-title" className="hero-field relative overflow-hidden">
-        <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-12">
-          <div className="grid items-center lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] 2xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+        {/* The journey picture sits behind everything, faint, so the words and the form read first. */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-full lg:w-[62%]" aria-hidden="true">
+          <Image
+            src="/home/hero-journey.webp"
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 62vw, 100vw"
+            className="hero-backdrop object-cover object-[70%_30%] opacity-[0.16] lg:opacity-[0.24]"
+          />
+        </div>
+        <div className="relative mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-12">
+          <div className="grid items-center gap-x-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] 2xl:gap-x-20">
             <div className="relative z-10 min-w-0 pb-6 pt-6 sm:pt-10 lg:pb-8 lg:pt-10">
               {/* The badge shows only when the content sets one. */}
               {t(hero.eyebrow, locale) ? (
@@ -205,29 +216,26 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
               </ul>
             </div>
 
-            <figure className="hero-figure relative -mx-4 min-w-0 sm:-mx-6 lg:-ml-8 lg:-mr-12 lg:self-end">
-              <Image
-                src="/home/hero-journey.webp"
-                alt={t(hero.imageAlt, locale)}
-                width={788}
-                height={732}
-                priority
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="hero-art h-auto w-full"
+            {/* The plan request, where the picture used to be: the page's one form, so links to #quote-form land here. */}
+            <div
+              id="quote-form"
+              className="hero-rise relative z-10 mb-8 min-w-0 scroll-mt-24 rounded-[1.5rem] bg-white/95 p-5 shadow-[0_24px_60px_-28px_rgb(40_40_120/0.35)] ring-1 ring-[#e6e3f4] backdrop-blur sm:p-7 lg:my-8"
+              style={{ "--i": 3 } as React.CSSProperties}
+            >
+              <h2 className="text-xl font-extrabold leading-tight tracking-[-0.01em] text-navy sm:text-[1.55rem]">{t(closing.title, locale)}</h2>
+              <p className="mt-1.5 mb-5 text-sm leading-snug text-slate sm:text-[15px]">{t(closing.body, locale)}</p>
+              <PlanRequestForm
+                locale={locale}
+                treatments={specialties.items.map((item) => ({ slug: item.slug, title: item.title }))}
+                labels={{
+                  submit: t(hero.form.submit, locale),
+                  country: t(hero.form.countryLabel, locale),
+                  countryPlaceholder: t(hero.form.countryPlaceholder, locale),
+                  phone: t(hero.form.phoneLabel, locale),
+                  privacy: t(hero.form.privacy, locale),
+                }}
               />
-              <figcaption
-                className="hero-float absolute left-[75.9%] top-[42.6%] w-[max(37%,11.5rem)] -translate-x-1/2 -translate-y-1/2 -rotate-6 rounded-[max(3.4cqw,1rem)] bg-white px-[max(3cqw,0.75rem)] pb-[max(3cqw,0.75rem)] pt-[max(5.6cqw,1.5rem)] text-center shadow-[0_2.4cqw_5cqw_-2cqw_rgb(40_40_120/0.28)]"
-              >
-                <span className="absolute left-1/2 top-0 flex h-[max(8.4cqw,2.25rem)] w-[max(8.4cqw,2.25rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white p-[max(1cqw,0.25rem)]">
-                  <span className="flex h-full w-full items-center justify-center rounded-full bg-violet text-white">
-                    <Check className="h-1/2 w-1/2" />
-                  </span>
-                </span>
-                <span className="block text-[max(2.9cqw,0.85rem)] font-extrabold leading-tight tracking-[-0.01em] text-navy">{t(hero.cardTitle, locale)}</span>
-                <span className="mt-[0.8cqw] block text-[max(2.15cqw,0.72rem)] leading-snug text-[#2c3a5e]">{t(hero.cardBody, locale)}</span>
-                <span className="mx-auto mt-[1.4cqw] block h-[0.45cqw] w-[11cqw] rounded-full bg-violet" aria-hidden="true" />
-              </figcaption>
-            </figure>
+            </div>
           </div>
 
           <ul className="relative z-10 mb-10 hidden rounded-3xl bg-hero-band px-4 py-5 xl:-mt-2 xl:grid xl:grid-cols-3">
