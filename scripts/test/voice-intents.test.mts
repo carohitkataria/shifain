@@ -124,6 +124,12 @@ assert.equal(readPhone("plus nine nine eight 90 123 45 67"), "998901234567");
 assert.equal(readReference("S H dash A B C D dash 1 2 3 4 dash E F G H dash 5 6 7 8"), "SH-ABCD-1234-EFGH-5678");
 assert.equal(readReference("sh-abcd-1234-efgh-5678"), "SH-ABCD-1234-EFGH-5678");
 assert.equal(readReference("abc"), undefined);
+// Case numbers: two letters and five digits, typed or read aloud.
+assert.equal(readReference("UZ48213"), "UZ48213");
+assert.equal(readReference("my case number is U Z 4 8 2 1 3"), "UZ48213");
+assert.equal(readReference("номер uz 48 213"), "UZ48213");
+assert.equal(readReference("UZ482139"), undefined, "six digits is not a case number");
+assert.equal(readReference("is 48213"), undefined, "the two letters must start a word");
 assert.equal(readCompanions("I'm coming alone"), 0);
 assert.equal(readCompanions("two companions"), 2);
 

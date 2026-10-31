@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Icon } from "@/components/Icon";
@@ -9,6 +9,7 @@ import { PlanNextSteps } from "@/components/PlanNextSteps";
 import { botLink } from "@/lib/telegram-login";
 import { getContent } from "@/lib/store";
 import { getCase } from "@/lib/cases";
+import { mayViewCase } from "@/lib/case-access";
 import { isDatabaseConfigured } from "@/lib/db";
 import { attractionsFor, listDiseases, listTreatments, priceBandsFor } from "@/lib/catalogue";
 import { estimateFor } from "@/lib/ai/estimate";
@@ -38,8 +39,9 @@ export default async function PlanPage({
   const content = await getContent();
 
   if (!isDatabaseConfigured()) notFound();
-  const record = await getCase(reference).catch(() => null);
-  if (!record) notFound();
+  const record = await getCase(reference.trim().toUpperCase()).catch(() => null);
+  // A case number alone shows nothing — not even whether the case exists.
+  if (!record || !(await mayViewCase(record))) redirect(`/${locale}/portal/patient/login?error=plan`);
 
   const shell = (body: React.ReactNode, after?: React.ReactNode) => (
     <>

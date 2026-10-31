@@ -35,6 +35,8 @@ export type TelegramContact = {
   lastName: string | null;
   languageCode: string | null;
   phone: string | null;
+  /** Telegram vouched for the number: shared with the button, by its own owner. */
+  phoneVerified?: boolean;
   contactType: "patient" | "partner" | "lead" | "unknown";
   contactId: string | null;
   caseReference: string | null;
@@ -121,6 +123,7 @@ export async function upsertTelegramContact(
         lastName: data.lastName,
         languageCode: data.languageCode,
         phone: data.phone ?? undefined,
+        ...(data.phoneVerified ? { phoneVerified: true } : {}),
         botRole: data.botRole,
         state: data.state,
         stateData: data.stateData,

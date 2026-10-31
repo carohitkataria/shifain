@@ -13,15 +13,17 @@ import {
 } from "../cases";
 import { replanCase } from "../case-flow";
 import {
-  authenticatePatient,
   currentPatient,
   endPatientSession,
+  findCaseForSignIn,
   requestEmailCode,
   startPatientEmailSession,
   startPatientSession,
   verifyEmailCode,
   type PatientIdentity,
 } from "../patient-auth";
+import { provenIdentity, sendCaseCode, verifyCaseCode } from "../case-codes";
+import { allowHit } from "../rate-limit";
 import { getContent } from "../store";
 import { getSettings } from "../settings";
 import { notifyOps } from "../mailer";
@@ -86,7 +88,16 @@ type Ctx = {
   text: string;
   lang: SayLang;
   locale: Locale;
+  /** The caller's address, for the sign-in attempt limit. */
+  ip?: string;
 };
+
+/** Sign-in steps: at most five tries an hour for this conversation and for this address. */
+const SIGN_IN_TRIES = 5;
+const SIGN_IN_WINDOW_MS = 60 * 60_000;
+function mayTrySignIn(ctx: Ctx): boolean {
+  return allowHit(`signin-chat:${ctx.sessionId}`, SIGN_IN_TRIES, SIGN_IN_WINDOW_MS) && allowHit(`signin-ip:${ctx.ip ?? "unknown"}`, SIGN_IN_TRIES, SIGN_IN_WINDOW_MS);
+}
 
 export function isCommandName(value: unknown): value is CommandName {
   return typeof value === "string" && (COMMAND_NAMES as readonly string[]).includes(value);
@@ -167,6 +178,15 @@ export async function runCommand(ctx: Ctx, command: ParsedCommand): Promise<Comm
     case "sign_in": {
       if (await identity()) return { reply: line("signedIn") };
       if (slots.email) return sendCode(ctx, slots.email, {});
+      // This conversation opened a case: the code goes to the contacts on it.
+      if (ctx.intake.caseReference && !slots.reference) {
+        if (!mayTrySignIn(ctx)) return { reply: line("tooManyTries") };
+        const own = await getCase(ctx.intake.caseReference).catch(() => null);
+        const sent = own ? await sendCaseCode(own).catch(() => ({ status: "failed" as const })) : { status: "none" as const };
+        if (sent.status === "none" || sent.status === "failed") return { reply: line("caseCodeNoChannel") };
+        await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "case_code", data: { reference: ctx.intake.caseReference } });
+        return { reply: line("ownCaseCodeSent") };
+      }
       if (slots.reference) {
         await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "phone", data: { reference: slots.reference } });
         return { reply: line("askPhone") };
@@ -385,7 +405,7 @@ export async function continueCommand(ctx: Ctx, pending: PendingCommand): Promis
         await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "phone", data: { ...pending.data, reference } });
         return { reply: line("askPhone") };
       }
-      if (/reference|номер заявки|ariza raqam/i.test(text)) {
+      if (/reference|case number|номер заявки|номер случая|ariza raqam|holat raqam/i.test(text)) {
         await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "reference", data: { ...pending.data } });
         return { reply: line("askReference") };
       }
@@ -396,12 +416,13 @@ export async function continueCommand(ctx: Ctx, pending: PendingCommand): Promis
     }
 
     case "sign_in:code": {
-      if (/reference|номер заявки|ariza raqam/i.test(text)) {
+      if (/reference|case number|номер заявки|номер случая|ariza raqam|holat raqam/i.test(text)) {
         await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "reference", data: { ...pending.data } });
         return { reply: line("askReference") };
       }
       const code = readCode(text);
       if (!code) return { reply: line("askCodeAgain") };
+      if (!mayTrySignIn(ctx)) return { reply: line("tooManyTries") };
       const verified = await verifyEmailCode(String(pending.data.email), code).catch(() => null);
       if (!verified) return { reply: line("codeWrong") };
       await startPatientEmailSession(verified);
@@ -411,6 +432,7 @@ export async function continueCommand(ctx: Ctx, pending: PendingCommand): Promis
     case "sign_in:reference": {
       const reference = readReference(text);
       if (!reference) return { reply: line("referenceAgain") };
+      if (!mayTrySignIn(ctx)) return { reply: line("tooManyTries") };
       await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "phone", data: { ...pending.data, reference } });
       return { reply: line("askPhone") };
     }
@@ -418,12 +440,25 @@ export async function continueCommand(ctx: Ctx, pending: PendingCommand): Promis
     case "sign_in:phone": {
       const phone = readPhone(text);
       if (!phone) return { reply: line("askPhone") };
-      const record = await authenticatePatient(String(pending.data.reference), phone).catch(() => null);
-      if (!record) {
-        await setPendingCommand(ctx.sessionId, null);
-        return { reply: line("signInFailed") };
-      }
-      await startPatientSession(record.patient.phone);
+      if (!mayTrySignIn(ctx)) return { reply: line("tooManyTries") };
+      // The number and phone only find the case. The code goes to a contact
+      // already on it — never to the number typed here — and the same reply
+      // is given whether or not anything matched.
+      const record = await findCaseForSignIn(String(pending.data.reference), phone).catch(() => null);
+      if (record) await sendCaseCode(record).catch((error) => console.error("[shifain] chat case code failed", error));
+      await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "case_code", data: { ...pending.data } });
+      return { reply: line("caseCodeSent") };
+    }
+
+    case "sign_in:case_code": {
+      const code = readCode(text);
+      if (!code) return { reply: line("askCodeAgain") };
+      if (!mayTrySignIn(ctx)) return { reply: line("tooManyTries") };
+      const verified = await verifyCaseCode(String(pending.data.reference), code).catch(() => null);
+      const proven = verified ? provenIdentity(verified.record, verified.via) : null;
+      if (!proven) return { reply: line("caseCodeWrong") };
+      if (proven.kind === "email") await startPatientEmailSession(proven.email);
+      else await startPatientSession(proven.digits);
       return signedInThen(ctx, then, String(pending.data.thenText ?? ""));
     }
 

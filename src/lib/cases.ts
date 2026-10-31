@@ -1,6 +1,7 @@
 import "server-only";
 import crypto from "node:crypto";
 import { getDb } from "./db";
+import { caseNumber, countryCodeFor, MIN_PHONE_DIGITS, phonesMatch } from "./access-rules";
 import type { Plan } from "./ai/plan-schema";
 
 export type CaseStatus = "new" | "planning" | "planned" | "plan-failed" | "confirmed" | "closed";
@@ -91,14 +92,16 @@ export type PatientPreferences = {
 export type PlanEdit = { at: string; via: "voice" | "chat" | "portal" | "coordinator"; change: string };
 
 /**
- * The reference is also the only thing guarding the plan URL, which carries a
- * medical summary — so it is 96 bits of randomness, not a tidy short code.
- * Grouped in fours so a coordinator can still read it down a phone line.
+ * A case number a patient can read down a phone line: their country code and
+ * five digits (UZ48213). It finds a case and nothing more — the plan page and
+ * every account screen need a signed-in patient, so guessing a number shows
+ * nobody anything.
  */
-export function newReference(): string {
-  const body = crypto.randomBytes(12).toString("base64url").toUpperCase().replace(/[-_]/g, "0");
-  return `SH-${body.match(/.{1,4}/g)!.join("-")}`;
+export function newReference(patient: { country?: string | null; phone?: string | null } = {}): string {
+  return caseNumber(countryCodeFor(patient.country, patient.phone), () => crypto.randomInt(0, 100_000) / 100_000);
 }
+
+const isDuplicateKey = (error: unknown) => (error as { code?: number } | null)?.code === 11000;
 
 export async function createCase(
   input: Omit<PatientCase, "_id" | "createdAt" | "updatedAt" | "plan" | "planError" | "status"> & {
@@ -107,7 +110,7 @@ export async function createCase(
 ): Promise<PatientCase> {
   const now = new Date().toISOString();
   const record: PatientCase = {
-    _id: newReference(),
+    _id: newReference(input.patient),
     status: input.status ?? "new",
     createdAt: now,
     updatedAt: now,
@@ -126,8 +129,16 @@ export async function createCase(
     ...(input.requested ? { requested: input.requested } : {}),
   };
   const db = await getDb();
-  await db.collection<PatientCase>("cases").insertOne(record);
-  return record;
+  // Five digits per country: on the rare clash, draw again.
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await db.collection<PatientCase>("cases").insertOne(record);
+      return record;
+    } catch (error) {
+      if (!isDuplicateKey(error) || attempt >= 20) throw error;
+      record._id = newReference(input.patient);
+    }
+  }
 }
 
 export async function savePlan(reference: string, plan: Plan): Promise<void> {
@@ -151,19 +162,37 @@ export async function getCase(reference: string): Promise<PatientCase | null> {
   return db.collection<PatientCase>("cases").findOne({ _id: reference });
 }
 
-/** A patient's own cases, found by the phone number they gave us. */
+/** Candidates whose stored number ends like this one; callers confirm each with phonesMatch. */
+const tailPattern = (digits: string) => `${digits.slice(-MIN_PHONE_DIGITS).split("").join("[^0-9]*")}$`;
+
+/**
+ * A patient's own cases: those where this is the patient's number. A family
+ * member's number never finds a case here — family see a case only through
+ * the patient's invite (familyCasesFor).
+ */
 export async function casesForPhone(digits: string, limit = 20): Promise<PatientCase[]> {
-  if (digits.length < 6) return [];
+  if (digits.replace(/\D/g, "").length < MIN_PHONE_DIGITS) return [];
   const db = await getDb();
-  // Numbers are typed inconsistently, so match on the trailing digits rather
-  // than on whatever spacing or country-code form was used on the day.
-  const tail = digits.slice(-9).split("").join("[^0-9]*");
-  return db
+  const found = await db
     .collection<PatientCase>("cases")
-    .find({ $or: [{ "patient.phone": { $regex: `${tail}$` } }, { "family.phone": { $regex: `${tail}$` } }] } as never)
+    .find({ "patient.phone": { $regex: tailPattern(digits) } } as never)
     .sort({ createdAt: -1 })
-    .limit(limit)
+    .limit(limit * 2)
     .toArray();
+  return found.filter((record) => phonesMatch(record.patient.phone, digits)).slice(0, limit);
+}
+
+/** Cases where the patient invited this person as family, with something to see. */
+export async function familyCasesFor(identity: { kind: "phone"; digits: string } | { kind: "email"; email: string }, limit = 20): Promise<PatientCase[]> {
+  const db = await getDb();
+  const filter =
+    identity.kind === "email"
+      ? { family: { $elemMatch: { email: emailMatcher(identity.email), "access.0": { $exists: true } } } }
+      : identity.digits.replace(/\D/g, "").length >= MIN_PHONE_DIGITS
+        ? { family: { $elemMatch: { phone: { $regex: tailPattern(identity.digits) }, "access.0": { $exists: true } } } }
+        : null;
+  if (!filter) return [];
+  return db.collection<PatientCase>("cases").find(filter as never).sort({ createdAt: -1 }).limit(limit).toArray();
 }
 
 /** The whole address, ignoring case: older cases kept it as typed ("Name@Gmail.com"). */
@@ -176,7 +205,7 @@ export async function casesForEmail(email: string, limit = 20): Promise<PatientC
   const address = emailMatcher(email);
   return db
     .collection<PatientCase>("cases")
-    .find({ $or: [{ "patient.email": address }, { accountEmail: address }, { "family.email": address }] } as never)
+    .find({ $or: [{ "patient.email": address }, { accountEmail: address }] } as never)
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();

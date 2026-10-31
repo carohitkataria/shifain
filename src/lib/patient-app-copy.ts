@@ -588,7 +588,7 @@ export const APP = {
   agree: l("I agree to Shifain keeping my details to plan my care.", "Я согласен(на), чтобы Shifain хранил мои данные для планирования лечения.", "Shifain davolanishimni rejalashtirish uchun ma'lumotlarimni saqlashiga roziman."),
   verifiedByCode: l("Verified by a one-time code", "Подтверждение одноразовым кодом", "Bir martalik kod bilan tasdiqlanadi"),
   phoneSignIn: l("Phone number you gave us", "Телефон, который вы указали", "Bergan telefon raqamingiz"),
-  refPlaceholder: l("SH-XXXX-XXXX-XXXX", "SH-XXXX-XXXX-XXXX", "SH-XXXX-XXXX-XXXX"),
+  refPlaceholder: l("UZ48213", "UZ48213", "UZ48213"),
   refNeeded: l("With your phone, enter your case reference too.", "Вместе с телефоном укажите номер случая.", "Telefon bilan birga holat raqamini ham kiriting."),
   errors: {
     email: l("Check the email address.", "Проверьте адрес почты.", "Pochta manzilini tekshiring."),

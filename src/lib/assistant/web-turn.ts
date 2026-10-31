@@ -1,7 +1,6 @@
 import "server-only";
 import { listCities } from "../catalogue";
 import { getCase } from "../cases";
-import { startPatientSession } from "../patient-auth";
 import type { Locale } from "../i18n";
 import { generateChatReply, generateIntakeReply, type ConversationMessage } from "../voice-agent";
 import {
@@ -58,6 +57,8 @@ type TurnInput = {
   locale: Locale;
   /** Admin test console: nothing is opened or signed in for real. */
   dryRun?: boolean;
+  /** The caller's address, for the sign-in attempt limit. */
+  ip?: string;
 };
 
 const HANDOFF_NOTE: Record<SayLang, string> = {
@@ -66,10 +67,15 @@ const HANDOFF_NOTE: Record<SayLang, string> = {
   uz: "Hozir siz bilan koordinator — u tez orada shu yerda javob beradi.",
 };
 
+/**
+ * Opening a case signs nobody in: the number they typed could be anyone's.
+ * This conversation can follow the one case it opened; seeing all their
+ * cases takes a one-time code sent to a contact already on file.
+ */
 const CASE_OPENED: Record<SayLang, string> = {
-  en: "Thank you, {name}. Your case is open — reference ending {ref}. Your free plan is being prepared now; it takes about a minute and I'm opening it for you. A coordinator will also contact you on {phone} within 24 hours. You're signed in on this device, so you can ask me “what's my case status” any time.",
-  ru: "Спасибо, {name}. Заявка открыта — номер заканчивается на {ref}. Бесплатный план готовится, это около минуты — открываю его. Координатор также свяжется с вами по номеру {phone} в течение 24 часов. Вы вошли на этом устройстве — спрашивайте «какой статус моей заявки» в любое время.",
-  uz: "Rahmat, {name}. Arizangiz ochildi — raqami {ref} bilan tugaydi. Bepul reja tayyorlanmoqda, bir daqiqacha — uni ochyapman. Koordinator 24 soat ichida {phone} raqami orqali bog'lanadi. Siz bu qurilmada tizimga kirdingiz — istalgan vaqtda «arizam qanday holatda» deb so'rang.",
+  en: "Thank you, {name}. Your case is open — number ending {ref}. Your free plan is being prepared now; it takes about a minute and I'm opening it for you. A coordinator will also contact you on {phone} within 24 hours. You can ask me “what's my case status” in this chat any time. To see all your cases in your account, say “sign me in” and I'll send you a one-time code.",
+  ru: "Спасибо, {name}. Заявка открыта — номер заканчивается на {ref}. Бесплатный план готовится, это около минуты — открываю его. Координатор также свяжется с вами по номеру {phone} в течение 24 часов. В этом чате можно в любой момент спросить «какой статус моей заявки». Чтобы видеть все свои заявки в личном кабинете, скажите «войти» — я пришлю одноразовый код.",
+  uz: "Rahmat, {name}. Arizangiz ochildi — raqami {ref} bilan tugaydi. Bepul reja tayyorlanmoqda, bir daqiqacha — uni ochyapman. Koordinator 24 soat ichida {phone} raqami orqali bog'lanadi. Shu chatda istalgan vaqtda «arizam qanday holatda» deb so'rashingiz mumkin. Barcha arizalaringizni kabinetda ko'rish uchun «kirish» deng — bir martalik kod yuboraman.",
 };
 
 const GREETING =
@@ -135,7 +141,7 @@ async function welcome(intake: WebIntake, lang: SayLang): Promise<TurnReply> {
   return { reply: copy.fresh, state: intake.state, suggestions: copy.chips, via: "greeting" };
 }
 
-const TEST_CASE_NOTE = "(Test mode) Everything a case needs is here, so a real chat would open the case now, sign the patient in and open their plan page.";
+const TEST_CASE_NOTE = "(Test mode) Everything a case needs is here, so a real chat would open the case now and show its plan page in this chat.";
 
 const historyOf = (intake: WebIntake): ConversationMessage[] =>
   intake.messages.slice(-16).map((message) => ({
@@ -182,7 +188,7 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
 
   // 2. Commands.
   const cities = (await listCities().catch(() => [])).map((city) => city.name);
-  const ctx = { sessionId, intake, text, lang, locale };
+  const ctx = { sessionId, intake, text, lang, locale, ip: input.ip };
   const aiLanguage = input.detectedLanguage ?? guessed ?? intake.language;
   const command = await commandTurn(ctx, cities);
   if (command) return done(await afterCommand(input, command, lang));
@@ -383,7 +389,6 @@ async function askNextOrOpen(input: TurnInput, intake: WebIntake, lang: SayLang,
   if (input.dryRun) return { reply: [lead, TEST_CASE_NOTE].filter(Boolean).join(" "), state: "collecting_profile", via: "profile" };
 
   const reference = await createCaseFromWebIntake(intake, input.locale);
-  if (intake.fields.phone) await startPatientSession(`+${intake.fields.phone.replace(/\D/g, "")}`).catch(() => undefined);
   const phone = intake.fields.phone ? `+${intake.fields.phone.replace(/\D/g, "")}` : "";
   // After the AI's own thanks, the case news starts without a second one.
   const template = lead ? CASE_OPENED[lang].replace(/^[^.]*\{name\}\.\s*/, "") : CASE_OPENED[lang];

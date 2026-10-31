@@ -8,6 +8,7 @@
  *
  * Pure functions, no database: tested in scripts/test/voice-intents.test.mts.
  */
+import { COUNTRIES } from "../countries";
 
 export const COMMAND_NAMES = [
   "help",
@@ -152,9 +153,13 @@ export function readEmail(text: string): string | undefined {
   return `${local}@${match[2]}`.toLowerCase();
 }
 
+/** The two letters a case number can start with: a country code, or XX when the country was unknown. */
+const CASE_PREFIXES = new Set([...COUNTRIES.map((country) => country.code), "XX"]);
+
 /**
- * A case reference read aloud: "S H, A B 1 2, …". References are SH- plus
- * sixteen letters and digits, grouped in fours.
+ * A case number read aloud or typed: "U Z 4 8 2 1 3" → UZ48213 (two letters,
+ * five digits). Older references — SH- and sixteen letters and digits in
+ * fours — are still read.
  */
 export function readReference(text: string): string | undefined {
   const joined = normalise(text)
@@ -162,10 +167,14 @@ export function readReference(text: string): string | undefined {
     .replace(/\b(zero|oh)\b/g, "0")
     .replace(/[^a-z0-9]/g, "")
     .toUpperCase();
-  const body = joined.replace(/^.*?SH/, "");
-  const candidate = (joined.includes("SH") ? body : joined).slice(0, 16);
-  if (!/^[A-Z0-9]{16}$/.test(candidate)) return undefined;
-  return `SH-${candidate.match(/.{4}/g)!.join("-")}`;
+  const legacy = joined.match(/SH([A-Z0-9]{16})/);
+  if (legacy) return `SH-${legacy[1].match(/.{4}/g)!.join("-")}`;
+  // Two letters that start a word, then five digits, spaced or not: "it's U Z 48 213".
+  const spoken = normalise(text).replace(/\b(zero|oh)\b/g, "0").toUpperCase();
+  const short = spoken.match(/(?<![A-Z])([A-Z])[\s.-]*([A-Z])[\s.-]*((?:\d[\s.-]*){5})(?!\d)/);
+  if (short && CASE_PREFIXES.has(`${short[1]}${short[2]}`)) return `${short[1]}${short[2]}${short[3].replace(/\D/g, "")}`;
+  // Only the old sixteen characters, without the SH in front.
+  return /^[A-Z0-9]{16}$/.test(joined) && /\d/.test(joined) ? `SH-${joined.match(/.{4}/g)!.join("-")}` : undefined;
 }
 
 const YES = /^(yes|yeah|yep|yup|sure|ok|okay|correct|right|please do|go ahead|do it|confirm|that's right|that is right|да|ага|конечно|верно|правильно|давай|хорошо|ha|xa|albatta|to'g'ri|mayli|bo'ladi)( please| пожалуйста| iltimos)?$/;

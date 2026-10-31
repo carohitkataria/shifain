@@ -9,6 +9,8 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 import { getOrCreateWebIntake, storeWebIntakeFile, findWebIntake } from "@/lib/web-intake";
 import { handleWebTurn } from "@/lib/assistant/web-turn";
 import { DEFAULT_NATURAL_VOICE, VOICE_ID_PATTERN, naturalVoice } from "@/lib/voice/voices";
+import { allowHit } from "@/lib/rate-limit";
+import { MAX_REPORT_BYTES } from "@/lib/reports";
 
 const SESSION_COOKIE = "shifain_chat";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days, so "what's my status" works when they come back
@@ -60,6 +62,42 @@ export async function GET(request: NextRequest) {
 
 const LANG = /^[a-z]{2,3}$/;
 
+/** The public chat's limits: turns per conversation and per address, and how much one turn may carry. */
+const CHAT_LIMITS = {
+  turnsPerSession: 30,
+  turnsPerAddress: 60,
+  windowMs: 10 * 60_000,
+  audioBytes: 8 * 1024 * 1024,
+  audioSeconds: 65,
+  fileBytes: MAX_REPORT_BYTES,
+  fileTypes: /^(application\/pdf|image\/(png|jpeg|webp|heic|heif))$/,
+};
+
+type Lang = "en" | "ru" | "uz";
+const LIMIT_WORDS: Record<"slow" | "audio" | "file", Record<Lang, string>> = {
+  slow: {
+    en: "You're sending messages faster than I can keep up. Please wait a few minutes and try again.",
+    ru: "Сообщения приходят быстрее, чем я успеваю отвечать. Подождите несколько минут и попробуйте снова.",
+    uz: "Xabarlar men javob berishga ulgurganimdan tezroq kelyapti. Bir necha daqiqa kutib, qayta urinib ko'ring.",
+  },
+  audio: {
+    en: "That voice message is too long for me. Please keep it under a minute, or type it.",
+    ru: "Это голосовое сообщение слишком длинное. Пожалуйста, говорите не дольше минуты или напишите текстом.",
+    uz: "Bu ovozli xabar juda uzun. Iltimos, bir daqiqadan oshirmang yoki yozib yuboring.",
+  },
+  file: {
+    en: "I can take reports as PDF or photos (JPG, PNG, WEBP, HEIC), up to 14 MB each. Please send it in one of those.",
+    ru: "Я принимаю заключения в PDF или фото (JPG, PNG, WEBP, HEIC) до 14 МБ каждое. Пришлите, пожалуйста, в одном из этих форматов.",
+    uz: "Xulosalarni PDF yoki rasm (JPG, PNG, WEBP, HEIC) shaklida, har biri 14 MB gacha qabul qilaman. Shu formatlardan birida yuboring.",
+  },
+};
+
+const langOf = (locale: Locale): Lang => (locale === "ru" ? "ru" : locale === "uz" || locale === "oz" ? "uz" : "en");
+
+function clientAddress(request: NextRequest): string {
+  return (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || request.headers.get("x-real-ip") || "unknown";
+}
+
 /** The server only ever speaks with a curated voice or the one the admin chose. */
 function allowedVoice(requested: unknown, adminVoice: string | null): string {
   const fallback = adminVoice ?? DEFAULT_NATURAL_VOICE;
@@ -106,6 +144,13 @@ export async function POST(request: NextRequest) {
     if (Number.isFinite(speed) && speed > 0) rate = Math.min(1.2, Math.max(0.7, speed));
   };
 
+  const ip = clientAddress(request);
+  /** A refusal in the patient's language, before anything is stored or transcribed. */
+  const refuse = (why: keyof typeof LIMIT_WORDS, status: number) => {
+    const reply = LIMIT_WORDS[why][langOf(locale)];
+    return NextResponse.json({ reply: locale === "oz" ? toUzCyrillic(reply) : reply, state: "limited" }, { status });
+  };
+
   if (contentType.includes("multipart/form-data")) {
     const form = await request.formData();
     const audio = form.get("audio") as File | null;
@@ -113,6 +158,10 @@ export async function POST(request: NextRequest) {
     const text = form.get("message") as string | null;
     wantsVoice = form.get("voice") === "1";
     readCommon((name) => form.get(name));
+    if (!allowTurn(sessionId, ip)) return refuse("slow", 429);
+
+    if (audio && (audio.size > CHAT_LIMITS.audioBytes || Number(form.get("seconds")) > CHAT_LIMITS.audioSeconds)) return refuse("audio", 413);
+    if (file && file.size > 0 && (file.size > CHAT_LIMITS.fileBytes || !CHAT_LIMITS.fileTypes.test(file.type))) return refuse("file", 415);
 
     if (audio && isElevenLabsConfigured()) {
       const buffer = Buffer.from(await audio.arrayBuffer());
@@ -139,6 +188,7 @@ export async function POST(request: NextRequest) {
     userMessage = String(body.message ?? "").trim().slice(0, 4000);
     wantsVoice = body.voice === true;
     readCommon((name) => body[name]);
+    if (!allowTurn(sessionId, ip)) return refuse("slow", 429);
     const lang = String(body.lang ?? "").toLowerCase().split("-")[0];
     if (LANG.test(lang)) detectedLanguage = lang;
   }
@@ -203,7 +253,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const turn = await handleWebTurn({ sessionId, text: userMessage, detectedLanguage, locale });
+    const turn = await handleWebTurn({ sessionId, text: userMessage, detectedLanguage, locale, ip });
     return respond(await withSpeech({ ...turn, via: undefined }));
   } catch (error) {
     console.error("[shifain] chat error:", error);
@@ -212,4 +262,12 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
+}
+
+/** One more turn for this conversation and this address, within the limits. */
+function allowTurn(sessionId: string, ip: string): boolean {
+  return (
+    allowHit(`chat-session:${sessionId}`, CHAT_LIMITS.turnsPerSession, CHAT_LIMITS.windowMs) &&
+    allowHit(`chat-ip:${ip}`, CHAT_LIMITS.turnsPerAddress, CHAT_LIMITS.windowMs)
+  );
 }

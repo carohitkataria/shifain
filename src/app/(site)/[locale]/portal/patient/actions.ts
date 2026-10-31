@@ -7,7 +7,7 @@ import {
   currentPatient,
   ensureAccount,
   getPatientAccount,
-  authenticatePatient,
+  findCaseForSignIn,
   endPatientSession,
   requestEmailCode,
   startPatientEmailSession,
@@ -18,6 +18,7 @@ import {
 } from "@/lib/patient-auth";
 import { MIN_PASSWORD, checkPassword, setAccountPassword } from "@/lib/patient-password";
 import { casesForEmail } from "@/lib/cases";
+import { provenIdentity, sendCaseCode, verifyCaseCode } from "@/lib/case-codes";
 import { requestPhoneCode, verifyPhoneCode, type PhoneCodeRequest } from "@/lib/phone-codes";
 import { allowHit } from "@/lib/rate-limit";
 import { COUNTRIES } from "@/lib/countries";
@@ -33,20 +34,47 @@ function localeOf(formData: FormData): Locale {
 
 const field = (formData: FormData, name: string, max = 120) => String(formData.get(name) ?? "").trim().slice(0, max);
 
+/**
+ * Sign-in with a case number. Step one: the number and phone only find the
+ * case, and a one-time code goes to a contact already on it (its Telegram,
+ * WhatsApp or email) — never to the number typed here. The page says the
+ * same whether or not anything matched. Step two: the code opens the account.
+ * Five tries an hour per address.
+ */
 export async function patientLoginAction(formData: FormData) {
   const locale = localeOf(formData);
-  const reference = String(formData.get("reference") ?? "");
-  const phone = String(formData.get("phone") ?? "");
+  const reference = field(formData, "reference", 40).toUpperCase();
+  const code = field(formData, "code", 12);
+  const page = `/${locale}/portal/patient/login`;
+  const step = new URLSearchParams({ with: "reference", ref: reference });
 
-  const record = await authenticatePatient(reference, phone).catch((error) => {
-    console.error("[shifain] patient sign-in failed", error);
+  if (!allowHit(`case-signin:${await clientIp()}`, 5, 60 * 60_000)) {
+    step.set("error", "slow");
+    redirect(`${page}?${step.toString()}`);
+  }
+
+  if (code) {
+    const verified = await verifyCaseCode(reference, code).catch(() => null);
+    const proven = verified ? provenIdentity(verified.record, verified.via) : null;
+    if (!proven) {
+      step.set("sent", "1");
+      step.set("error", "code");
+      redirect(`${page}?${step.toString()}`);
+    }
+    if (proven.kind === "email") await startPatientEmailSession(proven.email);
+    else await startPatientSession(proven.digits);
+    redirect(`/${locale}/portal/patient`);
+  }
+
+  const record = await findCaseForSignIn(reference, field(formData, "phone", 40)).catch((error) => {
+    console.error("[shifain] case sign-in lookup failed", error);
     return null;
   });
-
-  if (!record) redirect(`/${locale}/portal/patient/login?with=reference&error=1`);
-
-  await startPatientSession(record.patient.phone);
-  redirect(`/${locale}/portal/patient`);
+  const sent = record ? await sendCaseCode(record).catch(() => null) : null;
+  step.set("sent", "1");
+  // Only in local development with nothing to send through: the code, so the flow can be tried.
+  if (sent?.status === "dev") step.set("dev", sent.code);
+  redirect(`${page}?${step.toString()}`);
 }
 
 export async function patientLogoutAction(formData: FormData) {

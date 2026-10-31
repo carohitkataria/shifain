@@ -10,7 +10,7 @@ export const PATIENT_COPY = {
     "Murojaat raqamingiz va qoldirgan telefoningiz bilan kiring. Parol kerak emas.",
   ),
   reference: l("Your reference", "Номер обращения", "Murojaat raqami"),
-  referenceHint: l("Looks like SH-XXXX-XXXX-XXXX-XXXX", "Вида SH-XXXX-XXXX-XXXX-XXXX", "SH-XXXX-XXXX-XXXX-XXXX ko'rinishida"),
+  referenceHint: l("Looks like UZ48213", "Вида UZ48213", "UZ48213 ko'rinishida"),
   phone: l("Phone number", "Телефон", "Telefon raqami"),
   phoneHint: l(
     "The last few digits are enough.",

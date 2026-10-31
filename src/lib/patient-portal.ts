@@ -3,11 +3,12 @@ import crypto from "node:crypto";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getDb, isDatabaseConfigured } from "./db";
-import { casesForEmail, casesForPhone, type PatientCase, type PlanEdit } from "./cases";
-import { accountForPhone, currentPatient, getPatientAccount, normalisePhone, type PatientAccount, type PatientIdentity } from "./patient-auth";
+import { casesForEmail, casesForPhone, familyCasesFor, type PatientCase, type PlanEdit } from "./cases";
+import { accountForPhone, currentPatient, getPatientAccount, type PatientAccount, type PatientIdentity } from "./patient-auth";
+import { canSee, viewerOf, type Viewer } from "./access-rules";
 import { MAX_REPORT_BYTES, storeReports, type ReportUpload } from "./reports";
 import { getSettings } from "./settings";
-import type { FamilyAccess, FamilyMember, JourneyFields } from "./journey-rules";
+import type { FamilyAccess, JourneyFields } from "./journey-rules";
 
 /**
  * The patient portal's data: the signed-in patient, their cases, and what
@@ -60,8 +61,7 @@ export const languageName = (code: string) => PORTAL_LANGUAGES.find((item) => it
 
 type CaseWithAppointments = PatientCase & JourneyFields & { appointments?: Appointment[] };
 
-/** Who is looking: the patient, or a family member they added (with what they may see). */
-export type Viewer = { role: "patient" } | { role: "family"; member: FamilyMember };
+export { canSee, viewerOf, type Viewer };
 
 export type PortalData = {
   identity: PatientIdentity;
@@ -78,10 +78,13 @@ const loadCases = cache(
     if (!isDatabaseConfigured()) return null;
     const identity = await currentPatient().catch(() => null);
     if (!identity) return null;
-    const [cases, account] = await Promise.all([
+    const [own, family, account] = await Promise.all([
       (identity.kind === "email" ? casesForEmail(identity.email) : casesForPhone(identity.digits)).catch(() => []),
+      // A family member sees a case only once the patient has invited them to part of it.
+      familyCasesFor(identity).catch(() => []),
       (identity.kind === "email" ? getPatientAccount(identity.email) : accountForPhone(identity.digits)).catch(() => null),
     ]);
+    const cases = [...own, ...family.filter((item) => !own.some((mine) => mine._id === item._id) && viewerOf(identity, item))];
     return { identity, account, cases: cases as CaseWithAppointments[] };
   },
 );
@@ -100,31 +103,10 @@ export async function loadPortal(locale: string, caseParam?: string | null): Pro
   return { identity, account, cases, active, viewer: active ? viewerOf(identity, active) : null };
 }
 
-const samePhone = (a: string | null | undefined, digits: string) => {
-  const known = normalisePhone(a ?? "");
-  return digits.length >= 6 && known.length >= 6 && known.endsWith(digits.slice(-9));
-};
-
-/** Who this signed-in person is on this case, if anyone. */
-export function viewerOf(identity: PatientIdentity, record: Pick<PatientCase, "patient" | "accountEmail"> & JourneyFields): Viewer | null {
-  if (identity.kind === "email") {
-    const email = identity.email.toLowerCase();
-    if ((record.patient.email ?? "").toLowerCase() === email || (record.accountEmail ?? "").toLowerCase() === email) return { role: "patient" };
-    const member = (record.family ?? []).find((item) => (item.email ?? "").toLowerCase() === email);
-    return member ? { role: "family", member } : null;
-  }
-  if (samePhone(record.patient.phone, identity.digits)) return { role: "patient" };
-  const member = (record.family ?? []).find((item) => samePhone(item.phone, identity.digits));
-  return member ? { role: "family", member } : null;
-}
-
 /** Whether this signed-in person is the patient on this case (and so may change it). */
 export function ownsCase(identity: PatientIdentity, record: Pick<PatientCase, "patient" | "accountEmail"> & JourneyFields): boolean {
   return viewerOf(identity, record)?.role === "patient";
 }
-
-/** Whether this viewer may see one part of the case. The patient sees everything. */
-export const canSee = (viewer: Viewer | null, part: FamilyAccess) => viewer?.role === "patient" || (viewer?.role === "family" && viewer.member.access.includes(part));
 
 /**
  * The case, only for its patient — or, when `part` is given, also for a family
