@@ -410,9 +410,11 @@ export function parseCommand(text: string, cities: string[] = []): ParsedCommand
     return { name: rule.name, slots: slotsFor(rule.name, text, cities) };
   }
 
-  // "Delhi instead" / "I'd prefer Chennai" — a city with a preference word.
+  // "Delhi instead" / "I'd prefer Chennai" — a city with a preference word. A question
+  // ("which hospitals in Delhi?") is for the assistant, not a change of plan.
   const city = readCity(value, cities);
-  if (city && /\b(prefer|rather|instead|change|switch|move|want|in)\b|лучше|вместо|предпочит|хочу|afzal|o'rniga|xohlayman/.test(value) && !long) {
+  const question = /\?\s*$/.test(text) || /^(which|what|where|how|do|does|is|are|can|could|какие|какая|где|как|есть ли|qaysi|qayerda|qanday)\b/.test(value);
+  if (city && !question && /\b(prefer|rather|instead|change|switch|move|want|in)\b|лучше|вместо|предпочит|хочу|afzal|o'rniga|xohlayman/.test(value) && !long) {
     return { name: "set_city", slots: { city } };
   }
   return null;

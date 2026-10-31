@@ -351,10 +351,11 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
     [act],
   );
 
-  /** Sent with every turn: the page's language and the voice to answer in. */
+  /** Sent with every turn: the page's language, the page itself and the voice to answer in. */
   const turnContext = useCallback(
     () => ({
       locale: (document.documentElement.lang || "en").split("-")[0],
+      page: window.location.pathname,
       voiceId: voicePrefs.engine === "natural" ? voicePrefs.naturalId : "device",
       rate: voicePrefs.rate,
     }),

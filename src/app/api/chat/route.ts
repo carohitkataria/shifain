@@ -14,6 +14,7 @@ import { audioSeconds } from "@/lib/audio-duration";
 import { speakable } from "@/lib/access-levels";
 import { sayLang } from "@/lib/voice/command-copy";
 import { MAX_REPORT_BYTES } from "@/lib/reports";
+import { hospitalOnPage } from "@/lib/assistant/tool-rules";
 
 const SESSION_COOKIE = "shifain_chat";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days, so "what's my status" works when they come back
@@ -138,11 +139,14 @@ export async function POST(request: NextRequest) {
   let requestedVoice: unknown;
   let rate = 1;
   let uploadedFile: { fileName: string; mimeType: string; data: Buffer } | null = null;
+  /** The hospital profile the chat was opened on, if any. */
+  let pageHospitalId: string | null = null;
 
   const readCommon = (get: (name: string) => unknown) => {
     const pageLocale = String(get("locale") ?? "");
     if (isLocale(pageLocale)) locale = pageLocale;
     requestedVoice = get("voiceId");
+    pageHospitalId = hospitalOnPage(get("page"));
     const speed = Number(get("rate"));
     if (Number.isFinite(speed) && speed > 0) rate = Math.min(1.2, Math.max(0.7, speed));
   };
@@ -258,7 +262,7 @@ export async function POST(request: NextRequest) {
       return respond(await withSpeech({ ...turn, via: undefined }));
     }
 
-    const turn = await handleWebTurn({ sessionId, text: userMessage, detectedLanguage, locale, ip });
+    const turn = await handleWebTurn({ sessionId, text: userMessage, detectedLanguage, locale, ip, pageHospitalId });
     return respond(await withSpeech({ ...turn, via: undefined }));
   } catch (error) {
     console.error("[shifain] chat error:", error);
