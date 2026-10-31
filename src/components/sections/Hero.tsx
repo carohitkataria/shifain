@@ -108,8 +108,26 @@ const VALUES = [
   { Icon: HeartFilled, colour: "text-violet" },
 ];
 
+/** The plan request, as the hero shows it — or the closing section, when the hero is switched off. */
+export function PlanForm({ content, locale }: { content: SiteContent; locale: Locale }) {
+  const { hero, specialties } = content;
+  return (
+    <PlanRequestForm
+      locale={locale}
+      treatments={specialties.items.map((item) => ({ slug: item.slug, title: item.title }))}
+      labels={{
+        submit: t(hero.form.submit, locale),
+        country: t(hero.form.countryLabel, locale),
+        countryPlaceholder: t(hero.form.countryPlaceholder, locale),
+        phone: t(hero.form.phoneLabel, locale),
+        privacy: t(hero.form.privacy, locale),
+      }}
+    />
+  );
+}
+
 export function Hero({ content, locale }: { content: SiteContent; locale: Locale }) {
-  const { hero, closing, specialties } = content;
+  const { hero, closing } = content;
 
   return (
     <>
@@ -224,17 +242,7 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
             >
               <h2 className="text-xl font-extrabold leading-tight tracking-[-0.01em] text-navy sm:text-[1.55rem]">{t(closing.title, locale)}</h2>
               <p className="mt-1.5 mb-5 text-sm leading-snug text-slate sm:text-[15px]">{t(closing.body, locale)}</p>
-              <PlanRequestForm
-                locale={locale}
-                treatments={specialties.items.map((item) => ({ slug: item.slug, title: item.title }))}
-                labels={{
-                  submit: t(hero.form.submit, locale),
-                  country: t(hero.form.countryLabel, locale),
-                  countryPlaceholder: t(hero.form.countryPlaceholder, locale),
-                  phone: t(hero.form.phoneLabel, locale),
-                  privacy: t(hero.form.privacy, locale),
-                }}
-              />
+              <PlanForm content={content} locale={locale} />
             </div>
           </div>
 

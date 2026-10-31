@@ -4,6 +4,7 @@ import { t } from "@/lib/localize";
 import { OpenChatButton } from "../OpenChatButton";
 import { MESSAGE_US } from "../Header";
 import { TelegramGlyph } from "../TelegramGlyph";
+import { PlanForm } from "./Hero";
 import { botLink } from "@/lib/telegram-login";
 import type { SiteContent } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
@@ -115,23 +116,28 @@ export function Tracker({ content, locale }: { content: SiteContent; locale: Loc
 const waHref = (value: string) => `https://wa.me/${value.replace(/\D/g, "")}`;
 
 /**
- * The page's close: the plan request is in the hero now, so this sends the
- * patient back up to it, with the chat, Telegram and WhatsApp as the other ways in.
+ * The page's close: the plan request is in the hero, so this sends the
+ * patient back up to it, with the chat, Telegram and WhatsApp as the other
+ * ways in. With the hero switched off, the form is here instead, so links to
+ * #quote-form always have somewhere to land.
  */
 export async function Closing({ content, locale }: { content: SiteContent; locale: Locale }) {
   const { closing, hero, contact } = content;
   const telegram = await botLink().catch(() => null);
+  const formInHero = content.sections.hero?.enabled !== false;
   return (
-    <section id="get-started" className="ui-section bg-hero">
+    <section id="get-started" className="ui-section scroll-mt-20 bg-hero">
       <div className="ui-container flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <div className="max-w-2xl">
           <h2 className="ui-h2">{t(closing.title, locale)}</h2>
           <p className="ui-lead">{t(closing.body, locale)}</p>
         </div>
         <div className="flex w-full flex-wrap items-center gap-x-6 gap-y-3 lg:w-auto lg:justify-end">
-          <a href="#quote-form" className="ui-btn ui-btn-primary w-full sm:w-auto">
-            {t(hero.primaryCta, locale)}
-          </a>
+          {formInHero ? (
+            <a href="#quote-form" className="ui-btn ui-btn-primary w-full sm:w-auto">
+              {t(hero.primaryCta, locale)}
+            </a>
+          ) : null}
           {telegram ? (
             <a
               href={telegram}
@@ -153,6 +159,13 @@ export async function Closing({ content, locale }: { content: SiteContent; local
           </span>
         </div>
       </div>
+      {formInHero ? null : (
+        <div id="quote-form" className="ui-container mt-8 scroll-mt-24">
+          <div className="min-w-0 rounded-[1.25rem] bg-white p-5 ring-1 ring-[#e6e3f4] sm:p-8 lg:ml-auto lg:max-w-3xl">
+            <PlanForm content={content} locale={locale} />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
