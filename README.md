@@ -35,7 +35,9 @@ language; a blank translation falls back to English.
 
 ## Homepage control panel (`/admin`)
 
-Sign in with `ADMIN_PASSWORD`. The sidebar groups the areas — Overview, Site content, and Patients
+Sign in at `/admin/login` with the admin ID (`ADMIN_ID`, "admin" if unset) and `ADMIN_PASSWORD`.
+Coordinators use the same page with their email and the password from Partner logins, and land
+on the coordinator desk at `/coordinator`. The sidebar groups the areas — Overview, Site content, and Patients
 & partners — and each group folds away, with the choice remembered per browser. Every page carries
 its save button beside the title. Repeatable lists (paragraphs, badges, FAQ rows) can be added to
 and removed from in place: both are submitted by the same form as the fields, so a half-written
@@ -106,7 +108,8 @@ line with `npm run db:partner`.
 
 | Who | Where | With what |
 |---|---|---|
-| Owner / coordinator | `/admin` | `ADMIN_PASSWORD` |
+| Owner | `/admin/login` | `ADMIN_ID` and `ADMIN_PASSWORD` |
+| Coordinator | `/admin/login`, then `/coordinator` | email and password, created in admin under Partner logins |
 | Referring doctor | `/[locale]/portal/doctor` | email and password, created in admin |
 | Patient | `/[locale]/portal/patient` | a six-digit code emailed to them, or their case reference and phone |
 
@@ -188,6 +191,7 @@ signs a tie-up and publishes them by hand.
 
 | variable | purpose |
 |---|---|
+| `ADMIN_ID` | the owner's sign-in ID at `/admin/login`; "admin" if unset |
 | `ADMIN_PASSWORD` | password for `/admin` (required in production) |
 | `ADMIN_SECRET` | signs the admin session cookie; 16+ chars, required in production |
 | `PARTNER_SECRET` | signs the partner-portal session cookie; falls back to `ADMIN_SECRET` |

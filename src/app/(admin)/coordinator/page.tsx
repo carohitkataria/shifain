@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 /** A coordinator's patients: who is waiting on them first. */
 export default async function CoordinatorHome() {
   const actor = await deskActor();
-  if (!actor || actor.kind !== "coordinator") redirect("/coordinator/login");
+  if (!actor || actor.kind !== "coordinator") redirect("/admin/login");
   const cases = await casesForCoordinator(actor.user._id);
   const rows = await Promise.all(
     cases.map(async (record) => {

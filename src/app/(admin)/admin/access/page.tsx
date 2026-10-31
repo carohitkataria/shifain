@@ -130,8 +130,8 @@ export default async function AccessPage({
           Save login
         </button>
         <p className="text-sm leading-relaxed text-ink-soft">
-          Coordinators sign in at <Link href="/coordinator/login" className="font-semibold text-brand hover:underline">/coordinator</Link> and
-          see the patients assigned to them on each case&apos;s care desk.
+          Coordinators sign in at <Link href="/admin/login" className="font-semibold text-brand hover:underline">/admin/login</Link> with
+          their email and this password, and see the patients assigned to them on each case&apos;s care desk.
           Saving an existing email replaces that person&apos;s password. Existing sessions keep
           working for up to twelve hours — suspend the login to cut access off now.
         </p>

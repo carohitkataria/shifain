@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function CoordinatorCase({ params, searchParams }: { params: Promise<{ ref: string }>; searchParams: Promise<{ done?: string }> }) {
   const actor = await deskActor();
-  if (!actor) redirect("/coordinator/login");
+  if (!actor) redirect("/admin/login");
   const { ref } = await params;
   const { done } = await searchParams;
   const found = await deskCase(ref);
