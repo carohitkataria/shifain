@@ -1,5 +1,5 @@
 import "server-only";
-import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from "@google/generative-ai";
+import { FunctionCallingMode, GoogleGenerativeAI, SchemaType, type Content, type FunctionDeclaration, type ResponseSchema } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
 import type { IntakeField } from "./conversation-intake";
 import { noteFailure, available, withGeminiModel, geminiBaseUrl, noteSuccess, noteError } from "./ai/providers";
@@ -7,6 +7,8 @@ import { COMMAND_NAMES, type CommandName } from "./voice/intents";
 import { getAssistantConfig } from "./assistant/config";
 import { knowledgeForPrompt } from "./assistant/knowledge";
 import { faqKnowledge } from "./faqs";
+import { MAX_TOOL_CALLS, TOOL_DEFINITIONS } from "./assistant/tool-rules";
+import { runTool, type ToolContext } from "./assistant/tools";
 
 export { pauseDuration, rankGeminiModels } from "./ai/providers";
 
@@ -40,7 +42,7 @@ CONVERSATION RULES
 - If something is missing, ask one relevant question. Never ask again for something they have already told you.
 - If you do not have verified information to answer, say so plainly and offer to connect them with a coordinator.
 - Never diagnose, prescribe or change medication, or promise an outcome, success rate or survival figure.
-- Never invent hospital prices, doctor names or availability, treatment recommendations or hospital facts. Do not quote prices yourself: their free plan includes an itemised estimate, which the treating hospital confirms.
+- Name hospitals, doctors and starting prices only from tool results in this turn (list_hospitals, list_doctors, price_band). Never invent hospital prices, doctor names or availability, treatment recommendations or hospital facts. A starting price is always "indicative": their free plan includes the itemised estimate, which the treating hospital confirms. Without a tool result, do not quote a price or name a hospital or doctor.
 - ShifaIn arranges treatment in India. If they want it elsewhere, say so kindly and offer a coordinator.
 - If something sounds like an emergency happening now (severe chest pain, trouble breathing, heavy bleeding, collapse), tell them to call their local emergency number or go to the nearest emergency department.
 
@@ -78,6 +80,8 @@ type TurnInput = {
   stage: TurnStage;
   /** Let the assistant name an app command (website chat). */
   commands: boolean;
+  /** Data tools for this conversation (website chat); the server fills in the hospital and the case. */
+  tools?: ToolContext;
 };
 
 type TurnResult = { reply: string; extracted: ExtractedInfo; command?: CommandName };
@@ -135,6 +139,7 @@ async function systemFor(input: TurnInput): Promise<string> {
     BASE_SYSTEM,
     stageText(input.stage, input.commands),
     input.commands ? COMMAND_TEXT : "",
+    input.tools ? TOOLS_TEXT : "",
     `WHAT TO RETURN
 reply: what you say to the patient.
 ready: see WHERE WE ARE (false when following up).
@@ -254,6 +259,120 @@ async function turnWithClaude(input: TurnInput, system: string): Promise<TurnRes
   return readResult(block.input as Record<string, unknown>, input.commands);
 }
 
+// ---------------------------------------------------------------- tools
+
+/**
+ * With data tools, the answer itself is a call: the model may call up to
+ * MAX_TOOL_CALLS data tools (the server runs them on live data), and must then
+ * call `respond` — the same fields as the JSON reply above. After the last data
+ * call, only `respond` is offered.
+ */
+const TOOLS_TEXT = `DATA TOOLS
+You can look things up: ${TOOL_DEFINITIONS.map((tool) => `${tool.name} — ${tool.description}`).join(" ")}
+Use a tool when the patient asks about doctors, hospitals or prices, at most ${MAX_TOOL_CALLS} per turn, then call respond with your reply. Always finish by calling respond.`;
+
+const RESPOND_FIELDS: Record<string, { type: "string" | "boolean"; enum?: string[] }> = {
+  reply: { type: "string" },
+  ready: { type: "boolean" },
+  command: { type: "string", enum: [...COMMAND_NAMES, "none"] },
+  ...Object.fromEntries(FIELD_KEYS.map((key) => [key, { type: "string" as const }])),
+};
+
+function geminiDeclarations(): FunctionDeclaration[] {
+  const string = (description?: string) => ({ type: SchemaType.STRING, ...(description ? { description } : {}) });
+  return [
+    ...TOOL_DEFINITIONS.map((tool) => ({
+      name: tool.name,
+      description: tool.description,
+      ...(Object.keys(tool.parameters).length
+        ? { parameters: { type: SchemaType.OBJECT, properties: Object.fromEntries(Object.entries(tool.parameters).map(([key, about]) => [key, string(about)])) } }
+        : {}),
+    })),
+    {
+      name: "respond",
+      description: "Your reply to the patient, with anything you learned from them. Always the last call.",
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: Object.fromEntries(
+          Object.entries(RESPOND_FIELDS).map(([key, field]) => [
+            key,
+            field.type === "boolean" ? { type: SchemaType.BOOLEAN } : field.enum ? { type: SchemaType.STRING, format: "enum", enum: field.enum } : { type: SchemaType.STRING },
+          ]),
+        ),
+        required: ["reply", "ready", "command"],
+      },
+    } as FunctionDeclaration,
+  ] as FunctionDeclaration[];
+}
+
+async function turnWithGeminiTools(model: string, input: TurnInput, system: string, timeoutMs: number, tools: ToolContext): Promise<TurnResult> {
+  const generator = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!).getGenerativeModel(
+    { model, systemInstruction: system, generationConfig: { temperature: 0.4, maxOutputTokens: MAX_REPLY_TOKENS }, tools: [{ functionDeclarations: geminiDeclarations() }] },
+    { timeout: timeoutMs, baseUrl: geminiBaseUrl() },
+  );
+  const contents: Content[] = normaliseHistory(input.history, input.message).map((turn) => ({
+    role: turn.role === "assistant" ? "model" : "user",
+    parts: [{ text: turn.content }],
+  }));
+  for (let round = 0; round <= MAX_TOOL_CALLS; round++) {
+    const last = round === MAX_TOOL_CALLS;
+    const result = await generator.generateContent({
+      contents,
+      toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.ANY, ...(last ? { allowedFunctionNames: ["respond"] } : {}) } },
+    });
+    const calls = result.response.functionCalls() ?? [];
+    const respond = calls.find((call) => call.name === "respond");
+    if (respond) return readResult(respond.args as Record<string, unknown>, input.commands);
+    const call = calls[0];
+    if (!call) break;
+    const output = await runTool(call.name, (call.args ?? {}) as Record<string, unknown>, tools);
+    contents.push({ role: "model", parts: [{ functionCall: call }] }, { role: "function", parts: [{ functionResponse: { name: call.name, response: output } }] });
+  }
+  throw new Error("Gemini gave no reply after its tool calls");
+}
+
+async function turnWithClaudeTools(input: TurnInput, system: string, tools: ToolContext): Promise<TurnResult> {
+  const client = new Anthropic();
+  const toolList: Anthropic.Messages.Tool[] = [
+    ...TOOL_DEFINITIONS.map((tool) => ({
+      name: tool.name,
+      description: tool.description,
+      input_schema: {
+        type: "object" as const,
+        properties: Object.fromEntries(Object.entries(tool.parameters).map(([key, about]) => [key, { type: "string", description: about }])),
+      },
+    })),
+    CLAUDE_RESPOND,
+  ];
+  const messages: Anthropic.Messages.MessageParam[] = normaliseHistory(input.history, input.message).map((turn) => ({ role: turn.role, content: turn.content }));
+  for (let round = 0; round <= MAX_TOOL_CALLS; round++) {
+    const last = round === MAX_TOOL_CALLS;
+    const response = await client.messages.create(
+      {
+        model: CLAUDE_MODEL,
+        max_tokens: MAX_REPLY_TOKENS,
+        system,
+        messages,
+        tools: toolList,
+        tool_choice: last ? { type: "tool", name: "respond" } : { type: "any" },
+      },
+      { timeout: CLAUDE_TIMEOUT_MS, maxRetries: 0 },
+    );
+    const uses = response.content.filter((item): item is Anthropic.Messages.ToolUseBlock => item.type === "tool_use");
+    const respond = uses.find((use) => use.name === "respond");
+    if (respond) return readResult(respond.input as Record<string, unknown>, input.commands);
+    if (uses.length === 0) break;
+    const results: Anthropic.Messages.ToolResultBlockParam[] = [];
+    for (const use of uses.slice(0, 1)) {
+      results.push({ type: "tool_result", tool_use_id: use.id, content: JSON.stringify(await runTool(use.name, use.input as Record<string, unknown>, tools)) });
+    }
+    // Every tool_use must be answered; any beyond the first are declined.
+    for (const use of uses.slice(1)) results.push({ type: "tool_result", tool_use_id: use.id, content: JSON.stringify({ error: "One tool at a time." }), is_error: true });
+    messages.push({ role: "assistant", content: response.content }, { role: "user", content: results });
+  }
+  throw new Error("Claude gave no reply after its tool calls");
+}
+
 // ---------------------------------------------------------------- one turn
 
 /**
@@ -266,7 +385,10 @@ export async function assistantTurn(input: TurnInput): Promise<TurnResult | null
   const system = await systemFor(input);
   if (available("gemini")) {
     try {
-      const result = await withGeminiModel((model, timeoutMs) => turnWithGemini(model, input, system, timeoutMs), { tier: "chat" });
+      const result = await withGeminiModel(
+        (model, timeoutMs) => (input.tools ? turnWithGeminiTools(model, input, system, timeoutMs, input.tools) : turnWithGemini(model, input, system, timeoutMs)),
+        { tier: "chat" },
+      );
       if (result.reply || result.command) return result;
     } catch (err) {
       console.error("[shifain] Gemini turn failed:", err);
@@ -275,7 +397,7 @@ export async function assistantTurn(input: TurnInput): Promise<TurnResult | null
   }
   if (available("claude")) {
     try {
-      const result = await turnWithClaude(input, system);
+      const result = input.tools ? await turnWithClaudeTools(input, system, input.tools) : await turnWithClaude(input, system);
       noteSuccess("claude", CLAUDE_MODEL);
       if (result.reply || result.command) return result;
     } catch (err) {
@@ -299,7 +421,7 @@ export async function generateIntakeReply(
   history: ConversationMessage[] = [],
   currentFields: Partial<IntakeField> = {},
   patientLanguage?: string,
-  options: { commands?: boolean } = {},
+  options: { commands?: boolean; tools?: ToolContext } = {},
 ): Promise<IntakeReplyResult> {
   const result = await assistantTurn({
     message: userMessage,
@@ -307,6 +429,7 @@ export async function generateIntakeReply(
     language: patientLanguage,
     stage: { kind: "medical", fields: currentFields },
     commands: options.commands === true,
+    tools: options.tools,
   });
   if (result) return { ...result, source: "ai" };
   console.error("[shifain] no AI provider answered; using the scripted intake");
@@ -323,7 +446,7 @@ export async function generateChatReply(
   userMessage: string,
   history: ConversationMessage[] = [],
   patientLanguage?: string,
-  options: { commands?: boolean; caseSummary?: string } = {},
+  options: { commands?: boolean; caseSummary?: string; tools?: ToolContext } = {},
 ): Promise<ChatReplyResult> {
   const result = await assistantTurn({
     message: userMessage,
@@ -331,6 +454,7 @@ export async function generateChatReply(
     language: patientLanguage,
     stage: { kind: "followup", caseSummary: options.caseSummary ?? "The patient already has a case open with ShifaIn." },
     commands: options.commands === true,
+    tools: options.tools,
   });
   return result
     ? { reply: result.reply, command: result.command, source: "ai" }

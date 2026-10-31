@@ -25,7 +25,11 @@ import { getAssistantConfig } from "./config";
 import { countAnswer, rememberQuestion, type AnswerPath } from "./stats";
 import { listTreatments } from "../catalogue";
 import { differentTreatments, newTreatmentRequest } from "../voice/treatments";
-import { markHumanRequested, setUploadReading, switchWebIntakeTreatment } from "../web-intake";
+import { markHumanRequested, setUploadReading, setWebIntakeHospital, switchWebIntakeTreatment } from "../web-intake";
+import { currentPatient } from "../patient-auth";
+import { levelOf } from "../access-levels";
+import { hospitalNamed } from "./tool-rules";
+import type { ToolContext } from "./tools";
 import { instantAnswer } from "./knowledge";
 import {
   guessLanguage,
@@ -252,6 +256,10 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
     }
   }
 
+  // The hospital the data tools look at: the one the patient names now, else the one they chose
+  // before (or asked from, on a hospital or doctor page). Set here, before the AI runs.
+  const tools = await toolContext(sessionId, intake, text);
+
   // 4. Instant answers the team has written.
   const config = await getAssistantConfig();
   const instant = instantAnswer(text, config.entries, lang);
@@ -264,6 +272,7 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
     const { reply, command: named, source } = await generateChatReply(text, history, aiLanguage, {
       commands: true,
       caseSummary: await caseSummary(intake),
+      tools,
     });
     if (named) {
       const outcome = await runCommand({ ...ctx, intake }, { name: named, slots: slotsFor(named, text, cities) });
@@ -277,7 +286,7 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
     return done({ reply, state: "complete", caseReference: intake.caseReference, via: "ai" });
   }
 
-  const turn = await generateIntakeReply(text, history, intake.fields, aiLanguage, { commands: true });
+  const turn = await generateIntakeReply(text, history, intake.fields, aiLanguage, { commands: true, tools });
   if (turn.command) {
     const outcome = await runCommand({ ...ctx, intake }, { name: turn.command, slots: slotsFor(turn.command, text, cities) });
     return done(await afterCommand(input, outcome, lang));
@@ -395,6 +404,22 @@ export async function handleReportTurn(input: TurnInput & { file: ReportFile; up
     return done({ ...(await askNextOrOpen(input, intake, lang, lead)), via });
   }
   return done({ reply: `${lead} ${REPORT_WORDS.whichTreatment[lang]}`, state: "medical_chat", via });
+}
+
+/** What the data tools may see in this conversation, decided by the server. */
+async function toolContext(sessionId: string, intake: WebIntake, text: string): Promise<ToolContext> {
+  const hospitals = await publishedHospitals({ limit: 200 }).catch(() => []);
+  const named = hospitalNamed(text, hospitals);
+  let hospitalId = intake.hospitalId ?? null;
+  if (named && named._id !== hospitalId) {
+    hospitalId = named._id;
+    await setWebIntakeHospital(sessionId, named._id).catch(() => undefined);
+  }
+  if (!hospitalId && intake.caseReference) {
+    hospitalId = (await getCase(intake.caseReference).catch(() => null))?.requested?.hospitalId ?? null;
+  }
+  const signedIn = Boolean(await currentPatient().catch(() => null));
+  return { hospitalId, caseReference: intake.caseReference, level: levelOf({ signedIn, conversationCase: intake.caseReference }) };
 }
 
 const QUESTION_START =

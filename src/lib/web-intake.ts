@@ -39,6 +39,8 @@ export type WebIntake = {
   command?: PendingCommand | null;
   /** When the patient asked for a person; a coordinator picks it up from Messages. */
   humanRequestedAt?: string | null;
+  /** The published hospital the patient chose or last named; the data tools look there, never where the AI says. */
+  hospitalId?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -247,6 +249,11 @@ export async function storeWebIntakeFile(
   );
 
   return id;
+}
+
+/** The hospital the conversation is about now (the patient named it). */
+export async function setWebIntakeHospital(sessionId: string, hospitalId: string): Promise<void> {
+  await (await getDb()).collection<WebIntake>(COLLECTION).updateOne({ _id: sessionId }, { $set: { hospitalId, updatedAt: new Date().toISOString() } });
 }
 
 /** Keeps what the assistant read in a shared report next to the file. */
