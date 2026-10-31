@@ -7,7 +7,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 import { getOrCreateWebIntake, storeWebIntakeFile, findWebIntake } from "@/lib/web-intake";
-import { handleWebTurn } from "@/lib/assistant/web-turn";
+import { handleReportTurn, handleWebTurn } from "@/lib/assistant/web-turn";
 import { DEFAULT_NATURAL_VOICE, VOICE_ID_PATTERN, naturalVoice } from "@/lib/voice/voices";
 import { allowHit } from "@/lib/rate-limit";
 import { audioSeconds } from "@/lib/audio-duration";
@@ -239,22 +239,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Handle file upload
+    // A report: kept, then read, and answered from what it says.
     if (uploadedFile) {
       await getOrCreateWebIntake(sessionId);
-      await storeWebIntakeFile(sessionId, {
+      const uploadId = await storeWebIntakeFile(sessionId, {
         fileName: uploadedFile.fileName,
         mimeType: uploadedFile.mimeType,
         fileSize: uploadedFile.data.byteLength,
         data: uploadedFile.data,
       });
-
-      if (!userMessage) {
-        return NextResponse.json({
-          reply: `📎 File received: ${uploadedFile.fileName}. Your report has been saved. Continue describing your medical needs.`,
-          state: "medical_chat",
-        });
-      }
+      const turn = await handleReportTurn({ sessionId, text: userMessage, detectedLanguage, locale, ip, file: uploadedFile, uploadId });
+      return respond(await withSpeech({ ...turn, via: undefined }));
     }
 
     const turn = await handleWebTurn({ sessionId, text: userMessage, detectedLanguage, locale, ip });

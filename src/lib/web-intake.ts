@@ -249,6 +249,21 @@ export async function storeWebIntakeFile(
   return id;
 }
 
+/** Keeps what the assistant read in a shared report next to the file. */
+export async function setUploadReading(sessionId: string, uploadId: string, reading: NonNullable<IntakeUploadRef["reading"]>): Promise<void> {
+  const collection = (await getDb()).collection<WebIntake>(COLLECTION);
+  const intake = await collection.findOne({ _id: sessionId }, { projection: { uploads: 1 } });
+  if (!intake?.uploads?.some((upload) => upload.id === uploadId)) return;
+  const uploads = intake.uploads.map((upload) => (upload.id === uploadId ? { ...upload, reading } : upload));
+  await collection.updateOne({ _id: sessionId }, { $set: { uploads, updatedAt: new Date().toISOString() } });
+}
+
+/** A file the patient already shared, for attaching to the case it went on to open. */
+export async function readWebIntakeFile(uploadId: string): Promise<{ fileName: string; mimeType: string; data: Buffer } | null> {
+  const stored = await (await getDb()).collection<StoredFile>(FILES_COLLECTION).findOne({ _id: uploadId });
+  return stored?.data ? { fileName: stored.fileName, mimeType: stored.mimeType, data: Buffer.from((stored.data as Binary).buffer) } : null;
+}
+
 export async function createCaseFromWebIntake(
   intake: WebIntake,
   locale: Locale = "en",
@@ -261,6 +276,9 @@ export async function createCaseFromWebIntake(
     fields.previousTreatment ? `Previous treatment: ${fields.previousTreatment}` : null,
     fields.age ? `Patient age: ${fields.age}` : null,
     fields.destination ? `Preferred destination: ${fields.destination}` : null,
+    ...intake.uploads
+      .filter((upload) => upload.reading?.findings)
+      .map((upload) => `Report ${upload.fileName} (${upload.reading!.documentType}), as read by the assistant — to be checked: ${upload.reading!.findings}`),
   ]
     .filter(Boolean)
     .join("\n");

@@ -37,6 +37,10 @@ import { toUzCyrillic } from "./uz-cyrillic";
 import { casesForPhone, getCase, type PatientCase } from "./cases";
 import { isCaseReference, phonesMatch } from "./access-rules";
 import { createLead } from "./telegram-leads";
+import { listSpecialties, publishedHospitals } from "./catalogue";
+import { addCaseFiles } from "./journey";
+import { canReadReport, readReport } from "./assistant/report-reader";
+import { REPORT_WORDS, hospitalList, mergeCondition, type ReplyLang } from "./assistant/report-rules";
 import { isElevenLabsConfigured, transcribeAudio, textToSpeech } from "./elevenlabs";
 import { generateReply, generateIntakeReply, type ConversationMessage } from "./voice-agent";
 import {
@@ -174,6 +178,58 @@ async function handleMedicalChat(
   await updateContactState("patient", userId, "intake");
 }
 
+// ---------------------------------------------------------------- reports
+
+const escapeHtml = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/**
+ * A report sent to the bot is read and answered from, as on the website: what
+ * it shows in plain words, hospitals we work with for it, and the next step.
+ * Its findings fill the intake; with a case linked, the file joins the case.
+ */
+async function answerReport(
+  chatId: number,
+  userId: number,
+  file: { fileName: string; mimeType: string; data: Buffer },
+  note: string,
+  languageCode: string | null,
+  caseReference: string | null,
+): Promise<void> {
+  const lang: ReplyLang = languageCode?.startsWith("ru") ? "ru" : languageCode?.startsWith("uz") ? "uz" : "en";
+  const specialties = (await listSpecialties().catch(() => [])).map((item) => ({ code: item._id, name: item.name?.en ?? item._id }));
+  const reading = canReadReport(file.mimeType)
+    ? await readReport({ file, language: { en: "English", ru: "Russian", uz: "Uzbek, in the Latin alphabet" }[lang], specialties, note }).catch(() => null)
+    : null;
+  const hospitals = reading?.specialtyCode ? await publishedHospitals({ specialtyCode: reading.specialtyCode, limit: 3 }).catch(() => []) : [];
+  const lead = reading
+    ? [reading.reply, hospitals.length ? REPORT_WORDS.hospitals[lang].replace("{list}", hospitalList(hospitals)) : ""].filter(Boolean).join(" ")
+    : `${REPORT_WORDS.saved[lang].replace("{file}", file.fileName)} ${REPORT_WORDS.unreadable[lang]}`;
+
+  if (caseReference) {
+    const added = await addCaseFiles(caseReference, [new File([new Uint8Array(file.data)], file.fileName, { type: file.mimeType })], { source: "patient", kind: "report" }, "chat").catch((error) => {
+      console.error("[shifain] could not add the Telegram report to the case", error);
+      return [];
+    });
+    await sendMessage("patient", { chatId, text: escapeHtml([lead, added.length ? REPORT_WORDS.addedToCase[lang] : ""].filter(Boolean).join(" ")) });
+    return;
+  }
+
+  const intake = await getOrCreateIntake(userId, chatId);
+  await pushIntakeMessage(userId, "user", `📎 ${file.fileName}${note ? ` — ${note}` : ""}`);
+  if (reading?.isMedical) {
+    await updateIntakeFields(userId, {
+      ...(intake.fields.treatment ? {} : reading.treatment ? { treatment: reading.treatment } : {}),
+      condition: mergeCondition(intake.fields.condition, reading.condition),
+    });
+  }
+  const after = await getOrCreateIntake(userId, chatId);
+  const ready = Boolean(after.fields.treatment && after.fields.condition);
+  const reply = ready || !reading?.isMedical ? lead : `${lead} ${REPORT_WORDS.whichTreatment[lang]}`;
+  await pushIntakeMessage(userId, "assistant", reply);
+  await sendMessage("patient", { chatId, text: escapeHtml(reply) });
+  if (ready && after.state !== "collecting_profile" && after.state !== "complete") await transitionToProfile(chatId, userId);
+}
+
 // ---------------------------------------------------------------- profile collection (code-driven, no LLM)
 
 async function transitionToProfile(chatId: number, userId: number): Promise<void> {
@@ -281,10 +337,9 @@ async function handleFileUpload(
       data: fileBuffer,
     });
 
-    await sendMessage("patient", {
-      chatId,
-      text: `📎 <b>File received:</b> ${fileName}\n\nYour report has been saved and will be attached to your case. You can send more files, or continue describing your medical needs.`,
-    });
+    await answerReport(chatId, userId, { fileName, mimeType, data: fileBuffer }, msg.caption?.trim() ?? "", contact?.languageCode ?? null, contact?.caseReference ?? null);
+    // The caption was read with the report; it is not answered twice.
+    return;
   } catch (error) {
     console.error("[shifain] file upload error:", error);
     await sendMessage("patient", {

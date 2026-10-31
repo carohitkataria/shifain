@@ -359,11 +359,11 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
     [voicePrefs],
   );
 
-  const post = useCallback(async (body: BodyInit, headers?: HeadersInit): Promise<ChatReply> => {
+  const post = useCallback(async (body: BodyInit, headers?: HeadersInit, timeoutMs = 30_000): Promise<ChatReply> => {
     setSending(true);
     try {
-      // A reply should come in seconds; never leave the patient watching dots.
-      const res = await fetch("/api/chat", { method: "POST", body, headers, signal: AbortSignal.timeout(30_000) });
+      // A reply should come in seconds; never leave the patient watching dots. Reading a report takes longer.
+      const res = await fetch("/api/chat", { method: "POST", body, headers, signal: AbortSignal.timeout(timeoutMs) });
       const data = (await res.json()) as ChatReply;
       if (!res.ok && !data.reply) return { error: data.error ?? "Something went wrong. Please try again." };
       return data;
@@ -435,7 +435,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       const form = new FormData();
       form.append("file", file);
       form.append("locale", turnContext().locale);
-      const data = await post(form);
+      const data = await post(form, undefined, 75_000);
       if (data.error) setMessages((prev) => [...prev, { role: "assistant", content: data.error! }]);
       else apply(data);
       if (fileRef.current) fileRef.current.value = "";
