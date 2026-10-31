@@ -66,6 +66,8 @@ type TurnInput = {
   dryRun?: boolean;
   /** The caller's address, for the sign-in attempt limit. */
   ip?: string;
+  /** The hospital profile page the chat was opened on, if any. */
+  pageHospitalId?: string | null;
 };
 
 const HANDOFF_NOTE: Record<SayLang, string> = {
@@ -258,7 +260,7 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
 
   // The hospital the data tools look at: the one the patient names now, else the one they chose
   // before (or asked from, on a hospital or doctor page). Set here, before the AI runs.
-  const tools = await toolContext(sessionId, intake, text);
+  const tools = await toolContext(sessionId, intake, text, input.pageHospitalId ?? null);
 
   // 4. Instant answers the team has written.
   const config = await getAssistantConfig();
@@ -407,13 +409,14 @@ export async function handleReportTurn(input: TurnInput & { file: ReportFile; up
 }
 
 /** What the data tools may see in this conversation, decided by the server. */
-async function toolContext(sessionId: string, intake: WebIntake, text: string): Promise<ToolContext> {
+async function toolContext(sessionId: string, intake: WebIntake, text: string, pageHospitalId: string | null): Promise<ToolContext> {
   const hospitals = await publishedHospitals({ limit: 200 }).catch(() => []);
-  const named = hospitalNamed(text, hospitals);
+  // A hospital named in the message wins; then the profile page the patient is on; then the one kept on the chat.
+  const chosen = hospitalNamed(text, hospitals) ?? hospitals.find((item) => item._id === pageHospitalId) ?? null;
   let hospitalId = intake.hospitalId ?? null;
-  if (named && named._id !== hospitalId) {
-    hospitalId = named._id;
-    await setWebIntakeHospital(sessionId, named._id).catch(() => undefined);
+  if (chosen && chosen._id !== hospitalId) {
+    hospitalId = chosen._id;
+    await setWebIntakeHospital(sessionId, chosen._id).catch(() => undefined);
   }
   if (!hospitalId && intake.caseReference) {
     hospitalId = (await getCase(intake.caseReference).catch(() => null))?.requested?.hospitalId ?? null;

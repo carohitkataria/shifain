@@ -11,6 +11,7 @@ import {
   bandRow,
   doctorsAt,
   hospitalNamed,
+  hospitalOnPage,
   hospitalsFor,
   languageCode,
   maskReference,
@@ -84,6 +85,31 @@ assert.deepEqual(atArtemis[0].days, ["mon", "wed"], "days at this hospital only,
 assert.deepEqual(Object.keys(atArtemis[0]).sort(), ["days", "languages", "name", "specialty"], "only the listed fields");
 assert.deepEqual(atArtemis[0].languages, ["English", "Russian"]);
 assert.deepEqual(doctorsAt({ hospital: artemis, doctors, links, schedules, specialties, language: "Russian" }).map((row) => row.name), ["Dr Artemis Cardio"]);
+
+// A stale link is a past affiliation; a schedule only counts between its dates.
+const moved = doctorsAt({
+  hospital: artemis,
+  doctors: [...doctors, doctor("d-a4", "Dr Former", "cardiology"), doctor("d-a5", "Dr Later", "cardiology")],
+  links: [...links, { hospitalId: "h-artemis", doctorId: "d-a4", stale: true }],
+  schedules: [
+    { hospitalId: "h-artemis", doctorId: "d-a1", day: "wed" },
+    { hospitalId: "h-artemis", doctorId: "d-a1", day: "fri", validTo: "2026-01-31" },
+    { hospitalId: "h-artemis", doctorId: "d-a1", day: "sat", validFrom: "2027-03-01" },
+    { hospitalId: "h-artemis", doctorId: "d-a5", day: "tue", validFrom: "2027-03-01" },
+  ],
+  specialties,
+  specialty: "cardiology",
+  today: "2026-10-31",
+});
+assert.deepEqual(moved.map((row) => row.name), ["Dr Artemis Cardio"], "no stale link, no schedule that has not started");
+assert.deepEqual(moved[0].days, ["wed"], "expired and future schedule days are left out");
+
+// Opened from a hospital's profile page: that hospital, by id only.
+assert.equal(hospitalOnPage("/ru/hospitals/h-artemis"), "h-artemis");
+assert.equal(hospitalOnPage("/en/hospitals/h%20x/"), "h x");
+assert.equal(hospitalOnPage("/en/hospitals"), null);
+assert.equal(hospitalOnPage("/en/doctors/d-1"), null);
+assert.equal(hospitalOnPage(42), null);
 
 // The patient names another hospital mid-chat: the list follows.
 const switched = hospitalNamed("Actually, what about Medanta?", [artemis, medanta, apollo]);

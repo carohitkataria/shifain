@@ -76,8 +76,8 @@ export type ToolDoctor = Published & {
   specialties?: { code: string }[];
   languages?: string[];
 };
-export type ToolLink = { hospitalId: string; doctorId: string; current?: boolean };
-export type ToolSchedule = { hospitalId: string; doctorId: string; day: string | null };
+export type ToolLink = { hospitalId: string; doctorId: string; current?: boolean; stale?: boolean };
+export type ToolSchedule = { hospitalId: string; doctorId: string; day: string | null; validFrom?: string | null; validTo?: string | null };
 export type ToolSpecialty = { _id: string; name: { en?: string } | null };
 
 const isPublished = (item: Published) => item.publication?.state === "published";
@@ -131,6 +131,22 @@ export function hospitalNamed(text: string, hospitals: ToolHospital[]): ToolHosp
   return best?.hospital ?? null;
 }
 
+/**
+ * The hospital whose profile page the chat was opened on ("/ru/hospitals/h-1"
+ * → "h-1"), so "which doctors here?" needs no name. Only an id: the server
+ * still checks it is published before using it.
+ */
+export function hospitalOnPage(path: unknown): string | null {
+  if (typeof path !== "string") return null;
+  const match = /^\/[a-z]{2}\/hospitals\/([^/?#]{1,120})\/?(?:[?#].*)?$/.exec(path);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------- outputs (only these fields)
 
 const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -146,12 +162,20 @@ export function doctorsAt(input: {
   specialties: ToolSpecialty[];
   specialty?: string;
   language?: string;
+  /** YYYY-MM-DD; a schedule outside its validFrom–validTo dates does not count. */
+  today?: string;
 }): DoctorRow[] {
   const hospital = input.hospital;
   if (!hospital || !isPublished(hospital)) return [];
+  const today = input.today ?? new Date().toISOString().slice(0, 10);
+  // Same rules as the public directory and the slot finder: a stale link is a
+  // past affiliation, and a schedule only counts between its dates.
+  const schedules = input.schedules.filter(
+    (row) => row.hospitalId === hospital._id && (!row.validFrom || row.validFrom.slice(0, 10) <= today) && (!row.validTo || row.validTo.slice(0, 10) >= today),
+  );
   const atHospital = new Set([
-    ...input.links.filter((link) => link.hospitalId === hospital._id && link.current !== false).map((link) => link.doctorId),
-    ...input.schedules.filter((row) => row.hospitalId === hospital._id).map((row) => row.doctorId),
+    ...input.links.filter((link) => link.hospitalId === hospital._id && link.current !== false && link.stale !== true).map((link) => link.doctorId),
+    ...schedules.map((row) => row.doctorId),
   ]);
   const wanted = input.specialty?.trim() ? matchSpecialty(input.specialty, input.specialties) : null;
   const language = input.language ? languageCode(input.language) : null;
@@ -171,7 +195,7 @@ export function doctorsAt(input: {
       languages: (doctor.languages ?? []).map((code) => LANGUAGE_NAMES[code] ?? code),
       days: [
         ...new Set(
-          input.schedules.filter((row) => row.hospitalId === hospital._id && row.doctorId === doctor._id && row.day).map((row) => row.day!),
+          schedules.filter((row) => row.doctorId === doctor._id && row.day).map((row) => row.day!),
         ),
       ].sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b)),
     }));
