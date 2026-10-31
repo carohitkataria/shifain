@@ -2,7 +2,7 @@ import "server-only";
 import crypto from "node:crypto";
 import { getDb } from "./db";
 import { keyedHash, safeEqual } from "./patient-auth";
-import { normalisePhone, phonesMatch } from "./access-rules";
+import { codeDestinations, normalisePhone, phonesMatch } from "./access-rules";
 import { isMailConfigured, send } from "./mailer";
 import { isWhatsAppConfigured, sendWhatsAppCode } from "./whatsapp";
 import { isTelegramConfigured, sendMessage } from "./telegram";
@@ -48,50 +48,47 @@ function wordsFor(locale: string | null | undefined, ref: string, code: string):
   return locale === "oz" ? { text: toUzCyrillic(text), subject: toUzCyrillic(WORDS.uz.subject) } : { text, subject: WORDS[lang].subject };
 }
 
-/**
- * A Telegram chat whose number Telegram vouched for and which is the case's
- * own number. A chat merely linked to the case is not enough: the code proves
- * the phone, and the session it opens is the phone's.
- */
-async function telegramChatFor(record: PatientCase): Promise<number | null> {
-  if (!isTelegramConfigured("patient")) return null;
+/** Telegram chats whose number Telegram vouched for and which end like the case's number. */
+async function verifiedTelegramChats(record: PatientCase): Promise<{ phone: string; chatId: number }[]> {
+  if (!isTelegramConfigured("patient")) return [];
   const tail = normalisePhone(record.patient.phone).slice(-4);
-  if (tail.length < 4) return null;
+  if (tail.length < 4) return [];
   const contacts = (await getDb()).collection<TelegramContact>("telegram_contacts");
   const candidates = await contacts.find({ botRole: "patient", phoneVerified: true, phone: { $regex: `${tail}$` } }).limit(20).toArray();
-  return candidates.find((contact) => phonesMatch(contact.phone, record.patient.phone))?.telegramChatId ?? null;
+  return candidates.filter((contact) => contact.phone).map((contact) => ({ phone: contact.phone!, chatId: contact.telegramChatId }));
+}
+
+/**
+ * Where a code for this case goes, in order of preference, without sending
+ * anything. The destinations come from codeDestinations (access-rules.ts):
+ * only contacts already on the case — so a code that proves the phone opens
+ * the phone's session, and one that proves the inbox opens the inbox's.
+ */
+async function channelsFor(record: PatientCase): Promise<{ via: CodeChannel; send: (code: string) => Promise<boolean> }[]> {
+  const chats = await verifiedTelegramChats(record).catch(() => []);
+  const destinations = codeDestinations(record, {
+    telegramVerifiedPhones: chats.map((chat) => chat.phone),
+    whatsapp: isWhatsAppConfigured(),
+    email: isMailConfigured(),
+  });
+  return destinations.map((destination) => {
+    const words = (code: string) => wordsFor(record.locale, record._id, code);
+    if (destination.via === "telegram") {
+      const chat = chats.find((item) => phonesMatch(item.phone, destination.to))!;
+      return {
+        via: "telegram" as const,
+        send: async (code: string) => {
+          await sendMessage("patient", { chatId: chat.chatId, text: words(code).text });
+          return true;
+        },
+      };
+    }
+    if (destination.via === "whatsapp") return { via: "whatsapp" as const, send: (code: string) => sendWhatsAppCode(destination.to, code) };
+    return { via: "email" as const, send: (code: string) => send(destination.to, words(code).subject, words(code).text) };
+  });
 }
 
 const emailOf = (record: PatientCase) => record.patient.email || record.accountEmail || null;
-
-/** Where a code for this case would go, in order of preference, without sending anything. */
-async function channelsFor(record: PatientCase): Promise<{ via: CodeChannel; send: (code: string) => Promise<boolean> }[]> {
-  const out: { via: CodeChannel; send: (code: string) => Promise<boolean> }[] = [];
-  const chat = await telegramChatFor(record).catch(() => null);
-  if (chat) {
-    out.push({
-      via: "telegram",
-      send: async (code) => {
-        await sendMessage("patient", { chatId: chat, text: wordsFor(record.locale, record._id, code).text });
-        return true;
-      },
-    });
-  }
-  if (isWhatsAppConfigured() && normalisePhone(record.patient.phone).length >= 9) {
-    out.push({ via: "whatsapp", send: (code) => sendWhatsAppCode(normalisePhone(record.patient.phone), code) });
-  }
-  const email = emailOf(record);
-  if (email && isMailConfigured()) {
-    out.push({
-      via: "email",
-      send: (code) => {
-        const words = wordsFor(record.locale, record._id, code);
-        return send(email, words.subject, words.text);
-      },
-    });
-  }
-  return out;
-}
 
 /** Sends a code for this case through the first channel that takes it. */
 export async function sendCaseCode(record: PatientCase): Promise<CaseCodeRequest> {

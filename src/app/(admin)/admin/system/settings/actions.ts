@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
-import { clampRetention, saveSettings } from "@/lib/settings";
+import { clampRetention, clampVerifyWindow, saveSettings } from "@/lib/settings";
 import { VOICE_ID_PATTERN } from "@/lib/voice/voices";
 
 export async function saveSettingsAction(formData: FormData) {
@@ -25,6 +25,7 @@ export async function saveSettingsAction(formData: FormData) {
     voiceEngine: formData.get("voiceEngine") === "device" ? "device" : "natural",
     voiceId: VOICE_ID_PATTERN.test(voiceId) ? voiceId : null,
     serverListening: formData.get("serverListening") === "on",
+    verifyWindowHours: clampVerifyWindow(Number(formData.get("verifyWindowHours"))),
   });
 
   // Cases, plans and the apply form all read these on the way through.

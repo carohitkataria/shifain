@@ -92,6 +92,11 @@ export const SAY = {
     ru: "Если данные совпадают с заявкой, шестизначный код уже отправлен в Telegram, WhatsApp или на почту, указанные в этой заявке. Напишите или продиктуйте его, когда придёт. Ничего нет через минуту? Скажите «соедини с координатором».",
     uz: "Agar ma'lumotlar arizaga mos kelsa, olti xonali kod shu arizadagi Telegram, WhatsApp yoki emailga yuborildi. Kelganda yozing yoki ayting. Bir daqiqada kelmasa — «koordinator bilan gaplashmoqchiman» deng.",
   },
+  reverifyCodeSent: {
+    en: "For your privacy, I need to check it's still you: I've sent a six-digit code to the Telegram, WhatsApp or email on your case. Type or read it to me when it arrives.",
+    ru: "Для вашей безопасности нужно убедиться, что это по-прежнему вы: я отправил шестизначный код в Telegram, WhatsApp или на почту из вашей заявки. Напишите или продиктуйте его, когда придёт.",
+    uz: "Xavfsizligingiz uchun bu hali ham siz ekaningizni tekshirishim kerak: arizangizdagi Telegram, WhatsApp yoki emailga olti xonali kod yubordim. Kelganda yozing yoki ayting.",
+  },
   ownCaseCodeSent: {
     en: "I've sent a six-digit code to the Telegram, WhatsApp or email on your case. Type or read it to me when it arrives.",
     ru: "Я отправил шестизначный код в Telegram, WhatsApp или на почту, указанные в вашей заявке. Напишите или продиктуйте его, когда придёт.",
@@ -281,6 +286,7 @@ export const SERVICE_WORDS: Record<string, Line> = {
 
 export const PAGE_WORDS: Record<string, Line> = {
   plan: { en: "your plan", ru: "ваш план", uz: "rejangiz" },
+  reports: { en: "your reports in your account", ru: "ваши документы в личном кабинете", uz: "kabinetingizdagi hujjatlaringizni" },
   hospitals: { en: "our hospitals", ru: "наши больницы", uz: "shifoxonalarimiz" },
   doctors: { en: "our doctors", ru: "наших врачей", uz: "shifokorlarimiz" },
   treatments: { en: "treatments", ru: "виды лечения", uz: "davolash turlari" },

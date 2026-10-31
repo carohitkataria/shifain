@@ -83,6 +83,7 @@ export const SECTIONS: Section[] = [
     tabs: [
       { label: "Overview", href: "/admin/settings" },
       { label: "Team & logins", href: "/admin/access" },
+      { label: "Sign-in log", href: "/admin/system/sign-ins" },
       { label: "Site settings", href: "/admin/system/settings" },
       { label: "Telegram", href: "/admin/telegram" },
       { label: "AI assistant", href: "/admin/assistant" },

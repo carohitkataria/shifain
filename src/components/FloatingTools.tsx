@@ -144,6 +144,8 @@ const IconWave = () => (
 /** Turns the API's reply into chat state; shared by typed, uploaded and spoken turns. */
 type ChatReply = {
   reply?: string;
+  /** The reply as it may be read aloud: no whole phone, email or case number. */
+  speech?: string;
   state?: string;
   /** Quick replies to offer under the answer. */
   suggestions?: string[];

@@ -21,6 +21,11 @@ import { casesForEmail } from "@/lib/cases";
 import { provenIdentity, sendCaseCode, verifyCaseCode } from "@/lib/case-codes";
 import { requestPhoneCode, verifyPhoneCode, type PhoneCodeRequest } from "@/lib/phone-codes";
 import { allowHit } from "@/lib/rate-limit";
+import { audit, type AuditMethod } from "@/lib/audit";
+
+/** One sign-in attempt, for the admin sign-in log. */
+const logSignIn = async (method: AuditMethod, ok: boolean, reference: string | null = null) =>
+  audit({ session: "web", method, reference, result: ok ? "ok" : "failed", ip: await clientIp() });
 import { COUNTRIES } from "@/lib/countries";
 import { CHANNELS, type ContactChannel } from "@/lib/journey-rules";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
@@ -49,6 +54,7 @@ export async function patientLoginAction(formData: FormData) {
   const step = new URLSearchParams({ with: "reference", ref: reference });
 
   if (!allowHit(`case-signin:${await clientIp()}`, 5, 60 * 60_000)) {
+    await audit({ session: "web", method: "case-code", reference, result: "limited", ip: await clientIp() });
     step.set("error", "slow");
     redirect(`${page}?${step.toString()}`);
   }
@@ -56,6 +62,7 @@ export async function patientLoginAction(formData: FormData) {
   if (code) {
     const verified = await verifyCaseCode(reference, code).catch(() => null);
     const proven = verified ? provenIdentity(verified.record, verified.via) : null;
+    await logSignIn("case-code", Boolean(proven), reference);
     if (!proven) {
       step.set("sent", "1");
       step.set("error", "code");
@@ -71,6 +78,7 @@ export async function patientLoginAction(formData: FormData) {
     return null;
   });
   const sent = record ? await sendCaseCode(record).catch(() => null) : null;
+  await audit({ session: "web", method: "case-code", reference, result: record ? "sent" : "failed", ip: await clientIp() });
   step.set("sent", "1");
   // Only in local development with nothing to send through: the code, so the flow can be tried.
   if (sent?.status === "dev") step.set("dev", sent.code);
@@ -157,6 +165,7 @@ export async function verifyEmailCodeAction(formData: FormData) {
     console.error("[shifain] could not check a sign-in code", error);
     return null;
   });
+  await logSignIn("email-code", Boolean(verified));
   if (!verified) {
     redirect(`${page}?sent=1&email=${encodeURIComponent(email)}&error=code${resetting(formData) ? "&then=password" : ""}`);
   }
@@ -195,12 +204,14 @@ export async function passwordLoginAction(formData: FormData) {
 
   const ip = await clientIp();
   if (!allowHit(`pw-id:${identifier.toLowerCase()}`, 10, 15 * 60_000) || !allowHit(`pw-ip:${ip}`, 30, 15 * 60_000)) {
+    await audit({ session: "web", method: "password", reference: null, result: "limited", ip });
     redirect(`${page}error=slow&${keep}`);
   }
   const account = await checkPassword(identifier, password).catch((error) => {
     console.error("[shifain] password sign-in failed", error);
     return null;
   });
+  await logSignIn("password", Boolean(account));
   if (!account) redirect(`${page}error=password&${keep}`);
 
   await startPatientEmailSession(account.email, { remember });
@@ -235,6 +246,7 @@ export async function verifyPhoneCodeAction(formData: FormData) {
     console.error("[shifain] could not check a WhatsApp code", error);
     return null;
   });
+  await logSignIn("phone-code", Boolean(verified));
   if (!verified) {
     redirect(`/${locale}/portal/patient/login?otp=whatsapp&sent=1&phone=${encodeURIComponent(phone)}&error=code${resetting(formData) ? "&then=password" : ""}`);
   }

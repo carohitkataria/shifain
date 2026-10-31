@@ -16,6 +16,7 @@
  *
  * Uses its own test records (phone +998 90 000 11 22) and removes them after.
  */
+import crypto from "node:crypto";
 import { MongoClient } from "mongodb";
 
 const BASE = process.env.BASE_URL || "http://localhost:3130";
@@ -102,6 +103,21 @@ const theirPlan = await stranger(`/en/plan/${VICTIM_REF}`);
 check(theirPlan.status >= 300 && theirPlan.status < 400, "the other patient's plan page does not open", `${theirPlan.status}`);
 const ownPlan = await stranger(`/en/plan/${opened}`);
 check(ownPlan.status === 200, "the stranger's own new plan opens in the browser that opened it", `${ownPlan.status}`);
+
+// ---------------------------------------------------------------- Part B: levels
+// (Last for this browser: planting the code below makes it the proven owner of that phone.)
+const reportsAsk = await say(stranger, "show my reports");
+check(!reportsAsk.action && /code/i.test(reportsAsk.reply ?? ""), "asking for reports at conversation level sends a code, not the reports", reportsAsk.reply?.slice(0, 100));
+const pending = await db.collection("case_codes").findOne({ _id: opened });
+check(Boolean(pending), "the code waits for the case the chat opened");
+// With the signing secret (as in dev.sh), plant a known code and finish the sign-in in the chat.
+if (process.env.PARTNER_SECRET && pending) {
+  const hash = crypto.createHmac("sha256", process.env.PARTNER_SECRET).update(`code:case:${opened}:123456`).digest("base64url");
+  await db.collection("case_codes").updateOne({ _id: opened }, { $set: { codeHash: hash, via: "whatsapp", attempts: 0 } });
+  const after = await say(stranger, "123456");
+  check(after.action?.href?.endsWith("/portal/patient/reports") === true, "after the right code, the reports open in the same turn", `${after.reply?.slice(0, 80)} ${JSON.stringify(after.action)}`);
+}
+
 
 // ---------------------------------------------------------------- 2. a case number alone
 const anyone = browser();

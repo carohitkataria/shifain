@@ -50,17 +50,44 @@ const SHORT_SESSION_SECONDS = 60 * 60 * 12;
 
 export type SessionOptions = { remember?: boolean };
 
+/**
+ * When this browser last proved who it is. Every session starts from a proof —
+ * a one-time code, a Telegram-verified number, a password or Google — so the
+ * moment a session starts is the moment of verification. Sensitive actions
+ * (reports, payment links, family, contact details) ask for a fresh code once
+ * it is older than the window in Settings.
+ */
+export const VERIFIED_COOKIE = "shifain_verified";
+
 async function setSession(subject: string, { remember = true }: SessionOptions): Promise<void> {
-  const expires = Date.now() + (remember ? MAX_AGE_SECONDS : SHORT_SESSION_SECONDS) * 1000;
+  const now = Date.now();
+  const expires = now + (remember ? MAX_AGE_SECONDS : SHORT_SESSION_SECONDS) * 1000;
   const payload = `${subject}.${expires}`;
   const jar = await cookies();
-  jar.set(PATIENT_COOKIE, `${payload}.${sign(payload)}`, {
+  const options = {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     path: "/",
     ...(remember ? { maxAge: MAX_AGE_SECONDS } : {}),
-  });
+  };
+  jar.set(PATIENT_COOKIE, `${payload}.${sign(payload)}`, options);
+  jar.set(VERIFIED_COOKIE, `${now}.${sign(`verified:${subject}:${now}`)}`, options);
+}
+
+/** When the signed-in patient last verified, in milliseconds; null if not signed in or unknown. */
+export async function verifiedAt(): Promise<number | null> {
+  const jar = await cookies();
+  const token = jar.get(PATIENT_COOKIE)?.value;
+  const proof = jar.get(VERIFIED_COOKIE)?.value;
+  if (!token || !proof) return null;
+  const identity = readToken(token);
+  if (!identity) return null;
+  const subject = identity.kind === "email" ? `e:${identity.email}` : identity.digits;
+  const at = proof.indexOf(".");
+  const when = Number(proof.slice(0, at));
+  if (!Number.isFinite(when) || !safeEqual(proof.slice(at + 1), sign(`verified:${subject}:${when}`))) return null;
+  return when;
 }
 
 export async function startPatientSession(phone: string, options: SessionOptions = {}): Promise<void> {
@@ -70,6 +97,7 @@ export async function startPatientSession(phone: string, options: SessionOptions
 export async function endPatientSession(): Promise<void> {
   const jar = await cookies();
   jar.delete(PATIENT_COOKIE);
+  jar.delete(VERIFIED_COOKIE);
 }
 
 /** The signed-in patient's phone number, or null. */

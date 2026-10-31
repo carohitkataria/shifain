@@ -4,7 +4,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getDb, isDatabaseConfigured } from "./db";
 import { casesForEmail, casesForPhone, familyCasesFor, type PatientCase, type PlanEdit } from "./cases";
-import { accountForPhone, currentPatient, getPatientAccount, type PatientAccount, type PatientIdentity } from "./patient-auth";
+import { accountForPhone, currentPatient, getPatientAccount, verifiedAt, type PatientAccount, type PatientIdentity } from "./patient-auth";
 import { canSee, viewerOf, type Viewer } from "./access-rules";
 import { MAX_REPORT_BYTES, storeReports, type ReportUpload } from "./reports";
 import { getSettings } from "./settings";
@@ -101,6 +101,16 @@ export async function loadPortal(locale: string, caseParam?: string | null): Pro
     cases[0] ||
     null;
   return { identity, account, cases, active, viewer: active ? viewerOf(identity, active) : null };
+}
+
+/**
+ * Whether the patient signed in recently enough for a sensitive action —
+ * opening reports, payment links, family, contact details (Settings →
+ * "Re-check sign-in after"). Older, and they are asked for a fresh code.
+ */
+export async function isFreshlyVerified(): Promise<boolean> {
+  const at = await verifiedAt().catch(() => null);
+  return at !== null && Date.now() - at <= (await getSettings()).verifyWindowHours * 3_600_000;
 }
 
 /** Whether this signed-in person is the patient on this case (and so may change it). */
