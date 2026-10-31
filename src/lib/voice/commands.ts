@@ -14,6 +14,7 @@ import {
 import { replanCase } from "../case-flow";
 import {
   currentPatient,
+  verifiedAt,
   endPatientSession,
   findCaseForSignIn,
   requestEmailCode,
@@ -24,6 +25,8 @@ import {
 } from "../patient-auth";
 import { provenIdentity, sendCaseCode, verifyCaseCode } from "../case-codes";
 import { allowHit } from "../rate-limit";
+import { COMMAND_LEVELS, gate, levelOf } from "../access-levels";
+import { audit } from "../audit";
 import { getContent } from "../store";
 import { getSettings } from "../settings";
 import { notifyOps } from "../mailer";
@@ -151,6 +154,22 @@ export async function runCommand(ctx: Ctx, command: ParsedCommand): Promise<Comm
   const slots = command.slots;
   const line = (key: SayKey, vars?: Record<string, string | number>) => say(key, lang, vars);
 
+  // Who may do this is decided here, in code — never by the AI that may have named the command.
+  const need = COMMAND_LEVELS[command.name];
+  if (need.level !== "public") {
+    const who = await identity();
+    const have = levelOf({ signedIn: Boolean(who), conversationCase: ctx.intake.caseReference });
+    const when = who ? await verifiedAt().catch(() => null) : null;
+    const decision = gate(command.name, have, when, (await getSettings()).verifyWindowHours);
+    if (decision !== "allow") {
+      await audit({ session: ctx.sessionId, method: `action:${command.name}`, reference: ctx.intake.caseReference, result: "needs-code", ip: ctx.ip ?? null });
+      return requireCode(ctx, command.name, decision === "reverify");
+    }
+    if (need.level === "verified") {
+      await audit({ session: ctx.sessionId, method: `action:${command.name}`, reference: ctx.intake.caseReference, result: "ok", ip: ctx.ip ?? null });
+    }
+  }
+
   switch (command.name) {
     case "help":
       return { reply: line("help") };
@@ -198,6 +217,9 @@ export async function runCommand(ctx: Ctx, command: ParsedCommand): Promise<Comm
       await endPatientSession();
       await setPendingCommand(ctx.sessionId, null);
       return { reply: line("signedOut") };
+
+    case "reports":
+      return { reply: line("opening", { what: PAGE_WORDS.reports[lang] }), action: { type: "navigate", href: `/${locale}/portal/patient/reports` } };
 
     case "upload_report":
       return { reply: line("upload"), links: [{ kind: "attach", label: lang === "ru" ? "Прикрепить" : lang === "uz" ? "Biriktirish" : "Attach report" }] };
@@ -424,6 +446,7 @@ export async function continueCommand(ctx: Ctx, pending: PendingCommand): Promis
       if (!code) return { reply: line("askCodeAgain") };
       if (!mayTrySignIn(ctx)) return { reply: line("tooManyTries") };
       const verified = await verifyEmailCode(String(pending.data.email), code).catch(() => null);
+      await audit({ session: ctx.sessionId, method: "chat-email-code", reference: null, result: verified ? "ok" : "failed", ip: ctx.ip ?? null });
       if (!verified) return { reply: line("codeWrong") };
       await startPatientEmailSession(verified);
       return signedInThen(ctx, then, String(pending.data.thenText ?? ""));
@@ -446,6 +469,7 @@ export async function continueCommand(ctx: Ctx, pending: PendingCommand): Promis
       // is given whether or not anything matched.
       const record = await findCaseForSignIn(String(pending.data.reference), phone).catch(() => null);
       if (record) await sendCaseCode(record).catch((error) => console.error("[shifain] chat case code failed", error));
+      await audit({ session: ctx.sessionId, method: "chat-case-code", reference: String(pending.data.reference), result: record ? "sent" : "failed", ip: ctx.ip ?? null });
       await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "case_code", data: { ...pending.data } });
       return { reply: line("caseCodeSent") };
     }
@@ -456,6 +480,7 @@ export async function continueCommand(ctx: Ctx, pending: PendingCommand): Promis
       if (!mayTrySignIn(ctx)) return { reply: line("tooManyTries") };
       const verified = await verifyCaseCode(String(pending.data.reference), code).catch(() => null);
       const proven = verified ? provenIdentity(verified.record, verified.via) : null;
+      await audit({ session: ctx.sessionId, method: "chat-case-code", reference: String(pending.data.reference), result: proven ? "ok" : "failed", ip: ctx.ip ?? null });
       if (!proven) return { reply: line("caseCodeWrong") };
       if (proven.kind === "email") await startPatientEmailSession(proven.email);
       else await startPatientSession(proven.digits);
@@ -580,6 +605,22 @@ async function beginCase(ctx: Ctx, phrase: string): Promise<CommandOutcome> {
 async function askToSignIn(ctx: Ctx, then: CommandName | null): Promise<CommandOutcome> {
   await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "method", data: { then: then ?? "", thenText: then ? ctx.text : "" } });
   return { reply: say("needSignIn", ctx.lang) };
+}
+
+/**
+ * A command that needs more than this person has: a one-time code to a contact
+ * on their case, and the command runs once it is entered. With no case known,
+ * they are asked how to sign in.
+ */
+async function requireCode(ctx: Ctx, then: CommandName, again: boolean): Promise<CommandOutcome> {
+  const own = (await ownedCases(ctx, await identity()))[0] ?? null;
+  if (!own) return askToSignIn(ctx, then);
+  if (!mayTrySignIn(ctx)) return { reply: say("tooManyTries", ctx.lang) };
+  const sent = await sendCaseCode(own).catch(() => ({ status: "failed" as const }));
+  await audit({ session: ctx.sessionId, method: "chat-case-code", reference: own._id, result: sent.status === "none" || sent.status === "failed" ? "failed" : "sent", ip: ctx.ip ?? null });
+  if (sent.status === "none" || sent.status === "failed") return { reply: say("caseCodeNoChannel", ctx.lang) };
+  await setPendingCommand(ctx.sessionId, { name: "sign_in", step: "case_code", data: { reference: own._id, then, thenText: ctx.text } });
+  return { reply: say(again ? "reverifyCodeSent" : "ownCaseCodeSent", ctx.lang) };
 }
 
 async function sendCode(ctx: Ctx, email: string, carry: PendingCommand["data"]): Promise<CommandOutcome> {

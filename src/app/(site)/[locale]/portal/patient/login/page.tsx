@@ -80,6 +80,7 @@ const ERRORS: Record<string, L> = {
   email: APP.errors.email,
   telegram: APP.errors.telegram,
   plan: LOGIN.errPlan,
+  fresh: LOGIN.errFresh,
   "1": APP.errors.reference,
 };
 
@@ -93,7 +94,8 @@ export default async function PatientLoginPage({ params, searchParams }: { param
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
   const query = await searchParams;
-  if (isDatabaseConfigured() && (await currentPatient().catch(() => null))) redirect(`/${locale}/portal/patient`);
+  // A signed-in patient is sent on — unless they are here to verify again for a sensitive action.
+  if (query.error !== "fresh" && isDatabaseConfigured() && (await currentPatient().catch(() => null))) redirect(`/${locale}/portal/patient`);
 
   const here = `/${locale}/portal/patient/login`;
   const view = viewOf(query);

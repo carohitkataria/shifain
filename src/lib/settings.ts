@@ -34,6 +34,11 @@ export type SiteSettings = {
    * for free. Off by default; the browser's recogniser costs nothing.
    */
   serverListening: boolean;
+  /**
+   * Opening reports, payment links, adding family and changing contact details
+   * need a sign-in this recent (hours); older, and a fresh code is asked for.
+   */
+  verifyWindowHours: number;
   updatedAt: string | null;
 };
 
@@ -48,6 +53,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   voiceEngine: "natural",
   voiceId: null,
   serverListening: false,
+  verifyWindowHours: 24,
   updatedAt: null,
 };
 
@@ -73,7 +79,14 @@ export async function getSettings(): Promise<SiteSettings> {
 
   // A retention of zero would delete a report the moment it landed.
   merged.reportRetentionDays = clampRetention(merged.reportRetentionDays);
+  merged.verifyWindowHours = clampVerifyWindow(merged.verifyWindowHours);
   return merged;
+}
+
+/** Between one hour and a week. */
+export function clampVerifyWindow(hours: number): number {
+  if (!Number.isFinite(hours)) return DEFAULT_SETTINGS.verifyWindowHours;
+  return Math.min(168, Math.max(1, Math.round(hours)));
 }
 
 export function clampRetention(days: number): number {

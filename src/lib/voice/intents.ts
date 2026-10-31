@@ -28,6 +28,7 @@ export const COMMAND_NAMES = [
   "sign_in",
   "sign_out",
   "upload_report",
+  "reports",
   "cost",
   "hospitals",
   "doctors",
@@ -344,6 +345,11 @@ const RULES: Rule[] = [
   {
     name: "edit_plan",
     test: has(/\b(edit|change|update|modify|adjust|customi[sz]e)\b (my |the )?(treatment )?(plan|package|estimate)\b|(измени|поменя|редактир|настро)\S* (мой )?(план|пакет)|rejani (o'zgartir|tahrirla)/),
+  },
+  {
+    // Before open_plan: "show my reports" is about the files, not the plan.
+    name: "reports",
+    test: has(/\b(show|open|see|view|read|where are|display)\b (me )?(my |the )?(medical )?(reports|results|test results|scans|files|documents)\b|^my reports$|(покажи|открой)\S* (мои )?(анализы|заключения|документы|снимки)|^мои анализы$|(hisobot|tahlil|natija)larimni (ko'rsat|och)|^tahlillarim$/),
   },
   {
     name: "open_plan",

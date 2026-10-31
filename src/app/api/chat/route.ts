@@ -11,6 +11,8 @@ import { handleReportTurn, handleWebTurn } from "@/lib/assistant/web-turn";
 import { DEFAULT_NATURAL_VOICE, VOICE_ID_PATTERN, naturalVoice } from "@/lib/voice/voices";
 import { allowHit } from "@/lib/rate-limit";
 import { audioSeconds } from "@/lib/audio-duration";
+import { speakable } from "@/lib/access-levels";
+import { sayLang } from "@/lib/voice/command-copy";
 import { MAX_REPORT_BYTES } from "@/lib/reports";
 
 const SESSION_COOKIE = "shifain_chat";
@@ -222,7 +224,8 @@ export async function POST(request: NextRequest) {
     if (settings.voiceEngine !== "natural" || requestedVoice === "device") return payload;
     try {
       const speech = await cachedSpeech({
-        text: reply.slice(0, 1200),
+        // Spoken aloud: never a whole phone number, email or case number (the screen keeps them).
+        text: speakable(reply, sayLang(detectedLanguage ?? locale)).slice(0, 1200),
         languageCode: detectedLanguage ?? locale,
         voiceId: allowedVoice(requestedVoice, settings.voiceId),
         speed: rate,

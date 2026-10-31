@@ -108,3 +108,26 @@ export const canSee = (viewer: Viewer | null, part: FamilyAccess) =>
 export function mayViewPlan(input: { viewer: Viewer | null; team: boolean; referrer: boolean; openedHere: boolean }): boolean {
   return input.team || input.referrer || input.openedHere || canSee(input.viewer, "reports");
 }
+
+// ---------------------------------------------------------------- where a code may go
+
+export type CodeDestination = { via: "telegram" | "whatsapp" | "email"; to: string };
+
+/**
+ * Where a one-time code for a case may be sent: only to contacts already on
+ * the case — never to a number or address typed in the conversation, which is
+ * not even an input here. A Telegram chat counts only when the number Telegram
+ * vouched for is the case's own.
+ */
+export function codeDestinations(
+  record: { patient: { phone: string; email?: string | null }; accountEmail?: string | null },
+  available: { telegramVerifiedPhones: string[]; whatsapp: boolean; email: boolean },
+): CodeDestination[] {
+  const out: CodeDestination[] = [];
+  const phone = normalisePhone(record.patient.phone);
+  if (phone.length >= MIN_PHONE_DIGITS && available.telegramVerifiedPhones.some((verified) => phonesMatch(verified, phone))) out.push({ via: "telegram", to: phone });
+  if (available.whatsapp && phone.length >= MIN_PHONE_DIGITS) out.push({ via: "whatsapp", to: phone });
+  const email = record.patient.email || record.accountEmail || null;
+  if (available.email && email) out.push({ via: "email", to: email });
+  return out;
+}

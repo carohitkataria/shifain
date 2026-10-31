@@ -4,6 +4,7 @@ import { publicOrigin, publicUrl } from "@/lib/origin";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { OAUTH_COOKIE, emailFromCode } from "@/lib/google-auth";
 import { ensureAccount, startPatientEmailSession } from "@/lib/patient-auth";
+import { audit } from "@/lib/audit";
 
 export async function GET(request: NextRequest) {
   const jar = await cookies();
@@ -33,5 +34,6 @@ export async function GET(request: NextRequest) {
 
   await ensureAccount(email, "", locale).catch((error) => console.error("[shifain] could not record a Google account", error));
   await startPatientEmailSession(email);
+  await audit({ session: "web", method: "google", reference: null, result: "ok", ip: null });
   return NextResponse.redirect(publicUrl(request, `/${locale}/portal/patient`));
 }

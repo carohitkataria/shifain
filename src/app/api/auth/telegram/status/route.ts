@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
 import { accountForPhone, startPatientEmailSession, startPatientSession } from "@/lib/patient-auth";
 import { TG_LOGIN_COOKIE, readTelegramLogin, spendTelegramLogin } from "@/lib/telegram-login";
+import { audit } from "@/lib/audit";
 
 /**
  * Polled by the sign-in page while the patient is in Telegram. Once the bot has
@@ -26,6 +27,7 @@ export async function GET() {
   const account = await accountForPhone(login.digits).catch(() => null);
   if (account) await startPatientEmailSession(account.email);
   else await startPatientSession(login.digits);
+  await audit({ session: "web", method: "telegram", reference: null, result: "ok", ip: null });
   jar.delete({ name: TG_LOGIN_COOKIE, path: "/api/auth/telegram" });
   return NextResponse.json({ status: "done", redirect: then === "password" ? `/${locale}/portal/patient/settings?set=password#password` : `/${locale}/portal/patient` });
 }

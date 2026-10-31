@@ -74,6 +74,11 @@ export const LOGIN = {
     "Войдите, чтобы увидеть свой план: по почте или номеру телефона из заявки либо по номеру случая.",
     "Rejangizni ko'rish uchun kiring: arizadagi email yoki telefon raqami yoki holat raqami bilan.",
   ),
+  errFresh: l(
+    "For your privacy, please confirm it's you again before opening reports, payment links, family or contact details. A one-time code is quickest.",
+    "Для вашей безопасности подтвердите вход ещё раз, прежде чем открывать документы, ссылки на оплату, семью или контакты. Быстрее всего — по одноразовому коду.",
+    "Xavfsizligingiz uchun hujjatlar, to'lov havolalari, oila yoki kontaktlarni ochishdan oldin yana bir bor tasdiqlang. Eng tezi — bir martalik kod.",
+  ),
   errSlow: l("Too many tries. Wait a few minutes, or use a one-time code.", "Слишком много попыток. Подождите несколько минут или войдите по коду.", "Juda koʻp urinish. Bir necha daqiqa kuting yoki kod bilan kiring."),
   errPhone: l("Check the mobile number — with the country code.", "Проверьте номер — вместе с кодом страны.", "Raqamni tekshiring — mamlakat kodi bilan."),
   errWhatsApp: l("We couldn’t send a WhatsApp message to that number. Try Telegram or email.", "Не удалось отправить сообщение в WhatsApp. Попробуйте Telegram или почту.", "WhatsAppga xabar yuborilmadi. Telegram yoki pochtani sinab koʻring."),

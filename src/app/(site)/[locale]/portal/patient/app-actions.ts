@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { ownedCase, requestAppointment, type AppointmentWindow } from "@/lib/patient-portal";
+import { isFreshlyVerified as isFresh, ownedCase, requestAppointment, type AppointmentWindow } from "@/lib/patient-portal";
 import {
   addCaseFiles,
   addFamilyMember,
@@ -37,6 +37,7 @@ import {
   type RidePlace,
 } from "@/lib/journey-rules";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
+import { audit } from "@/lib/audit";
 
 const SECTIONS = new Set(["", "case", "calendar", "reports", "stay", "companions", "family", "payments", "documents", "notifications", "settings", "tasks", "messages"]);
 const text = (formData: FormData, name: string, max = 300) => {
@@ -56,13 +57,24 @@ function localeOf(formData: FormData): Locale {
  * patient; a family member only where noted), make the change, and return to
  * the screen it came from with a short note for the toast.
  */
-async function act(formData: FormData, change: (reference: string, who: { name: string; family: boolean }) => Promise<string | void>, familyMay = false) {
+async function act(
+  formData: FormData,
+  change: (reference: string, who: { name: string; family: boolean }) => Promise<string | void>,
+  familyMay = false,
+  /** A sensitive action (family, contact details, payment links): needs a recent sign-in, and is logged. */
+  sensitive?: string,
+) {
   const locale = localeOf(formData);
   const reference = String(formData.get("reference") ?? "").trim().toUpperCase();
   const back = String(formData.get("section") ?? "");
   const section = SECTIONS.has(back) ? back : "";
   const owned = await ownedCase(reference, familyMay ? "calendar" : undefined);
   if (!owned || (!familyMay && owned.viewer.role !== "patient")) redirect(`/${locale}/portal/patient/login`);
+  if (sensitive) {
+    const fresh = await isFresh();
+    await audit({ session: "web", method: `action:${sensitive}`, reference: owned.record._id, result: fresh ? "ok" : "needs-code", ip: null });
+    if (!fresh) redirect(`/${locale}/portal/patient/login?error=fresh`);
+  }
   const name = owned.viewer.role === "family" ? owned.viewer.member.name : owned.record.patient.name;
   const done = (await change(owned.record._id, { name, family: owned.viewer.role === "family" })) || "saved";
   const path = `/${locale}/portal/patient${section ? `/${section}` : ""}`;
@@ -157,7 +169,7 @@ export async function familyAddAction(formData: FormData) {
       access: many<FamilyAccess>(FAMILY_ACCESS, formData.getAll("access")),
     });
     return "saved";
-  });
+  }, false, "portal-family-add");
 }
 
 export async function familyUpdateAction(formData: FormData) {
@@ -173,7 +185,7 @@ export async function familyUpdateAction(formData: FormData) {
       travelling: formData.get("travelling") === "on",
     });
     return "saved";
-  });
+  }, false, "portal-family-change");
 }
 
 export async function channelsAction(formData: FormData) {
@@ -199,7 +211,7 @@ export async function homeContactAction(formData: FormData) {
     const phone = text(formData, "phone", 30);
     await setPreferences(reference, { homeContact: name && phone ? { name, phone, relation: text(formData, "relation", 40) } : null });
     return "saved";
-  });
+  }, false, "portal-contact-change");
 }
 
 /**
@@ -258,7 +270,7 @@ export async function payAction(formData: FormData) {
   await act(formData, async (reference) => {
     await addTask(reference, { title: "Send the patient a payment link", detail: "Asked from the app", due: null, owner: "desk", section: "payments" }, "portal");
     return "pay";
-  });
+  }, false, "portal-payment-link");
 }
 
 export async function helloAction(formData: FormData) {

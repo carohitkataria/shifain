@@ -186,6 +186,23 @@ export default async function SettingsPage({
                 </span>
               </label>
 
+              <label>
+                <span className={adminLabel}>Re-check sign-in after</span>
+                <input
+                  name="verifyWindowHours"
+                  type="number"
+                  min={1}
+                  max={168}
+                  step={1}
+                  defaultValue={settings.verifyWindowHours}
+                  className={adminField}
+                />
+                <span className="mt-1 block text-sm text-ink-soft">
+                  Hours. Opening reports, payment links, adding family or changing contact details asks
+                  for a fresh one-time code once the patient&apos;s last sign-in is older than this.
+                </span>
+              </label>
+
               <label className="sm:col-span-2">
                 <span className={adminLabel}>Operations inbox</span>
                 <input
