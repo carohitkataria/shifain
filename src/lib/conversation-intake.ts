@@ -30,6 +30,8 @@ export type IntakeUploadRef = {
   mimeType: string;
   fileSize: number;
   createdAt: string;
+  /** What the assistant read in it, when it could: for the coordinator and the planner, not a diagnosis. */
+  reading?: { documentType: string; findings: string; specialtyCode: string | null } | null;
 };
 
 export type ConversationIntake = {

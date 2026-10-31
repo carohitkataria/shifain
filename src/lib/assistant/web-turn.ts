@@ -1,5 +1,8 @@
 import "server-only";
-import { listCities } from "../catalogue";
+import { listCities, listSpecialties, publishedHospitals } from "../catalogue";
+import { addCaseFiles } from "../journey";
+import { readReport, type ReportFile } from "./report-reader";
+import { REPORT_WORDS, hospitalList, mergeCondition, withNote } from "./report-rules";
 import { getCase } from "../cases";
 import type { Locale } from "../i18n";
 import { generateChatReply, generateIntakeReply, type ConversationMessage } from "../voice-agent";
@@ -22,7 +25,7 @@ import { getAssistantConfig } from "./config";
 import { countAnswer, rememberQuestion, type AnswerPath } from "./stats";
 import { listTreatments } from "../catalogue";
 import { differentTreatments, newTreatmentRequest } from "../voice/treatments";
-import { markHumanRequested, switchWebIntakeTreatment } from "../web-intake";
+import { markHumanRequested, setUploadReading, switchWebIntakeTreatment } from "../web-intake";
 import { instantAnswer } from "./knowledge";
 import {
   guessLanguage,
@@ -315,6 +318,83 @@ export async function handleWebTurn(input: TurnInput): Promise<TurnReply> {
     return done({ ...(await askNextOrOpen(input, intake, lang, turn.reply)), via: turn.source === "scripted" ? "scripted" : "ai" });
   }
   return done({ reply: turn.reply, state: "medical_chat", via: turn.source === "scripted" ? "scripted" : "ai" });
+}
+
+/** The language the report reply is written in; Uzbek Cyrillic pages convert it afterwards, like every reply. */
+const WRITE_IN: Record<SayLang, string> = { en: "English", ru: "Russian", uz: "Uzbek, in the Latin alphabet" };
+
+/**
+ * A report shared in the chat. It is read — what kind of document, what it
+ * says, which specialty looks after it — and the answer comes from that:
+ * the findings in plain words, hospitals we work with for it, and the next
+ * step. Its findings fill the medical part of the intake, so a patient who
+ * sends a report instead of describing their problem goes straight on to
+ * the few details a case needs. Once a case is open, the report joins it.
+ */
+export async function handleReportTurn(input: TurnInput & { file: ReportFile; uploadId: string }): Promise<TurnReply> {
+  const { sessionId, locale, file } = input;
+  let intake = await getOrCreateWebIntake(sessionId);
+  const lang = sayLang(input.detectedLanguage ?? guessLanguage(input.text) ?? intake.language ?? locale);
+  await pushWebIntakeMessage(sessionId, "user", `📎 ${file.fileName}${input.text ? ` — ${input.text}` : ""}`);
+  const done = async (reply: TurnReply): Promise<TurnReply> => {
+    if (reply.reply) await pushWebIntakeMessage(sessionId, "assistant", reply.reply);
+    if (!input.dryRun) await countAnswer(reply.via);
+    return reply;
+  };
+  const saved = REPORT_WORDS.saved[lang].replace("{file}", file.fileName);
+
+  // A person is handling this chat: the file is kept for them, and the assistant stays quiet.
+  if (intake.handoff) return done({ reply: saved, state: intake.state, handoff: true, via: "handoff" });
+
+  const specialties = (await listSpecialties().catch(() => [])).map((item) => ({ code: item._id, name: item.name?.en ?? item._id }));
+  const reading = await readReport({ file, language: WRITE_IN[lang], specialties, note: input.text }).catch(() => null);
+  if (reading?.isMedical) {
+    await setUploadReading(sessionId, input.uploadId, { documentType: reading.documentType, findings: reading.findings, specialtyCode: reading.specialtyCode }).catch((error) =>
+      console.error("[shifain] could not keep the report reading", error),
+    );
+  }
+  // Only hospitals the site may name: published against a signed tie-up.
+  const hospitals = reading?.specialtyCode ? await publishedHospitals({ specialtyCode: reading.specialtyCode, limit: 3 }).catch(() => []) : [];
+  const lead = reading
+    ? [reading.reply, hospitals.length ? REPORT_WORDS.hospitals[lang].replace("{list}", hospitalList(hospitals)) : ""].filter(Boolean).join(" ")
+    : `${saved} ${REPORT_WORDS.unreadable[lang]}`;
+  const via: AnswerPath = reading ? "ai" : "scripted";
+
+  // A case is open: the report joins it, for the coordinator and the doctors.
+  if (intake.complete && intake.caseReference) {
+    const added = input.dryRun
+      ? []
+      : await addCaseFiles(intake.caseReference, [new File([new Uint8Array(file.data)], file.fileName, { type: file.mimeType })], { source: "patient", kind: "report" }, "chat").catch((error) => {
+          console.error("[shifain] could not add the chat report to the case", error);
+          return [];
+        });
+    return done({
+      reply: [lead, added.length ? REPORT_WORDS.addedToCase[lang] : ""].filter(Boolean).join(" "),
+      state: "complete",
+      caseReference: intake.caseReference,
+      via,
+    });
+  }
+
+  // What they typed with the file is theirs to keep, whatever the file turns out to be.
+  const said = withNote(intake.fields.condition, input.text);
+  if (!reading?.isMedical) {
+    if (said && said !== (intake.fields.condition ?? "")) await updateWebIntakeFields(sessionId, { condition: said });
+    return done({ reply: reading ? lead : `${lead} ${REPORT_WORDS.whichTreatment[lang]}`, state: intake.state, via });
+  }
+
+  // What the report shows becomes the medical part of the intake.
+  await updateWebIntakeFields(sessionId, {
+    treatment: intake.fields.treatment || reading.treatment || undefined,
+    condition: mergeCondition(said, reading.condition) || undefined,
+  });
+  intake = await getOrCreateWebIntake(sessionId);
+  if (intake.fields.treatment && intake.fields.condition) {
+    if (intake.state !== "collecting_profile") await setWebIntakeState(sessionId, "collecting_profile");
+    intake = await getOrCreateWebIntake(sessionId);
+    return done({ ...(await askNextOrOpen(input, intake, lang, lead)), via });
+  }
+  return done({ reply: `${lead} ${REPORT_WORDS.whichTreatment[lang]}`, state: "medical_chat", via });
 }
 
 const QUESTION_START =
