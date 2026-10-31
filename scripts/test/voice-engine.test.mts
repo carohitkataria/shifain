@@ -7,7 +7,7 @@
 import assert from "node:assert/strict";
 import { FLASH_LANGUAGES, baseLanguage, listensOnServer, ttsModelFor } from "../../src/lib/voice/engine-rules.ts";
 import { forScreen } from "../../src/lib/voice/reply-script.ts";
-import { speechModel } from "../../src/lib/elevenlabs.ts";
+import { playbackRate, speechModel } from "../../src/lib/elevenlabs.ts";
 import { pickCandidates, providerHealth } from "../../src/lib/ai/providers.ts";
 import { speakable } from "../../src/lib/access-levels.ts";
 
@@ -33,6 +33,10 @@ assert.equal(speechModel({ languageCode: "ru" }).modelId, "eleven_flash_v2_5", "
 process.env.ELEVENLABS_MODEL_WIDE = "eleven_v4";
 assert.equal(speechModel({ languageCode: "uz" }).modelId, "eleven_v4", "ELEVENLABS_MODEL_WIDE");
 delete process.env.ELEVENLABS_MODEL_WIDE;
+// Eleven v3 cannot change speed: the player applies the patient's rate instead.
+assert.equal(playbackRate({ languageCode: "uz", speed: 0.8 }), 0.8, "uz at 0.8: the player slows it");
+assert.equal(playbackRate({ languageCode: "ru", speed: 0.8 }), 1, "ru: Flash speaks at 0.8 itself");
+assert.equal(playbackRate({ languageCode: "uz", speed: 3 }), 1.2, "clamped");
 
 // D2. The server listens for uz/kk/ky/tg and where the browser has no recogniser; the admin can force it.
 const base = { serverVoice: true, canRecord: true, hasRecogniser: true, forceServer: false };

@@ -85,8 +85,10 @@ assert.equal(results[30], false, "the 31st turn is refused");
 assert.equal(allowHit(`${key}-other`, 30, 10 * 60_000), true, "another conversation is unaffected");
 
 // A caller who changes their chat cookie every time cannot grow the limiter without bound.
+const floodStart = Date.now();
 for (let i = 0; i < 120_000; i++) allowHit(`flood-${i}`, 30, 10 * 60_000);
-assert.ok(trackedKeys() <= 50_001, `the limiter holds ${trackedKeys()} keys`);
+assert.ok(trackedKeys() <= 50_000, `the limiter holds ${trackedKeys()} keys`);
+assert.ok(Date.now() - floodStart < 5_000, `a flood of new keys stays cheap (${Date.now() - floodStart} ms for 120,000 calls)`);
 const after = `after-flood-${Date.now()}`;
 const again = Array.from({ length: 31 }, () => allowHit(after, 30, 10 * 60_000));
 assert.equal(again[30], false, "limits still hold after a flood");

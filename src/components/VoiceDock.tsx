@@ -18,7 +18,8 @@ import { listensOnServer } from "@/lib/voice/engine-rules";
  */
 
 /** `speech` is the reply as it may be read aloud (no whole phone, email or case number); the screen shows `reply`. */
-export type VoiceTurnResult = { reply?: string; speech?: string; audioBase64?: string; heardNothing?: boolean; error?: string };
+/** `audioRate`: the patient's speed, when the voice could not be made at that speed and the player applies it. */
+export type VoiceTurnResult = { reply?: string; speech?: string; audioBase64?: string; audioRate?: number; heardNothing?: boolean; error?: string };
 
 type Phase = "starting" | "listening" | "hearing" | "thinking" | "speaking" | "error";
 
@@ -162,7 +163,10 @@ export function VoiceDock({
 
       if (result.audioBase64 && audioEl.current) {
         const el = audioEl.current;
+        const rate = result.audioRate && result.audioRate > 0 ? result.audioRate : 1;
+        el.defaultPlaybackRate = rate;
         el.src = `data:audio/mpeg;base64,${result.audioBase64}`;
+        el.playbackRate = rate;
         el.onended = next;
         el.play().catch(next);
         return;

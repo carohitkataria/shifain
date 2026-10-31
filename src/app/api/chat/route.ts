@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "node:crypto";
-import { isElevenLabsConfigured, transcribeAudio, cachedSpeech } from "@/lib/elevenlabs";
+import { isElevenLabsConfigured, transcribeAudio, cachedSpeech, playbackRate } from "@/lib/elevenlabs";
 import { toUzCyrillic } from "@/lib/uz-cyrillic";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
@@ -226,13 +226,16 @@ export async function POST(request: NextRequest) {
     const settings = await getSettings();
     if (settings.voiceEngine !== "natural" || requestedVoice === "device") return spoken;
     try {
-      const speech = await cachedSpeech({
+      const request = {
         text: spoken.speech.slice(0, 1200),
         languageCode: detectedLanguage ?? locale,
         voiceId: allowedVoice(requestedVoice, settings.voiceId),
         speed: rate,
-      });
-      return { ...spoken, audioBase64: speech.toString("base64") };
+      };
+      const speech = await cachedSpeech(request);
+      // A model that cannot change speed (Eleven v3, for Uzbek) leaves the rate to the player.
+      const audioRate = playbackRate(request);
+      return { ...spoken, audioBase64: speech.toString("base64"), ...(audioRate !== 1 ? { audioRate } : {}) };
     } catch (error) {
       console.error("[shifain] speech failed; the browser reads it instead", error);
       return spoken;

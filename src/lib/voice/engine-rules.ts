@@ -34,6 +34,9 @@ export function baseLanguage(code: string | null | undefined): string {
   return THREE_LETTER[value] ?? (/^[a-z]{2,3}$/.test(value) ? value : "");
 }
 
+/** Eleven v3 (and models we have not checked) ignore voice_settings.speed; the player applies the rate instead. */
+export const takesSpeed = (model: string) => /flash|turbo|multilingual/i.test(model);
+
 /** Only Flash and Turbo take language_code; other models refuse or ignore it. */
 export const takesLanguageCode = (model: string) => /flash|turbo/i.test(model);
 

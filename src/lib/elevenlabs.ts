@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import { Binary } from "mongodb";
 import { getDb, isDatabaseConfigured } from "./db";
 import { DEFAULT_NATURAL_VOICE } from "./voice/voices";
-import { baseLanguage, takesLanguageCode, ttsModelFor } from "./voice/engine-rules";
+import { baseLanguage, takesLanguageCode, takesSpeed, ttsModelFor } from "./voice/engine-rules";
 
 const API = "https://api.elevenlabs.io/v1";
 
@@ -86,6 +86,16 @@ export function speechModel(opts: Pick<TTSOptions, "modelId" | "languageCode">):
   return base && takesLanguageCode(opts.modelId) ? { modelId: opts.modelId, languageCode: base } : { modelId: opts.modelId };
 }
 
+const clampSpeed = (speed: number | undefined) => Math.min(1.2, Math.max(0.7, speed ?? 1));
+
+/**
+ * The rate the player should apply: the patient's Slower/Faster choice when
+ * the model cannot speak at that speed itself (Eleven v3), otherwise 1.
+ */
+export function playbackRate(opts: Pick<TTSOptions, "modelId" | "languageCode" | "speed">): number {
+  return takesSpeed(speechModel(opts).modelId) ? 1 : clampSpeed(opts.speed);
+}
+
 /**
  * Generates speech from text using ElevenLabs TTS.
  * Returns raw audio bytes as MP3 (Telegram accepts MP3 for voice notes
@@ -96,13 +106,12 @@ export async function textToSpeech(opts: TTSOptions): Promise<Buffer> {
   if (!key) throw new Error("ELEVENLABS_API_KEY is not set.");
 
   const voiceId = opts.voiceId ?? DEFAULT_NATURAL_VOICE;
-  const speed = Math.min(1.2, Math.max(0.7, opts.speed ?? 1));
 
   const model = speechModel(opts);
   const body: Record<string, unknown> = {
     text: opts.text,
     model_id: model.modelId,
-    voice_settings: { stability: 0.5, similarity_boost: 0.75, speed },
+    voice_settings: { stability: 0.5, similarity_boost: 0.75, ...(takesSpeed(model.modelId) ? { speed: clampSpeed(opts.speed) } : {}) },
   };
   if (model.languageCode) body.language_code = model.languageCode;
 
@@ -143,7 +152,7 @@ export async function cachedSpeech(opts: TTSOptions): Promise<Buffer> {
   const model = speechModel(opts);
   const key = crypto
     .createHash("sha256")
-    .update([opts.voiceId ?? DEFAULT_NATURAL_VOICE, model.modelId, model.languageCode ?? baseLanguage(opts.languageCode), opts.speed ?? 1, opts.text].join("|"))
+    .update([opts.voiceId ?? DEFAULT_NATURAL_VOICE, model.modelId, model.languageCode ?? baseLanguage(opts.languageCode), takesSpeed(model.modelId) ? clampSpeed(opts.speed) : 1, opts.text].join("|"))
     .digest("base64url");
 
   try {

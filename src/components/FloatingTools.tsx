@@ -152,6 +152,8 @@ type ChatReply = {
   handoff?: boolean;
   caseReference?: string;
   audioBase64?: string;
+  /** The speed the player applies when the voice model could not. */
+  audioRate?: number;
   transcript?: string;
   heardNothing?: boolean;
   error?: string;
