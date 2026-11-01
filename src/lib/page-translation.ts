@@ -155,26 +155,31 @@ export async function translateText(locale: TranslatedLocale, text: string, page
 
 // ---------------------------------------------------------------- the patient app's own words
 
-const warming = new Set<TranslatedLocale>();
+/** Languages whose app text is all stored, and when the last attempt started for the rest. */
+const warmed = new Set<TranslatedLocale>();
+const lastWarm = new Map<TranslatedLocale, number>();
+const RETRY_MS = 10 * 60_000;
 
 /**
  * The patient app's and plan page's own interface text — taken from the
  * code's copy, never from a page — translated and stored once per language.
  * Their pages hold a patient's details, so the page translator there only
- * looks up stored text and never sends a page's text to the AI.
+ * looks up stored text and never sends a page's text to the AI. If the AI
+ * could not finish (out of quota, down), it is tried again ten minutes later.
  */
 export async function warmAppText(locale: TranslatedLocale): Promise<void> {
-  if (warming.has(locale)) return;
-  warming.add(locale);
+  if (warmed.has(locale) || Date.now() - (lastWarm.get(locale) ?? 0) < RETRY_MS) return;
+  lastWarm.set(locale, Date.now());
   try {
     const { appTexts } = await import("./app-text");
     const texts = appTexts();
+    let done = 0;
     for (let i = 0; i < texts.length; i += 60) {
-      await translateTexts(locale, texts.slice(i, i + 60), { page: "/app", trusted: true });
+      done += (await translateTexts(locale, texts.slice(i, i + 60), { page: "/app", trusted: true })).size;
     }
+    if (done >= texts.length) warmed.add(locale);
   } catch (error) {
     console.error("[shifain] could not translate the app's text into", locale, error);
-    warming.delete(locale);
   }
 }
 
