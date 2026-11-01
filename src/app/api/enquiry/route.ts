@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { NextResponse, type NextRequest } from "next/server";
 import { publicUrl } from "@/lib/origin";
-import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n";
+import { DEFAULT_LOCALE, LOCALE_PATTERN, isLocale } from "@/lib/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { linkCaseToAccount, newReference, type CaseRequest } from "@/lib/cases";
 import { OPENED_COOKIE, openedCookie } from "@/lib/case-access";
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
   const locale = isLocale(localeField) ? localeField : DEFAULT_LOCALE;
   // A hospital or doctor page sends the patient back to its own form, not the homepage's.
   const from = String(form.get("from") ?? "");
-  const onPage = /^\/(en|ru|uz|oz)\/(hospitals|doctors)\/[\w-]+$/.test(from);
+  const onPage = new RegExp(`^/(${LOCALE_PATTERN})/(hospitals|doctors)/[\\w-]+$`).test(from);
   // Back to the form with the reason, which the form shows: never a silent bounce.
   const back = (why: "missing" | "files" | "empty") =>
     NextResponse.redirect(publicUrl(request, `${onPage ? from : `/${locale}`}?enquiry=${why}${onPage ? "#book" : "#quote-form"}`), 303);

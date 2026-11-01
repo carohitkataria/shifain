@@ -5,23 +5,51 @@ export const CONTENT_LOCALES = ["en", "ru", "uz"] as const;
 export type ContentLocale = (typeof CONTENT_LOCALES)[number];
 
 /**
- * The languages a page can be shown in. "oz" is Uzbek in Cyrillic (the code
- * Uzbekistan's own government sites use): it is never stored, but made from
- * the Latin Uzbek as the page renders — see uz-cyrillic.ts.
+ * The languages a page can be shown in.
+ * - en, ru, uz: written by hand, in the code and the content.
+ * - oz: Uzbek in Cyrillic (the code Uzbekistan's own government sites use):
+ *   never stored, but made from the Latin Uzbek as the page renders — see uz-cyrillic.ts.
+ * - The rest are translated by the AI from English, once per sentence, and kept
+ *   in the database, where the team can correct them (Admin → Translations).
+ *   Arabic, Hindi and Bengali are the ones the team reviews.
  */
-export const LOCALES = ["en", "ru", "uz", "oz"] as const;
+export const LOCALES = ["en", "ru", "uz", "oz", "ar", "hi", "bn", "fr", "es", "pt", "bg", "ro", "sq"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 
-export const LOCALE_META: Record<Locale, { label: string; english: string; dir: "ltr" | "rtl"; htmlLang: string }> = {
-  en: { label: "English", english: "English", dir: "ltr", htmlLang: "en" },
-  ru: { label: "Русский", english: "Russian", dir: "ltr", htmlLang: "ru" },
-  uz: { label: "Oʻzbekcha", english: "Uzbek (Latin)", dir: "ltr", htmlLang: "uz" },
-  oz: { label: "Ўзбекча", english: "Uzbek (Cyrillic)", dir: "ltr", htmlLang: "uz-Cyrl" },
+/** Languages the page translator fills in from English. */
+export const TRANSLATED_LOCALES = ["ar", "hi", "bn", "fr", "es", "pt", "bg", "ro", "sq"] as const satisfies readonly Locale[];
+export type TranslatedLocale = (typeof TRANSLATED_LOCALES)[number];
+/** Of those, the ones the team checks and corrects first. */
+export const REVIEWED_LOCALES: readonly TranslatedLocale[] = ["ar", "hi", "bn"];
+export const isTranslatedLocale = (value: string | null | undefined): value is TranslatedLocale =>
+  !!value && (TRANSLATED_LOCALES as readonly string[]).includes(value);
+
+export const LOCALE_META: Record<Locale, { label: string; english: string; dir: "ltr" | "rtl"; htmlLang: string; short: string }> = {
+  en: { label: "English", english: "English", dir: "ltr", htmlLang: "en", short: "EN" },
+  ru: { label: "Русский", english: "Russian", dir: "ltr", htmlLang: "ru", short: "RU" },
+  uz: { label: "Oʻzbekcha", english: "Uzbek (Latin)", dir: "ltr", htmlLang: "uz", short: "UZ" },
+  oz: { label: "Ўзбекча", english: "Uzbek (Cyrillic)", dir: "ltr", htmlLang: "uz-Cyrl", short: "ЎЗ" },
+  ar: { label: "العربية", english: "Arabic", dir: "rtl", htmlLang: "ar", short: "AR" },
+  hi: { label: "हिन्दी", english: "Hindi", dir: "ltr", htmlLang: "hi", short: "HI" },
+  bn: { label: "বাংলা", english: "Bengali", dir: "ltr", htmlLang: "bn", short: "BN" },
+  fr: { label: "Français", english: "French", dir: "ltr", htmlLang: "fr", short: "FR" },
+  es: { label: "Español", english: "Spanish", dir: "ltr", htmlLang: "es", short: "ES" },
+  pt: { label: "Português", english: "Portuguese", dir: "ltr", htmlLang: "pt", short: "PT" },
+  bg: { label: "Български", english: "Bulgarian", dir: "ltr", htmlLang: "bg", short: "BG" },
+  ro: { label: "Română", english: "Romanian", dir: "ltr", htmlLang: "ro", short: "RO" },
+  sq: { label: "Shqip", english: "Albanian", dir: "ltr", htmlLang: "sq", short: "SQ" },
 };
 
-/** The stored language a page language reads from: Cyrillic Uzbek reads the Latin. */
-export const contentLocale = (locale: Locale): ContentLocale => (locale === "oz" ? "uz" : locale);
+/** "en|ru|uz|…", for matching a locale at the start of a path. */
+export const LOCALE_PATTERN = LOCALES.join("|");
+
+/**
+ * The stored language a page language reads from: Cyrillic Uzbek reads the
+ * Latin, and the translated languages read the English the translator starts from.
+ */
+export const contentLocale = (locale: Locale): ContentLocale =>
+  locale === "oz" ? "uz" : (CONTENT_LOCALES as readonly string[]).includes(locale) ? (locale as ContentLocale) : "en";
 
 /**
  * Country -> language mapping, taken from the country list so there is one

@@ -5,7 +5,10 @@ import { useState, useEffect } from "react";
 export function MobileMenu({
   items,
   cta,
+  wide = false,
 }: {
+  /** Shown up to the 2xl breakpoint instead of xl, for languages whose menu runs longer. */
+  wide?: boolean;
   items: { href: string; label: string }[];
   cta?: { href: string; label: string };
 }) {
@@ -21,7 +24,7 @@ export function MobileMenu({
     <>
       <button
         onClick={() => setOpen(!open)}
-        className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-ink transition hover:bg-surface-muted sm:mr-0 sm:h-11 sm:w-11 xl:hidden"
+        className={`-me-1 flex h-10 w-10 items-center justify-center rounded-lg text-ink transition hover:bg-surface-muted sm:me-0 sm:h-11 sm:w-11 ${wide ? "2xl:hidden" : "xl:hidden"}`}
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
       >
@@ -37,7 +40,7 @@ export function MobileMenu({
       </button>
 
       {open && (
-        <div className="fixed inset-0 top-[60px] z-50 xl:hidden">
+        <div className={`fixed inset-0 top-[60px] z-50 ${wide ? "2xl:hidden" : "xl:hidden"}`}>
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <nav className="relative mx-4 mt-2 rounded-2xl border border-line bg-white p-2 shadow-xl">
             {items.map((item) => (

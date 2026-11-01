@@ -477,6 +477,7 @@ export function PlanRequestForm({
           </label>
           <select
             id="country"
+            translate="no"
             name="country"
             data-field="country"
             defaultValue={defaults?.country ?? ""}
@@ -498,7 +499,7 @@ export function PlanRequestForm({
                 {item.label}
               </option>
             ))}
-            <option value="Other">{OTHER_COUNTRY[locale]}</option>
+            <option value="Other">{OTHER_COUNTRY[locale] ?? OTHER_COUNTRY.en}</option>
           </select>
           <FieldError id="err-country" text={errors.country} />
         </div>

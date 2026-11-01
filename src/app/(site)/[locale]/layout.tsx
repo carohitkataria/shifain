@@ -3,8 +3,9 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "../../globals.css";
 import { getContent } from "@/lib/store";
 import { t } from "@/lib/localize";
-import { LOCALES, LOCALE_META, isLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
+import { LOCALES, LOCALE_META, isLocale, isTranslatedLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 import { FloatingTools } from "@/components/FloatingTools";
+import { PageTranslator } from "@/components/PageTranslator";
 
 /** The site's typeface, served from our own domain; Cyrillic falls back to the system face. */
 const jakarta = Plus_Jakarta_Sans({
@@ -65,11 +66,21 @@ export default async function SiteLayout({
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
   const { contact } = await getContent();
 
+  // A translated language renders the English, then swaps it: the page stays
+  // hidden for that moment (at most 2.5 s) so the visitor never sees it switch.
+  const translated = isTranslatedLocale(locale);
+
   return (
-    <html lang={LOCALE_META[locale].htmlLang} dir={LOCALE_META[locale].dir} className="site-scale">
+    <html
+      lang={LOCALE_META[locale].htmlLang}
+      dir={LOCALE_META[locale].dir}
+      className="site-scale"
+      {...(translated ? { "data-translating": "" } : {})}
+    >
       <body className={jakarta.className}>
         {children}
         <FloatingTools whatsapp={contact.whatsapp || null} phone={contact.phone || null} />
+        {translated ? <PageTranslator locale={locale} /> : null}
       </body>
     </html>
   );

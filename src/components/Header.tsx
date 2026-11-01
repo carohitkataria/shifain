@@ -7,7 +7,7 @@ import { WhatsAppGlyph } from "./WhatsAppGlyph";
 import { t } from "@/lib/localize";
 import { botLink } from "@/lib/telegram-login";
 import type { L, SiteContent } from "@/lib/content-types";
-import type { Locale } from "@/lib/i18n";
+import { isTranslatedLocale, type Locale } from "@/lib/i18n";
 
 const UserIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
@@ -46,6 +46,8 @@ export async function Header({
   ];
   const login = { href: `${home}/portal/patient`, label: account ?? t(content.nav.loginSignup, locale) };
   const telegram = await botLink().catch(() => null);
+  // Translated menus run longer than the English: the full menu waits for a wider screen.
+  const roomy = isTranslatedLocale(locale);
   const whatsapp = content.contact.whatsapp ? `https://wa.me/${content.contact.whatsapp.replace(/\D/g, "")}` : null;
 
   return (
@@ -59,7 +61,10 @@ export async function Header({
           />
         </Link>
 
-        <nav aria-label="Primary" className="hidden flex-1 items-center justify-center gap-1 xl:flex 2xl:gap-3">
+        <nav
+          aria-label="Primary"
+          className={`hidden flex-1 items-center justify-center gap-1 2xl:flex 2xl:gap-3 ${roomy ? "" : "xl:flex"}`}
+        >
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -71,7 +76,7 @@ export async function Header({
           ))}
         </nav>
 
-        <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2 xl:ml-0">
+        <div className={`ms-auto flex shrink-0 items-center gap-1 sm:gap-2 2xl:ms-0 ${roomy ? "" : "xl:ms-0"}`}>
           <LanguageSwitcher locale={locale} path={path} />
 
           {telegram ? (
@@ -107,7 +112,7 @@ export async function Header({
             {login.label}
           </Link>
 
-          <MobileMenu items={nav} cta={login} />
+          <MobileMenu items={nav} cta={login} wide={roomy} />
         </div>
       </div>
     </header>

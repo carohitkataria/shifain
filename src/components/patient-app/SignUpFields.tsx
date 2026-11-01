@@ -58,7 +58,7 @@ export function SignUpFields({
     <>
       <label className="a-field">
         <span>{labels.country}</span>
-        <select className="a-input" name="country" required value={country} onChange={(event) => pickCountry(event.target.value)}>
+        <select translate="no" className="a-input" name="country" required value={country} onChange={(event) => pickCountry(event.target.value)}>
           <option value="" disabled>
             {labels.choose}
           </option>
@@ -67,7 +67,7 @@ export function SignUpFields({
               {item.label}
             </option>
           ))}
-          <option value="Other">{OTHER_COUNTRY[locale]}</option>
+          <option value="Other">{OTHER_COUNTRY[locale] ?? OTHER_COUNTRY.en}</option>
         </select>
       </label>
       <label className="a-field">

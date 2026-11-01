@@ -67,10 +67,11 @@ export const SECTIONS: Section[] = [
     label: "Website",
     icon: "layout",
     href: "/admin/website",
-    match: (path) => starts("/admin/website", "/admin/faqs")(path) || groupPaths.includes(path),
+    match: (path) => starts("/admin/website", "/admin/faqs", "/admin/translations")(path) || groupPaths.includes(path),
     tabs: [
       { label: "Homepage", href: "/admin/website", match: (path) => starts("/admin/website")(path) || groupPaths.includes(path) },
       { label: "FAQs", href: "/admin/faqs" },
+      { label: "Translations", href: "/admin/translations" },
     ],
   },
   { id: "reports", label: "Reports", icon: "chart", href: "/admin/reports", match: starts("/admin/reports") },
