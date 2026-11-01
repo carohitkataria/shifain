@@ -320,6 +320,9 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       if (!action) return;
       if (action.type === "navigate" && action.href.startsWith("/")) {
         router.push(action.href);
+        // On a phone the chat covers the whole screen: step aside so the page it opened is seen.
+        // A voice conversation goes on; the chat is one tap away.
+        if (!voiceOn && window.matchMedia("(max-width: 639px)").matches) setOpen(false);
       } else if (action.type === "locale") {
         const rest = pathname.replace(new RegExp(`^/(${LOCALE_PATTERN})(?=/|$)`), "");
         router.push(`/${action.locale}${rest || ""}`);
@@ -341,7 +344,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
         });
       }
     },
-    [pathname, router],
+    [pathname, router, voiceOn],
   );
 
   const apply = useCallback(

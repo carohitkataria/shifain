@@ -83,6 +83,8 @@ export type CommandOutcome = {
   suggestions?: string[];
   /** Everything a case needs is known: the caller opens it now. */
   openCase?: boolean;
+  /** Only an answer (a price): a chat collecting contact details asks its question again after it. */
+  answerOnly?: boolean;
 };
 
 type Ctx = {
@@ -340,7 +342,8 @@ async function onOwnCase(ctx: Ctx, command: ParsedCommand): Promise<CommandOutco
       await editPackage(current._id, service, include, edit(`${include ? "Added" : "Removed"} ${service}`));
       await setPendingCommand(ctx.sessionId, null);
       return {
-        reply: line(include ? "serviceAdded" : "serviceRemoved", { service: SERVICE_WORDS[service][lang] }),
+        // "Done — the hotel is removed", not "a hotel is removed".
+        reply: line(include ? "serviceAdded" : "serviceRemoved", { service: lang === "en" ? SERVICE_WORDS[service][lang].replace(/^(a|an) /, "the ") : SERVICE_WORDS[service][lang] }),
         caseReference: current._id,
       };
     }
@@ -687,16 +690,16 @@ async function priceOf(ctx: Ctx, phrase: string): Promise<CommandOutcome> {
     const pending = ctx.intake.command;
     if (pending?.name === "cost") {
       await setPendingCommand(ctx.sessionId, null);
-      return { reply: say("costUnknown", ctx.lang) };
+      return { reply: say("costUnknown", ctx.lang), answerOnly: true };
     }
     await setPendingCommand(ctx.sessionId, { name: "cost", step: "treatment", data: {} });
     return { reply: say("costWhich", ctx.lang) };
   }
   await setPendingCommand(ctx.sessionId, null);
   const [band] = await priceBandsFor([match._id]).catch(() => []);
-  if (!band) return { reply: say("costUnknown", ctx.lang) };
+  if (!band) return { reply: say("costUnknown", ctx.lang), answerOnly: true };
   const money = (value: number) => value.toLocaleString("en-US");
-  return { reply: say("costRange", ctx.lang, { treatment: treatmentLabel(match, ctx.lang), min: money(band.min), max: money(band.max) }) };
+  return { reply: say("costRange", ctx.lang, { treatment: treatmentLabel(match, ctx.lang), min: money(band.min), max: money(band.max) }), answerOnly: true };
 }
 
 async function contactLinks(lang: SayLang): Promise<ReplyLink[]> {

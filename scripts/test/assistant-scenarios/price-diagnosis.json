@@ -222,5 +222,31 @@
     ]
    }
   ]
+ },
+ {
+  "id": "price-while-giving-contact-en",
+  "category": "price",
+  "locale": "en",
+  "state": {
+   "intake": {
+    "state": "collecting_profile",
+    "fields": {
+     "treatment": "knee replacement",
+     "condition": "Knee pain for two years",
+     "name": null,
+     "phone": null,
+     "country": null
+    }
+   }
+  },
+  "turns": [
+   {
+    "say": "How much does a knee replacement cost?",
+    "must": [
+     "US dollars",
+     "full name"
+    ]
+   }
+  ]
  }
 ]

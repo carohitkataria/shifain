@@ -81,6 +81,7 @@ export const APP = {
   quick: l("Quick actions", "Быстрые действия", "Tezkor amallar"),
   allClear: l("Nothing waiting on you.", "От вас ничего не требуется.", "Sizdan hech narsa kutilmayapti."),
   noCase: l("Start a case to see your plan, calendar and care team here.", "Создайте случай — здесь появятся план, календарь и команда.", "Holat oching — bu yerda reja, taqvim va jamoa paydo bo'ladi."),
+  notShared: l("The patient has not shared this part of their case with you.", "Пациент не открыл вам этот раздел.", "Bemor bu bo'limni siz bilan ulashmagan."),
   startCase: l("Start a case", "Создать случай", "Holat ochish"),
   quickTiles: {
     book: l("Book", "Запись", "Yozilish"),
@@ -215,6 +216,7 @@ export const APP = {
   email: l("Email", "Почта", "Pochta"),
   // case
   confirmedPlan: l("Plan confirmed", "План подтверждён", "Reja tasdiqlandi"),
+  draftPlan: l("Draft plan", "Черновик плана", "Reja loyihasi"),
   yourDoctor: l("Your doctor", "Ваш врач", "Shifokoringiz"),
   noDoctor: l("Your coordinator confirms your doctor with the hospital.", "Координатор подтвердит врача с клиникой.", "Koordinator shifokorni shifoxona bilan tasdiqlaydi."),
   book: l("Book", "Запись", "Yozilish"),

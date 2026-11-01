@@ -28,7 +28,7 @@ export default async function ReportsPage(props: AppProps) {
   if (!record || !canSee(portal.viewer, "reports")) {
     return (
       <AppShell app={app} section="reports">
-        <p className="a-card a-pad">{t(APP.noCase, locale)}</p>
+        <p className="a-card a-pad">{t(record && portal.viewer?.role === "family" ? APP.notShared : APP.noCase, locale)}</p>
       </AppShell>
     );
   }
@@ -51,7 +51,7 @@ export default async function ReportsPage(props: AppProps) {
   return (
     <AppShell app={app} section="reports">
       {isPatient ? (
-        <form action={uploadAction} encType="multipart/form-data">
+        <form action={uploadAction}>
           <Hidden app={app} section="reports" />
           <div className="a-row">
             <UploadButton label={t(APP.upload, locale)} className="a-btn a-btn-p" multiple style={{ flex: 1 }} />

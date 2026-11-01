@@ -461,6 +461,11 @@ async function commandTurn(ctx: Parameters<typeof runCommand>[0], cities: string
 async function afterCommand(input: TurnInput, outcome: CommandOutcome, lang: SayLang): Promise<TurnReply> {
   const intake = await getOrCreateWebIntake(input.sessionId);
   if (outcome.openCase) return askNextOrOpen(input, intake, lang, outcome.reply);
+  // A price asked while giving contact details: answered, then the question it interrupted.
+  if (outcome.answerOnly && intake.state === "collecting_profile" && !intake.complete && !intake.command) {
+    const step = nextProfileStep(profileOf(intake));
+    if (step) return { reply: `${outcome.reply} ${profileQuestion(step, lang)}`, state: "collecting_profile", suggestions: profileSuggestions(step, lang), via: "command" };
+  }
   return {
     reply: outcome.reply,
     state: outcome.state ?? (intake.complete ? "complete" : intake.state),

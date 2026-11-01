@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import { getDb } from "./db";
 import { accountForPhone, keyedHash, normalisePhone, safeEqual } from "./patient-auth";
 import { isWhatsAppConfigured, sendWhatsAppCode } from "./whatsapp";
-import type { PatientCase } from "./cases";
+import { familyCasesFor, type PatientCase } from "./cases";
 
 /**
  * One-time sign-in codes sent to a mobile number — today on WhatsApp. Kept as
@@ -23,6 +23,8 @@ const tailOf = (digits: string) => digits.slice(-9);
 /** Whether this number belongs to an account or a case — the only numbers we send codes to. */
 async function isKnownPhone(digits: string): Promise<boolean> {
   if (await accountForPhone(digits).catch(() => null)) return true;
+  // A family member the patient invited signs in with their own number.
+  if ((await familyCasesFor({ kind: "phone", digits }, 1).catch(() => [])).length) return true;
   const tail = tailOf(digits);
   const cases = await (await getDb())
     .collection<PatientCase>("cases")

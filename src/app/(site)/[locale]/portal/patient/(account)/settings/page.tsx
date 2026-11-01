@@ -25,9 +25,11 @@ export default async function SettingsPage(props: AppProps) {
   const app = await loadApp(props);
   const { locale, record, portal, channels } = app;
   const account = portal.account;
-  const name = (account ? [account.firstName, account.lastName].filter(Boolean).join(" ") : "") || record?.patient.name || "";
-  const email = account?.email ?? record?.patient.email ?? (portal.identity.kind === "email" ? portal.identity.email : null);
-  const phone = record?.patient.phone ?? (account ? `${account.dial} ${account.phone}` : null);
+  // A family member is shown as themselves: the patient's contact details are not theirs to see.
+  const member = portal.viewer?.role === "family" ? portal.viewer.member : null;
+  const name = member ? member.name : (account ? [account.firstName, account.lastName].filter(Boolean).join(" ") : "") || record?.patient.name || "";
+  const email = member ? member.email : account?.email ?? record?.patient.email ?? (portal.identity.kind === "email" ? portal.identity.email : null);
+  const phone = member ? member.phone : record?.patient.phone ?? (account ? `${account.dial} ${account.phone}` : null);
   const country = record?.patient.country ?? account?.country ?? null;
   const suggested = suggestedMessenger(country ? COUNTRY_BY_NAME.get(country)?.code : null);
   const isPatient = portal.viewer?.role === "patient";
@@ -49,7 +51,7 @@ export default async function SettingsPage(props: AppProps) {
         <SecHead icon="lock" title={t(APP.password.title, locale)} action={account?.passwordHash ? <span className="a-pill t-ok">{t(APP.password.isSet, locale)}</span> : null} />
         <div className="a-card a-pad">
           {/* Email sign-ins can always set one: the account is made from their case if needed. */}
-          {account || portal.identity.kind === "email" ? (
+          {!member && (account || portal.identity.kind === "email") ? (
             <form action={setPasswordAction}>
               <input type="hidden" name="locale" value={locale} />
               <p className="a-tiny a-muted" style={{ marginTop: 0 }}>

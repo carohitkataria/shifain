@@ -98,7 +98,11 @@ async function CaseOverview(props: AppProps) {
       <div className="a-card a-pad">
         <div className="a-row a-between a-wrap">
           <span className="a-pill t-sch">{record._id}</span>
-          {record.status === "confirmed" || record.status === "planned" ? <span className="a-pill t-ok">{t(APP.confirmedPlan, locale)}</span> : null}
+          {record.status === "confirmed" ? (
+            <span className="a-pill t-ok">{t(APP.confirmedPlan, locale)}</span>
+          ) : record.status === "planned" ? (
+            <span className="a-pill t-due">{t(APP.draftPlan, locale)}</span>
+          ) : null}
         </div>
         <h3 style={{ fontSize: 18, marginTop: 10 }}>{caseNeed(app) ?? t(APP.caseShort, locale)}</h3>
         <p className="a-tiny a-muted">{[app.names.disease, record.plan?.destinationCity].filter(Boolean).join(" · ")}</p>

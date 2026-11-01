@@ -155,7 +155,7 @@ export const SAY = {
     ru: "Можно изменить город, добавить или убрать услуги — перелёт, трансфер, визовую поддержку, гостиницу, переводчика, SIM-карту, питание или наблюдение после лечения — указать даты поездки и сопровождающих или добавить медицинские детали для нового плана. Что изменить?",
     uz: "Shaharni o'zgartirish, xizmatlarni qo'shish yoki olib tashlash — parvoz, aeroport transferi, viza, mehmonxona, tarjimon, SIM-karta, ovqat yoki keyingi kuzatuv — safar vaqti va hamrohlarni belgilash yoki yangi reja uchun tibbiy ma'lumot qo'shish mumkin. Nimani o'zgartiramiz?",
   },
-  serviceAdded: { en: "Done — {service} is added to your plan.", ru: "Готово — {service} добавлено в план.", uz: "Tayyor — {service} rejaga qo'shildi." },
+  serviceAdded: { en: "Done — I've added {service} to your plan.", ru: "Готово — {service} добавлено в план.", uz: "Tayyor — {service} rejaga qo'shildi." },
   serviceRemoved: { en: "Done — {service} is removed from your plan.", ru: "Готово — {service} убрано из плана.", uz: "Tayyor — {service} rejadan olib tashlandi." },
   whichService: {
     en: "Which service? Flights, airport pickup, visa support, hotel, interpreter, SIM card, meals or follow-up.",
@@ -168,7 +168,7 @@ export const SAY = {
     uz: "Yozib oldim — {city} afzal. Koordinator u yerda mos shifoxona qidiradi.",
   },
   whichCity: { en: "Which city would you prefer? We work in {cities}.", ru: "Какой город предпочитаете? Мы работаем в: {cities}.", uz: "Qaysi shahar afzal? Biz {cities} shaharlarida ishlaymiz." },
-  travelSet: { en: "Noted — you'd like to travel {month}.", ru: "Записал — поездка: {month}.", uz: "Yozib oldim — safar: {month}." },
+  travelSet: { en: "Noted — your travel dates: {month}.", ru: "Записал — поездка: {month}.", uz: "Yozib oldim — safar: {month}." },
   whichMonth: { en: "When would you like to travel?", ru: "Когда вы хотели бы поехать?", uz: "Qachon safar qilmoqchisiz?" },
   companionsSet: {
     en: "Noted — {count} travelling with you.",

@@ -58,6 +58,8 @@ export const initialsOf = (name: string) =>
   name
     .replace(/^(dr|mr|mrs|ms)\.?\s+/i, "")
     .split(/\s+/)
+    // Words only: "Malika (coordinator)" is "MC", never "M(".
+    .map((part) => part.replace(/[^\p{L}\p{N}]/gu, ""))
     .filter(Boolean)
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())

@@ -185,14 +185,16 @@ export async function casesForPhone(digits: string, limit = 20): Promise<Patient
 /** Cases where the patient invited this person as family, with something to see. */
 export async function familyCasesFor(identity: { kind: "phone"; digits: string } | { kind: "email"; email: string }, limit = 20): Promise<PatientCase[]> {
   const db = await getDb();
-  const filter =
-    identity.kind === "email"
-      ? { family: { $elemMatch: { email: emailMatcher(identity.email), "access.0": { $exists: true } } } }
-      : identity.digits.replace(/\D/g, "").length >= MIN_PHONE_DIGITS
-        ? { family: { $elemMatch: { phone: { $regex: tailPattern(identity.digits) }, "access.0": { $exists: true } } } }
-        : null;
-  if (!filter) return [];
-  return db.collection<PatientCase>("cases").find(filter as never).sort({ createdAt: -1 }).limit(limit).toArray();
+  const email = identity.kind === "email" ? emailMatcher(identity.email) : null;
+  const phone = identity.kind === "phone" && identity.digits.replace(/\D/g, "").length >= MIN_PHONE_DIGITS ? new RegExp(tailPattern(identity.digits)) : null;
+  if (!email && !phone) return [];
+  // A plain field match, then the member checked here: the same person must also have been given something to see.
+  const filter = email ? { "family.email": email } : { "family.phone": phone };
+  const found = await db.collection<PatientCase & { family?: { email?: string | null; phone?: string | null; access?: string[] }[] }>("cases")
+    .find(filter as never).sort({ createdAt: -1 }).limit(limit * 3).toArray();
+  return found
+    .filter((record) => (record.family ?? []).some((member) => (member.access?.length ?? 0) > 0 && (email ? email.test(member.email ?? "") : phone!.test(member.phone ?? ""))))
+    .slice(0, limit);
 }
 
 /** The whole address, ignoring case: older cases kept it as typed ("Name@Gmail.com"). */

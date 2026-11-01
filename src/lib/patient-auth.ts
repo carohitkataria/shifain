@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { getDb } from "./db";
 import { isMailConfigured, send } from "./mailer";
-import { emailMatcher, type PatientCase } from "./cases";
+import { emailMatcher, familyCasesFor, type PatientCase } from "./cases";
 import { normalisePhone, phonesMatch } from "./access-rules";
 
 export { normalisePhone };
@@ -182,14 +182,16 @@ export async function accountForPhone(digits: string): Promise<PatientAccount | 
 /** Whether this address may sign in: it has an account, or a case was opened with it. */
 async function isKnownEmail(email: string): Promise<boolean> {
   const db = await getDb();
-  const [account, record] = await Promise.all([
+  const [account, record, invited] = await Promise.all([
     db.collection<PatientAccount>("patient_accounts").findOne({ _id: email }, { projection: { _id: 1 } }),
     db.collection<PatientCase>("cases").findOne(
       { $or: [{ "patient.email": emailMatcher(email) }, { accountEmail: emailMatcher(email) }] },
       { projection: { _id: 1 } },
     ),
+    // A family member the patient invited signs in with their own address.
+    familyCasesFor({ kind: "email", email }, 1).catch(() => []),
   ]);
-  return Boolean(account || record);
+  return Boolean(account || record || invited.length);
 }
 
 function codeEmail(code: string, signUp: boolean): { subject: string; text: string; html: string } {

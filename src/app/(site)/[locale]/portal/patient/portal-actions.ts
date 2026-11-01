@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { deleteReports } from "@/lib/reports";
-import type { PatientCase } from "@/lib/cases";
+import { addPatientNote, type PatientCase } from "@/lib/cases";
 import {
   APPOINTMENT_KINDS,
   APPOINTMENT_WINDOWS,
@@ -95,4 +95,28 @@ export async function cancelAppointmentAction(formData: FormData) {
   if (!owned) redirect(`/${locale}/portal/patient/login`);
   await cancelAppointment(owned.record._id, String(formData.get("id") ?? ""));
   redirect(back(locale, "messages", owned.record._id, "tab=calls&done=cancelled"));
+}
+
+/** Answers to the questions the draft plan asked: kept on the case for the coordinator and the next plan. */
+export async function answerPlanQuestionsAction(formData: FormData) {
+  const locale = localeOf(formData);
+  const reference = String(formData.get("case") ?? "");
+  const owned = await ownedCase(reference);
+  if (!owned) redirect(`/${locale}/portal/patient/login`);
+
+  // The questions come from the stored plan, never from the form.
+  const questions = owned.record.plan?.questionsForPatient ?? [];
+  const lines = questions.flatMap((question, index) => {
+    const answer = String(formData.get(`answer.${index}`) ?? "").trim().slice(0, 600);
+    return answer ? [`${question} — ${answer}`] : [];
+  });
+  const back = `/${locale}/portal/patient/case?case=${encodeURIComponent(owned.record._id)}&tab=plan`;
+  if (lines.length === 0) redirect(`${back}&error=answers`);
+
+  await addPatientNote(owned.record._id, `Answers to the plan's questions:\n${lines.join("\n")}`, {
+    at: new Date().toISOString(),
+    via: "portal",
+    change: "Answered the plan's questions",
+  });
+  redirect(`${back}&done=answered`);
 }
