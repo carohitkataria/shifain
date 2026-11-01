@@ -1394,6 +1394,19 @@ body {
   text-align: center;
 }
 
+/* Translated languages: hidden while the page translator swaps the English,
+   and shown after 2.5 s whatever happens (no script, slow network). */
+html[data-translating] body {
+  opacity: 0;
+  animation: translating-reveal 0s linear 2.5s forwards;
+}
+
+@keyframes translating-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
 /* Homepage hero (approved design) ------------------------------------- */
 
 .hero-field {

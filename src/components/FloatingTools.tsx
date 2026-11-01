@@ -5,6 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { VoiceDock, type VoiceTurnResult } from "./VoiceDock";
 import { VoicePicker } from "./VoicePicker";
 import { DEFAULT_NATURAL_VOICE, parseVoicePrefs, voiceForGender, type VoicePrefs } from "@/lib/voice/voices";
+import { LOCALE_PATTERN } from "@/lib/i18n";
+
+/** Inside the patient app (not its sign-in or sign-up page), where the app has its own help. */
+const PORTAL_INSIDE = new RegExp(`^/(${LOCALE_PATTERN})/portal/patient(?!/(login|signup)(/|$))(/|$)`);
 
 const FAQ_ITEMS = [
   {
@@ -317,7 +321,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
       if (action.type === "navigate" && action.href.startsWith("/")) {
         router.push(action.href);
       } else if (action.type === "locale") {
-        const rest = pathname.replace(/^\/(en|ru|uz|oz)(?=\/|$)/, "");
+        const rest = pathname.replace(new RegExp(`^/(${LOCALE_PATTERN})(?=/|$)`), "");
         router.push(`/${action.locale}${rest || ""}`);
       } else if (action.type === "voice") {
         if (action.openPicker) {
@@ -616,7 +620,8 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
                         {msg.role === "user" ? "You said" : "Spoken reply"}
                       </span>
                     ) : null}
-                    {msg.content}
+                    {/* What the patient wrote stays as written; replies already come in their language. */}
+                    <span translate="no">{msg.content}</span>
                   </div>
                   {msg.links?.length ? (
                     <div className="chat-links">
@@ -748,7 +753,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
         ref={fabRef}
         type="button"
         // The patient app has its own help button (bottom right, above its tab bar); sign-in and sign-up keep this one.
-        hidden={!open && /^\/(en|ru|uz|oz)\/portal\/patient(?!\/(login|signup)(\/|$))(\/|$)/.test(pathname)}
+        hidden={!open && PORTAL_INSIDE.test(pathname)}
         className={`help-fab ${open ? "help-fab-open" : ""}`}
         aria-expanded={open}
         aria-label={open ? "Close help" : "Need help? Chat with us"}

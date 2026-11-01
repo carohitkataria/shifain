@@ -7,9 +7,6 @@ import { LOCALES, LOCALE_COOKIE, LOCALE_META, type Locale } from "@/lib/i18n";
  * Language is picked automatically from the visitor's country, but always
  * changeable here. The choice is remembered in a cookie so it wins next time.
  */
-/** The short code on the button: the full name is in the menu and read to screen readers. */
-const SHORT: Record<Locale, string> = { en: "EN", ru: "RU", uz: "UZ", oz: "ЎЗ" };
-
 export function LanguageSwitcher({ locale, path }: { locale: Locale; path: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -49,7 +46,7 @@ export function LanguageSwitcher({ locale, path }: { locale: Locale; path: strin
           <circle cx="12" cy="12" r="9" />
           <path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18" />
         </svg>
-        <span aria-hidden="true">{SHORT[locale]}</span>
+        <span aria-hidden="true">{LOCALE_META[locale].short}</span>
         <svg viewBox="0 0 24 24" className="hidden h-3.5 w-3.5 sm:block" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
           <path d="m6 9 6 6 6-6" />
         </svg>
@@ -58,7 +55,8 @@ export function LanguageSwitcher({ locale, path }: { locale: Locale; path: strin
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-1.5 w-44 overflow-hidden rounded-xl border border-line bg-white py-1 shadow-xl shadow-ink/10"
+          translate="no"
+          className="absolute end-0 z-50 mt-1.5 w-44 overflow-hidden rounded-xl border border-line bg-white py-1 shadow-xl shadow-ink/10"
         >
           {LOCALES.map((option) => (
             <a
@@ -71,7 +69,7 @@ export function LanguageSwitcher({ locale, path }: { locale: Locale; path: strin
               }`}
             >
               <span>{LOCALE_META[option].label}</span>
-              <span className="text-[0.68rem] uppercase tracking-wider text-ink-muted">{option === "oz" ? "ЎЗ" : option}</span>
+              <span className="text-[0.68rem] uppercase tracking-wider text-ink-muted">{LOCALE_META[option].short}</span>
             </a>
           ))}
         </div>

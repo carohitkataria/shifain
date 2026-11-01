@@ -5,7 +5,7 @@ import { isElevenLabsConfigured, transcribeAudio, cachedSpeech, playbackRate } f
 import { toUzCyrillic } from "@/lib/uz-cyrillic";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
+import { DEFAULT_LOCALE, isLocale, isTranslatedLocale, type Locale } from "@/lib/i18n";
 import { getOrCreateWebIntake, storeWebIntakeFile, findWebIntake } from "@/lib/web-intake";
 import { handleReportTurn, handleWebTurn } from "@/lib/assistant/web-turn";
 import { DEFAULT_NATURAL_VOICE, VOICE_ID_PATTERN, naturalVoice } from "@/lib/voice/voices";
@@ -16,6 +16,7 @@ import { sayLang } from "@/lib/voice/command-copy";
 import { MAX_REPORT_BYTES } from "@/lib/reports";
 import { hospitalOnPage } from "@/lib/assistant/tool-rules";
 import { forScreen } from "@/lib/voice/reply-script";
+import { translateTexts } from "@/lib/page-translation";
 
 const SESSION_COOKIE = "shifain_chat";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days, so "what's my status" works when they come back
@@ -208,6 +209,22 @@ export async function POST(request: NextRequest) {
   // A Cyrillic Uzbek page is answered in Uzbek, and the answer shown in Cyrillic.
   const cyrillic = locale === "oz";
   if (cyrillic) locale = "uz";
+  // A translated language (Arabic, French, …): the AI answers in it, and the
+  // replies written in code — steps, commands, prices — are translated too.
+  const translatedPage = isTranslatedLocale(locale) ? locale : null;
+  if (translatedPage) detectedLanguage ??= translatedPage;
+  const inPageLanguage = async <T extends { reply?: string; via?: string; suggestions?: string[]; links?: { label: string }[] }>(turn: T): Promise<T> => {
+    if (!translatedPage || turn.via === "ai" || !turn.reply) return turn;
+    const texts = [turn.reply, ...(turn.suggestions ?? []), ...(turn.links ?? []).map((link) => link.label)];
+    const found = await translateTexts(translatedPage, texts, { page: "/chat", visitor: ip }).catch(() => new Map<string, string>());
+    const say = (text: string) => found.get(text) ?? text;
+    return {
+      ...turn,
+      reply: say(turn.reply),
+      ...(turn.suggestions ? { suggestions: turn.suggestions.map(say) } : {}),
+      ...(turn.links ? { links: turn.links.map((link) => ({ ...link, label: say(link.label) })) } : {}),
+    };
+  };
   // The screen gets Cyrillic; `speech` stays the Latin it was made from (see forScreen).
   const script = (payload: Record<string, unknown>) => forScreen(payload, cyrillic);
 
@@ -257,11 +274,11 @@ export async function POST(request: NextRequest) {
         data: uploadedFile.data,
       });
       const turn = await handleReportTurn({ sessionId, text: userMessage, detectedLanguage, locale, ip, file: uploadedFile, uploadId });
-      return respond(await withSpeech({ ...turn, via: undefined }));
+      return respond(await withSpeech({ ...(await inPageLanguage(turn)), via: undefined }));
     }
 
     const turn = await handleWebTurn({ sessionId, text: userMessage, detectedLanguage, locale, ip, pageHospitalId });
-    return respond(await withSpeech({ ...turn, via: undefined }));
+    return respond(await withSpeech({ ...(await inPageLanguage(turn)), via: undefined }));
   } catch (error) {
     console.error("[shifain] chat error:", error);
     return respond(
