@@ -58,7 +58,7 @@ export async function DocumentsTab(props: AppProps) {
                 <span className={`a-pill ${pill}`}>{t(APP.docStatus[doc.status], locale)}</span>
               </div>
               {isPatient && (doc.status === "needed" || (doc.status === "optional" && !file)) ? (
-                <form action={uploadAction} encType="multipart/form-data" className="a-row" style={{ padding: "0 14px 12px" }}>
+                <form action={uploadAction} className="a-row" style={{ padding: "0 14px 12px" }}>
                   <Hidden app={app} section="stay" tab="documents" />
                   <input type="hidden" name="docKey" value={doc.key} />
                   <UploadButton label={t(APP.upload, locale)} className="a-btn a-btn-t" style={{ flex: 1, minHeight: 38 }} />

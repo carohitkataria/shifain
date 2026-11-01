@@ -349,7 +349,7 @@ export async function loadGrounding(): Promise<Grounding> {
     db
       .collection("hospitals")
       .aggregate<{ city: string; specialtyCode: string; hospitals: number }>([
-        { $unwind: { path: "$specialtyCodes", preserveNullAndEmptyArrays: false } },
+        { $unwind: "$specialtyCodes" },
         { $group: { _id: { city: "$city", s: "$specialtyCodes" }, n: { $sum: 1 } } },
         { $project: { _id: 0, city: "$_id.city", specialtyCode: "$_id.s", hospitals: "$n" } },
       ])
