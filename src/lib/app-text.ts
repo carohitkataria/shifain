@@ -28,6 +28,6 @@ export function appTexts(): string[] {
     }
     for (const item of Array.isArray(value) ? value : Object.values(record)) walk(item, depth + 1);
   };
-  for (const module of [patientAppCopy, patientCopy, portalCopy, portalPatientCopy, planCopy, intakeCopy, loginCopy]) walk(module, 0);
+  for (const copy of [patientAppCopy, patientCopy, portalCopy, portalPatientCopy, planCopy, intakeCopy, loginCopy]) walk(copy, 0);
   return [...found];
 }
