@@ -16,7 +16,7 @@ import { sayLang } from "@/lib/voice/command-copy";
 import { MAX_REPORT_BYTES } from "@/lib/reports";
 import { hospitalOnPage } from "@/lib/assistant/tool-rules";
 import { forScreen } from "@/lib/voice/reply-script";
-import { translateTexts } from "@/lib/page-translation";
+import { translateText, translateTexts } from "@/lib/page-translation";
 
 const SESSION_COOKIE = "shifain_chat";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days, so "what's my status" works when they come back
@@ -155,9 +155,10 @@ export async function POST(request: NextRequest) {
 
   const ip = clientAddress(request);
   /** A refusal in the patient's language, before anything is stored or transcribed. */
-  const refuse = (why: keyof typeof LIMIT_WORDS, status: number) => {
+  const refuse = async (why: keyof typeof LIMIT_WORDS, status: number) => {
     const reply = LIMIT_WORDS[why][langOf(locale)];
-    return NextResponse.json({ reply: locale === "oz" ? toUzCyrillic(reply) : reply, state: "limited" }, { status });
+    const shown = locale === "oz" ? toUzCyrillic(reply) : isTranslatedLocale(locale) ? await translateText(locale, reply).catch(() => reply) : reply;
+    return NextResponse.json({ reply: shown, state: "limited" }, { status });
   };
 
   if (contentType.includes("multipart/form-data")) {
@@ -216,7 +217,8 @@ export async function POST(request: NextRequest) {
   const inPageLanguage = async <T extends { reply?: string; via?: string; suggestions?: string[]; links?: { label: string }[] }>(turn: T): Promise<T> => {
     if (!translatedPage || turn.via === "ai" || !turn.reply) return turn;
     const texts = [turn.reply, ...(turn.suggestions ?? []), ...(turn.links ?? []).map((link) => link.label)];
-    const found = await translateTexts(translatedPage, texts, { page: "/chat", visitor: ip }).catch(() => new Map<string, string>());
+    // Replies can carry the patient's name, case or report findings: translated, never stored.
+    const found = await translateTexts(translatedPage, texts, { page: "/chat", visitor: ip, store: false }).catch(() => new Map<string, string>());
     const say = (text: string) => found.get(text) ?? text;
     return {
       ...turn,

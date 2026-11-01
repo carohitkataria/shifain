@@ -4,7 +4,8 @@
  * and which language a visitor lands on.
  */
 import assert from "node:assert/strict";
-import { cleanBatch, needsTranslation, readTranslations, MAX_BATCH } from "../../src/lib/page-translation-rules.ts";
+import { cleanBatch, isPrivatePage, needsTranslation, readTranslations, MAX_BATCH } from "../../src/lib/page-translation-rules.ts";
+import { appTexts } from "../../src/lib/app-text.ts";
 import { LOCALES, LOCALE_META, TRANSLATED_LOCALES, contentLocale, isTranslatedLocale, resolveLocale } from "../../src/lib/i18n.ts";
 import { t } from "../../src/lib/localize.ts";
 
@@ -54,5 +55,13 @@ assert.equal(readTranslations('["Réserver"]', 2), null, "wrong length");
 assert.equal(readTranslations('["Réserver", ""]', 2), null, "a blank translation");
 assert.equal(readTranslations("not json", 1), null);
 assert.equal(readTranslations({ reply: "x" }, 1), null);
+
+// A patient's own pages never send their text to the AI; their interface comes from the code's copy.
+for (const page of ["/portal/patient", "/portal/patient/case", "/plan/UZ48213", "/portal"]) assert.ok(isPrivatePage(page), page);
+for (const page of ["/", "/hospitals/h-1", "/portals", "/faq"]) assert.ok(!isPrivatePage(page), page);
+const app = appTexts();
+assert.ok(app.length > 300, `the app's own sentences (${app.length})`);
+assert.ok(app.every((text) => !text.includes("{")), "no placeholders");
+assert.ok(app.includes("Home") || app.includes("My case"), "menu items are there");
 
 console.log("page translation: 13 languages, what is sent, batches, the AI's reply, landing language");

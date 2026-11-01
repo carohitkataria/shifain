@@ -23,6 +23,12 @@ const KEEP_AS_IS = [
   /^[A-Z0-9]{1,4}$/, // short codes: EN, JCI, NABH, USD
 ];
 
+/**
+ * A patient's own pages (their account, a plan; the path without its locale).
+ * Their details are on them, so text there is never sent to the AI or stored.
+ */
+export const isPrivatePage = (page: string) => /^\/(portal|plan)(\/|$)/.test(page);
+
 export const MAX_TEXT = 800;
 export const MAX_BATCH = 60;
 export const MAX_BATCH_CHARS = 24_000;

@@ -95,7 +95,16 @@ async function translateChunk(texts: string[], locale: TranslatedLocale): Promis
 export async function translateTexts(
   locale: TranslatedLocale,
   texts: string[],
-  options: { page?: string; visitor?: string } = {},
+  options: {
+    page?: string;
+    visitor?: string;
+    /** False: only translations already stored; nothing goes to the AI. */
+    ai?: boolean;
+    /** False: translate, but keep nothing — for text that may hold a patient's details. */
+    store?: boolean;
+    /** The server's own warm-up of the app's text: not held to one visitor's budget. */
+    trusted?: boolean;
+  } = {},
 ): Promise<Map<string, string>> {
   const out = new Map<string, string>();
   if (texts.length === 0 || !isDatabaseConfigured()) return out;
@@ -107,10 +116,11 @@ export async function translateTexts(
   const stored = await collection.find({ _id: { $in: [...ids.keys()] } }).toArray().catch(() => []);
   for (const row of stored) out.set(ids.get(row._id) ?? row.source, row.text);
 
+  if (options.ai === false) return out;
   const missing = texts.filter((text) => !out.has(text));
   const affordable = missing.filter(
     () =>
-      allowHit(`translate:${options.visitor ?? "server"}`, PER_VISITOR.limit, PER_VISITOR.windowMs) &&
+      (options.trusted || allowHit(`translate:${options.visitor ?? "server"}`, PER_VISITOR.limit, PER_VISITOR.windowMs)) &&
       allowHit("translate:site", SITE_WIDE.limit, SITE_WIDE.windowMs),
   );
   const now = new Date().toISOString();
@@ -121,6 +131,7 @@ export async function translateTexts(
     await Promise.all(
       chunk.map(async (source, index) => {
         out.set(source, translated[index]);
+        if (options.store === false) return;
         await collection
           .updateOne(
             { _id: translationId(locale, source) },
@@ -135,11 +146,36 @@ export async function translateTexts(
   return out;
 }
 
-/** One text, for the chat's own replies; the English when it cannot be translated. */
+/** One fixed sentence written in the code (never a patient's words); the English when it cannot be translated. */
 export async function translateText(locale: TranslatedLocale, text: string, page = "/chat"): Promise<string> {
   const source = sourceKey(text);
   if (!source) return text;
   return (await translateTexts(locale, [source], { page })).get(source) ?? text;
+}
+
+// ---------------------------------------------------------------- the patient app's own words
+
+const warming = new Set<TranslatedLocale>();
+
+/**
+ * The patient app's and plan page's own interface text — taken from the
+ * code's copy, never from a page — translated and stored once per language.
+ * Their pages hold a patient's details, so the page translator there only
+ * looks up stored text and never sends a page's text to the AI.
+ */
+export async function warmAppText(locale: TranslatedLocale): Promise<void> {
+  if (warming.has(locale)) return;
+  warming.add(locale);
+  try {
+    const { appTexts } = await import("./app-text");
+    const texts = appTexts();
+    for (let i = 0; i < texts.length; i += 60) {
+      await translateTexts(locale, texts.slice(i, i + 60), { page: "/app", trusted: true });
+    }
+  } catch (error) {
+    console.error("[shifain] could not translate the app's text into", locale, error);
+    warming.delete(locale);
+  }
 }
 
 // ---------------------------------------------------------------- console
