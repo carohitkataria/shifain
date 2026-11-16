@@ -5,6 +5,7 @@
  * Everything is scoped under .pl.
  */
 .pl {
+  --pl-serif: "DM Serif Display";
   --pl-bg: #faf9f6;
   --pl-sand: #f3f1ea;
   --pl-ink: #203c39;

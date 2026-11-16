@@ -25,7 +25,7 @@
   --color-hero-end: #eceef9;
   --color-hero-band: #f3f1ff;
 
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+  --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 
   --radius-xl2: 1.25rem;
@@ -595,6 +595,12 @@ body {
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
   transition: background-color 0.15s ease, transform 0.15s ease;
+}
+/* Out of the way while the visitor types into a form on the page (phones only; see FloatingTools). */
+.help-fab-away {
+  transform: translateY(calc(100% + 40px));
+  opacity: 0;
+  pointer-events: none;
 }
 
 .help-fab:hover {

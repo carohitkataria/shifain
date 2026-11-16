@@ -15,8 +15,9 @@ function secret(): string {
   return "shifain-development-secret-do-not-use-in-production";
 }
 
+/** Signed under the owner's label, so no other kind of token with the same secret verifies here. */
 function sign(payload: string): string {
-  return crypto.createHmac("sha256", secret()).update(payload).digest("base64url");
+  return crypto.createHmac("sha256", secret()).update(`admin-session:${payload}`).digest("base64url");
 }
 
 function safeEqual(a: string, b: string): boolean {

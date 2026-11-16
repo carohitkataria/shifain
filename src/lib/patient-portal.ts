@@ -9,6 +9,7 @@ import { canSee, viewerOf, type Viewer } from "./access-rules";
 import { MAX_REPORT_BYTES, storeReports, type ReportUpload } from "./reports";
 import { getSettings } from "./settings";
 import type { FamilyAccess, JourneyFields } from "./journey-rules";
+import { sniffMediaType } from "./upload-guard";
 
 /**
  * The patient portal's data: the signed-in patient, their cases, and what
@@ -144,13 +145,12 @@ export async function addPortalReports(reference: string, files: File[]): Promis
   const allowed = /^(application\/pdf|image\/(png|jpeg|webp|heic|heif))$/;
   const uploads: ReportUpload[] = [];
   for (const file of files.slice(0, 5)) {
-    if (!file.size || file.size > MAX_REPORT_BYTES || !allowed.test(file.type)) continue;
-    uploads.push({
-      id: crypto.randomBytes(6).toString("hex"),
-      filename: file.name.slice(0, 160) || "report",
-      mediaType: file.type,
-      body: Buffer.from(await file.arrayBuffer()),
-    });
+    if (!file.size || file.size > MAX_REPORT_BYTES) continue;
+    const body = Buffer.from(await file.arrayBuffer());
+    // The bytes decide the type, not the browser's label.
+    const mediaType = sniffMediaType(body);
+    if (!mediaType || !allowed.test(mediaType)) continue;
+    uploads.push({ id: crypto.randomBytes(6).toString("hex"), filename: file.name.slice(0, 160) || "report", mediaType, body });
   }
   if (uploads.length === 0) return 0;
 

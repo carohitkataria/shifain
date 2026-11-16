@@ -31,7 +31,7 @@ export const text = (value: FormDataEntryValue | string | null | undefined): str
  * from researched rows is what lets the team see, later, which records they
  * actually stand behind.
  */
-export function authoredProvenance(source = "ShifaIn admin panel") {
+export function authoredProvenance(source = "Shifain admin panel") {
   return {
     source,
     sourceUrl: null,

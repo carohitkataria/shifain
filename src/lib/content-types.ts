@@ -50,7 +50,7 @@ export const SECTION_IDS: SectionId[] = [
 export const SECTION_LABELS: Record<SectionId, string> = {
   hero: "Hero",
   stats: "Proof strip (counted from the catalogue)",
-  usps: "Why ShifaIn (star)",
+  usps: "Why Shifain (star)",
   journey: "How it works (4 steps)",
   specialties: "Treatment categories",
   aiPlanner: "AI plan & estimate builder",

@@ -1,0 +1,26 @@
+name: CI
+
+# Type check, lint, the rule and conversation tests, the production build and a
+# dependency audit on every push and pull request. No secrets are needed: the
+# tests use an in-memory database and scripted AI replies.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high

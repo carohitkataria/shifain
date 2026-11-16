@@ -98,21 +98,21 @@ const NO_AI_FOLLOWUP: Record<SayLang, string> = {
 
 const WELCOME: Record<SayLang, { fresh: string; back: string; resume: string; chips: string[]; backChips: string[] }> = {
   en: {
-    fresh: "Hello, and welcome to ShifaIn. I can prepare a free treatment plan with an estimate, answer questions about treatment in India, or connect you with a coordinator. What would you like to do?",
+    fresh: "Hello, and welcome to Shifain. I can prepare a free treatment plan with an estimate, answer questions about treatment in India, or connect you with a coordinator. What would you like to do?",
     back: "Welcome back{name}. Your case ending {ref}: {status}. What would you like to do?",
     resume: "Hello again{name}. Let's pick up where we left off.",
     chips: ["Get a free treatment plan", "How much does treatment cost?", "Check my case", "Talk to a person"],
     backChips: ["Show my plan", "Case status", "Start a new case", "Talk to a person"],
   },
   ru: {
-    fresh: "Здравствуйте, добро пожаловать в ShifaIn. Я могу составить бесплатный план лечения со сметой, ответить на вопросы о лечении в Индии или связать вас с координатором. Что вас интересует?",
+    fresh: "Здравствуйте, добро пожаловать в Shifain. Я могу составить бесплатный план лечения со сметой, ответить на вопросы о лечении в Индии или связать вас с координатором. Что вас интересует?",
     back: "С возвращением{name}. Ваша заявка …{ref}: {status}. Чем помочь?",
     resume: "Снова здравствуйте{name}. Продолжим с того места, где остановились.",
     chips: ["Нужен план лечения", "Сколько стоит лечение?", "Статус моей заявки", "Связаться с человеком"],
     backChips: ["Покажи мой план", "Статус заявки", "Открыть новую заявку", "Связаться с человеком"],
   },
   uz: {
-    fresh: "Assalomu alaykum, ShifaIn'ga xush kelibsiz. Smetali bepul davolash rejasini tayyorlay olaman, Hindistonda davolanish haqida savollarga javob beraman yoki koordinator bilan bog'layman. Nima qilmoqchisiz?",
+    fresh: "Assalomu alaykum, Shifain'ga xush kelibsiz. Smetali bepul davolash rejasini tayyorlay olaman, Hindistonda davolanish haqida savollarga javob beraman yoki koordinator bilan bog'layman. Nima qilmoqchisiz?",
     back: "Qaytganingizdan xursandmiz{name}. Arizangiz …{ref}: {status}. Qanday yordam beray?",
     resume: "Yana salom{name}. To'xtagan joyimizdan davom etamiz.",
     chips: ["Bepul reja kerak", "Davolash qancha turadi?", "Arizam holati", "Odam bilan gaplashish"],
@@ -528,7 +528,7 @@ async function askNextOrOpen(input: TurnInput, intake: WebIntake, lang: SayLang,
 async function caseSummary(intake: WebIntake): Promise<string> {
   const record = intake.caseReference ? await getCase(intake.caseReference).catch(() => null) : null;
   if (!record) {
-    return "The patient has a case with ShifaIn, but its details could not be loaded just now. Do not state a status, plan or reference; if they ask, say their coordinator will confirm.";
+    return "The patient has a case with Shifain, but its details could not be loaded just now. Do not state a status, plan or reference; if they ask, say their coordinator will confirm.";
   }
   const plan =
     record.status === "planning"

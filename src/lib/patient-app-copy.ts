@@ -164,6 +164,7 @@ export const APP = {
     due: l("Pending", "Ожидает", "Kutilmoqda"),
     sch: l("Booked", "Назначено", "Belgilangan"),
     off: l("Not needed", "Не нужно", "Kerak emas"),
+    tbd: l("Not decided yet", "Пока не решено", "Hali hal qilinmagan"),
   },
   todoKinds: {
     document: l("Upload", "Загрузить", "Yuklash"),
@@ -417,6 +418,7 @@ export const APP = {
   homeContact: l("Emergency contact at home", "Контакт дома на случай ЧП", "Uydagi favqulodda kontakt"),
   relation: l("Relation", "Кем приходится", "Qarindoshligi"),
   signOut: l("Sign out", "Выйти", "Chiqish"),
+  signOutEverywhere: l("Sign out on all devices", "Выйти на всех устройствах", "Barcha qurilmalarda chiqish"),
   saved: l("Saved", "Сохранено", "Saqlandi"),
   // tasks
   openN: (n: number) => l(`Open · ${n}`, `Открыто · ${n}`, `Ochiq · ${n}`),
@@ -596,6 +598,12 @@ export const APP = {
     email: l("Check the email address.", "Проверьте адрес почты.", "Pochta manzilini tekshiring."),
     code: l("That code did not match — try again.", "Код не подошёл — попробуйте ещё раз.", "Kod mos kelmadi — qayta urinib ko'ring."),
     mail: l("We could not send the email. Try your case reference instead.", "Не удалось отправить письмо. Войдите по номеру случая.", "Xat yuborilmadi. Holat raqami bilan kiring."),
+    // Sign-up: a new visitor has no case reference, so offer what works without an account.
+    mailSignUp: l(
+      "We could not send the email just now. You don't need an account to get your free plan: fill in the form on the home page, or write to us in the chat, and a coordinator will reach you. You can create the account later.",
+      "Сейчас не удалось отправить письмо. Для бесплатного плана аккаунт не нужен: заполните форму на главной странице или напишите нам в чат — координатор свяжется с вами. Аккаунт можно создать позже.",
+      "Hozir xat yuborib bo'lmadi. Bepul reja uchun akkaunt shart emas: bosh sahifadagi shaklni to'ldiring yoki chatda yozing — koordinator siz bilan bog'lanadi. Akkauntni keyinroq ochishingiz mumkin.",
+    ),
     details: l("Fill in your name, country, phone and email, and agree to continue.", "Укажите имя, страну, телефон и почту и подтвердите согласие.", "Ism, mamlakat, telefon va pochtani kiriting va rozilik bering."),
     reference: l("That reference and phone do not match.", "Номер случая и телефон не совпадают.", "Holat raqami va telefon mos kelmadi."),
     telegram: l("Telegram sign-in isn't available right now. Use your email instead.", "Вход через Telegram сейчас недоступен. Войдите по почте.", "Telegram orqali kirish hozir ishlamayapti. Pochta orqali kiring."),

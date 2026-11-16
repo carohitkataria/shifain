@@ -48,6 +48,7 @@ export async function emailFromCode(code: string, origin: string): Promise<strin
       redirect_uri: callbackUrl(origin),
       grant_type: "authorization_code",
     }),
+    signal: AbortSignal.timeout(15_000),
   });
   if (!response.ok) {
     console.error("[shifain] google token exchange failed", response.status);

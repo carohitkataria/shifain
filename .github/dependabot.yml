@@ -1,0 +1,9 @@
+# Weekly dependency updates, so a security fix (like the Next.js one in the
+# November audit) arrives as a pull request instead of waiting to be noticed.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

@@ -117,7 +117,11 @@ assert.equal(tile("flights").status, "ok"); // a booked inbound flight counts as
 assert.equal(tile("pickup").status, "ok");
 assert.equal(tile("hotel").status, "due");
 assert.equal(tile("interpreter").status, "off");
-assert.equal(tile("balance").status, "off"); // no confirmed price yet
+assert.equal(tile("balance").status, "tbd"); // no confirmed price yet: not decided, never "not needed"
+// before any plan, nothing reads "not needed": the package is simply not decided yet
+const unplanned = planTiles({ ...booked, plan: null }, { driver: null, hotel: null, interpreter: null });
+assert.equal(unplanned.find((item) => item.key === "visa")!.status, "tbd");
+assert.equal(unplanned.find((item) => item.key === "interpreter")!.status, "tbd");
 
 // the journey stepper
 assert.equal(stagesDone(base, "2026-10-20"), 1); // plan, no visa yet

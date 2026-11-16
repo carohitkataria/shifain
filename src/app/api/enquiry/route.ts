@@ -1,7 +1,9 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { NextResponse, type NextRequest } from "next/server";
-import { publicUrl } from "@/lib/origin";
+import { clientAddress, publicUrl } from "@/lib/origin";
+import { allowHit } from "@/lib/rate-limit";
+import { declaredTooLarge } from "@/lib/upload-guard";
 import { DEFAULT_LOCALE, LOCALE_PATTERN, isLocale } from "@/lib/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { linkCaseToAccount, newReference, type CaseRequest } from "@/lib/cases";
@@ -10,9 +12,10 @@ import { listedDoctor, listedHospital } from "@/lib/directory";
 import { currentPatient, getPatientAccount } from "@/lib/patient-auth";
 import { setPreferences } from "@/lib/journey";
 import { CHANNELS, type ContactChannel } from "@/lib/journey-rules";
-import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
+import { MAX_TOTAL_BYTES, hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
 import { openCase } from "@/lib/case-flow";
 import { attributeFromCookie } from "@/lib/referrals";
+import { alertTeamPlain } from "@/lib/team-alerts";
 
 const ENQUIRY_LOG =
   process.env.SHIFAIN_ENQUIRY_LOG || path.join(process.cwd(), ".data", "enquiries.jsonl");
@@ -25,6 +28,15 @@ const ENQUIRY_LOG =
 async function recordToDisk(entry: Record<string, unknown>): Promise<void> {
   await fs.mkdir(path.dirname(ENQUIRY_LOG), { recursive: true });
   await fs.appendFile(ENQUIRY_LOG, `${JSON.stringify(entry)}\n`, "utf8");
+  // The file does not survive a redeploy, so the team hears now: who to call back, nothing clinical.
+  await alertTeamPlain(`Enquiry ${String(entry.reference)} could not be saved`, [
+    "The database was not reachable, so this enquiry was kept only in a local file on the server.",
+    `Reference: ${String(entry.reference)}`,
+    `Name: ${String(entry.name ?? "")}`,
+    `Phone: ${String(entry.phone ?? "")}`,
+    `Country: ${String(entry.country ?? "")}`,
+    "Please call the patient back and open the case by hand.",
+  ]).catch((error) => console.error("[shifain] could not alert the team about a fallback enquiry", error));
 }
 
 /**
@@ -49,7 +61,18 @@ async function requestedFrom(form: FormData): Promise<CaseRequest | null> {
   };
 }
 
+/** Each enquiry opens a case, a paid AI plan and a team alert: per address, and for the whole site, per hour. */
+const PER_ADDRESS = { limit: 5, windowMs: 60 * 60_000 };
+const SITE_WIDE = { limit: 120, windowMs: 60 * 60_000 };
+/** The files, plus room for the text fields and the form's own framing. */
+const MAX_BODY_BYTES = MAX_TOTAL_BYTES + 2 * 1024 * 1024;
+
+const cap = (value: FormDataEntryValue | null, length: number) => String(value ?? "").trim().slice(0, length);
+
 export async function POST(request: NextRequest) {
+  const homeBack = (why: string) => NextResponse.redirect(publicUrl(request, `/${DEFAULT_LOCALE}?enquiry=${why}#quote-form`), 303);
+  // Refused before the body is read, so an oversized post never sits in memory.
+  if (declaredTooLarge(request.headers, MAX_BODY_BYTES)) return homeBack("files");
   const form = await request.formData();
 
   const localeField = String(form.get("locale") ?? "");
@@ -58,30 +81,42 @@ export async function POST(request: NextRequest) {
   const from = String(form.get("from") ?? "");
   const onPage = new RegExp(`^/(${LOCALE_PATTERN})/(hospitals|doctors)/[\\w-]+$`).test(from);
   // Back to the form with the reason, which the form shows: never a silent bounce.
-  const back = (why: "missing" | "files" | "empty") =>
+  const back = (why: "missing" | "files" | "empty" | "slow" | "consent") =>
     NextResponse.redirect(publicUrl(request, `${onPage ? from : `/${locale}`}?enquiry=${why}${onPage ? "#book" : "#quote-form"}`), 303);
+
+  // A field people never see: only a script fills it in. It is sent on as if
+  // all went well, so it learns nothing, and nothing is opened.
+  if (String(form.get("website") ?? "").trim()) return NextResponse.redirect(publicUrl(request, `/${locale}`), 303);
 
   // Name arrives as title + first + last; older callers may still send `name`.
   const name = (
     [form.get("prefix"), form.get("firstName"), form.get("lastName")]
-      .map((v) => String(v ?? "").trim())
+      .map((v) => cap(v, 60))
       .filter(Boolean)
-      .join(" ") || String(form.get("name") ?? "").trim()
+      .join(" ") || cap(form.get("name"), 120)
   ).trim();
-  const country = String(form.get("country") ?? "").trim();
-  const dial = String(form.get("dial") ?? "").trim();
-  const local = String(form.get("phone") ?? "").trim();
+  const country = cap(form.get("country"), 80);
+  const dial = cap(form.get("dial"), 6);
+  const local = cap(form.get("phone"), 30);
   const signedIn = isDatabaseConfigured() ? await currentPatient().catch(() => null) : null;
   const accountEmail = signedIn?.kind === "email" ? signedIn.email : null;
   // A signed-in patient who leaves the email blank is reached at their account's.
-  const email = String(form.get("email") ?? "").trim().toLowerCase() || accountEmail;
+  const email = cap(form.get("email"), 200).toLowerCase() || accountEmail;
   const phone = [dial, local].filter(Boolean).join(" ").trim();
 
   if (!name || !phone || !country) return back("missing");
+  // Health details are kept only with the patient's explicit agreement, recorded with its time.
+  if (form.get("consent") !== "yes") return back("consent");
+  const consentAt = new Date().toISOString();
 
   const intake = await readIntake(form);
   if (intake.tooLarge) return back("files");
   if (!hasSomethingToPlanFrom(intake)) return back("empty");
+  // Counted only once the form is complete, so a patient correcting a mistake is not held back.
+  const ip = clientAddress(request);
+  if (!allowHit(`enquiry:${ip}`, PER_ADDRESS.limit, PER_ADDRESS.windowMs) || !allowHit("enquiry:site", SITE_WIDE.limit, SITE_WIDE.windowMs)) {
+    return back("slow");
+  }
 
   const patient = { name, phone, country, email };
 
@@ -105,7 +140,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const requested = await requestedFrom(form);
-    const record = await openCase({ locale, patient, intake, source: "website", referredBy: null, requested });
+    const record = await openCase({ locale, patient, intake, source: "website", referredBy: null, requested, consentAt });
     await attributeFromCookie(record, "link");
     if (accountEmail && accountEmail !== email) await linkCaseToAccount(record._id, accountEmail).catch(() => undefined);
     // The ways to reach them chosen at sign-up travel with every case they open.

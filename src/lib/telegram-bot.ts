@@ -732,8 +732,8 @@ async function handlePatientCallback(
 /** The first message, in the language the patient's Telegram is set to. */
 const WELCOME = {
   en:
-    "🏥 <b>Welcome to ShifaIn</b>\n\n" +
-    "I'm the ShifaIn care assistant, and a coordinator is on hand if you'd rather talk to a person. Just tell me what you need — no forms to fill out.\n\n" +
+    "🏥 <b>Welcome to Shifain</b>\n\n" +
+    "I'm the Shifain care assistant, and a coordinator is on hand if you'd rather talk to a person. Just tell me what you need — no forms to fill out.\n\n" +
     "You can:\n" +
     "• <b>Describe your medical need</b> — I'll ask a few questions and create your treatment plan\n" +
     "• <b>Send a voice message</b> — speak in any language, I'll understand\n" +
@@ -741,8 +741,8 @@ const WELCOME = {
     "• Check your case status with /status\n\n" +
     "Simply start by telling me what treatment you're looking for, and I'll guide you through the rest.",
   ru:
-    "🏥 <b>Добро пожаловать в ShifaIn</b>\n\n" +
-    "Я помощник ShifaIn по лечению, а если захотите поговорить с человеком — рядом координатор. Просто напишите, что вам нужно, — без анкет.\n\n" +
+    "🏥 <b>Добро пожаловать в Shifain</b>\n\n" +
+    "Я помощник Shifain по лечению, а если захотите поговорить с человеком — рядом координатор. Просто напишите, что вам нужно, — без анкет.\n\n" +
     "Вы можете:\n" +
     "• <b>Описать, что вас беспокоит</b> — я задам пару вопросов и составлю план лечения\n" +
     "• <b>Отправить голосовое</b> — на любом языке, я пойму\n" +
@@ -750,8 +750,8 @@ const WELCOME = {
     "• Узнать статус случая командой /status\n\n" +
     "Начните с того, какое лечение вы ищете, — дальше я подскажу.",
   uz:
-    "🏥 <b>ShifaIn ga xush kelibsiz</b>\n\n" +
-    "Men ShifaIn davolanish yordamchisiman, odam bilan gaplashmoqchi bo'lsangiz koordinator ham bor. Nima kerakligini yozing — anketasiz.\n\n" +
+    "🏥 <b>Shifain ga xush kelibsiz</b>\n\n" +
+    "Men Shifain davolanish yordamchisiman, odam bilan gaplashmoqchi bo'lsangiz koordinator ham bor. Nima kerakligini yozing — anketasiz.\n\n" +
     "Siz:\n" +
     "• <b>Muammoingizni tasvirlashingiz</b> mumkin — bir necha savol berib, davolash rejasini tuzaman\n" +
     "• <b>Ovozli xabar yuborishingiz</b> mumkin — istalgan tilda, tushunaman\n" +
@@ -843,7 +843,7 @@ async function startLogin(chatId: number, userId: number, token: string): Promis
   if (!(await pendingTelegramLogin(token))) {
     await sendMessage("patient", {
       chatId,
-      text: "⌛ This sign-in link has expired. Go back to the ShifaIn website and press <b>Sign in with Telegram</b> again.",
+      text: "⌛ This sign-in link has expired. Go back to the Shifain website and press <b>Sign in with Telegram</b> again.",
     });
     return;
   }
@@ -851,7 +851,7 @@ async function startLogin(chatId: number, userId: number, token: string): Promis
   await sendMessage("patient", {
     chatId,
     text:
-      "🔐 <b>Sign in to ShifaIn</b>\n\n" +
+      "🔐 <b>Sign in to Shifain</b>\n\n" +
       "Tap <b>Share my phone number</b> below. Telegram confirms the number is yours, and the website signs you in — no code to type.\n\n" +
       "Didn't try to sign in? Just ignore this message.",
     requestContact: true,
@@ -876,8 +876,8 @@ async function handleLoginContact(
   await sendMessage("patient", {
     chatId,
     text: confirmed
-      ? "✅ <b>You're signed in.</b> Go back to your browser — the ShifaIn website is opening your account.\n\nYou can also send me your reports here, and I'll message you when your case moves."
-      : "⌛ This sign-in link has expired. Go back to the ShifaIn website and press <b>Sign in with Telegram</b> again.",
+      ? "✅ <b>You're signed in.</b> Go back to your browser — the Shifain website is opening your account.\n\nYou can also send me your reports here, and I'll message you when your case moves."
+      : "⌛ This sign-in link has expired. Go back to the Shifain website and press <b>Sign in with Telegram</b> again.",
   });
 }
 
@@ -1196,7 +1196,7 @@ async function handlePartnerUpdate(update: TgUpdate): Promise<void> {
 
 const NOT_LINKED =
   "🔗 This chat is not connected to a partner account yet.\n\n" +
-  "Open your ShifaIn partner portal and tap <b>Connect Telegram</b> — your referral updates will arrive here.";
+  "Open your Shifain partner portal and tap <b>Connect Telegram</b> — your referral updates will arrive here.";
 
 async function handlePartnerCommand(chatId: number, _userId: number, text: string): Promise<void> {
   const [cmd, ...args] = text.split(/\s+/);
@@ -1220,7 +1220,7 @@ async function handlePartnerCommand(chatId: number, _userId: number, text: strin
       await sendMessage("partner", {
         chatId,
         text:
-          "🤝 <b>Welcome to ShifaIn Partner Bot</b>\n\n" +
+          "🤝 <b>Welcome to Shifain Partner Bot</b>\n\n" +
           "I can help you with:\n" +
           "• Track your referred patients\n" +
           "• Receive case updates\n" +
@@ -1241,7 +1241,7 @@ async function handlePartnerCommand(chatId: number, _userId: number, text: strin
           "/refer — Submit a new referral\n" +
           "/notices — Latest announcements\n" +
           "/earnings — Commission summary\n" +
-          "/contact — Reach ShifaIn team\n\n" +
+          "/contact — Reach Shifain team\n\n" +
           "Full features are available in the partner portal.",
       });
       break;
@@ -1318,7 +1318,7 @@ async function handlePartnerCommand(chatId: number, _userId: number, text: strin
     case "/contact":
       await sendMessage("partner", {
         chatId,
-        text: "📞 Type your message and the ShifaIn team will respond here.",
+        text: "📞 Type your message and the Shifain team will respond here.",
       });
       break;
 

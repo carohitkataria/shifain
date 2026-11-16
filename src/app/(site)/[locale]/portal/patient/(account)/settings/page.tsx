@@ -9,7 +9,7 @@ import { COUNTRY_BY_NAME } from "@/lib/countries";
 import { LOCALES, LOCALE_META } from "@/lib/i18n";
 import { t } from "@/lib/localize";
 import { channelsAction, homeContactAction, privacyAction } from "../../app-actions";
-import { patientLogoutAction, setPasswordAction } from "../../actions";
+import { patientLogoutAction, patientLogoutEverywhereAction, setPasswordAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -190,6 +190,13 @@ export default async function SettingsPage(props: AppProps) {
         <button className="a-btn a-btn-s a-w" style={{ marginTop: 16, color: "var(--red)" }}>
           <AppIcon name="logout" />
           {t(APP.signOut, locale)}
+        </button>
+      </form>
+      <form action={patientLogoutEverywhereAction}>
+        <input type="hidden" name="locale" value={locale} />
+        <button className="a-btn a-btn-s a-w" style={{ marginTop: 8 }}>
+          <AppIcon name="logout" />
+          {t(APP.signOutEverywhere, locale)}
         </button>
       </form>
     </AppShell>

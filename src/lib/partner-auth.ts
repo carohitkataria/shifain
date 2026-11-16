@@ -55,8 +55,9 @@ function secret(): string {
   return "shifain-development-secret-do-not-use-in-production";
 }
 
+/** Signed under the partner label, so a patient or admin token with the same secret never verifies here. */
 function sign(payload: string): string {
-  return crypto.createHmac("sha256", secret()).update(payload).digest("base64url");
+  return crypto.createHmac("sha256", secret()).update(`partner-session:${payload}`).digest("base64url");
 }
 
 function safeEqual(a: string, b: string): boolean {

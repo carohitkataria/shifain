@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Icon } from "@/components/Icon";
 import { getContent } from "@/lib/store";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
@@ -49,9 +50,9 @@ export default async function TreatmentsIndexPage({
                 >
                   <span
                     aria-hidden="true"
-                    className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-2xl"
+                    className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-brand"
                   >
-                    {item.icon}
+                    <Icon name={item.icon} className="h-6 w-6" />
                   </span>
                   <h2 className="mt-4 text-xl font-extrabold tracking-tight text-ink">
                     {t(item.title, locale)}

@@ -43,6 +43,8 @@ async function call<T>(token: string, method: string, body?: Record<string, unkn
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
+    // A slow Telegram must not hold a patient's request (or the webhook) open.
+    signal: AbortSignal.timeout(15_000),
   });
   const json = (await res.json()) as TgResult<T>;
   if (!json.ok) throw new Error(`Telegram ${method}: ${json.description}`);
@@ -154,7 +156,7 @@ export async function getFile(role: BotRole, fileId: string): Promise<TgFile> {
 export async function downloadFile(role: BotRole, filePath: string): Promise<Buffer> {
   const token = tokenFor(role);
   if (!token) throw new Error(`Telegram ${role} bot is not configured.`);
-  const res = await fetch(`${API}/file/bot${token}/${filePath}`);
+  const res = await fetch(`${API}/file/bot${token}/${filePath}`, { signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`Telegram file download ${res.status}`);
   const buf = await res.arrayBuffer();
   return Buffer.from(buf);
@@ -175,6 +177,7 @@ export async function sendVoice(role: BotRole, chatId: number, audioBuffer: Buff
   const res = await fetch(`${API}/bot${token}/sendVoice`, {
     method: "POST",
     body: form,
+    signal: AbortSignal.timeout(30_000),
   });
   const json = (await res.json()) as { ok: true; result: TgMessage } | { ok: false; description: string };
   if (!json.ok) throw new Error(`Telegram sendVoice: ${json.description}`);
@@ -197,7 +200,6 @@ export async function setWebhook(role: BotRole, url: string): Promise<void> {
     url,
     secret_token: secret,
     allowed_updates: ["message", "callback_query"],
-    drop_pending_updates: true,
   });
 }
 

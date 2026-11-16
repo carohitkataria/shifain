@@ -1,10 +1,12 @@
 import "server-only";
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
-import { getDb } from "./db";
+import { cache } from "react";
+import { getDb, isDatabaseConfigured } from "./db";
 import { isMailConfigured, send } from "./mailer";
 import { emailMatcher, familyCasesFor, type PatientCase } from "./cases";
 import { normalisePhone, phonesMatch } from "./access-rules";
+import { allowHit } from "./rate-limit";
 
 export { normalisePhone };
 
@@ -25,6 +27,13 @@ const sign = (payload: string) =>
 
 /** The same keyed hash, for one-time codes kept by sibling modules (phone codes). */
 export const keyedHash = (value: string) => sign(`code:${value}`);
+/**
+ * A patient session is signed under its own label: the partner and admin
+ * cookies may share the secret, and a patient token must never read as one
+ * of theirs (a patient address ending in ".doctor" would otherwise look like
+ * a partner id and role).
+ */
+const signSession = (payload: string) => sign(`patient-session:${payload}`);
 
 export function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
@@ -71,7 +80,7 @@ async function setSession(subject: string, { remember = true }: SessionOptions):
     path: "/",
     ...(remember ? { maxAge: MAX_AGE_SECONDS } : {}),
   };
-  jar.set(PATIENT_COOKIE, `${payload}.${sign(payload)}`, options);
+  jar.set(PATIENT_COOKIE, `${payload}.${signSession(payload)}`, options);
   jar.set(VERIFIED_COOKIE, `${now}.${sign(`verified:${subject}:${now}`)}`, options);
 }
 
@@ -262,7 +271,18 @@ export async function requestEmailCode(emailInput: string, signUp: SignUpDetails
     return { status: "dev", code };
   }
   await db.collection<SignInCode>("signin_codes").deleteOne({ _id: email });
-  return { status: "mail-failed" };
+  // The team hears that mail is failing (once an hour at most), never which address it was.
+  if (allowHit("alert:mail-failed", 1, 60 * 60_000)) {
+    const { alertTeamPlain } = await import("./team-alerts");
+    await alertTeamPlain("Sign-in emails are failing", [
+      "A patient asked for a sign-in code and the email could not be sent.",
+      isMailConfigured() ? "The mail provider refused or did not answer; check Resend." : "No mail provider is configured (RESEND_API_KEY).",
+    ]).catch(() => undefined);
+  }
+  // Signing in, a known address gets the same answer as an unknown one, so the
+  // form never tells anyone who is a patient here. Signing up is about the
+  // visitor's own new account, so there the truth helps them more.
+  return signUp ? { status: "mail-failed" } : { status: "sent" };
 }
 
 /** Checks a code. For a sign-up, this is when the account is created. Returns the email, or null. */
@@ -338,7 +358,50 @@ export async function currentPatient(): Promise<PatientIdentity | null> {
   const token = jar.get(PATIENT_COOKIE)?.value;
   if (!token) return null;
 
-  return readToken(token);
+  const identity = readToken(token);
+  if (!identity) return null;
+  // A session started before "sign out on all devices" (or a password change) has ended.
+  const before = await revokedBefore(subjectOf(identity));
+  if (before && startedAt(jar.get(VERIFIED_COOKIE)?.value, subjectOf(identity)) < before) return null;
+  return identity;
+}
+
+const subjectOf = (identity: PatientIdentity) => (identity.kind === "email" ? `e:${identity.email}` : identity.digits);
+
+/** When this browser's session began, from the signed proof set with it; 0 if unknown. */
+function startedAt(proof: string | undefined, subject: string): number {
+  if (!proof) return 0;
+  const at = proof.indexOf(".");
+  const when = Number(proof.slice(0, at));
+  return Number.isFinite(when) && safeEqual(proof.slice(at + 1), sign(`verified:${subject}:${when}`)) ? when : 0;
+}
+
+type Revocation = { _id: string; before: number };
+
+/** Sessions for this person started before this moment no longer count. Read once per request. */
+const revokedBefore = cache(async (subject: string): Promise<number | null> => {
+  if (!isDatabaseConfigured()) return null;
+  const db = await getDb().catch(() => null);
+  const row = await db?.collection<Revocation>("session_revocations").findOne({ _id: subject }).catch(() => null);
+  return row?.before ?? null;
+});
+
+/**
+ * Ends every session this person has, on every device. The browser that asked
+ * is signed in again straight away when `keepThisOne` is set (after a password
+ * change), so only the others are signed out.
+ */
+export async function revokeOtherSessions(identity: PatientIdentity, keepThisOne: boolean): Promise<void> {
+  const subject = subjectOf(identity);
+  const db = await getDb();
+  await db.collection<Revocation>("session_revocations").updateOne({ _id: subject }, { $set: { before: Date.now() } }, { upsert: true });
+  if (keepThisOne) {
+    // A new session, a millisecond later than the cut-off.
+    await new Promise((resolve) => setTimeout(resolve, 2));
+    await setSession(subject, { remember: true });
+  } else {
+    await endPatientSession();
+  }
 }
 
 /**
@@ -353,7 +416,7 @@ function readToken(token: string): PatientIdentity | null {
   const subject = token.slice(0, expiresAt);
   const expires = token.slice(expiresAt + 1, signatureAt);
   const signature = token.slice(signatureAt + 1);
-  if (!safeEqual(signature, sign(`${subject}.${expires}`))) return null;
+  if (!safeEqual(signature, signSession(`${subject}.${expires}`))) return null;
   if (!(Number(expires) > Date.now())) return null;
 
   return subject.startsWith("e:")

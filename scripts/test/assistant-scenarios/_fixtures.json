@@ -284,7 +284,7 @@
   {
    "_id": "UZ55501",
    "status": "planning",
-   "createdAt": "2026-10-20T00:00:00Z",
+   "createdAt": "now",
    "updatedAt": null,
    "locale": "en",
    "patient": {

@@ -49,3 +49,26 @@ export function allowHit(key: string, limit: number, windowMs: number): boolean 
 
 /** How many keys are held; for tests. */
 export const trackedKeys = () => buckets.size;
+
+/** Counts one event (a failed sign-in) without any limit. */
+export function recordHit(key: string, windowMs: number): void {
+  const now = Date.now();
+  if (buckets.size >= MAX_KEYS && !buckets.has(key)) trimOldest();
+  const hits = (buckets.get(key)?.hits ?? []).filter((at) => now - at < windowMs);
+  hits.push(now);
+  buckets.delete(key);
+  buckets.set(key, { hits, windowMs });
+}
+
+/** How many events this key has had within the window, without adding one. */
+export function recentHits(key: string, windowMs: number): number {
+  const now = Date.now();
+  return (buckets.get(key)?.hits ?? []).filter((at) => now - at < windowMs).length;
+}
+
+/**
+ * A pause that grows with the failures on one account: guessing slows to a
+ * crawl, but the real person, from their own address, is never locked out.
+ * Nothing for the first five; then 300 ms more per failure, up to 3 seconds.
+ */
+export const slowdownMs = (failures: number) => Math.min(3_000, Math.max(0, failures - 5) * 300);

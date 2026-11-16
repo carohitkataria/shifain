@@ -57,6 +57,8 @@ export type PatientCase = {
   accountEmail?: string | null;
   /** The hospital or doctor page the patient asked from, when they did. */
   requested?: CaseRequest | null;
+  /** When the patient ticked the consent box on the website form. */
+  consentAt?: string | null;
 };
 
 export type CaseRequest = {
@@ -159,7 +161,43 @@ export async function savePlanFailure(reference: string, message: string): Promi
 
 export async function getCase(reference: string): Promise<PatientCase | null> {
   const db = await getDb();
-  return db.collection<PatientCase>("cases").findOne({ _id: reference });
+  const record = await db.collection<PatientCase>("cases").findOne({ _id: reference });
+  return record ? settleStuckPlan(record) : null;
+}
+
+/** A plan takes about a minute; one still "planning" after this was lost (a restart, a redeploy, a sleeping server). */
+export const PLANNING_TIMEOUT_MS = 5 * 60_000;
+
+/** When the current planning run began: the last re-plan request, or the case's opening. */
+export const planningStartedAt = (record: Pick<PatientCase, "createdAt" | "replans">): number =>
+  Math.max(Date.parse(record.createdAt) || 0, ...(record.replans ?? []).map((at) => Date.parse(at) || 0));
+
+/**
+ * Plans run in the web process after the response. If that process stopped
+ * mid-plan, nothing would ever finish the case, and the patient's page would
+ * wait forever. Whoever reads such a case first settles it: back to the
+ * earlier plan if there was one, otherwise handed to a coordinator — and the
+ * team is told, once (the update only matches while the case is still stuck).
+ */
+export async function settleStuckPlan(record: PatientCase): Promise<PatientCase> {
+  if (record.status !== "planning" || Date.now() - planningStartedAt(record) < PLANNING_TIMEOUT_MS) return record;
+  const now = new Date().toISOString();
+  const settled: Partial<PatientCase> = record.plan
+    ? { status: "planned", updatedAt: now }
+    : { status: "plan-failed", planError: "The automatic plan did not finish. A coordinator is preparing it by hand.", updatedAt: now };
+  const db = await getDb();
+  const result = await db
+    .collection<PatientCase>("cases")
+    .updateOne({ _id: record._id, status: "planning" }, { $set: settled })
+    .catch(() => null);
+  if (result?.modifiedCount) {
+    const { alertTeam } = await import("./team-alerts");
+    await alertTeam(
+      record._id,
+      record.plan ? "A re-plan did not finish; the earlier plan is showing again." : "The automatic plan did not finish — please prepare it by hand.",
+    ).catch(() => undefined);
+  }
+  return { ...record, ...settled };
 }
 
 /** Candidates whose stored number ends like this one; callers confirm each with phonesMatch. */
@@ -179,8 +217,11 @@ export async function casesForPhone(digits: string, limit = 20): Promise<Patient
     .sort({ createdAt: -1 })
     .limit(limit * 2)
     .toArray();
-  return found.filter((record) => phonesMatch(record.patient.phone, digits)).slice(0, limit);
+  return settleAll(found.filter((record) => phonesMatch(record.patient.phone, digits)).slice(0, limit));
 }
+
+/** Lists of cases settle any lost plan too, so the account never shows "drafting" for ever. */
+const settleAll = (records: PatientCase[]) => Promise.all(records.map((record) => (record.status === "planning" ? settleStuckPlan(record) : record)));
 
 /** Cases where the patient invited this person as family, with something to see. */
 export async function familyCasesFor(identity: { kind: "phone"; digits: string } | { kind: "email"; email: string }, limit = 20): Promise<PatientCase[]> {
@@ -205,12 +246,13 @@ export const emailMatcher = (email: string) =>
 export async function casesForEmail(email: string, limit = 20): Promise<PatientCase[]> {
   const db = await getDb();
   const address = emailMatcher(email);
-  return db
+  const found = await db
     .collection<PatientCase>("cases")
     .find({ $or: [{ "patient.email": address }, { accountEmail: address }] } as never)
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();
+  return settleAll(found);
 }
 
 /** Ties a case to the signed-in account that opened it. */

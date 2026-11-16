@@ -3,7 +3,7 @@ import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { DM_Serif_Display } from "next/font/google";
+import "@fontsource/dm-serif-display/400.css";
 import {
   AlertCircle,
   ArrowLeft,
@@ -48,8 +48,7 @@ import "./login.css";
 
 export const dynamic = "force-dynamic";
 
-// The design's display face. It has no Cyrillic, so Russian and Uzbek (Cyrillic) headings fall back to Georgia.
-const serif = DM_Serif_Display({ weight: "400", subsets: ["latin", "latin-ext"], display: "swap", variable: "--pl-serif" });
+// The design's display face (DM Serif Display, from our own domain). It has no Cyrillic, so Russian and Uzbek (Cyrillic) headings fall back to Georgia.
 
 /** The welcome photo, once it is in public/patient-login; until then the story card stands on its purple wash alone. */
 const PHOTO = ["welcome.webp", "welcome.jpg", "welcome.png"].find((name) => fs.existsSync(path.join(process.cwd(), "public", "patient-login", name)));
@@ -81,6 +80,7 @@ const ERRORS: Record<string, L> = {
   telegram: APP.errors.telegram,
   plan: LOGIN.errPlan,
   fresh: LOGIN.errFresh,
+  nochannel: LOGIN.errNoChannel,
   "1": APP.errors.reference,
 };
 
@@ -197,11 +197,12 @@ export default async function PatientLoginPage({ params, searchParams }: { param
           {t(LOGIN.sendAgain, locale)}
         </Link>
       </div>
+      <p className="pl-hint">{t(LOGIN.noCodeYet, locale)}</p>
     </form>
   );
 
   return (
-    <div className={`pl ${serif.variable}`}>
+    <div className="pl">
       <header className="pl-nav">
         <Link href={`/${locale}`} className="pl-brand" aria-label="Shifain">
           {/* The strapline is part of the logo: the same words as the site header. */}

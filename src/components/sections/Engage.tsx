@@ -85,8 +85,9 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
       body: t(partners.hospitalBody, locale),
       cta: t(partners.hospitalCta, locale),
       ctaHref: `/${locale}/portal/hospital`,
-      login: t(partners.hospitalLogin, locale),
-      loginHref: `/${locale}/portal/hospital`,
+      // No hospital portal yet: no "Hospital login" that leads to "opening soon".
+      login: null,
+      loginHref: null,
     },
   ];
 
@@ -108,9 +109,11 @@ export function Partners({ content, locale }: { content: SiteContent; locale: Lo
               <Link href={row.ctaHref} className="ui-btn ui-btn-secondary min-h-11 px-5 text-[15px]">
                 {row.cta}
               </Link>
-              <Link href={row.loginHref} className="ui-link px-2 text-[15px]">
-                {row.login}
-              </Link>
+              {row.login && row.loginHref ? (
+                <Link href={row.loginHref} className="ui-link px-2 text-[15px]">
+                  {row.login}
+                </Link>
+              ) : null}
             </div>
           </div>
         ))}

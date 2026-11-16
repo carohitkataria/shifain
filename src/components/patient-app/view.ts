@@ -61,7 +61,7 @@ export const tileTone = (status: PlanTile["status"]) => (status === "ok" ? "c-gr
 /** The short word under a plan tile: a date, a name, an amount, or the status. */
 export function tileValue(tile: PlanTile, app: AppData): string {
   const { locale } = app;
-  if (tile.status === "off") return t(APP.tileStatus.off, locale);
+  if (tile.status === "off" || tile.status === "tbd") return t(APP.tileStatus[tile.status], locale);
   if (!tile.value) return t(APP.tileStatus[tile.status], locale);
   if (/^\d{4}-\d{2}-\d{2}$/.test(tile.value)) return fmtDay(tile.value, locale);
   if (tile.key === "balance") return money(Number(tile.value), app.record?.billing?.currency ?? "USD");

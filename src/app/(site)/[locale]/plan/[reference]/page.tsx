@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -6,6 +5,7 @@ import { Icon } from "@/components/Icon";
 import { PlanPackage, type PlanLine } from "@/components/PlanPackage";
 import { PlanWaiting } from "@/components/PlanWaiting";
 import { PlanNextSteps } from "@/components/PlanNextSteps";
+import { isMailConfigured } from "@/lib/mailer";
 import { botLink } from "@/lib/telegram-login";
 import { getContent } from "@/lib/store";
 import { getCase } from "@/lib/cases";
@@ -58,7 +58,7 @@ export default async function PlanPage({
 
   // "Follow your case on Telegram": the bot links this chat to the case from the start payload.
   const telegram = await botLink(`case_${record._id}`).catch(() => null);
-  const next = <PlanNextSteps record={record} locale={locale} telegram={telegram} />;
+  const next = <PlanNextSteps record={record} locale={locale} telegram={telegram} canEmail={isMailConfigured()} />;
   const hadFiles = record.intakeRoute === "reports" && (record.reports?.length ?? 0) > 0;
 
   const referenceLine = (

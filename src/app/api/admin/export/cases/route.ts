@@ -2,10 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { caseRows, allCases } from "@/lib/console";
 
-const cell = (value: unknown) => {
-  const text = value == null ? "" : String(value);
-  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-};
+import { csvCell as cell } from "@/lib/csv";
 
 /**
  * GET /api/admin/export/cases?months=6 — the cases of a period as a CSV for a

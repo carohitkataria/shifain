@@ -846,7 +846,6 @@ export const defaultContent: SiteContent = {
         links: [
           { id: "fl5", label: l("Refer a patient", "Направить пациента", "Bemor yo'llash"), href: "#partners" },
           { id: "fl6", label: l("Doctor login", "Вход для врачей", "Shifokor kirishi"), href: "/portal/doctor" },
-          { id: "fl7", label: l("Hospital login", "Вход для клиник", "Shifoxona kirishi"), href: "/portal/hospital" },
           { id: "fl8", label: l("Partner with us", "Стать партнёром", "Hamkor bo'lish"), href: "#partners" },
         ],
       },
@@ -856,8 +855,8 @@ export const defaultContent: SiteContent = {
         links: [
           { id: "fl9", label: l("About Shifain", "О Shifain", "Shifain haqida"), href: "#about" },
           { id: "fl10", label: l("Questions & answers", "Вопросы и ответы", "Savol-javoblar"), href: "#faq" },
-          { id: "fl11", label: l("Privacy policy", "Политика конфиденциальности", "Maxfiylik siyosati"), href: "#" },
-          { id: "fl12", label: l("Terms of use", "Условия использования", "Foydalanish shartlari"), href: "#" },
+          { id: "fl11", label: l("Privacy policy", "Политика конфиденциальности", "Maxfiylik siyosati"), href: "/privacy" },
+          { id: "fl12", label: l("Terms of use", "Условия использования", "Foydalanish shartlari"), href: "/terms" },
         ],
       },
     ],

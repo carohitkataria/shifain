@@ -9,6 +9,7 @@ import { APP } from "@/lib/patient-app-copy";
 import { LOCALES, LOCALE_META, DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 import { t } from "@/lib/localize";
 import { signUpAction } from "../actions";
+import { LEGAL_COMMON } from "@/lib/legal-copy";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export default async function PatientSignUpPage({ params, searchParams }: { para
       ) : (
         <form action={signUpAction}>
           <input type="hidden" name="locale" value={locale} />
-          {query.error ? <AuthError>{t(query.error === "mail" ? APP.errors.mail : APP.errors.details, locale)}</AuthError> : null}
+          {query.error ? <AuthError>{t(query.error === "mail" ? APP.errors.mailSignUp : APP.errors.details, locale)}</AuthError> : null}
           <div className="a-row">
             <label className="a-field" style={{ flex: 1, marginTop: 0 }}>
               <span>{t(APP.fullName, locale)}</span>
@@ -87,7 +88,12 @@ export default async function PatientSignUpPage({ params, searchParams }: { para
           </div>
           <label className="a-row a-tiny" style={{ marginTop: 14, alignItems: "flex-start" }}>
             <input type="checkbox" name="agree" value="yes" required style={{ marginTop: 2 }} />
-            <span>{t(APP.agree, locale)}</span>
+            <span>
+              {t(APP.agree, locale)}{" "}
+              <a href={`/${locale}/privacy`} target="_blank" rel="noopener" style={{ fontWeight: 600, textDecoration: "underline" }}>
+                {t(LEGAL_COMMON.privacyLink, locale)}
+              </a>
+            </span>
           </label>
           <button className="a-btn a-btn-p a-w" style={{ marginTop: 14 }}>
             {t(APP.createAccount, locale)}

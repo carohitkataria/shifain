@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 /**
- * The ShifaIn logo: the lotus, aircraft and cross, the "shifain" wordmark
+ * The Shifain logo: the lotus, aircraft and cross, the "shifain" wordmark
  * with its orange i and green n, and the "Trusted medical journey" strapline.
  * The files are cut from the approved artwork by scripts/brand/build-logo.mts.
  *
@@ -65,7 +65,7 @@ export function Wordmark({
 
 /** The whole logo, strapline included — for sign-in pages and anywhere the logo stands alone. */
 export function LogoStacked({ className = "h-24 w-auto", tone = "light" }: { className?: string; tone?: Tone }) {
-  return <Image src={src("logo", tone)} alt="ShifaIn" width={FULL.width} height={FULL.height} className={`w-auto ${className}`} />;
+  return <Image src={src("logo", tone)} alt="Shifain" width={FULL.width} height={FULL.height} className={`w-auto ${className}`} />;
 }
 
 type LogoProps = {
@@ -84,7 +84,7 @@ export function Logo({ tagline, className = "", markClassName, wordmarkClassName
       <LogoMark className={markClassName ?? (compact ? "h-9" : "h-12")} tone={tone} priority />
       <span className="flex flex-col justify-center leading-none">
         {/* self-start: in this column a longer strapline would otherwise stretch the wordmark sideways. */}
-        <Wordmark className={`self-start ${wordmarkClassName ?? (compact ? "h-6" : "h-8")}`} tone={tone} title="ShifaIn" priority />
+        <Wordmark className={`self-start ${wordmarkClassName ?? (compact ? "h-6" : "h-8")}`} tone={tone} title="Shifain" priority />
         {tagline ? (
           <span
             className={`mt-1 hidden whitespace-nowrap text-[0.6rem] font-semibold uppercase leading-none tracking-[0.2em] md:block ${

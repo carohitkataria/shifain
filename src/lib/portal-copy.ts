@@ -29,11 +29,12 @@ export const PORTAL_COPY: Record<PortalRole, { title: L; body: L; cta: L; ctaHre
 export const PORTAL_BACK = l("Back to homepage", "На главную", "Bosh sahifaga");
 
 export const ENQUIRY_RECEIVED = {
-  title: l("Your reports are in", "Документы получены", "Hujjatlaringiz qabul qilindi"),
+  // Shown only when the enquiry could not reach the database: say what is true then, and no more.
+  title: l("We have your request", "Ваша заявка у нас", "So'rovingiz qabul qilindi"),
   body: l(
-    "We are preparing your plan and cost estimate now — it lands on your WhatsApp within minutes. The treating hospital confirms the final plan and the guaranteed price within 48 hours.",
-    "Сейчас готовим ваш план и смету — они придут в WhatsApp в течение нескольких минут. Клиника подтвердит окончательный план и гарантированную цену в течение 48 часов.",
-    "Hozir reja va hisobingizni tayyorlayapmiz — bir necha daqiqada WhatsApp'ga keladi. Shifoxona yakuniy reja va kafolatlangan narxni 48 soat ichida tasdiqlaydi.",
+    "A coordinator will contact you on the phone number you gave, usually within 24 hours, and prepare your free plan with you. If you sent reports, they may ask you to send them again.",
+    "Координатор свяжется с вами по указанному номеру телефона, обычно в течение 24 часов, и подготовит с вами бесплатный план. Если вы отправляли документы, вас могут попросить прислать их ещё раз.",
+    "Koordinator siz bergan telefon raqami orqali, odatda 24 soat ichida bog'lanadi va siz bilan bepul reja tayyorlaydi. Agar hujjat yuborgan bo'lsangiz, ularni qayta yuborishingiz so'ralishi mumkin.",
   ),
   reference: l("Your reference", "Ваш номер обращения", "Murojaat raqamingiz"),
 };

@@ -5,9 +5,9 @@ const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
 export const HOSPITAL_COPY = {
   listTitle: l("Partner hospitals", "Клиники-партнёры", "Hamkor shifoxonalar"),
   listBody: l(
-    "Every hospital here has a signed agreement with ShifaIn. We list only where we have one — so the price you are quoted is a price the hospital has committed to, and the desk that answers is expecting you.",
-    "У каждой клиники здесь есть подписанное соглашение с ShifaIn. Мы публикуем только такие — поэтому названная цена подтверждена клиникой, а служба приёма вас уже ждёт.",
-    "Bu yerdagi har bir shifoxona ShifaIn bilan shartnoma imzolagan. Biz faqat shundaylarni ko'rsatamiz — shuning uchun aytilgan narx shifoxona tomonidan tasdiqlangan va qabul bo'limi sizni kutadi.",
+    "Every hospital here has a signed agreement with Shifain. We list only where we have one — so the price you are quoted is a price the hospital has committed to, and the desk that answers is expecting you.",
+    "У каждой клиники здесь есть подписанное соглашение с Shifain. Мы публикуем только такие — поэтому названная цена подтверждена клиникой, а служба приёма вас уже ждёт.",
+    "Bu yerdagi har bir shifoxona Shifain bilan shartnoma imzolagan. Biz faqat shundaylarni ko'rsatamiz — shuning uchun aytilgan narx shifoxona tomonidan tasdiqlangan va qabul bo'limi sizni kutadi.",
   ),
   none: l(
     "We are signing our first hospitals now, so there is nothing to list here yet. That is deliberate: we would rather show you nothing than show you a hospital we have no agreement with. Send us your reports and a coordinator will bring you the hospitals that fit your case, with their quoted prices.",

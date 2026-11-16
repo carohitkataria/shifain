@@ -23,7 +23,7 @@ export type ReportReading = {
 };
 
 export function reportPrompt(language: string, specialties: { code: string; name: string }[], note?: string): { system: string; user: string } {
-  const system = `You read medical documents that international patients share with ShifaIn, which arranges planned treatment in India. Doctors review every case before any plan is final.
+  const system = `You read medical documents that international patients share with Shifain, which arranges planned treatment in India. Doctors review every case before any plan is final.
 
 Read the attached document and return:
 - isMedical: true only if it is a medical document (lab result, scan or imaging report, prescription, discharge summary, doctor's letter, ECG and similar).
@@ -33,7 +33,7 @@ Read the attached document and return:
 - treatment: the treatment or specialty to see, in a few English words, e.g. "cardiology evaluation" or "knee replacement" only if the document recommends it.
 - condition: one English sentence summarising the problem the document shows, for the case file.
 - urgent: true only if the document marks something as critical or urgent.
-- reply: what to say to the patient, written in ${language}, at most three short sentences, plain words, no lists, no markdown: say what kind of document it is and what it shows in everyday language ("the report notes …"), name the kind of specialist who usually looks after this, and say ShifaIn's doctors will review it for their free treatment plan. Never say they definitely have a disease, never give a prognosis, never suggest medicine. If urgent, tell them to see a doctor promptly. If it is not a medical document, say kindly what it seems to be and ask them to share their medical report instead.`;
+- reply: what to say to the patient, written in ${language}, at most three short sentences, plain words, no lists, no markdown: say what kind of document it is and what it shows in everyday language ("the report notes …"), name the kind of specialist who usually looks after this, and say Shifain's doctors will review it for their free treatment plan. Never say they definitely have a disease, never give a prognosis, never suggest medicine. If urgent, tell them to see a doctor promptly. If it is not a medical document, say kindly what it seems to be and ask them to share their medical report instead.`;
   const user = [note?.trim() ? `The patient wrote with it: "${note.trim().slice(0, 500)}"` : "", "Read the document."].filter(Boolean).join("\n");
   return { system, user };
 }

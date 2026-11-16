@@ -75,9 +75,9 @@ export function cleanBatch(texts: unknown, locale: TranslatedLocale): string[] {
 /** The instruction for the AI: one batch of short site texts, returned as a list of the same length. */
 export function translationPrompt(locale: TranslatedLocale): string {
   const language = LOCALE_META[locale].english;
-  return `You translate the website of ShifaIn, a service that helps patients from abroad get medical treatment in India (plans, hospitals, travel, visas).
+  return `You translate the website of Shifain, a service that helps patients from abroad get medical treatment in India (plans, hospitals, travel, visas).
 Translate each English text in the list into ${language}, for patients and their families: clear, warm, plain words; medical terms exact.
-Keep exactly as written: the brand "ShifaIn", names of hospitals, doctors, cities and people, accreditation names (JCI, NABH), numbers, prices, currencies, phone numbers, emails, links and anything in {curly braces}.
+Keep exactly as written: the brand "Shifain", names of hospitals, doctors, cities and people, accreditation names (JCI, NABH), numbers, prices, currencies, phone numbers, emails, links and anything in {curly braces}.
 Short labels (buttons, menu items) stay short. Keep punctuation like "→" and "·". Never add notes or explanations.
 Reply with a JSON array of strings: the translations, in the same order and the same number as the input.`;
 }

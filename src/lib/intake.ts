@@ -2,10 +2,14 @@ import "server-only";
 import crypto from "node:crypto";
 import { INTAKE_QUESTIONS, type IntakeAnswers, type PlanReport } from "./ai/plan";
 import { MAX_REPORT_BYTES, type ReportUpload } from "./reports";
+import { trustedMediaType } from "./upload-guard";
 import type { CaseReport, IntakeRoute } from "./cases";
 
 export const MAX_FILES = 10;
 export const MAX_TOTAL_BYTES = 25 * 1024 * 1024;
+export const MAX_DESCRIPTION = 6_000;
+export const MAX_ANSWER = 1_000;
+const MAX_NEED = 200;
 export { MAX_REPORT_BYTES as MAX_FILE_BYTES };
 
 /** The file types the planner can actually read. */
@@ -31,12 +35,13 @@ export type Intake = {
  * standard questions — so this never insists on a file.
  */
 export async function readIntake(form: FormData): Promise<Intake> {
-  const statedNeed = String(form.get("treatment") ?? form.get("need") ?? "").trim();
-  const description = String(form.get("description") ?? "").trim() || null;
+  // Capped: a form is a few sentences, and every character goes to the paid planner.
+  const statedNeed = String(form.get("treatment") ?? form.get("need") ?? "").trim().slice(0, MAX_NEED);
+  const description = String(form.get("description") ?? "").trim().slice(0, MAX_DESCRIPTION) || null;
 
   const answers: IntakeAnswers = {};
   for (const { id } of INTAKE_QUESTIONS) {
-    const value = String(form.get(`answer.${id}`) ?? "").trim();
+    const value = String(form.get(`answer.${id}`) ?? "").trim().slice(0, MAX_ANSWER);
     if (value) answers[id] = value;
   }
   const hasAnswers = Object.keys(answers).length > 0;
@@ -67,8 +72,9 @@ export async function readIntake(form: FormData): Promise<Intake> {
 
   for (const file of files) {
     const id = crypto.randomBytes(6).toString("hex");
-    const mediaType = READABLE.test(file.type) ? file.type : "application/octet-stream";
     const body = Buffer.from(await file.arrayBuffer());
+    // The type the file's bytes show, never the one the browser claims.
+    const mediaType = trustedMediaType(body);
 
     meta.push({ id, filename: file.name, mediaType, bytes: body.byteLength });
     if (body.byteLength <= MAX_REPORT_BYTES) {
@@ -79,7 +85,7 @@ export async function readIntake(form: FormData): Promise<Intake> {
       mediaType,
       // Only a type the planner can read is worth sending; the rest are still
       // stored and still reach a coordinator.
-      data: READABLE.test(file.type) ? body.toString("base64") : "",
+      data: READABLE.test(mediaType) ? body.toString("base64") : "",
     });
   }
 

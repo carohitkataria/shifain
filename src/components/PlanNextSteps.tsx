@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Icon } from "./Icon";
 import { TelegramGlyph } from "./TelegramGlyph";
+import { OpenChatButton } from "./OpenChatButton";
 import { PLAN_COPY } from "@/lib/plan-copy";
 import { contentLocale, type Locale } from "@/lib/i18n";
 import { t } from "@/lib/localize";
@@ -11,7 +12,18 @@ import type { PatientCase } from "@/lib/cases";
  * patient is never left at a dead end: what happens next and when, and two
  * ways to follow the case (Telegram, their account).
  */
-export function PlanNextSteps({ record, locale, telegram }: { record: Pick<PatientCase, "_id" | "patient" | "locale">; locale: Locale; telegram: string | null }) {
+export function PlanNextSteps({
+  record,
+  locale,
+  telegram,
+  canEmail,
+}: {
+  record: Pick<PatientCase, "_id" | "patient" | "locale">;
+  locale: Locale;
+  telegram: string | null;
+  /** Whether mail can go out at all: the page promises email updates only then. */
+  canEmail: boolean;
+}) {
   const N = PLAN_COPY.next;
   const spoken = N.language[contentLocale(locale)];
   const email = record.patient.email;
@@ -45,6 +57,13 @@ export function PlanNextSteps({ record, locale, telegram }: { record: Pick<Patie
             </span>
           </a>
         ) : null}
+        <OpenChatButton className="flex min-h-14 items-center gap-3 rounded-xl border border-line bg-white px-4 py-3 text-left text-ink transition hover:border-brand">
+          <Icon name="chat" className="h-6 w-6 flex-none text-brand" />
+          <span>
+            <span className="block font-bold">{t(N.chat, locale)}</span>
+            <span className="block text-xs text-ink-muted">{t(N.chatHint, locale)}</span>
+          </span>
+        </OpenChatButton>
         <Link href={signIn} className="flex min-h-14 items-center gap-3 rounded-xl border border-line bg-white px-4 py-3 text-ink transition hover:border-brand">
           <Icon name="clipboard" className="h-6 w-6 flex-none text-brand" />
           <span>
@@ -54,7 +73,7 @@ export function PlanNextSteps({ record, locale, telegram }: { record: Pick<Patie
         </Link>
       </div>
       <p className="mt-4 text-sm text-ink-muted">
-        {email ? `${t(N.emailed, locale).replace("{email}", email)} ` : ""}
+        {email && canEmail ? `${t(N.emailed, locale).replace("{email}", email)} ` : ""}
         {t(N.keepRef, locale)}
       </p>
     </section>

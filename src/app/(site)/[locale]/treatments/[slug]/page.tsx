@@ -73,8 +73,8 @@ export default async function TreatmentPage({
               </Link>
             </nav>
 
-            <span aria-hidden="true" className="mt-6 block text-4xl">
-              {specialty.icon}
+            <span aria-hidden="true" className="mt-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-brand">
+              <Icon name={specialty.icon} className="h-8 w-8" />
             </span>
             <h1 className="mt-3 text-[clamp(2rem,1.4rem+2.4vw,3rem)] font-extrabold leading-tight tracking-tight text-ink">
               {t(specialty.title, locale)}
@@ -181,7 +181,7 @@ export default async function TreatmentPage({
                   href={`/${locale}/treatments/${item.slug}`}
                   className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold text-ink-soft transition hover:border-brand hover:text-brand-deep"
                 >
-                  <span aria-hidden="true">{item.icon}</span>
+                  <Icon name={item.icon} className="h-4 w-4 text-brand" />
                   {t(item.title, locale)}
                 </Link>
               </li>

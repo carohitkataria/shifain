@@ -1,13 +1,21 @@
 /**
- * Drives the parts of the public site a patient actually touches: the enquiry,
- * the three ways of telling us what is wrong, the pages they can click through
- * to, and whether the site opens in the language that fits where they are.
+ * Drives the parts of the public site a patient actually touches: the
+ * three-step plan form in the hero, the pages they click through to, the
+ * legal pages, missing pages, and the safety rules around them (headers,
+ * redirects, the form's consent and spam field).
  *
- *   npm i --no-save playwright-core
- *   npm start &
- *   node scripts/test/site-flow.mjs
+ *   npm run build && npm start &      (or npm run dev)
+ *   BASE_URL=http://localhost:3000 node scripts/test/site-flow.mjs
+ *
+ * Playwright: uses the installed `playwright` (or playwright-core with CHROME_PATH).
  */
-import { chromium } from "playwright-core";
+let chromium;
+try {
+  // PLAYWRIGHT_MODULE: a path to a global install (ES modules ignore NODE_PATH).
+  ({ chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright"));
+} catch {
+  ({ chromium } = await import("playwright-core"));
+}
 
 // localhost, not 127.0.0.1: Next aliases the loopback IP to "localhost" in
 // its own redirects, so serving one and fetching the other looks cross-origin.
@@ -20,42 +28,42 @@ const check = (ok, label, extra = "") => {
 };
 
 for (const width of [390, 1280]) {
-  const context = await browser.newContext({ viewport: { width, height: 950 } });
+  const context = await browser.newContext({ viewport: { width, height: 900 } });
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
-  page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-
+  page.on("console", (m) => m.type() === "error" && !/favicon|DevTools/.test(m.text()) && errors.push(m.text()));
   await page.goto(`${BASE}/en`, { waitUntil: "networkidle" });
+  const form = page.locator("#quote-form");
 
-  // Country comes before the phone, and fills the dialling code in.
-  const order = await page.evaluate(() => {
-    const c = document.querySelector('#country');
-    const p = document.querySelector('#phone');
-    return c && p ? (c.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING) > 0 : null;
-  });
-  check(order === true, `${width}px  country is asked before the phone number`);
+  // Step 1: nothing chosen is refused with a reason.
+  await form.getByRole("button", { name: /Continue/ }).click();
+  check(await form.getByText(/Choose a treatment/).isVisible(), `${width}px  step 1 says why it cannot continue`);
+  await form.getByText("Orthopaedics", { exact: true }).click();
+  await form.getByRole("button", { name: /Continue/ }).click();
 
+  // Step 2: three ways to tell us, and an empty step's error is scrolled into view.
+  for (const route of ["reports", "description", "questions"]) {
+    check((await form.locator(`input[name="route-choice"][value="${route}"]`).count()) === 1, `${width}px  route "${route}" offered`);
+  }
+  await form.locator('input[name="route-choice"][value="description"]').locator("xpath=..").click();
+  await form.getByRole("button", { name: /Continue/ }).click();
+  await page.waitForTimeout(700);
+  const errorBox = await page.locator("#err-condition").boundingBox();
+  check(Boolean(errorBox) && errorBox.y > 0 && errorBox.y + errorBox.height < 900 - 80, `${width}px  the step 2 error is on screen, clear of the chat button`, JSON.stringify(errorBox));
+  await page.fill("#description", "My knee hurts on stairs; my doctor says I need a replacement.");
+  await form.getByRole("button", { name: /Continue/ }).click();
+
+  // Step 3: the country fills the dialling code; consent is required.
   await page.selectOption("#country", "Uzbekistan");
   check((await page.inputValue('input[name="dial"]')) === "+998", `${width}px  choosing Uzbekistan fills +998`);
-  await page.selectOption("#country", "Nigeria");
-  check((await page.inputValue('input[name="dial"]')) === "+234", `${width}px  switching to Nigeria fills +234`);
-  await page.fill('input[name="dial"]', "+1");
-  check((await page.inputValue('input[name="dial"]')) === "+1", `${width}px  and the code stays editable`);
-
-  // Three ways in, and switching keeps what was typed.
-  for (const label of ["Upload my reports", "Describe it myself", "Answer a few questions"]) {
-    check(await page.locator(`button:has-text("${label}")`).count() > 0, `${width}px  route "${label}" offered`);
-  }
-  await page.click('button:has-text("Describe it myself")');
-  await page.fill("#description", "My father has chest pain when walking.");
-  await page.click('button:has-text("Answer a few questions")');
-  await page.fill("#answer-age", "62");
-  await page.click('button:has-text("Describe it myself")');
-  check(
-    (await page.inputValue("#description")) === "My father has chest pain when walking.",
-    `${width}px  switching route keeps what was already typed`,
-  );
+  await page.fill("#firstName", "TEST Flow");
+  await page.fill("#phone", "90 123 45 67");
+  await form.getByRole("button", { name: /Get|Send|plan/i }).last().click();
+  check(await page.locator("#err-consent").isVisible(), `${width}px  sending without consent is refused`);
+  check((await page.locator('#quote-form input[name="consent"]').count()) === 1, `${width}px  the form links consent to the privacy policy`, String(await page.locator('#quote-form a[href$="/privacy"]').count()));
+  const trap = await page.locator('#quote-form input[name="website"]').boundingBox();
+  check(Boolean(trap) && trap.x + trap.width < 0, `${width}px  the spam field is there and off screen`, JSON.stringify(trap));
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(overflow <= 0, `${width}px  homepage has no horizontal overflow`, `${overflow}px`);
@@ -63,74 +71,60 @@ for (const width of [390, 1280]) {
   await context.close();
 }
 
-// Only the chosen route is submitted.
-const context = await browser.newContext({ viewport: { width: 1280, height: 950 } });
+const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 const page = await context.newPage();
-await page.goto(`${BASE}/en`, { waitUntil: "networkidle" });
-await page.click('button:has-text("Answer a few questions")');
-const submitted = await page.evaluate(() => {
-  const form = document.querySelector('form[action="/api/enquiry"]');
-  return [...new FormData(form).keys()];
-});
-check(
-  submitted.some((k) => k.startsWith("answer.")) && !submitted.includes("description") && !submitted.includes("reports"),
-  "only the chosen route's fields are submitted",
-  submitted.filter((k) => k.startsWith("answer.") || k === "description" || k === "reports").join(",") || "none",
-);
 
-// An email is asked for, because email sign-in has to have something to match.
-check(await page.locator('input[name="email"]').count() > 0, "the enquiry asks for an email");
-
-// The name is split into title, first and last, laid out two-up.
-check(
-  (await page.locator('#prefix').count()) > 0 &&
-    (await page.locator('#firstName').count()) > 0 &&
-    (await page.locator('#lastName').count()) > 0,
-  "the enquiry splits the name into title, first and last",
-);
-
-// Public pages the patient can now click through to.
+// Pages the patient can click through to, including the legal pages the footer links.
 for (const [path, needle] of [
-  ["/en/hospitals", "Partner hospitals"],
+  ["/en/hospitals", "Hospitals"],
   ["/en/doctors", "Doctors"],
-  ["/en/treatments", "Specialised care"],
-  ["/en/conditions", "Conditions we plan for"],
-  ["/en/portal/patient/login", "Send me a code"],
-  ["/en/portal/doctor/login", "Partner doctor sign-in"],
-  ["/en/portal/doctor/apply", "Apply to refer patients"],
+  ["/en/treatments", "Cardiac care"],
+  ["/en/conditions", "Conditions"],
+  ["/en/faq", "Frequently asked questions"],
+  ["/en/privacy", "Privacy policy"],
+  ["/en/terms", "Terms of use"],
+  ["/ru/privacy", "Политика конфиденциальности"],
+  ["/en/portal/patient/login", "Welcome back"],
+  ["/en/portal/doctor/login", "sign"],
 ]) {
   const response = await page.goto(BASE + path, { waitUntil: "networkidle" });
-  check(response.status() === 200 && (await page.locator(`text=${needle}`).first().isVisible()), `${path} loads`);
+  check(response.status() === 200 && (await page.getByText(needle, { exact: false }).first().isVisible()), `${path} loads`);
 }
-
-// A doctor who lands on the sign-in page without an account has to be able to
-// get to the application form from there, or the form may as well not exist.
-await page.goto(`${BASE}/en/portal/doctor/login`, { waitUntil: "networkidle" });
-check(
-  (await page.locator('a[href="/en/portal/doctor/apply"]').count()) > 0,
-  "the doctor sign-in page links to the application form",
-);
-
-// The application form must never write a login — it only ever takes a name.
-await page.goto(`${BASE}/en/portal/doctor/apply`, { waitUntil: "networkidle" });
-check(
-  (await page.locator('input[type="password"]').count()) === 0,
-  "the application form never asks for a password",
-);
-check(
-  (await page.locator('select[name="country"] option').count()) > 50,
-  "the application form asks which country they practise in",
-);
-
-// The homepage cards go to those pages rather than back to the form.
 await page.goto(`${BASE}/en`, { waitUntil: "networkidle" });
-for (const [href, what] of [
-  ["/en/hospitals", "hospital cards"],
-  ["/en/doctors", "doctor cards"],
-  ["/en/conditions", "cost cards"],
-]) {
-  check(await page.locator(`a[href="${href}"]`).count() > 0, `${what} link through to ${href}`);
+for (const href of ["/en/privacy", "/en/terms"]) {
+  check((await page.locator(`footer a[href="${href}"]`).count()) > 0, `the footer links ${href}`);
 }
+check((await page.locator('footer a[href*="/portal/hospital"]').count()) === 0, "no 'Hospital login' while the hospital portal is not open");
+
+// The treatments page draws icons, never their names.
+await page.goto(`${BASE}/en/treatments`, { waitUntil: "networkidle" });
+const cardText = await page.locator("main").innerText();
+check(!/\n(heart|ribbon|bone|brain)\n/.test(`\n${cardText}\n`), "treatment cards show icons, not icon names");
+
+// Missing pages are 404, branded, in the visitor's language.
+for (const [path, needle] of [["/en/no-such-page", "find that page"], ["/ru/no-such-page", "Такой страницы нет"], ["/wp-login.php", ""]]) {
+  const response = await page.goto(BASE + path, { waitUntil: "networkidle" });
+  check(response.status() === 404, `${path} is a 404`, String(response.status()));
+  if (needle) check(await page.getByText(needle).first().isVisible(), `${path} says so in its language`);
+}
+
+// Security headers on every response.
+const headers = (await page.request.get(`${BASE}/en`)).headers();
+for (const name of ["strict-transport-security", "x-frame-options", "x-content-type-options", "referrer-policy", "content-security-policy", "permissions-policy"]) {
+  check(Boolean(headers[name]), `header ${name}`, headers[name] ?? "missing");
+}
+
+// A forged host never becomes a redirect target.
+const forged = await page.request.get(`${BASE}/`, { headers: { "x-forwarded-host": "evil.example" }, maxRedirects: 0 });
+check(!/evil\.example/.test(forged.headers().location ?? ""), "a forged X-Forwarded-Host is not followed", forged.headers().location ?? "");
+
+// The sitemap lists the pages with their language versions.
+const sitemap = await page.request.get(`${BASE}/sitemap.xml`);
+check(sitemap.ok() && /hreflang/.test(await sitemap.text()), "sitemap.xml exists with hreflang links");
+
+// Health check answers.
+const health = await page.request.get(`${BASE}/api/health`);
+check([200, 503].includes(health.status()) && "ok" in (await health.json()), "/api/health answers", String(health.status()));
 
 // Language follows the country the visitor is browsing from.
 for (const [country, expected] of [["UZ", "/uz"], ["RU", "/ru"], ["NG", "/en"], ["KZ", "/ru"]]) {

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { handleUpdate } from "@/lib/telegram-bot";
 import { webhookSecret } from "@/lib/telegram";
+import { safeEqual } from "@/lib/patient-auth";
 import type { TgUpdate, BotRole } from "@/lib/telegram";
 
 export async function POST(request: NextRequest) {
@@ -9,12 +10,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid bot role" }, { status: 400 });
   }
 
+  // No bot configured: there is no webhook here. Never accept an unsigned update.
   const secret = webhookSecret(role);
-  if (secret) {
-    const header = request.headers.get("x-telegram-bot-api-secret-token");
-    if (header !== secret) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
+  if (!secret) return NextResponse.json({ error: "not found" }, { status: 404 });
+  const header = request.headers.get("x-telegram-bot-api-secret-token") ?? "";
+  if (!safeEqual(header, secret)) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   let update: TgUpdate;
