@@ -64,7 +64,7 @@ export const DOCTOR_COPY = {
       "Bu ma'lumotlar ro'yxatingizni tekshirish va bemor yo'llash bo'yicha bog'lanish uchun kerak. Ular e'lon qilinmaydi.",
     ),
   },
-  notices: l("Notices from ShifaIn", "Сообщения от ShifaIn", "ShifaIn xabarlari"),
+  notices: l("Notices from Shifain", "Сообщения от Shifain", "Shifain xabarlari"),
   earnings: l("Your referrals", "Ваши направления", "Yo'llanmalaringiz"),
   earned: l("Earned", "Начислено", "Hisoblangan"),
   unpaid: l("Not yet paid", "Ещё не выплачено", "Hali to'lanmagan"),
@@ -112,9 +112,9 @@ export const DOCTOR_COPY = {
     closed: l("Closed", "Закрыто", "Yopilgan"),
   },
   privacy: l(
-    "You are handling another person's medical records. Refer a patient only with their consent. ShifaIn keeps the plan indefinitely and the uploaded files for 30 days, after which they are deleted automatically.",
-    "Вы работаете с медицинскими документами другого человека. Направляйте пациента только с его согласия. ShifaIn хранит план постоянно, а загруженные файлы — 30 дней, после чего они удаляются автоматически.",
-    "Siz boshqa odamning tibbiy hujjatlari bilan ishlayapsiz. Bemorni faqat roziligi bilan yo'llang. ShifaIn rejani doimiy, yuklangan fayllarni esa 30 kun saqlaydi va keyin ular avtomatik o'chiriladi.",
+    "You are handling another person's medical records. Refer a patient only with their consent. Shifain keeps the plan indefinitely and the uploaded files for 30 days, after which they are deleted automatically.",
+    "Вы работаете с медицинскими документами другого человека. Направляйте пациента только с его согласия. Shifain хранит план постоянно, а загруженные файлы — 30 дней, после чего они удаляются автоматически.",
+    "Siz boshqa odamning tibbiy hujjatlari bilan ishlayapsiz. Bemorni faqat roziligi bilan yo'llang. Shifain rejani doimiy, yuklangan fayllarni esa 30 kun saqlaydi va keyin ular avtomatik o'chiriladi.",
   ),
   referral: {
     linkTitle: l("Your referral link", "Ваша реферальная ссылка", "Sizning havolangiz"),
@@ -172,9 +172,9 @@ export const DOCTOR_COPY = {
     telegramConnect: l("Connect Telegram", "Подключить Telegram", "Telegramni ulash"),
     telegramConnected: l("Connected — updates go to Telegram", "Подключено — уведомления приходят в Telegram", "Ulangan — xabarlar Telegramga keladi"),
     consent: l(
-      "The patient has agreed to be referred to ShifaIn and for these records to be shared.",
-      "Пациент согласен на направление в ShifaIn и передачу этих документов.",
-      "Bemor ShifaInga yo'llanishga va bu hujjatlar ulashilishiga rozi.",
+      "The patient has agreed to be referred to Shifain and for these records to be shared.",
+      "Пациент согласен на направление в Shifain и передачу этих документов.",
+      "Bemor Shifainga yo'llanishga va bu hujjatlar ulashilishiga rozi.",
     ),
     consentMissing: l(
       "Please confirm the patient has agreed to the referral.",

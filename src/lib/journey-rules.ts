@@ -290,7 +290,8 @@ export function stagesDone(record: CaseView, today: string): number {
 
 // ---------------------------------------------------------------- plan status grid
 
-export type PlanTileStatus = "ok" | "due" | "sch" | "off";
+/** "off": the plan leaves it out; "tbd": nothing decides it yet (no plan, no quote, no follow-up booked). */
+export type PlanTileStatus = "ok" | "due" | "sch" | "off" | "tbd";
 export type PlanTile = { key: string; icon: string; status: PlanTileStatus; value: string | null; detail: string | null };
 
 const PACKAGE_FOR: Record<string, string> = {
@@ -311,7 +312,8 @@ export function planTiles(record: CaseView, names: { driver?: string | null; hot
   const procedure = journeyOf(record, "procedure");
   const physio = journeyOf(record, "physio") ?? journeyOf(record, "follow-up");
   const due = balanceDue(record.billing);
-  const off = (key: string, tile: PlanTile): PlanTile => (wants(key) ? tile : { ...tile, status: "off", value: null });
+  // Before there is a plan nothing is "not needed" yet: a visa usually is, and the plan will say.
+  const off = (key: string, tile: PlanTile): PlanTile => (wants(key) ? tile : { ...tile, status: record.plan ? "off" : "tbd", value: null });
 
   return [
     off("visa", {
@@ -327,11 +329,11 @@ export function planTiles(record: CaseView, names: { driver?: string | null; hot
     off("interpreter", { key: "interpreter", icon: "translate", status: names.interpreter ? "ok" : "due", value: names.interpreter ?? null, detail: null }),
     { key: "admission", icon: "hospital", status: admission ? dated(admission, false) : "due", value: admission?.date ?? null, detail: admission?.place ?? null },
     { key: "procedure", icon: "heart", status: procedure ? dated(procedure, false) : "due", value: procedure?.date ?? null, detail: procedure?.place ?? null },
-    { key: "physio", icon: "pill", status: physio ? dated(physio, false) : "off", value: physio?.date ?? null, detail: physio?.title ?? null },
+    { key: "physio", icon: "pill", status: physio ? dated(physio, false) : "tbd", value: physio?.date ?? null, detail: physio?.title ?? null },
     {
       key: "balance",
       icon: "wallet",
-      status: due == null ? "off" : due === 0 ? "ok" : "due",
+      status: due == null ? "tbd" : due === 0 ? "ok" : "due",
       value: due == null ? null : String(due),
       detail: record.billing?.dueNote ?? null,
     },

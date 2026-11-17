@@ -6,10 +6,13 @@ import { redirect } from "next/navigation";
 import { checkAdmin, endSession, isAuthenticated, startSession } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { authenticate, startPartnerSession } from "@/lib/partner-auth";
-import { allowHit } from "@/lib/rate-limit";
+import { allowHit, recentHits, recordHit, slowdownMs } from "@/lib/rate-limit";
 import { getContent, saveContent } from "@/lib/store";
 import { addListItem, buildEditor, collectBooleanPaths, removeListItem, setAtPath } from "@/lib/editor";
 import { findGroup } from "@/lib/admin-groups";
+import { clientIpFrom } from "@/lib/request-meta";
+
+const WINDOW = 15 * 60_000;
 
 /** Static pages are prerendered per locale, so publishing has to refresh them. */
 function refreshSite() {
@@ -24,10 +27,16 @@ function refreshSite() {
 export async function loginAction(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim().slice(0, 200);
   const password = String(formData.get("password") ?? "").slice(0, 200);
-  const ip = ((await headers()).get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
-  if (!allowHit(`admin-id:${id.toLowerCase()}`, 10, 15 * 60_000) || !allowHit(`admin-ip:${ip}`, 30, 15 * 60_000)) {
+  const ip = clientIpFrom(await headers());
+  const account = id.toLowerCase();
+  // Hard limits are per address (and per address and ID), never per ID alone:
+  // someone guessing at the owner's ID from elsewhere must not lock the owner out.
+  if (!allowHit(`admin-ip-id:${ip}:${account}`, 10, WINDOW) || !allowHit(`admin-ip:${ip}`, 30, WINDOW)) {
     redirect("/admin/login?error=slow");
   }
+  // Failures on one ID from many addresses slow every attempt on it down instead.
+  const wait = slowdownMs(recentHits(`admin-fail:${account}`, WINDOW));
+  if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
 
   if (checkAdmin(id, password)) {
     await startSession();
@@ -44,6 +53,7 @@ export async function loginAction(formData: FormData) {
       redirect("/coordinator");
     }
   }
+  recordHit(`admin-fail:${account}`, WINDOW);
   redirect("/admin/login?error=1");
 }
 

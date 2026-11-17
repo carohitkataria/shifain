@@ -1,4 +1,5 @@
 import "server-only";
+import { publicOriginFrom } from "./request-meta";
 import crypto from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { getDb, readOr } from "./db";
@@ -141,11 +142,7 @@ export async function partnerFromCookie(): Promise<PartnerUser | null> {
 // ------------------------------------------------------------------ links
 
 export async function siteOrigin(): Promise<string> {
-  if (process.env.BASE_URL) return process.env.BASE_URL.replace(/\/$/, "");
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
+  return publicOriginFrom(await headers(), "http://localhost:3000");
 }
 
 const usernameCache = new Map<string, { value: string | null; at: number }>();
@@ -181,7 +178,7 @@ export async function referralLinks(code: string): Promise<ReferralLinks> {
   const web = `${origin}/r/${code}`;
   const bot = await botUsername("patient");
   const telegram = bot ? `https://t.me/${bot}?start=ref_${code}` : null;
-  const message = `I recommend ShifaIn for treatment in India — they prepare a free treatment plan and cost estimate. Start here: ${web}`;
+  const message = `I recommend Shifain for treatment in India — they prepare a free treatment plan and cost estimate. Start here: ${web}`;
   return {
     code,
     web,
@@ -529,7 +526,7 @@ async function notifyPartner(
     return;
   }
   if (partner.email) {
-    await send(partner.email, `ShifaIn referral: ${who} — ${STAGE_LABEL[referral.status]}`, `${body}\n\nSee every referral in your partner portal.`);
+    await send(partner.email, `Shifain referral: ${who} — ${STAGE_LABEL[referral.status]}`, `${body}\n\nSee every referral in your partner portal.`);
   }
 }
 

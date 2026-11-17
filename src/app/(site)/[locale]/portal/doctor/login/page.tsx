@@ -11,6 +11,7 @@ import { PORTAL_BACK } from "@/lib/portal-copy";
 import { t } from "@/lib/localize";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 import { doctorLoginAction } from "../actions";
+import { LOGIN } from "@/lib/patient-login-copy";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +54,7 @@ export default async function DoctorLoginPage({
               role="alert"
               className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"
             >
-              {t(DOCTOR_COPY.signInFailed, locale)}
+              {t(error === "slow" ? LOGIN.errSlow : DOCTOR_COPY.signInFailed, locale)}
             </p>
           ) : null}
 

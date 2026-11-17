@@ -8,11 +8,26 @@ import type { Locale } from "@/lib/i18n";
 /** Dark footer with the tricolour rule above it, as in the design. */
 const FAQ_LINK = { id: "faq", label: { en: "Visa & FAQ", ru: "Виза и вопросы", uz: "Viza va savollar" }, href: "/faq" };
 
+/** The legal pages, whatever href the stored footer still has for them (it shipped with "#"). */
+const LEGAL: Record<string, string> = { fl11: "/privacy", fl12: "/terms" };
+
+type FooterLink = SiteContent["footer"]["columns"][number]["links"][number];
+
+/** A footer link as it should be today: legal links go to their pages; the hospital portal is not open yet. */
+function liveLink(link: FooterLink): FooterLink | null {
+  if (/\/portal\/hospital/.test(link.href)) return null;
+  const legal = LEGAL[link.id] ?? (/privacy/i.test(link.label.en ?? "") ? "/privacy" : /terms/i.test(link.label.en ?? "") ? "/terms" : null);
+  if (legal && (!link.href || link.href === "#")) return { ...link, href: legal };
+  return link;
+}
+
 export function Footer({ content, locale }: { content: SiteContent; locale: Locale }) {
   // The FAQ page is always linked, whatever the editor has done to the columns.
-  const columns = content.footer.columns.map((column, index) =>
-    index === 0 && !content.footer.columns.some((one) => one.links.some((link) => link.href.includes("/faq"))) ? { ...column, links: [...column.links, FAQ_LINK] } : column,
-  );
+  const columns = content.footer.columns
+    .map((column, index) =>
+      index === 0 && !content.footer.columns.some((one) => one.links.some((link) => link.href.includes("/faq"))) ? { ...column, links: [...column.links, FAQ_LINK] } : column,
+    )
+    .map((column) => ({ ...column, links: column.links.map(liveLink).filter((link): link is FooterLink => Boolean(link)) }));
   return (
     <footer id="about" className="scroll-mt-24">
       <div className="tricolour-rule" />
@@ -41,12 +56,13 @@ export function Footer({ content, locale }: { content: SiteContent; locale: Loca
                 <h3 className="text-base font-bold text-white">
                   {t(column.title, locale)}
                 </h3>
-                <ul className="mt-4 space-y-2.5">
+                <ul className="mt-3 flex flex-col">
                   {column.links.map((link) => (
                     <li key={link.id}>
                       <Link
                         href={localeHref(link.href, locale)}
-                        className="text-sm text-white/65 transition hover:text-white"
+                        // A comfortable tap target on a phone: the row, not just the words.
+                        className="inline-flex min-h-10 items-center text-sm text-white/65 transition hover:text-white"
                       >
                         {t(link.label, locale)}
                       </Link>

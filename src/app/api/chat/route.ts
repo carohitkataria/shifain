@@ -14,9 +14,11 @@ import { audioSeconds } from "@/lib/audio-duration";
 import { speakable } from "@/lib/access-levels";
 import { sayLang } from "@/lib/voice/command-copy";
 import { MAX_REPORT_BYTES } from "@/lib/reports";
+import { declaredTooLarge, sniffMediaType } from "@/lib/upload-guard";
 import { hospitalOnPage } from "@/lib/assistant/tool-rules";
 import { forScreen } from "@/lib/voice/reply-script";
 import { translateText, translateTexts } from "@/lib/page-translation";
+import { clientIpFrom } from "@/lib/request-meta";
 
 const SESSION_COOKIE = "shifain_chat";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days, so "what's my status" works when they come back
@@ -101,7 +103,7 @@ const LIMIT_WORDS: Record<"slow" | "audio" | "file", Record<Lang, string>> = {
 const langOf = (locale: Locale): Lang => (locale === "ru" ? "ru" : locale === "uz" || locale === "oz" ? "uz" : "en");
 
 function clientAddress(request: NextRequest): string {
-  return (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || request.headers.get("x-real-ip") || "unknown";
+  return clientIpFrom(request.headers);
 }
 
 /** The server only ever speaks with a curated voice or the one the admin chose. */
@@ -162,6 +164,8 @@ export async function POST(request: NextRequest) {
   };
 
   if (contentType.includes("multipart/form-data")) {
+    // Refused before the body is read: one file, one voice clip and the text, with room for the form's own bytes.
+    if (declaredTooLarge(request.headers, CHAT_LIMITS.fileBytes + CHAT_LIMITS.audioBytes + 1024 * 1024)) return refuse("file", 413);
     const form = await request.formData();
     const audio = form.get("audio") as File | null;
     const file = form.get("file") as File | null;
@@ -190,11 +194,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (file && file.size > 0) {
-      uploadedFile = {
-        fileName: file.name,
-        mimeType: file.type || "application/octet-stream",
-        data: Buffer.from(await file.arrayBuffer()),
-      };
+      const data = Buffer.from(await file.arrayBuffer());
+      // A file whose bytes are not the PDF or picture it claims to be is refused.
+      const mimeType = sniffMediaType(data);
+      if (!mimeType || !CHAT_LIMITS.fileTypes.test(mimeType)) return refuse("file", 415);
+      uploadedFile = { fileName: file.name, mimeType, data };
     }
   } else {
     const body = await request.json().catch(() => ({}));

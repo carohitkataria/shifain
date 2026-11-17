@@ -6,7 +6,7 @@ import { openCase } from "./case-flow";
 import { sendMessage } from "./telegram";
 import { getTelegramContact, linkContactToCase, updateContactState } from "./crm-messages";
 import { attributeCase, partnerByCode } from "./referrals";
-import { storeReports, MAX_REPORT_BYTES, type ReportUpload } from "./reports";
+import { MAX_REPORT_BYTES, type ReportUpload } from "./reports";
 import type { Locale } from "./i18n";
 
 export type IntakeField = {

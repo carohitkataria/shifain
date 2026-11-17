@@ -27,6 +27,8 @@ export async function send(to: string, subject: string, text: string, html?: str
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ from: process.env.MAIL_FROM || DEFAULT_FROM, to, subject, text, ...(html ? { html } : {}) }),
+      // A slow mail provider must not hold the patient's request open.
+      signal: AbortSignal.timeout(15_000),
     });
     if (!response.ok) {
       console.error("[shifain] mail rejected", response.status, await response.text().catch(() => ""));

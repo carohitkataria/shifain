@@ -2,6 +2,7 @@ import "server-only";
 import crypto from "node:crypto";
 import { Binary } from "mongodb";
 import { getDb } from "./db";
+import { sniffMediaType } from "./upload-guard";
 
 /**
  * Files attached to hospitals and doctors during onboarding: logos, gallery
@@ -40,6 +41,10 @@ export function acceptable(file: File | null | undefined, kind: MediaKind): file
 /** Stores one file and returns its id, or null if it was empty or not acceptable. */
 export async function storeMedia(file: File | null | undefined, owner: { type: MediaOwner; id: string }, kind: MediaKind): Promise<string | null> {
   if (!acceptable(file, kind)) return null;
+  const body = Buffer.from(await file.arrayBuffer());
+  // The bytes must be the kind the browser claimed, or the file is not stored.
+  const mediaType = sniffMediaType(body);
+  if (!mediaType || !(kind === "certificate" || kind === "agreement" ? DOCUMENT : IMAGE).test(mediaType)) return null;
   const id = `m-${crypto.randomBytes(9).toString("base64url")}`;
   const db = await getDb();
   await db.collection("media_assets").insertOne({
@@ -48,9 +53,9 @@ export async function storeMedia(file: File | null | undefined, owner: { type: M
     ownerId: owner.id,
     kind,
     filename: file.name.slice(0, 160) || kind,
-    mediaType: file.type,
-    bytes: file.size,
-    data: new Binary(Buffer.from(await file.arrayBuffer())),
+    mediaType,
+    bytes: body.byteLength,
+    data: new Binary(body),
     uploadedAt: new Date().toISOString(),
   } as never);
   return id;

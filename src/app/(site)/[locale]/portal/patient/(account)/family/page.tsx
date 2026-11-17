@@ -88,7 +88,7 @@ export default async function FamilyPage(props: AppProps) {
                     </div>
                   </form>
                   {member.travelling && member.passport === "missing" ? (
-                    <form action={uploadAction} encType="multipart/form-data" style={{ marginTop: 10 }}>
+                    <form action={uploadAction} style={{ marginTop: 10 }}>
                       <Hidden app={app} section="family" />
                       <input type="hidden" name="familyId" value={member.id} />
                       <UploadButton label={`${t(APP.passportNeeded, locale)} · ${t(APP.upload, locale)}`} className="a-btn a-btn-t a-w" />

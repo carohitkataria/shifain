@@ -5,6 +5,9 @@ import { PortalIcon } from "@/components/portal/PortalIcon";
 import { PORTAL_COPY } from "@/lib/portal-patient-copy";
 import { portalPage, withCase, type PortalPageProps } from "@/lib/patient-portal-page";
 import { listTreatments } from "@/lib/catalogue";
+import { answerPlanQuestionsAction } from "../../portal-actions";
+import { canSee } from "@/lib/patient-portal";
+import { APP } from "@/lib/patient-app-copy";
 import { SERVICE_WORDS, sayLang } from "@/lib/voice/command-copy";
 import { t } from "@/lib/localize";
 import type { L } from "@/lib/content-types";
@@ -23,6 +26,16 @@ export async function PlanTab(props: PortalPageProps) {
   const record = data.active;
   if (!record) return <PortalFrame content={content} locale={locale} data={data} section="plan" tabs={CASE_TABS("plan")}>{null}</PortalFrame>;
 
+  // The plan is a medical summary: a family member sees it only with the patient's reports.
+  if (!canSee(data.viewer, "reports")) {
+    return (
+      <PortalFrame content={content} locale={locale} data={data} section="plan" tabs={CASE_TABS("plan")}>
+        <Panel>
+          <p className="text-[15px] text-navy">{t(APP.notShared, locale)}</p>
+        </Panel>
+      </PortalFrame>
+    );
+  }
   const plan = record.plan;
   const treatments = plan ? await listTreatments().catch(() => []) : [];
   const nameOf = (code: string | null) => {
@@ -31,6 +44,9 @@ export async function PlanTab(props: PortalPageProps) {
   };
   const lang = sayLang(locale);
   const prefs = record.preferences ?? {};
+  // Answered since the plan was last redone: a new plan asks afresh.
+  const lastReplan = (record.replans ?? []).reduce((latest, at) => (at > latest ? at : latest), "");
+  const answered = (record.planEdits ?? []).some((edit) => edit.change === "Answered the plan's questions" && edit.at > lastReplan);
   const wishes: [L, string | null | undefined][] = [
     [PORTAL_COPY.wishCity, prefs.city],
     [PORTAL_COPY.wishTravel, prefs.travel],
@@ -134,11 +150,36 @@ export async function PlanTab(props: PortalPageProps) {
               {plan.questionsForPatient.length ? (
                 <Panel>
                   <h2 className="text-lg font-bold text-navy">{t(PORTAL_COPY.questions, locale)}</h2>
-                  <ul className="mt-3 list-disc space-y-1.5 pl-5 text-[15px] leading-relaxed text-[#2c3a5e]">
-                    {plan.questionsForPatient.map((question) => (
-                      <li key={question}>{question}</li>
-                    ))}
-                  </ul>
+                  {answered ? (
+                    <>
+                      <ul className="mt-3 list-disc space-y-1.5 pl-5 text-[15px] leading-relaxed text-[#2c3a5e]">
+                        {plan.questionsForPatient.map((question) => (
+                          <li key={question}>{question}</li>
+                        ))}
+                      </ul>
+                      <p className="mt-3 rounded-xl bg-surface-muted p-3 text-sm leading-relaxed text-navy">{t(PORTAL_COPY.answersSent, locale)}</p>
+                    </>
+                  ) : (
+                    <form action={answerPlanQuestionsAction} className="mt-3 space-y-3">
+                      <input type="hidden" name="locale" value={locale} />
+                      <input type="hidden" name="case" value={record._id} />
+                      {plan.questionsForPatient.map((question, index) => (
+                        <label key={question} className="block">
+                          <span className="text-[15px] leading-relaxed text-[#2c3a5e]">{question}</span>
+                          <textarea
+                            name={`answer.${index}`}
+                            rows={2}
+                            maxLength={600}
+                            placeholder={t(PORTAL_COPY.answerPlaceholder, locale)}
+                            className="mt-1.5 w-full rounded-xl border border-line bg-white px-3 py-2 text-[15px] text-navy focus:border-violet focus:outline-none"
+                          />
+                        </label>
+                      ))}
+                      <button type="submit" className="inline-flex min-h-11 items-center gap-2 rounded-full bg-violet px-5 font-semibold text-white transition hover:bg-brand-deep">
+                        {t(PORTAL_COPY.sendAnswers, locale)}
+                      </button>
+                    </form>
+                  )}
                 </Panel>
               ) : null}
               {plan.missingReports.length ? (

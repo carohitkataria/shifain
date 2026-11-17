@@ -109,7 +109,7 @@ export function schemaFor(grounding: Grounding): Record<string, unknown> {
         type: ["string", "null"],
         enum: [...cities, null],
         description:
-          "The city we would most likely place this case in, from the cities ShifaIn covers. Null if it is too early to say.",
+          "The city we would most likely place this case in, from the cities Shifain covers. Null if it is too early to say.",
       },
       stay: {
         type: "object",

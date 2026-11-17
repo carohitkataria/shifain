@@ -10,6 +10,7 @@ import {
   findCaseForSignIn,
   endPatientSession,
   requestEmailCode,
+  revokeOtherSessions,
   startPatientEmailSession,
   startPatientSession,
   verifyEmailCode,
@@ -22,13 +23,14 @@ import { provenIdentity, sendCaseCode, verifyCaseCode } from "@/lib/case-codes";
 import { requestPhoneCode, verifyPhoneCode, type PhoneCodeRequest } from "@/lib/phone-codes";
 import { allowHit } from "@/lib/rate-limit";
 import { audit, type AuditMethod } from "@/lib/audit";
+import { COUNTRIES } from "@/lib/countries";
+import { CHANNELS, type ContactChannel } from "@/lib/journey-rules";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
+import { clientIpFrom } from "@/lib/request-meta";
 
 /** One sign-in attempt, for the admin sign-in log. */
 const logSignIn = async (method: AuditMethod, ok: boolean, reference: string | null = null) =>
   audit({ session: "web", method, reference, result: ok ? "ok" : "failed", ip: await clientIp() });
-import { COUNTRIES } from "@/lib/countries";
-import { CHANNELS, type ContactChannel } from "@/lib/journey-rules";
-import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -79,6 +81,12 @@ export async function patientLoginAction(formData: FormData) {
   });
   const sent = record ? await sendCaseCode(record).catch(() => null) : null;
   await audit({ session: "web", method: "case-code", reference, result: record ? "sent" : "failed", ip: await clientIp() });
+  // The case and number matched but nothing could carry a code: say so, and where to get help,
+  // rather than "a code is on its way". (Both had to be right, so this tells a stranger nothing.)
+  if (record && (sent?.status === "none" || sent?.status === "failed")) {
+    step.set("error", "nochannel");
+    redirect(`${page}?${step.toString()}`);
+  }
   step.set("sent", "1");
   // Only in local development with nothing to send through: the code, so the flow can be tried.
   if (sent?.status === "dev") step.set("dev", sent.code);
@@ -88,6 +96,15 @@ export async function patientLoginAction(formData: FormData) {
 export async function patientLogoutAction(formData: FormData) {
   const locale = localeOf(formData);
   await endPatientSession();
+  redirect(`/${locale}/portal/patient/login`);
+}
+
+/** Signs this person out on every phone and computer, this one included. */
+export async function patientLogoutEverywhereAction(formData: FormData) {
+  const locale = localeOf(formData);
+  const identity = await currentPatient().catch(() => null);
+  if (identity) await revokeOtherSessions(identity, false).catch(() => endPatientSession());
+  else await endPatientSession();
   redirect(`/${locale}/portal/patient/login`);
 }
 
@@ -181,7 +198,7 @@ const SET_PASSWORD = (locale: Locale) => `/${locale}/portal/patient/settings?set
 
 async function clientIp(): Promise<string> {
   const list = await headers();
-  return list.get("x-forwarded-for")?.split(",")[0].trim() || list.get("x-real-ip") || "local";
+  return clientIpFrom(list);
 }
 
 /**
@@ -283,5 +300,7 @@ export async function setPasswordAction(formData: FormData) {
   if (password !== confirm) redirect(`${page}?error=mismatch#password`);
 
   await setAccountPassword(account.email, password);
+  // A new password ends every other session: a lost phone stays signed in no longer.
+  await revokeOtherSessions(identity, true).catch((error) => console.error("[shifain] could not end other sessions", error));
   redirect(`${page}?done=password#password`);
 }

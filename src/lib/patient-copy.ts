@@ -3,7 +3,7 @@ import type { L } from "./content-types";
 const l = (en: string, ru: string, uz: string): L => ({ en, ru, uz });
 
 export const PATIENT_COPY = {
-  signInTitle: l("Your ShifaIn file", "Ваше дело в ShifaIn", "ShifaIn'dagi ishingiz"),
+  signInTitle: l("Your Shifain file", "Ваше дело в Shifain", "Shifain'dagi ishingiz"),
   signInBody: l(
     "Sign in with the reference we sent you and the phone number you gave us. There is no password to remember.",
     "Войдите по номеру обращения и телефону, который вы оставили. Пароль не нужен.",

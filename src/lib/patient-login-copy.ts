@@ -79,6 +79,16 @@ export const LOGIN = {
     "Для вашей безопасности подтвердите вход ещё раз, прежде чем открывать документы, ссылки на оплату, семью или контакты. Быстрее всего — по одноразовому коду.",
     "Xavfsizligingiz uchun hujjatlar, to'lov havolalari, oila yoki kontaktlarni ochishdan oldin yana bir bor tasdiqlang. Eng tezi — bir martalik kod.",
   ),
+  errNoChannel: l(
+    "We couldn't send a code for this case: there is no email, WhatsApp or Telegram on it that a code can go to. Write to us in the chat and a coordinator will help you in.",
+    "Не удалось отправить код по этому случаю: в нём нет почты, WhatsApp или Telegram, куда можно отправить код. Напишите нам в чат — координатор поможет войти.",
+    "Bu holat bo'yicha kod yuborib bo'lmadi: unda kod yuboriladigan email, WhatsApp yoki Telegram yo'q. Chatda yozing — koordinator kirishga yordam beradi.",
+  ),
+  noCodeYet: l(
+    "No code after a few minutes? Check spam, send it again, or write to us in the chat.",
+    "Код не пришёл за несколько минут? Проверьте «Спам», отправьте ещё раз или напишите нам в чат.",
+    "Bir necha daqiqada kod kelmadimi? Spamni tekshiring, qayta yuboring yoki chatda yozing.",
+  ),
   errSlow: l("Too many tries. Wait a few minutes, or use a one-time code.", "Слишком много попыток. Подождите несколько минут или войдите по коду.", "Juda koʻp urinish. Bir necha daqiqa kuting yoki kod bilan kiring."),
   errPhone: l("Check the mobile number — with the country code.", "Проверьте номер — вместе с кодом страны.", "Raqamni tekshiring — mamlakat kodi bilan."),
   errWhatsApp: l("We couldn’t send a WhatsApp message to that number. Try Telegram or email.", "Не удалось отправить сообщение в WhatsApp. Попробуйте Telegram или почту.", "WhatsAppga xabar yuborilmadi. Telegram yoki pochtani sinab koʻring."),

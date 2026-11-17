@@ -20,7 +20,7 @@ export default async function CalendarPage(props: AppProps & { searchParams: Pro
   if (!record || !canSee(portal.viewer, "calendar")) {
     return (
       <AppShell app={app} section="calendar">
-        <p className="a-card a-pad">{t(APP.noCase, locale)}</p>
+        <p className="a-card a-pad">{t(record && portal.viewer?.role === "family" ? APP.notShared : APP.noCase, locale)}</p>
       </AppShell>
     );
   }

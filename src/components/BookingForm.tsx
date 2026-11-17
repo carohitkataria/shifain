@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { COUNTRY_BY_NAME, DIAL_BY_NAME, countryOptions } from "@/lib/countries";
 import { BOOKING_COPY as B } from "@/lib/directory-copy";
-import { INTAKE_COPY, REACH_COPY } from "@/lib/intake-copy";
+import { INTAKE_COPY, REACH_COPY, WIZARD_COPY as W } from "@/lib/intake-copy";
 import { t } from "@/lib/localize";
 import type { Locale } from "@/lib/i18n";
 import { EnquiryReturned } from "./EnquiryReturned";
 import { ReachChoice } from "./ReachChoice";
+import { Honeypot } from "@/components/Honeypot";
 
 const field =
   "w-full min-w-0 min-h-11 rounded-xl border border-line bg-white px-3.5 text-base text-ink placeholder:text-ink-muted transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-tint sm:text-sm";
@@ -41,6 +42,7 @@ export function BookingForm({
   return (
     <form action="/api/enquiry" method="post" encType="multipart/form-data" onSubmit={() => setSending(true)} className="space-y-3">
       <input type="hidden" name="locale" value={locale} />
+      <Honeypot />
       <input type="hidden" name="from" value={from} />
       {hospitalId ? <input type="hidden" name="hospitalId" value={hospitalId} /> : null}
       {doctorId ? <input type="hidden" name="doctorId" value={doctorId} /> : null}
@@ -158,6 +160,16 @@ export function BookingForm({
           {t(B.reportsHint, locale)}
         </p>
       </div>
+
+      <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-ink-soft">
+        <input type="checkbox" name="consent" value="yes" required className="mt-0.5 h-5 w-5 shrink-0" />
+        <span>
+          {t(W.consent, locale)}{" "}
+          <a href={`/${locale}/privacy`} target="_blank" rel="noopener" className="font-semibold text-brand underline">
+            {t(W.consentPolicy, locale)}
+          </a>
+        </span>
+      </label>
 
       <button type="submit" disabled={sending} className="btn btn-primary w-full disabled:opacity-70">
         {sending ? t(B.sending, locale) : t(B.submit, locale)}

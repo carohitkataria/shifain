@@ -3,9 +3,10 @@ import { isTranslatedLocale } from "@/lib/i18n";
 import { cleanBatch, isPrivatePage } from "@/lib/page-translation-rules";
 import { translateTexts, warmAppText } from "@/lib/page-translation";
 import { allowHit } from "@/lib/rate-limit";
+import { clientIpFrom } from "@/lib/request-meta";
 
 function clientAddress(request: Request): string {
-  return (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || request.headers.get("x-real-ip") || "unknown";
+  return clientIpFrom(request.headers);
 }
 
 /**

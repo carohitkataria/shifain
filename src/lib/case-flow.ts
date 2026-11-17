@@ -30,6 +30,8 @@ export async function openCase(input: {
   status?: CaseStatus;
   /** The hospital or doctor page the patient asked from. */
   requested?: CaseRequest | null;
+  /** When the patient agreed to us keeping their details (the website form's consent box). */
+  consentAt?: string | null;
 }): Promise<PatientCase> {
   const { intake } = input;
   const settings = await getSettings();
@@ -50,6 +52,7 @@ export async function openCase(input: {
     source: input.source,
     referredBy: input.referredBy,
     requested: input.requested ?? null,
+    ...(input.consentAt ? { consentAt: input.consentAt } : {}),
   });
 
   after(async () => {

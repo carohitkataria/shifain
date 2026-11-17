@@ -1,6 +1,6 @@
-# ShifaIn
+# Shifain
 
-Marketing site for ShifaIn — medical journeys **to India**, planned with AI assistance and
+Marketing site for Shifain — medical journeys **to India**, planned with AI assistance and
 run end to end. Built with Next.js (App Router), TypeScript and Tailwind CSS v4.
 
 The homepage is driven entirely by a content store that a non-developer edits and publishes
@@ -57,20 +57,19 @@ editable automatically — there is no second schema to keep in sync.
 |---|---|
 | `src/lib/content-types.ts` | shape of the homepage content |
 | `src/lib/default-content.ts` | the copy that ships with the code (frozen at runtime) |
-| `content/homepage.json` | what the admin panel publishes; absent until first publish |
+| MongoDB `site_content` | what the admin panel publishes (a draft and the published version) |
 | `src/lib/store.ts` | reads/writes the store and merges it over the defaults |
 
-Published content is written to `content/homepage.json` (override with `SHIFAIN_CONTENT_PATH`).
-Set that to a **writable persistent volume** in production — a serverless filesystem is
-read-only and ephemeral, so publishing would silently fail or be lost. Swapping the store for a
-database means reimplementing `getContent`/`saveContent`/`resetContent` in that one file.
+Published content lives in one MongoDB document, `site_content`. An older
+`content/homepage.json` (or `SHIFAIN_CONTENT_PATH`) is imported once, the first time the
+database is used, and is otherwise not read.
 
 Because the marketing pages are statically rendered per language, publishing calls
 `revalidatePath("/", "layout")` so the live pages pick up the change.
 
 ## The homepage
 
-Sections, in shipped order: hero and enquiry form · headline numbers · why ShifaIn (star) ·
+Sections, in shipped order: hero and enquiry form · headline numbers · why Shifain (star) ·
 your journey (path) · treatment categories · AI plan & estimate builder · upload reports band ·
 live case tracker · price guarantee and translator · indicative costs · hospitals · doctors ·
 comparison · included services (star) · why India (star) · for doctors & hospitals ·
@@ -91,18 +90,21 @@ Notable pieces:
 
 ## Enquiries
 
-The hero form posts to `/api/enquiry`, which validates, assigns a reference and appends a
-record to `.data/enquiries.jsonl` (override with `SHIFAIN_ENQUIRY_LOG`). Uploaded reports are
-counted but **not stored** — wire `record()` in `src/app/api/enquiry/route.ts` to your case
-system and object storage before launch.
+The hero form posts to `/api/enquiry`, which validates, requires the consent box, opens a case
+in MongoDB, stores the reports for 30 days and starts the AI plan. It is limited per address and
+site-wide per hour, refuses oversized bodies before reading them, and drops posts that fill the
+hidden spam field. Only if the database cannot be reached is the enquiry appended to
+`.data/enquiries.jsonl` (override with `SHIFAIN_ENQUIRY_LOG`) — that file does not survive a
+redeploy, so the team is alerted at once with who to call back.
 
-## Not built yet
+## Portals
 
-The patient and hospital portals are still placeholder pages that say so and offer the step that
-does work today. The **doctor portal is live**: a referring doctor signs in at
-`/[locale]/portal/doctor`, refers a patient with their reports, and follows every case they have
-sent. Logins are created in the admin panel under **People → Partner logins**, or from the command
-line with `npm run db:partner`.
+The **patient account** (`/[locale]/portal/patient`) is live: plan, calendar, to-do, messages,
+reports, family, travel and stay, payments, translator and settings. The **doctor portal** is
+live: a referring doctor signs in at `/[locale]/portal/doctor`, refers a patient with their
+reports, and follows every case they have sent. The **hospital portal** is not built yet; the
+site links "Partner with us" instead. Logins are created in the admin panel under
+**People → Partner logins**, or from the command line with `npm run db:partner`.
 
 ## Who signs in, and how
 
@@ -167,10 +169,12 @@ patient adds or drops like any other. Dental work in Gurgaon offers the Red Fort
 cancer or transplant pathway offers anything.
 
 If the planner fails or no API key is set, the case is still opened and marked for a coordinator —
-a patient who has uploaded their reports is never dropped.
+a patient who has uploaded their reports is never dropped. A plan still "drafting" after five
+minutes (the server restarted mid-plan) is settled by whoever reads the case next: back to the
+earlier plan, or handed to a coordinator, and the team is alerted once.
 
-Report files are not stored. The case keeps what each report was (filename, type, size) and the
-plan derived from it.
+Report files are stored in MongoDB for 30 days (see Reports above); each file's type is taken
+from its own bytes, never from the browser's label.
 
 ## Managing the catalogue
 
@@ -203,6 +207,16 @@ signs a tie-up and publishes them by hand.
 | `SHIFAIN_CONTENT_PATH` | where published content is stored |
 | `SHIFAIN_ENQUIRY_LOG` | where enquiries are appended |
 | `SHIFAIN_NOINDEX` | set to `1` on preview deployments to keep them out of search engines |
+| `BASE_URL` | the public address, e.g. `https://shifain.com`; links, redirects and the sitemap use it |
+| `ALLOWED_HOSTS` | extra host names the site answers on (comma-separated); others are never redirected to |
+| `TRUSTED_PROXY_HOPS` | proxies you add in front of Render's, so the client address is read correctly (default 0) |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | "Sign in with Google" for patients |
+| `GEMINI_API_KEY` | the chat, the planner and page translation (Claude is the fallback) |
+| `OPS_EMAIL` | where team alerts go when no ops email is set in Settings |
+
+`GET /api/health` answers 200 while the database responds (503 otherwise) — point an uptime
+monitor and Render's health check at it. Signed in as the owner it also lists which services
+are configured.
 
 ## Theme
 

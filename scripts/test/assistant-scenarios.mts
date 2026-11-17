@@ -154,7 +154,11 @@ const { forScreen } = await import("../../src/lib/voice/reply-script.ts");
 // ---------------------------------------------------------------- the catalogue every scenario starts from
 
 const catalogue = async (name: string) => JSON.parse(await readFile(path.join(process.cwd(), "src", "data", "catalogue", `${name}.json`), "utf8"));
-const fixtures = JSON.parse(await readFile(path.join(DIR, "_fixtures.json"), "utf8")) as Record<string, Record<string, unknown>[]>;
+// "now" in a fixture's date means this run's time: a plan "still being drafted" must stay
+// younger than the five minutes after which a lost plan is handed to a coordinator.
+const fixtures = JSON.parse(await readFile(path.join(DIR, "_fixtures.json"), "utf8"), (key, value) =>
+  value === "now" && /At$/.test(key) ? new Date().toISOString() : value,
+) as Record<string, Record<string, unknown>[]>;
 const seed = {
   treatments: await catalogue("treatments"),
   specialties: await catalogue("specialties"),

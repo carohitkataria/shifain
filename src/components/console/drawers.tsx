@@ -999,7 +999,7 @@ async function NewCaseDrawer({ url, close }: { url: string; close: string }) {
         </>
       }
     >
-      <form id="new-case" action={newCaseAction} encType="multipart/form-data">
+      <form id="new-case" action={newCaseAction}>
         <input type="hidden" name="back" value={url} />
         <label className={label}>
           Patient name
@@ -1224,7 +1224,7 @@ async function UploadDrawer({ url, close }: { url: string; close: string }) {
         </>
       }
     >
-      <form id="upload-files" action={deskUploadAction} encType="multipart/form-data">
+      <form id="upload-files" action={deskUploadAction}>
         <input type="hidden" name="back" value={withoutDrawer(url)} />
         <label className={label}>
           Case

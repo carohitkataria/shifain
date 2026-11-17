@@ -98,7 +98,7 @@ export default async function AccessPage({
             <select name="role" className={field} defaultValue="doctor">
               <option value="doctor">Referring doctor</option>
               <option value="hospital">Hospital desk</option>
-              <option value="coordinator">ShifaIn coordinator</option>
+              <option value="coordinator">Shifain coordinator</option>
             </select>
           </label>
           <label className="block min-w-0">

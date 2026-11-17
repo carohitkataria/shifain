@@ -136,6 +136,13 @@ export const PORTAL_COPY = {
   itinerary: l("Day by day", "По дням", "Kunma-kun"),
   services: l("Services in your package", "Услуги в вашем пакете", "Paketingizdagi xizmatlar"),
   questions: l("Questions for you", "Вопросы к вам", "Sizga savollar"),
+  answerPlaceholder: l("Your answer (optional)", "Ваш ответ (необязательно)", "Javobingiz (ixtiyoriy)"),
+  sendAnswers: l("Send my answers", "Отправить ответы", "Javoblarni yuborish"),
+  answersSent: l(
+    "Thank you — your answers are with your coordinator and are used when your plan is updated.",
+    "Спасибо — ваши ответы у координатора и будут учтены при обновлении плана.",
+    "Rahmat — javoblaringiz koordinatorda va reja yangilanganda hisobga olinadi.",
+  ),
   missing: l("Reports that would help", "Документы, которые помогут", "Yordam beradigan hujjatlar"),
   wishes: l("Your wishes", "Ваши пожелания", "Istaklaringiz"),
   wishCity: l("Preferred city", "Желаемый город", "Afzal shahar"),

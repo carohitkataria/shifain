@@ -1,6 +1,9 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { allowHit, recentHits, recordHit, slowdownMs } from "@/lib/rate-limit";
+import { clientIpFrom } from "@/lib/request-meta";
 import { authenticate, currentPartner, endPartnerSession, startPartnerSession } from "@/lib/partner-auth";
 import { hasSomethingToPlanFrom, readIntake } from "@/lib/intake";
 import { openCase } from "@/lib/case-flow";
@@ -10,6 +13,8 @@ import { getSettings } from "@/lib/settings";
 import { getDb } from "@/lib/db";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 
+const WINDOW = 15 * 60_000;
+
 function localeOf(formData: FormData): Locale {
   const value = String(formData.get("locale") ?? "");
   return isLocale(value) ? value : DEFAULT_LOCALE;
@@ -17,8 +22,15 @@ function localeOf(formData: FormData): Locale {
 
 export async function doctorLoginAction(formData: FormData) {
   const locale = localeOf(formData);
-  const email = String(formData.get("email") ?? "");
-  const password = String(formData.get("password") ?? "");
+  const email = String(formData.get("email") ?? "").trim().toLowerCase().slice(0, 200);
+  const password = String(formData.get("password") ?? "").slice(0, 200);
+  // The same limits as the team's sign-in: hard per address, a growing pause per account.
+  const ip = clientIpFrom(await headers());
+  if (!allowHit(`doctor-ip-id:${ip}:${email}`, 10, WINDOW) || !allowHit(`doctor-ip:${ip}`, 30, WINDOW)) {
+    redirect(`/${locale}/portal/doctor/login?error=slow`);
+  }
+  const wait = slowdownMs(recentHits(`doctor-fail:${email}`, WINDOW));
+  if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
 
   const user = await authenticate(email, password).catch((error) => {
     console.error("[shifain] partner sign-in failed", error);
@@ -26,6 +38,7 @@ export async function doctorLoginAction(formData: FormData) {
   });
 
   if (!user || user.role !== "doctor") {
+    recordHit(`doctor-fail:${email}`, WINDOW);
     redirect(`/${locale}/portal/doctor/login?error=1`);
   }
 

@@ -6,6 +6,9 @@
  * own .card / .btn / .chip.
  */
 .pa {
+  /* Self-hosted faces (see the site layout); Inter carries Cyrillic for the headings too. */
+  --pa-body: "Inter Variable";
+  --pa-display: "Plus Jakarta Sans Variable", "Inter Variable";
   --bg: #f6f6fb;
   --surface: #fff;
   --primary: #6c4fe0;
@@ -534,7 +537,8 @@
   background: var(--primary-050);
   color: var(--primary);
 }
-.t-off {
+.t-off,
+.t-tbd {
   background: var(--line-2);
   color: var(--muted);
 }

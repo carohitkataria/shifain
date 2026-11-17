@@ -19,5 +19,6 @@ export default function robots(): MetadataRoute.Robots {
       // sign-in only. Neither belongs in a search index, ever.
       disallow: ["/admin", "/api", "/*/plan/", "/*/portal/"],
     },
+    sitemap: `${(process.env.BASE_URL?.trim() || "https://shifain.com").replace(/\/$/, "")}/sitemap.xml`,
   };
 }

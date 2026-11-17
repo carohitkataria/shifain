@@ -30,6 +30,7 @@ import {
   type RidePlace,
   type RideStatus,
 } from "./journey-rules";
+import { sniffMediaType } from "./upload-guard";
 
 /**
  * The journey on the database: the providers the desk assigns, and every
@@ -201,9 +202,12 @@ export async function addCaseFiles(
   const allowed = /^(application\/pdf|image\/(png|jpeg|webp|heic|heif))$/;
   const uploads: (ReportUpload & CaseReport)[] = [];
   for (const file of files.slice(0, 5)) {
-    if (!file.size || file.size > MAX_REPORT_BYTES || !allowed.test(file.type)) continue;
+    if (!file.size || file.size > MAX_REPORT_BYTES) continue;
     const body = Buffer.from(await file.arrayBuffer());
-    uploads.push({ id: id(), filename: file.name.slice(0, 160) || "file", mediaType: file.type, body, bytes: body.byteLength, ...meta });
+    // The bytes decide the type, not the browser's label.
+    const mediaType = sniffMediaType(body);
+    if (!mediaType || !allowed.test(mediaType)) continue;
+    uploads.push({ id: id(), filename: file.name.slice(0, 160) || "file", mediaType, body, bytes: body.byteLength, ...meta });
   }
   if (!uploads.length) return [];
   const settings = await getSettings();

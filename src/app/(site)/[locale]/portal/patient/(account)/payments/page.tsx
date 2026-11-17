@@ -21,7 +21,7 @@ export default async function PaymentsPage(props: AppProps) {
   if (!record || !canSee(portal.viewer, "payments")) {
     return (
       <AppShell app={app} section="payments">
-        <p className="a-card a-pad">{t(APP.noCase, locale)}</p>
+        <p className="a-card a-pad">{t(record && portal.viewer?.role === "family" ? APP.notShared : APP.noCase, locale)}</p>
       </AppShell>
     );
   }

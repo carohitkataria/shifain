@@ -53,7 +53,7 @@ export async function notifyPatient(opts: {
       contactId: contact.contactId,
       caseReference: opts.caseReference,
       telegramChatId: contact.telegramChatId,
-      senderName: "ShifaIn",
+      senderName: "Shifain",
       text: opts.text,
       metadata: null,
       status: "delivered",
@@ -83,7 +83,7 @@ export async function notifyPartner(opts: {
       contactId: null,
       caseReference: null,
       telegramChatId: opts.telegramChatId,
-      senderName: "ShifaIn",
+      senderName: "Shifain",
       text: opts.text,
       metadata: null,
       status: "delivered",
@@ -139,9 +139,9 @@ const STATUS_WORDS: Record<string, Words> = {
     uz: "🎯 <b>Davolanishingiz tasdiqlandi!</b> Koordinator keyingi qadamlarni yuboradi.",
   },
   closed: {
-    en: "📁 <b>Your case is closed.</b> Thank you for choosing ShifaIn — write to us here any time.",
-    ru: "📁 <b>Ваш случай закрыт.</b> Спасибо, что выбрали ShifaIn — пишите нам здесь в любое время.",
-    uz: "📁 <b>Holatingiz yopildi.</b> ShifaIn ni tanlaganingiz uchun rahmat — istalgan vaqtda shu yerda yozing.",
+    en: "📁 <b>Your case is closed.</b> Thank you for choosing Shifain — write to us here any time.",
+    ru: "📁 <b>Ваш случай закрыт.</b> Спасибо, что выбрали Shifain — пишите нам здесь в любое время.",
+    uz: "📁 <b>Holatingiz yopildi.</b> Shifain ni tanlaganingiz uchun rahmat — istalgan vaqtda shu yerda yozing.",
   },
 };
 

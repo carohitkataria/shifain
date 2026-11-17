@@ -9,7 +9,6 @@ import {
   type IntakeField,
   type IntakeState,
   type IntakeUploadRef,
-  missingRequired,
   isIntakeReady,
   nextProfileQuestion,
 } from "./conversation-intake";
@@ -45,7 +44,7 @@ export type WebIntake = {
   updatedAt: string;
 };
 
-/** "coordinator" is a person on the ShifaIn team replying from the console. */
+/** "coordinator" is a person on the Shifain team replying from the console. */
 export type WebMessage = { role: "user" | "assistant" | "coordinator"; content: string; ts: string };
 
 export type PendingCommand = {

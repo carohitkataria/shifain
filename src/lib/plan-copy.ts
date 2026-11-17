@@ -147,6 +147,8 @@ export const PLAN_COPY = {
     telegramHint: l("Your case is linked when you open the bot — no forms.", "Случай привяжется, как только вы откроете бота — без анкет.", "Botni ochganingizda holatingiz bog'lanadi — anketasiz."),
     account: l("Open your patient account", "Открыть кабинет пациента", "Bemor kabinetini ochish"),
     accountHint: l("Your plan, messages, documents and travel — in one place.", "План, сообщения, документы и поездка — в одном месте.", "Reja, xabarlar, hujjatlar va safar — bir joyda."),
+    chat: l("Write to us in the chat", "Написать нам в чат", "Chatda yozish"),
+    chatHint: l("A coordinator answers here, in your language.", "Координатор ответит здесь, на вашем языке.", "Koordinator shu yerda, o'z tilingizda javob beradi."),
     emailed: l("We’ll also email updates to {email}.", "Мы также будем присылать новости на {email}.", "Yangiliklarni {email} manziliga ham yuboramiz."),
     keepRef: l("Keep your reference — with your phone number, it opens your account.", "Сохраните номер — вместе с телефоном он открывает ваш кабинет.", "Raqamni saqlang — telefon bilan birga u kabinetingizni ochadi."),
   },

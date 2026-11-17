@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 
-/** Lets patients add ShifaIn to their phone's home screen with the proper icon. */
+/** Lets patients add Shifain to their phone's home screen with the proper icon. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ShifaIn — Global health journeys to India",
-    short_name: "ShifaIn",
+    name: "Shifain — Global health journeys to India",
+    short_name: "Shifain",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

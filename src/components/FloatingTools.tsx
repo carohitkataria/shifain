@@ -37,7 +37,7 @@ type ChatMsg = {
   content: string;
   voice?: boolean;
   links?: ReplyLink[];
-  /** A person on the ShifaIn team wrote this, not the assistant. */
+  /** A person on the Shifain team wrote this, not the assistant. */
   coordinator?: boolean;
 };
 
@@ -314,12 +314,31 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, sending]);
 
+  // On a phone the round button sits over form fields (the contact step, WhatsApp, a
+  // status chip): while the visitor is typing into a page's form it steps aside.
+  const [typing, setTyping] = useState(false);
+  useEffect(() => {
+    const field = (target: EventTarget | null) =>
+      target instanceof HTMLElement && target.matches("input, select, textarea") && !target.closest(".help-panel, .help-panel-chat");
+    const onIn = (event: FocusEvent) => setTyping(field(event.target) && window.matchMedia("(max-width: 639px)").matches);
+    const onOut = () => setTyping(false);
+    document.addEventListener("focusin", onIn);
+    document.addEventListener("focusout", onOut);
+    return () => {
+      document.removeEventListener("focusin", onIn);
+      document.removeEventListener("focusout", onOut);
+    };
+  }, []);
+
   /** Carries out what the server asked the page to do after a command. */
   const act = useCallback(
     (action: ClientAction | undefined) => {
       if (!action) return;
       if (action.type === "navigate" && action.href.startsWith("/")) {
         router.push(action.href);
+        // On a phone the chat covers the whole screen: step aside so the page it opened is seen.
+        // A voice conversation goes on; the chat is one tap away.
+        if (!voiceOn && window.matchMedia("(max-width: 639px)").matches) setOpen(false);
       } else if (action.type === "locale") {
         const rest = pathname.replace(new RegExp(`^/(${LOCALE_PATTERN})(?=/|$)`), "");
         router.push(`/${action.locale}${rest || ""}`);
@@ -341,7 +360,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
         });
       }
     },
-    [pathname, router],
+    [pathname, router, voiceOn],
   );
 
   const apply = useCallback(
@@ -466,7 +485,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
           ref={panelRef}
           role="dialog"
           aria-modal="false"
-          aria-label={view === "chat" ? "Chat with ShifaIn" : "Help"}
+          aria-label={view === "chat" ? "Chat with Shifain" : "Help"}
           className="help-panel help-panel-chat"
         >
           {/* Header */}
@@ -486,7 +505,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
                 <IconBack />
               </button>
               <div className="min-w-0 flex-1">
-                <h2 className="truncate text-[15px] font-bold text-white">ShifaIn care team</h2>
+                <h2 className="truncate text-[15px] font-bold text-white">Shifain care team</h2>
                 <p className="flex items-center gap-1.5 text-[12px] text-white/75">
                   <span className="h-2 w-2 rounded-full bg-[#4ade80]" aria-hidden="true" />
                   Instant answers · coordinators on hand
@@ -754,7 +773,7 @@ export function FloatingTools({ whatsapp = null, phone = null }: { whatsapp?: st
         type="button"
         // The patient app has its own help button (bottom right, above its tab bar); sign-in and sign-up keep this one.
         hidden={!open && PORTAL_INSIDE.test(pathname)}
-        className={`help-fab ${open ? "help-fab-open" : ""}`}
+        className={`help-fab ${open ? "help-fab-open" : ""} ${typing && !open ? "help-fab-away" : ""}`}
         aria-expanded={open}
         aria-label={open ? "Close help" : "Need help? Chat with us"}
         onClick={() => (open ? close() : (setView("menu"), setOpen(true)))}

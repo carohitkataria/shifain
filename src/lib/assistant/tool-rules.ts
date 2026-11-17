@@ -32,7 +32,7 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
   },
   {
     name: "list_hospitals",
-    description: "Hospitals ShifaIn works with (published and under agreement). Returns name, city and accreditation. Call it when the patient asks where they could be treated.",
+    description: "Hospitals Shifain works with (published and under agreement). Returns name, city and accreditation. Call it when the patient asks where they could be treated.",
     level: "public",
     parameters: {
       city: "An Indian city, if the patient named one. Empty for all.",

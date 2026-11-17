@@ -173,6 +173,16 @@ export function Hero({ content, locale }: { content: SiteContent; locale: Locale
                 {t(hero.body, locale)}
               </p>
 
+              {/* On a phone the form starts below the fold: one plain line straight to it. */}
+              <a
+                href="#quote-form"
+                className="hero-rise mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-violet px-6 text-base font-semibold text-white shadow-[0_10px_24px_-12px_rgb(109_40_217/0.7)] transition hover:bg-brand-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand lg:hidden"
+                style={{ "--i": 2 } as React.CSSProperties}
+              >
+                {t(closing.title, locale)}
+                <span aria-hidden="true">↓</span>
+              </a>
+
               <div className="hero-rise mt-8 max-w-[43rem]" style={{ "--i": 3 } as React.CSSProperties}>
                 <OpenChatButton className="hero-chat-card group flex w-full items-center gap-4 rounded-full border-2 border-violet-line bg-white p-2.5 pr-3 text-left transition hover:border-violet/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:gap-5 sm:p-3 sm:pr-4">
                   <span className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-violet-soft text-violet sm:h-[4.5rem] sm:w-[4.5rem]">

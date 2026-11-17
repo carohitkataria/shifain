@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "../../globals.css";
 
 export const metadata: Metadata = {
-  title: "ShifaIn — Homepage control panel",
+  title: "Shifain — Homepage control panel",
   robots: { index: false, follow: false },
 };
 

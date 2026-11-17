@@ -45,6 +45,8 @@ export async function transcribeAudio(
     method: "POST",
     headers: { "xi-api-key": key },
     body: form,
+    // A minute of speech transcribes in seconds; past this the patient is better told to type.
+    signal: AbortSignal.timeout(45_000),
   });
 
   if (!res.ok) {
@@ -123,6 +125,7 @@ export async function textToSpeech(opts: TTSOptions): Promise<Buffer> {
       Accept: "audio/mpeg",
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!res.ok) {

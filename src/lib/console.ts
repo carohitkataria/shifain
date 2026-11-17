@@ -12,6 +12,7 @@ import { arrivalDate, balanceDue, journeyOf, OPEN_RIDE } from "./journey-rules";
 import { indiaNow, indiaToday } from "./patient-app";
 import { listWebChats, type WebChatSummary } from "./web-intake";
 import type { Appointment } from "./patient-portal";
+import { settleStuckPlan } from "./cases";
 
 /**
  * What the owner console reads besides the pages it already had: the badges on
@@ -65,7 +66,11 @@ export function boardKey(record: ConsoleCase, today = indiaToday()): BoardKey {
 // ---------------------------------------------------------------- shared reads
 
 const activeCasesRead = cache(() =>
-  readOr<ConsoleCase[]>([], (db) => db.collection<ConsoleCase>("cases").find({}).sort({ updatedAt: -1, createdAt: -1 }).limit(600).toArray()),
+  readOr<ConsoleCase[]>([], async (db) => {
+    const rows = await db.collection<ConsoleCase>("cases").find({}).sort({ updatedAt: -1, createdAt: -1 }).limit(600).toArray();
+    // A plan lost to a restart shows as needing a person, not "drafting" for ever.
+    return Promise.all(rows.map((row) => (row.status === "planning" ? (settleStuckPlan(row as never) as Promise<ConsoleCase>) : row)));
+  }),
 );
 
 /** Every case the console works with, newest activity first. Cached per request. */

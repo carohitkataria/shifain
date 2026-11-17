@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import { getDb, readOr } from "../db";
 
 /**
- * What the ShifaIn team teaches its assistant, edited in the console under
+ * What the Shifain team teaches its assistant, edited in the console under
  * Assistant: standing instructions, and a knowledge base of answers. Both
  * reach every AI reply (website chat, voice and Telegram); a knowledge entry
  * marked "instant" is also given straight back, with no AI call at all, when

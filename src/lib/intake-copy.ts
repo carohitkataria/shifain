@@ -148,6 +148,12 @@ export const WIZARD_COPY = {
       "Fayllar juda katta: 10 tagacha, har biri 14 MB gacha va jami 25 MB. Eng so'nggilarini yuboring.",
     ),
     empty: l("Add a report, a short description, or answer a question, then send again.", "Добавьте документ, короткое описание или ответьте на вопрос и отправьте ещё раз.", "Hujjat, qisqa tavsif qo'shing yoki savolga javob bering va qayta yuboring."),
+    consent: l("Please tick the box to agree to how we keep your details, then send again.", "Отметьте согласие на хранение ваших данных и отправьте ещё раз.", "Ma'lumotlaringizni saqlashga rozilik belgisini qo'ying va qayta yuboring."),
+    slow: l(
+      "We've received several requests from this connection in a short time. Please wait an hour, or write to us in the chat — a coordinator will help.",
+      "С этого подключения пришло несколько заявок за короткое время. Подождите час или напишите нам в чат — координатор поможет.",
+      "Bu ulanishdan qisqa vaqtda bir nechta so'rov keldi. Bir soat kuting yoki chatda yozing — koordinator yordam beradi.",
+    ),
   },
   conditionError: l(
     "Add at least one report, a short description, or answer one question.",
@@ -163,6 +169,13 @@ export const WIZARD_COPY = {
     "Siz bilan bog'lanish mumkin bo'lgan raqamni kiriting.",
   ),
   emailError: l("That email address does not look right.", "Адрес почты выглядит неверно.", "Pochta manzili noto'g'ri ko'rinadi."),
+  consent: l(
+    "I agree that Shifain may keep my details and the health information I send, to plan my treatment and share it with the hospital I choose.",
+    "Я согласен(на), чтобы Shifain хранил мои данные и присланные медицинские сведения, чтобы спланировать лечение и передать их выбранной клинике.",
+    "Shifain ma'lumotlarim va yuborgan tibbiy ma'lumotlarimni davolanishimni rejalashtirish va men tanlagan shifoxonaga yuborish uchun saqlashiga roziman.",
+  ),
+  consentPolicy: l("Read the privacy policy", "Политика конфиденциальности", "Maxfiylik siyosatini o'qish"),
+  consentError: l("Please tick the box to agree, so we can prepare your plan.", "Отметьте согласие, чтобы мы могли подготовить план.", "Reja tayyorlashimiz uchun rozilik belgisini qo'ying."),
   next: l("Continue", "Далее", "Davom etish"),
   back: l("Back", "Назад", "Orqaga"),
   submitting: l("Preparing your plan…", "Готовим ваш план…", "Rejangiz tayyorlanmoqda…"),

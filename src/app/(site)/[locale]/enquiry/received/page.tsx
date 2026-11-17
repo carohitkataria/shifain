@@ -17,7 +17,8 @@ export default async function EnquiryReceivedPage({
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
   const content = await getContent();
-  const { ref } = await searchParams;
+  // Shown only if it looks like one of ours: the page never echoes arbitrary text from the address.
+  const ref = /^[A-Z]{2}\d{5}$/.test((await searchParams).ref ?? "") ? (await searchParams).ref : null;
 
   return (
     <>

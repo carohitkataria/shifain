@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALES, LOCALE_COOKIE, isLocale, resolveLocale } from "@/lib/i18n";
 import { ADMIN_URL_HEADER } from "@/lib/console-url";
+import { publicOriginFrom } from "@/lib/request-meta";
 
 /** Pages that must never be indexed regardless of which deployment this is. */
 const PRIVATE = /^\/[a-z]{2}\/(plan|portal)\//;
@@ -52,20 +53,10 @@ export function middleware(request: NextRequest) {
 
   const path = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
 
-  // Redirect to the host the visitor actually asked for. request.nextUrl
-  // resolves to whatever Next decided the origin is — on a deployment reached
-  // by more than one hostname, or behind a proxy, that is not the host in the
-  // request, and bouncing someone to a different origin breaks the page they
-  // were on. The forwarded headers, then Host, are the visitor's own.
-  //
-  // A plain URL, not the cloned NextURL: NextResponse.redirect serialises a
-  // NextURL from the origin it was built with, so a host set on the clone is
-  // quietly dropped.
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  const proto = request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol.replace(":", "");
-  const target = host
-    ? new URL(`${proto}://${host}${path}${request.nextUrl.search}`)
-    : new URL(`${path}${request.nextUrl.search}`, request.nextUrl.origin);
+  // Redirect to the host the visitor asked for, but only one this site answers
+  // on (BASE_URL, ALLOWED_HOSTS, Render's own): a forged X-Forwarded-Host must
+  // never send the visitor, or a cache, to someone else's site.
+  const target = new URL(`${path}${request.nextUrl.search}`, publicOriginFrom(request.headers, request.nextUrl.origin));
 
   return rememberReferral(request, applyIndexingPolicy(NextResponse.redirect(target), path));
 }

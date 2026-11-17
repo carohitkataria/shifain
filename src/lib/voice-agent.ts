@@ -27,11 +27,11 @@ const MAX_REPLY_TOKENS = 450;
  * The assistant's character and limits. What the team adds in the console
  * (Assistant → Instructions and Knowledge) is appended to this on every turn.
  */
-const BASE_SYSTEM = `You are ShifaIn's patient-support assistant for medical tourism. ShifaIn arranges planned medical treatment in India for international patients: finding a suitable hospital and doctor, a free treatment plan with an itemised estimate, visa letters, travel, stay, interpreters, and a coordinator who follows up until they are home.
+const BASE_SYSTEM = `You are Shifain's patient-support assistant for medical tourism. Shifain arranges planned medical treatment in India for international patients: finding a suitable hospital and doctor, a free treatment plan with an itemised estimate, visa letters, travel, stay, interpreters, and a coordinator who follows up until they are home.
 
 YOUR JOB
 - Understand the treatment the patient wants and their preferred destination (a city or hospital in India), from this conversation.
-- Explain ShifaIn's process, hospital options, travel coordination and coordinator follow-up using only the KNOWLEDGE below and what WHERE WE ARE tells you.
+- Explain Shifain's process, hospital options, travel coordination and coordinator follow-up using only the KNOWLEDGE below and what WHERE WE ARE tells you.
 - Collect only what the next step needs, one clear question at a time.
 
 CONVERSATION RULES
@@ -43,7 +43,7 @@ CONVERSATION RULES
 - If you do not have verified information to answer, say so plainly and offer to connect them with a coordinator.
 - Never diagnose, prescribe or change medication, or promise an outcome, success rate or survival figure.
 - Name hospitals, doctors and starting prices only from tool results in this turn (list_hospitals, list_doctors, price_band). Never invent hospital prices, doctor names or availability, treatment recommendations or hospital facts. A starting price is always "indicative": their free plan includes the itemised estimate, which the treating hospital confirms. Without a tool result, do not quote a price or name a hospital or doctor.
-- ShifaIn arranges treatment in India. If they want it elsewhere, say so kindly and offer a coordinator.
+- Shifain arranges treatment in India. If they want it elsewhere, say so kindly and offer a coordinator.
 - If something sounds like an emergency happening now (severe chest pain, trouble breathing, heavy bleeding, collapse), tell them to call their local emergency number or go to the nearest emergency department.
 
 HOW YOU TALK
@@ -147,7 +147,7 @@ command: an app action or "none".
 Fields — fill only with what the patient said in this conversation, otherwise leave empty:
 ${FIELD_KEYS.map((key) => `${key}: ${FIELD_HELP[key]}`).join("\n")}`,
     config.instructions.trim() ? `INSTRUCTIONS FROM THE SHIFAIN TEAM (follow these)\n${config.instructions.trim()}` : "",
-    knowledge ? `KNOWLEDGE (facts from the ShifaIn team; the questions also live on the site's FAQ page, /faq, and under Help in the patient's account)\n${knowledge}` : "",
+    knowledge ? `KNOWLEDGE (facts from the Shifain team; the questions also live on the site's FAQ page, /faq, and under Help in the patient's account)\n${knowledge}` : "",
     input.language ? `The patient's language code is "${input.language}". Reply in that language.` : "",
   ]
     .filter(Boolean)
@@ -452,7 +452,7 @@ export async function generateChatReply(
     message: userMessage,
     history,
     language: patientLanguage,
-    stage: { kind: "followup", caseSummary: options.caseSummary ?? "The patient already has a case open with ShifaIn." },
+    stage: { kind: "followup", caseSummary: options.caseSummary ?? "The patient already has a case open with Shifain." },
     commands: options.commands === true,
     tools: options.tools,
   });
@@ -521,7 +521,7 @@ export function scriptedIntake(userMessage: string, currentFields: Partial<Intak
   if (!treatment && !condition) {
     return {
       reply:
-        (greetingOnly ? "Hello, and welcome to ShifaIn. " : "") +
+        (greetingOnly ? "Hello, and welcome to Shifain. " : "") +
         "Which treatment are you looking for? For example heart surgery, a knee or hip replacement, cancer care, " +
         "a transplant or IVF — or simply describe the problem in your own words.",
       extracted,

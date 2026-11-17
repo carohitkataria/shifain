@@ -9,9 +9,10 @@ import { EnquiryReturned } from "./EnquiryReturned";
 import { ReachChoice } from "./ReachChoice";
 import type { L } from "@/lib/content-types";
 import type { Locale } from "@/lib/i18n";
+import { Honeypot } from "@/components/Honeypot";
 
 type Route = "reports" | "description" | "questions";
-type Errors = Partial<Record<"need" | "other" | "condition" | "firstName" | "country" | "phone" | "email", string>>;
+type Errors = Partial<Record<"need" | "other" | "condition" | "firstName" | "country" | "phone" | "email" | "consent", string>>;
 
 const MAX_FILES = 10;
 const MAX_BYTES = 25 * 1024 * 1024;
@@ -121,17 +122,23 @@ export function PlanRequestForm({
       if (String(data.get("phone") ?? "").replace(/\D/g, "").length < 5) next.phone = t(W.phoneError, locale);
       const email = String(data.get("email") ?? "").trim();
       if ((email || data.get("channel") === "email") && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = t(W.emailError, locale);
+      if (data.get("consent") !== "yes") next.consent = t(W.consentError, locale);
     }
     return next;
   };
 
   const focusFirstError = (found: Errors) => {
-    const order: (keyof Errors)[] = ["need", "other", "condition", "firstName", "country", "phone", "email"];
+    const order: (keyof Errors)[] = ["need", "other", "condition", "firstName", "country", "phone", "email", "consent"];
     const key = order.find((k) => found[k]);
     if (!key) return;
     const target = formRef.current?.querySelector<HTMLElement>(`[data-field="${key}"]`);
     target?.focus({ preventScroll: true });
-    (target?.closest("label") ?? target)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    // The message itself is what must be seen: on a phone the step's error sits at the
+    // bottom of the card, under the chat button. Once it has rendered, bring it to the middle.
+    requestAnimationFrame(() => {
+      const message = document.getElementById(`err-${key}`);
+      (message ?? target?.closest("label") ?? target)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   };
 
   const goNext = () => {
@@ -177,6 +184,7 @@ export function PlanRequestForm({
       className="flex flex-col"
     >
       <input type="hidden" name="locale" value={locale} />
+      <Honeypot />
       <input type="hidden" name="treatment" value={treatmentValue} />
       <input ref={reportsRef} type="file" name="reports" multiple hidden tabIndex={-1} aria-hidden="true" />
       <EnquiryReturned locale={locale} />
@@ -195,7 +203,7 @@ export function PlanRequestForm({
                 }`}
               />
               <span
-                className={`mt-1.5 block text-xs font-semibold ${index === step ? "text-brand-deep" : "text-ink-muted"}`}
+                className={`mt-1.5 block text-[13px] font-semibold ${index === step ? "text-brand-deep" : "text-ink-muted"}`}
               >
                 {index + 1}. {t(name, locale)}
               </span>
@@ -319,12 +327,12 @@ export function PlanRequestForm({
                   <span className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink">
                     {t(INTAKE_COPY.routes[option], locale)}
                     {option === "reports" ? (
-                      <span className="rounded-full bg-leaf-tint px-2 py-0.5 text-[11px] font-bold text-leaf">
+                      <span className="rounded-full bg-leaf-tint px-2 py-0.5 text-[12px] font-bold text-leaf">
                         {t(W.recommended, locale)}
                       </span>
                     ) : null}
                   </span>
-                  <span className="mt-0.5 block text-[13px] text-ink-soft">{t(W.routeHints[option], locale)}</span>
+                  <span className="mt-0.5 block text-sm text-ink-soft">{t(W.routeHints[option], locale)}</span>
                 </span>
               </label>
             ))}
@@ -370,9 +378,9 @@ export function PlanRequestForm({
               <span className="text-sm font-bold text-brand-deep">
                 {files.length > 0 ? `+ ${t(W.addMore, locale)}` : `+ ${t(W.addFiles, locale)}`}
               </span>
-              <span className="text-xs text-ink-soft">{t(W.fileHint, locale)}</span>
+              <span className="text-sm text-ink-soft">{t(W.fileHint, locale)}</span>
             </label>
-            <p className="mt-2 text-xs leading-relaxed text-ink-muted">{t(INTAKE_COPY.privacyReports, locale)}</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-muted">{t(INTAKE_COPY.privacyReports, locale)}</p>
           </div>
         ) : null}
 
@@ -405,7 +413,7 @@ export function PlanRequestForm({
           }}
           className="space-y-3"
         >
-          <p className="text-xs leading-relaxed text-ink-muted">{t(INTAKE_COPY.questionsNote, locale)}</p>
+          <p className="text-sm leading-relaxed text-ink-muted">{t(INTAKE_COPY.questionsNote, locale)}</p>
           {coreQuestions.map((q) => (
             <div key={q.id}>
               <label htmlFor={`answer-${q.id}`} className={labelCls}>
@@ -557,6 +565,28 @@ export function PlanRequestForm({
           />
           <FieldError id="err-email" text={errors.email} />
         </div>
+
+        <div>
+          <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-ink-soft">
+            <input
+              type="checkbox"
+              name="consent"
+              value="yes"
+              data-field="consent"
+              aria-invalid={Boolean(errors.consent)}
+              aria-describedby={errors.consent ? "err-consent" : undefined}
+              onChange={() => setErrors((x) => ({ ...x, consent: undefined }))}
+              className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--color-brand,#6d28d9)]"
+            />
+            <span>
+              {t(W.consent, locale)}{" "}
+              <a href={`/${locale}/privacy`} target="_blank" rel="noopener" className="font-semibold text-brand underline">
+                {t(W.consentPolicy, locale)}
+              </a>
+            </span>
+          </label>
+          <FieldError id="err-consent" text={errors.consent} />
+        </div>
       </div>
 
       {/* Actions */}
@@ -606,7 +636,7 @@ export function PlanRequestForm({
         )}
       </div>
 
-      <ul className="mt-5 grid gap-2 border-t border-line pt-4 text-[13px] text-ink-soft sm:grid-cols-3 sm:gap-3">
+      <ul className="mt-5 grid gap-2 border-t border-line pt-4 text-sm text-ink-soft sm:grid-cols-3 sm:gap-3">
         {W.trust.map((item, index) => (
           <li key={index} className="flex items-start gap-2">
             <svg viewBox="0 0 24 24" className="mt-0.5 h-4 w-4 shrink-0 text-leaf" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">

@@ -598,7 +598,7 @@ export async function CareDesk({ record, actor, back, done }: { record: JourneyC
               </form>
             </details>
 
-            <form action={deskUploadAction} encType="multipart/form-data" className="mt-4 grid gap-2 border-t border-line pt-3 sm:grid-cols-2">
+            <form action={deskUploadAction} className="mt-4 grid gap-2 border-t border-line pt-3 sm:grid-cols-2">
               {hidden("documents")}
               <span className={`${label} sm:col-span-2`}>Upload for the patient</span>
               <select name="kind" className={field}>
