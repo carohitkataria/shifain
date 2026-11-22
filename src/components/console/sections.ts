@@ -74,7 +74,17 @@ export const SECTIONS: Section[] = [
       { label: "Translations", href: "/admin/translations" },
     ],
   },
-  { id: "reports", label: "Reports", icon: "chart", href: "/admin/reports", match: starts("/admin/reports") },
+  {
+    id: "reports",
+    label: "Reports",
+    icon: "chart",
+    href: "/admin/reports",
+    match: starts("/admin/reports"),
+    tabs: [
+      { label: "Business", href: "/admin/reports", match: (path) => path === "/admin/reports" },
+      { label: "Visitors", href: "/admin/reports/visitors" },
+    ],
+  },
   {
     id: "settings",
     label: "Settings",

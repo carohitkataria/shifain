@@ -15,7 +15,7 @@ export type LegalSection = { title: L; paragraphs: L[] };
 export type LegalDoc = { title: L; lead: L; sections: LegalSection[] };
 
 /** The version date, shown in the reader's language. */
-export const LEGAL_UPDATED = "2026-11-16";
+export const LEGAL_UPDATED = "2026-11-22";
 
 export const LEGAL_COMMON = {
   updated: l("Last updated", "Последнее обновление", "Oxirgi yangilanish"),
@@ -109,6 +109,11 @@ export const PRIVACY: LegalDoc = {
           "We use only the cookies the site needs: to keep you signed in, to remember your language, to keep a chat conversation going, and to note which partner referred you. We do not use advertising or tracking cookies.",
           "Мы используем только необходимые сайту cookie: чтобы вы оставались в аккаунте, чтобы помнить ваш язык, чтобы продолжался разговор в чате и чтобы отметить, какой партнёр вас направил. Рекламных и отслеживающих cookie нет.",
           "Biz faqat sayt uchun zarur cookie'lardan foydalanamiz: tizimda qolishingiz, tilingizni eslab qolish, chat suhbatini davom ettirish va sizni qaysi hamkor yo'llaganini belgilash uchun. Reklama yoki kuzatuv cookie'lari yo'q.",
+        ),
+        l(
+          "To know how many people the site helps, we count visits without cookies: which page was opened (a plan counts only as “a plan”, never by its number), the language, the kind of device, the country (from your time zone) and the site you came from. Your address is never stored; a visitor is recognised only within one day, through a code that cannot be traced back to you. If your browser asks not to be tracked, we do not count your visit. Cloudflare Web Analytics, which also sets no cookies, counts visits to our public pages; your own plan and account pages are never sent to it.",
+          "Чтобы понимать, скольким людям помогает сайт, мы считаем посещения без cookie: какая страница открыта (план — только как «план», никогда по номеру), язык, тип устройства, страна (по часовому поясу) и сайт, с которого вы пришли. Ваш адрес не сохраняется; посетитель узнаётся только в течение одного дня, по коду, который невозможно связать с вами. Если ваш браузер просит не отслеживать, мы не считаем ваше посещение. Cloudflare Web Analytics, тоже без cookie, считает посещения публичных страниц; страницы вашего плана и кабинета ему не передаются.",
+          "Sayt nechta odamga yordam berayotganini bilish uchun tashriflarni cookie'siz sanaymiz: qaysi sahifa ochilgani (reja faqat «reja» sifatida, hech qachon raqami bilan emas), til, qurilma turi, mamlakat (vaqt mintaqangiz bo'yicha) va qaysi saytdan kelganingiz. Manzilingiz saqlanmaydi; tashrifchi faqat bir kun ichida, sizga bog'lab bo'lmaydigan kod orqali taniladi. Brauzeringiz kuzatmaslikni so'rasa, tashrifingiz sanalmaydi. Cloudflare Web Analytics ham cookie'siz ochiq sahifalarimizga tashriflarni sanaydi; rejangiz va kabinetingiz sahifalari unga yuborilmaydi.",
         ),
       ],
     },
