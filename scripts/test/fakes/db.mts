@@ -241,6 +241,7 @@ class Cursor {
     return list.map((doc) => project(doc, this.projection));
   }
   async *[Symbol.asyncIterator]() { for (const doc of await this.toArray()) yield doc; }
+  async next() { return (await this.toArray())[0] ?? null; }
 }
 
 function collection(name: string) {
@@ -299,6 +300,18 @@ function collection(name: string) {
     },
     countDocuments: async (filter?: Doc) => find(filter).length,
     distinct: async (key: string, filter?: Doc) => [...new Set(find(filter).flatMap((doc) => getPath(doc, key)))],
+    bulkWrite: async (operations: Doc[]) => {
+      let upserted = 0;
+      let modified = 0;
+      for (const operation of operations) {
+        if (operation.updateOne) {
+          const result = update(operation.updateOne.filter, operation.updateOne.update, { upsert: operation.updateOne.upsert });
+          upserted += result.upsertedCount;
+          modified += result.modifiedCount;
+        } else if (operation.insertOne) insert(operation.insertOne.document);
+      }
+      return { acknowledged: true, upsertedCount: upserted, modifiedCount: modified };
+    },
     createIndex: async () => "fake-index",
     // Aggregations are only used by console reports; scenarios get an empty result.
     aggregate: () => new Cursor(() => []),

@@ -10,6 +10,8 @@ import { t } from "@/lib/localize";
 import { LOCALES, LOCALE_META, isLocale, isTranslatedLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
 import { FloatingTools } from "@/components/FloatingTools";
 import { PageTranslator } from "@/components/PageTranslator";
+import { VisitTracker } from "@/components/VisitTracker";
+import { CloudflareAnalytics } from "@/components/CloudflareAnalytics";
 
 /**
  * Published edits refresh these pages at once (the editor revalidates them);
@@ -46,6 +48,8 @@ export async function generateMetadata({
       images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "Shifain" }],
     },
     twitter: { card: "summary_large_image", images: ["/brand/og-image.png"] },
+    // Google Search Console's ownership check (the "HTML tag" method), when its code is set.
+    ...(process.env.GOOGLE_SITE_VERIFICATION?.trim() ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION.trim() } } : {}),
   };
 }
 
@@ -77,6 +81,8 @@ export default async function SiteLayout({
       <body>
         {children}
         <FloatingTools whatsapp={contact.whatsapp || null} phone={contact.phone || null} />
+        <VisitTracker />
+        <CloudflareAnalytics token={process.env.CF_WEB_ANALYTICS_TOKEN?.trim() || null} />
         {translated ? <PageTranslator locale={locale} /> : null}
       </body>
     </html>
