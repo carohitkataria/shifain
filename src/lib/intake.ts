@@ -22,7 +22,7 @@ export type Intake = {
   answers: IntakeAnswers | null;
   /** Metadata to keep on the case. */
   meta: CaseReport[];
-  /** Bytes to store for thirty days. */
+  /** Bytes to store on the case. */
   uploads: ReportUpload[];
   /** Base64 to hand the planner. */
   forPlanner: PlanReport[];

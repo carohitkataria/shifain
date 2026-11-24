@@ -39,8 +39,6 @@ export type PatientCase = {
   description: string | null;
   answers: Record<string, string> | null;
   reports: CaseReport[];
-  /** When the stored files are removed automatically. */
-  reportsExpireAt: string | null;
   plan: Plan | null;
   planError: string | null;
   /** Older cases predate this; see `sourceOf` in referrals. */
@@ -123,7 +121,6 @@ export async function createCase(
     description: input.description,
     answers: input.answers,
     reports: input.reports,
-    reportsExpireAt: input.reportsExpireAt,
     plan: null,
     planError: null,
     source: input.source,

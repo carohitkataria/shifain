@@ -8,8 +8,6 @@ import { getDb, readOr } from "./db";
  * is a decision lives here.
  */
 export type SiteSettings = {
-  /** How long an uploaded report is kept before MongoDB deletes it. */
-  reportRetentionDays: number;
   /** When off, a case still opens — a coordinator plans it by hand. */
   plannerEnabled: boolean;
   /** Whether a plan may suggest somewhere to visit while the patient is here. */
@@ -43,7 +41,6 @@ export type SiteSettings = {
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  reportRetentionDays: 30,
   plannerEnabled: true,
   offerTourism: true,
   opsEmail: null,
@@ -77,8 +74,6 @@ export async function getSettings(): Promise<SiteSettings> {
   };
   delete merged._id;
 
-  // A retention of zero would delete a report the moment it landed.
-  merged.reportRetentionDays = clampRetention(merged.reportRetentionDays);
   merged.verifyWindowHours = clampVerifyWindow(merged.verifyWindowHours);
   return merged;
 }
@@ -89,11 +84,6 @@ export function clampVerifyWindow(hours: number): number {
   return Math.min(168, Math.max(1, Math.round(hours)));
 }
 
-export function clampRetention(days: number): number {
-  if (!Number.isFinite(days)) return DEFAULT_SETTINGS.reportRetentionDays;
-  return Math.min(180, Math.max(7, Math.round(days)));
-}
-
 export async function saveSettings(settings: Omit<SiteSettings, "updatedAt">): Promise<void> {
   const db = await getDb();
   await db.collection<Stored>("site_settings").updateOne(
@@ -101,9 +91,10 @@ export async function saveSettings(settings: Omit<SiteSettings, "updatedAt">): P
     {
       $set: {
         ...settings,
-        reportRetentionDays: clampRetention(settings.reportRetentionDays),
         updatedAt: new Date().toISOString(),
       },
+      // Files are kept for good now; the old "keep for N days" setting goes on the next save.
+      $unset: { reportRetentionDays: "" },
     },
     { upsert: true },
   );

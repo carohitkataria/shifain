@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
-import { clampRetention, clampVerifyWindow, saveSettings } from "@/lib/settings";
+import { clampVerifyWindow, saveSettings } from "@/lib/settings";
 import { VOICE_ID_PATTERN } from "@/lib/voice/voices";
 
 export async function saveSettingsAction(formData: FormData) {
@@ -15,7 +15,6 @@ export async function saveSettingsAction(formData: FormData) {
   const voiceId = chosenVoice === "custom" ? customVoice : chosenVoice;
 
   await saveSettings({
-    reportRetentionDays: clampRetention(Number(formData.get("reportRetentionDays"))),
     plannerEnabled: formData.get("plannerEnabled") === "on",
     offerTourism: formData.get("offerTourism") === "on",
     opsEmail: email || null,

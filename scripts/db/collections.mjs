@@ -465,7 +465,6 @@ export const COLLECTIONS = [
       intakeRoute: { enum: ["reports", "description", "questions"] },
       description: { bsonType: ["string", "null"] },
       answers: { bsonType: ["object", "null"] },
-      reportsExpireAt: { bsonType: ["string", "null"] },
       reports: {
         bsonType: "array",
         items: {
@@ -748,22 +747,17 @@ export const COLLECTIONS = [
   },
   {
     name: "case_reports",
-    // The uploaded files themselves, kept for thirty days so a coordinator and
-    // the treating hospital can work from them, then removed automatically by
-    // the TTL index on expiresAt.
-    validator: doc(["reference", "filename", "mediaType", "bytes", "uploadedAt", "expiresAt"], {
+    // The uploaded files themselves, part of the patient's record. Kept until
+    // the team deletes the case; nothing removes them on a timer.
+    validator: doc(["reference", "filename", "mediaType", "bytes", "uploadedAt"], {
       reference: { bsonType: "string" },
       filename: { bsonType: "string" },
       mediaType: { bsonType: "string" },
       bytes: { bsonType: ["int", "long"] },
       data: { bsonType: "binData" },
       uploadedAt: { bsonType: ["string", "date"] },
-      expiresAt: { bsonType: "date" },
     }),
-    indexes: [
-      { key: { reference: 1 } },
-      { key: { expiresAt: 1 }, options: { expireAfterSeconds: 0 } },
-    ],
+    indexes: [{ key: { reference: 1 } }],
   },
   // --------------------------------------------------------------- partners
   {
@@ -933,7 +927,6 @@ export const COLLECTIONS = [
         bsonType: "object",
         required: ["_id"],
         properties: {
-          reportRetentionDays: { bsonType: ["int", "long", "double"] },
           plannerEnabled: { bsonType: "bool" },
           offerTourism: { bsonType: "bool" },
           opsEmail: { bsonType: ["string", "null"] },

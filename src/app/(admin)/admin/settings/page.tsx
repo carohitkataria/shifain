@@ -32,7 +32,7 @@ export default async function SettingsPage() {
     { icon: "tg", tone: "tg", title: "Telegram bot", sub: telegram ? "Patients and partners write to the bot; replies go out from the inbox" : "Add a bot token to start", href: "/admin/telegram", state: telegram ? ["Connected", "green"] : ["Not set", "amber"] },
     { icon: "mail", tone: "sky", title: "Email", sub: set("RESEND_API_KEY") ? `Sign-in codes and notices via Resend · ${process.env.MAIL_FROM || "no-reply@shifain.com"}` : "No mail key: email codes cannot be sent", href: "/admin/system/settings", state: set("RESEND_API_KEY") ? ["Sending", "green"] : ["Not set", "red"] },
     { icon: "sparkles", tone: "brand", title: "AI assistant", sub: `Planner ${settings.plannerEnabled ? "on" : "off"} · patient chat, voice and tests`, href: "/admin/assistant" },
-    { icon: "file", tone: "amber", title: "Report storage", sub: `Files deleted after ${settings.reportRetentionDays} days`, href: "/admin/system/settings" },
+    { icon: "file", tone: "amber", title: "Report storage", sub: "Kept until the case is deleted", href: "/admin/system/database" },
     { icon: "globe", tone: "teal", title: "Languages", sub: "English, Русский and Oʻzbekcha on the site and in the app", href: "/admin/website" },
     { icon: "phone-d", tone: "rose", title: "Patient app", sub: `Telegram suggested first in ${[...TELEGRAM_FIRST].join(", ")}; WhatsApp elsewhere`, href: "/admin/system/settings" },
     { icon: "db", tone: "grey", title: "Database", sub: isDatabaseConfigured() ? `MongoDB · ${counts.hospitals} hospitals · ${counts.doctors} doctors · ${counts.cases} cases` : "MONGODB_URI is not set", href: "/admin/system/database", state: isDatabaseConfigured() ? undefined : ["Missing", "red"] },

@@ -291,7 +291,7 @@ export const APP = {
     shifain: l("Shifain", "Shifain", "Shifain"),
   },
   view: l("View", "Открыть", "Ko'rish"),
-  retention: (days: number) => l(`Files are kept ${days} days, then removed.`, `Файлы хранятся ${days} дней, затем удаляются.`, `Fayllar ${days} kun saqlanadi, keyin o'chiriladi.`),
+  filesKept: l("Your files are kept safely on your case.", "Ваши файлы надёжно хранятся в вашем обращении.", "Fayllaringiz murojaatingizda xavfsiz saqlanadi."),
   // stay
   confirmed: l("Confirmed", "Подтверждено", "Tasdiqlandi"),
   toHospital: (km: number) => l(`${km} km to hospital`, `${km} км до клиники`, `shifoxonagacha ${km} km`),

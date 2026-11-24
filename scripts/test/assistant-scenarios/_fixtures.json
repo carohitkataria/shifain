@@ -276,7 +276,6 @@
    "description": "Paid deposit 12400 USD.",
    "answers": null,
    "reports": [],
-   "reportsExpireAt": null,
    "plan": null,
    "planError": null,
    "referredBy": null
@@ -298,7 +297,6 @@
    "description": "Knee pain.",
    "answers": null,
    "reports": [],
-   "reportsExpireAt": null,
    "plan": null,
    "planError": null,
    "referredBy": null

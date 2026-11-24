@@ -3,7 +3,6 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { Card, NotConfigured, Saved, Warn, adminField, adminLabel } from "@/components/admin/Panel";
 import { isAuthenticated } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
-import { RETENTION_DAYS } from "@/lib/reports";
 import { environmentCheck, getSettings } from "@/lib/settings";
 import { NATURAL_VOICES, naturalVoice } from "@/lib/voice/voices";
 import { saveSettingsAction } from "./actions";
@@ -138,24 +137,6 @@ export default async function SettingsPage({
             </fieldset>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <label>
-                <span className={adminLabel}>Keep uploaded reports for</span>
-                <input
-                  name="reportRetentionDays"
-                  type="number"
-                  min={7}
-                  max={180}
-                  step={1}
-                  defaultValue={settings.reportRetentionDays}
-                  className={adminField}
-                />
-                <span className="mt-1 block text-sm text-ink-soft">
-                  Days. Between 7 and 180; the site ships with {RETENTION_DAYS}. MongoDB deletes each
-                  file itself when the time is up — this only sets the clock for files uploaded from
-                  now on.
-                </span>
-              </label>
-
               <label>
                 <span className={adminLabel}>Default currency</span>
                 <input

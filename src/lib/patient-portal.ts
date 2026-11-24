@@ -154,18 +154,16 @@ export async function addPortalReports(reference: string, files: File[]): Promis
   }
   if (uploads.length === 0) return 0;
 
-  const settings = await getSettings();
-  const stored = await storeReports(reference, uploads, settings.reportRetentionDays);
+  const stored = await storeReports(reference, uploads);
   if (stored === 0) return 0;
 
-  const expiresAt = new Date(Date.now() + settings.reportRetentionDays * 86_400_000).toISOString();
   const db = await getDb();
   await db.collection<PatientCase>("cases").updateOne({ _id: reference }, {
     $push: {
       reports: { $each: uploads.map((upload) => ({ id: upload.id, filename: upload.filename, mediaType: upload.mediaType, bytes: upload.body.byteLength })) },
       planEdits: edit(`Added ${uploads.length} report${uploads.length === 1 ? "" : "s"}: ${uploads.map((upload) => upload.filename).join(", ")}`),
     },
-    $set: { reportsExpireAt: expiresAt, updatedAt: new Date().toISOString() },
+    $set: { updatedAt: new Date().toISOString() },
   } as never);
   return stored;
 }

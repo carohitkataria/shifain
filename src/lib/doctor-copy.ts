@@ -112,9 +112,9 @@ export const DOCTOR_COPY = {
     closed: l("Closed", "Закрыто", "Yopilgan"),
   },
   privacy: l(
-    "You are handling another person's medical records. Refer a patient only with their consent. Shifain keeps the plan indefinitely and the uploaded files for 30 days, after which they are deleted automatically.",
-    "Вы работаете с медицинскими документами другого человека. Направляйте пациента только с его согласия. Shifain хранит план постоянно, а загруженные файлы — 30 дней, после чего они удаляются автоматически.",
-    "Siz boshqa odamning tibbiy hujjatlari bilan ishlayapsiz. Bemorni faqat roziligi bilan yo'llang. Shifain rejani doimiy, yuklangan fayllarni esa 30 kun saqlaydi va keyin ular avtomatik o'chiriladi.",
+    "You are handling another person's medical records. Refer a patient only with their consent. Shifain keeps the plan and the uploaded files on the patient's case.",
+    "Вы работаете с медицинскими документами другого человека. Направляйте пациента только с его согласия. Shifain хранит план и загруженные файлы в обращении пациента.",
+    "Siz boshqa odamning tibbiy hujjatlari bilan ishlayapsiz. Bemorni faqat roziligi bilan yo'llang. Shifain reja va yuklangan fayllarni bemorning murojaatida saqlaydi.",
   ),
   referral: {
     linkTitle: l("Your referral link", "Ваша реферальная ссылка", "Sizning havolangiz"),

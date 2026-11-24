@@ -4,7 +4,7 @@ import { loadGrounding } from "./catalogue";
 import { createCase, describeRequest, getCase, savePlan, savePlanFailure, type CaseRequest, type CaseSource, type CaseStatus, type PatientCase } from "./cases";
 import { getDb } from "./db";
 import { generatePlan } from "./ai/plan";
-import { expiryFromNow, listReports, readReport, storeReports } from "./reports";
+import { listReports, readReport, storeReports } from "./reports";
 import { getSettings } from "./settings";
 import { notifyOps } from "./mailer";
 import { notifyCase, sendCaseUpdate } from "./telegram-notify";
@@ -45,10 +45,6 @@ export async function openCase(input: {
     description: intake.description,
     answers: intake.answers as Record<string, string> | null,
     reports: intake.meta,
-    reportsExpireAt:
-      intake.uploads.length > 0
-        ? expiryFromNow(settings.reportRetentionDays).toISOString()
-        : null,
     source: input.source,
     referredBy: input.referredBy,
     requested: input.requested ?? null,
@@ -69,7 +65,7 @@ export async function openCase(input: {
     await notifyCase(record._id, { kind: "status", status: "received" }).catch(() => undefined);
 
     if (intake.uploads.length > 0) {
-      await storeReports(record._id, intake.uploads, settings.reportRetentionDays).catch(async (error) => {
+      await storeReports(record._id, intake.uploads).catch(async (error) => {
         // The plan matters more than the archive, so this never blocks it — but the case says so,
         // the patient is not told their files were kept, and the team hears about it.
         console.error("[shifain] could not store reports for", record._id, error);

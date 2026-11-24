@@ -11,7 +11,6 @@ import { syncReferralWithCase } from "@/lib/referrals";
 import { notifyCase, sendCoordinatorReply } from "@/lib/telegram-notify";
 import { coordinatorReply, setWebIntakeProfileExtras } from "@/lib/web-intake";
 import { currentActor } from "@/lib/onboarding";
-import { getSettings } from "@/lib/settings";
 import { CHANNELS, type ContactChannel } from "@/lib/journey-rules";
 import { STATUSES } from "@/lib/console";
 import { withDrawer, withoutDrawer } from "@/lib/console-url";
@@ -78,7 +77,6 @@ export async function newCaseAction(formData: FormData) {
   const area = text(formData, "area", 80);
   const told = text(formData, "told", 4000);
   const locale = ["en", "ru", "uz"].includes(String(formData.get("locale"))) ? String(formData.get("locale")) : "en";
-  const settings = await getSettings();
   const record = await createCase({
     locale,
     patient: { name: name!, phone: phone!, country: country!, email: text(formData, "email", 160) },
@@ -87,7 +85,6 @@ export async function newCaseAction(formData: FormData) {
     description: told,
     answers: null,
     reports: [],
-    reportsExpireAt: new Date(Date.now() + settings.reportRetentionDays * 86_400_000).toISOString(),
     source: "coordinator",
     referredBy: null,
   });

@@ -2,7 +2,6 @@ import "server-only";
 import crypto from "node:crypto";
 import { getDb, readOr } from "./db";
 import { MAX_REPORT_BYTES, storeReports, type ReportUpload } from "./reports";
-import { getSettings } from "./settings";
 import { saveMessage, type CrmMessage } from "./crm-messages";
 import { notifyCase } from "./telegram-notify";
 import { computeSlots, type Slot } from "./onboarding-rules";
@@ -210,8 +209,7 @@ export async function addCaseFiles(
     uploads.push({ id: id(), filename: file.name.slice(0, 160) || "file", mediaType, body, bytes: body.byteLength, ...meta });
   }
   if (!uploads.length) return [];
-  const settings = await getSettings();
-  const stored = await storeReports(reference, uploads, settings.reportRetentionDays);
+  const stored = await storeReports(reference, uploads);
   if (!stored) return [];
   const added: CaseReport[] = uploads.map(({ body: _body, ...rest }) => {
     void _body;
@@ -223,10 +221,7 @@ export async function addCaseFiles(
       reports: { $each: added },
       planEdits: edit(`Added ${added.length} ${meta.kind ?? "report"}${added.length === 1 ? "" : "s"}: ${added.map((file) => file.filename).join(", ")}`, via),
     },
-    $set: {
-      reportsExpireAt: new Date(Date.now() + settings.reportRetentionDays * 86_400_000).toISOString(),
-      updatedAt: now(),
-    },
+    $set: { updatedAt: now() },
   } as never);
   if (meta.docKey) await setDocument(reference, meta.docKey, { status: meta.source === "patient" ? "uploaded" : "issued", reportId: added[0].id ?? null }, via);
   return added;

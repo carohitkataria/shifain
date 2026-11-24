@@ -1,9 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getDb } from "@/lib/db";
-import { deleteReports } from "@/lib/reports";
-import { addPatientNote, type PatientCase } from "@/lib/cases";
+import { addPatientNote } from "@/lib/cases";
 import {
   APPOINTMENT_KINDS,
   APPOINTMENT_WINDOWS,
@@ -39,23 +37,6 @@ export async function uploadReportsAction(formData: FormData) {
     return 0;
   });
   redirect(back(locale, "reports", owned.record._id, added > 0 ? "done=uploaded" : "error=upload"));
-}
-
-export async function deleteReportsAction(formData: FormData) {
-  const locale = localeOf(formData);
-  const reference = String(formData.get("case") ?? "");
-  const owned = await ownedCase(reference);
-  if (!owned) redirect(`/${locale}/portal/patient/login`);
-  if (formData.get("confirm") !== "yes") redirect(back(locale, "reports", owned.record._id, "error=confirm"));
-
-  await deleteReports(owned.record._id);
-  const now = new Date().toISOString();
-  const db = await getDb();
-  await db.collection<PatientCase>("cases").updateOne({ _id: owned.record._id }, {
-    $set: { reportsExpireAt: null, updatedAt: now },
-    $push: { planEdits: { at: now, via: "portal", change: "Asked for every stored report to be deleted now" } },
-  } as never);
-  redirect(back(locale, "reports", owned.record._id, "done=deleted"));
 }
 
 export async function requestAppointmentAction(formData: FormData) {

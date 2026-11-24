@@ -66,7 +66,6 @@ await db.collection("cases").insertOne({
   description: "Private medical history",
   answers: null,
   reports: [],
-  reportsExpireAt: null,
   plan: null,
   planError: null,
   source: "website",
