@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.github
+.claude
+docs
+design-system
+.data
+*.md
+.env*.local
