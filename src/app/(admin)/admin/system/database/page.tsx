@@ -64,7 +64,7 @@ const AREAS: { heading: string; rows: { name: string; what: string; seeded?: boo
     heading: "People and cases",
     rows: [
       { name: "cases", what: "Patient cases and their plans" },
-      { name: "case_reports", what: "Uploaded reports — deleted automatically after 30 days" },
+      { name: "case_reports", what: "Uploaded reports — kept until the case is deleted" },
       { name: "signin_codes", what: "Short-lived email sign-in codes" },
       { name: "partner_users", what: "Partner logins" },
       { name: "partner_applications", what: "Doctors asking to become partners" },

@@ -91,7 +91,7 @@ Notable pieces:
 ## Enquiries
 
 The hero form posts to `/api/enquiry`, which validates, requires the consent box, opens a case
-in MongoDB, stores the reports for 30 days and starts the AI plan. It is limited per address and
+in MongoDB, stores the reports on the case and starts the AI plan. It is limited per address and
 site-wide per hour, refuses oversized bodies before reading them, and drops posts that fill the
 hidden spam field. Only if the database cannot be reached is the enquiry appended to
 `.data/enquiries.jsonl` (override with `SHIFAIN_ENQUIRY_LOG`) — that file does not survive a
@@ -139,11 +139,11 @@ browsing from, and every language stays in the header switcher.
 
 ## Reports
 
-Uploaded files are kept for **30 days** so a coordinator and the treating
-hospital can work from them, then deleted by MongoDB itself — a TTL index on
-`expiresAt`, created by the app on its first upload rather than by a script
-someone has to remember to run. A case keeps only what each report *was*; the
-plan page and the patient portal both say when the files go.
+Uploaded files are part of the patient's record and are **kept for good**.
+Nothing deletes them on a timer; they go only when the team deletes the case in
+the console. Older versions deleted them after 30 days through a MongoDB TTL
+index; at start-up (`src/instrumentation.ts`) the app removes that index and the
+database rule that required an expiry date, if a database still has them.
 
 ## The AI plan
 
@@ -173,7 +173,7 @@ a patient who has uploaded their reports is never dropped. A plan still "draftin
 minutes (the server restarted mid-plan) is settled by whoever reads the case next: back to the
 earlier plan, or handed to a coordinator, and the team is alerted once.
 
-Report files are stored in MongoDB for 30 days (see Reports above); each file's type is taken
+Report files are stored in MongoDB until the case is deleted (see Reports above); each file's type is taken
 from its own bytes, never from the browser's label.
 
 ## Managing the catalogue

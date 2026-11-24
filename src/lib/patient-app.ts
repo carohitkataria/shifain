@@ -17,7 +17,6 @@ import {
   type TodoItem,
 } from "./journey-rules";
 import { COUNTRY_BY_NAME } from "./countries";
-import { getSettings } from "./settings";
 import { readOr } from "./db";
 import type { Doctor, HospitalDoctorLink } from "./catalogue";
 import type { Slot } from "./onboarding-rules";
@@ -46,7 +45,6 @@ export type AppData = {
   feed: FeedItem[];
   unread: number;
   channels: { channels: ContactChannel[]; main: ContactChannel };
-  retentionDays: number;
   /** The plan's condition and treatment, in the reader's language. */
   names: { disease: string | null; treatment: string | null };
 };
@@ -66,7 +64,6 @@ export const loadApp = cache(async (props: AppProps): Promise<AppData> => {
 
 /** The same, for a page that already loaded the portal (the older screens inside the app frame). */
 export async function buildApp(locale: Locale, content: SiteContent, portal: PortalData, query: AppData["query"]): Promise<AppData> {
-  const settings = await getSettings();
   const record = portal.active as JourneyCase | null;
   const ctx = record ? await careContext(record) : null;
   const today = indiaToday();
@@ -95,7 +92,6 @@ export async function buildApp(locale: Locale, content: SiteContent, portal: Por
     feed,
     unread: feed.filter((item) => item.at > seen).length,
     channels: contactChannels(record?.preferences?.channels?.length ? record.preferences : portal.account ?? undefined, countryCode),
-    retentionDays: settings.reportRetentionDays,
     names: { disease: disease ? t(disease.name, locale) : null, treatment: treatment ? t(treatment.name, locale) : null },
   };
 }

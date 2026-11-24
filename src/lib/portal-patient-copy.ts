@@ -176,23 +176,9 @@ export const PORTAL_COPY = {
     "Fayllarni qo'shib bo'lmadi. Turi va hajmini tekshirib, qayta urinib ko'ring.",
   ),
   reportsNone: l("No reports yet.", "Документов пока нет.", "Hozircha hujjat yo'q."),
-  keptUntil: l("Kept until", "Хранится до", "Saqlanadi"),
   notStored: l("Not stored", "Не сохранён", "Saqlanmagan"),
   openFile: l("Open", "Открыть", "Ochish"),
   downloadFile: l("Download", "Скачать", "Yuklab olish"),
-  privacyTitle: l("Your files stay private", "Ваши файлы конфиденциальны", "Fayllaringiz maxfiy"),
-  privacyBody: l(
-    "Only you and your coordinator can open them. They are deleted automatically after the date shown, or now if you ask.",
-    "Открыть их можете только вы и ваш координатор. Они удаляются автоматически после указанной даты — или сразу, по вашей просьбе.",
-    "Ularni faqat siz va koordinatoringiz ocha oladi. Ko'rsatilgan sanadan keyin avtomatik o'chiriladi — yoki so'rasangiz, darhol.",
-  ),
-  deleteReports: l("Delete my files now", "Удалить мои файлы сейчас", "Fayllarimni hozir o'chirish"),
-  deleteConfirm: l(
-    "Yes, delete every stored file on this case",
-    "Да, удалить все файлы этого обращения",
-    "Ha, bu murojaatdagi barcha fayllarni o'chirish",
-  ),
-  deleted: l("Your files have been deleted.", "Ваши файлы удалены.", "Fayllaringiz o'chirildi."),
 
   // Schedule
   scheduleTitle: l("Schedule a call", "Запись на звонок", "Qo'ng'iroqqa yozilish"),
@@ -321,9 +307,9 @@ export const PORTAL_COPY = {
     {
       q: l("Who can see my reports?", "Кто видит мои документы?", "Hujjatlarimni kim ko'radi?"),
       a: l(
-        "Only you, your coordinator and, once you choose one, the treating hospital. Files are deleted automatically after the retention period, or straight away if you ask.",
-        "Только вы, ваш координатор и — после вашего выбора — клиника. Файлы удаляются автоматически по истечении срока хранения или сразу по вашей просьбе.",
-        "Faqat siz, koordinatoringiz va — siz tanlagach — shifoxona. Fayllar saqlash muddati tugagach avtomatik yoki so'rovingiz bilan darhol o'chiriladi.",
+        "Only you, your coordinator and, once you choose one, the treating hospital. Your files are kept safely on your case.",
+        "Только вы, ваш координатор и — после вашего выбора — клиника. Ваши файлы надёжно хранятся в вашем обращении.",
+        "Faqat siz, koordinatoringiz va — siz tanlagach — shifoxona. Fayllaringiz murojaatingizda xavfsiz saqlanadi.",
       ),
     },
     {

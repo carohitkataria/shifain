@@ -127,7 +127,7 @@ export const PLAN_COPY = {
       "Не удалось завершить автоматический план — координатор готовит его вручную. Мы свяжемся с вами так, как вы выбрали.",
       "Avtomatik reja yakunlanmadi — koordinator uni qo'lda tayyorlamoqda. Siz tanlagan usulda bog'lanamiz.",
     ),
-    filesKept: l("Your files are kept safely for 30 days.", "Ваши файлы надёжно хранятся 30 дней.", "Fayllaringiz 30 kun xavfsiz saqlanadi."),
+    filesKept: l("Your files are kept safely.", "Ваши файлы надёжно сохранены.", "Fayllaringiz xavfsiz saqlanadi."),
     filesNotKept: l(
       "We could not keep your files — please send them again when your coordinator writes.",
       "Не удалось сохранить ваши файлы — пожалуйста, пришлите их снова, когда напишет координатор.",

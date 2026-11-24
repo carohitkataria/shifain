@@ -60,9 +60,9 @@ export const INTAKE_COPY = {
     "Bilganingizni yozing. Qolganini koordinator so'raydi.",
   ),
   privacyReports: l(
-    "Your reports are kept for 30 days so your coordinator and the hospital can work from them, then deleted automatically.",
-    "Документы хранятся 30 дней, чтобы координатор и клиника могли с ними работать, затем удаляются автоматически.",
-    "Hujjatlar 30 kun saqlanadi — koordinator va shifoxona ular bilan ishlashi uchun, keyin avtomatik o'chiriladi.",
+    "Your reports are kept safely on your case, so your coordinator and the hospital can work from them.",
+    "Документы надёжно хранятся в вашем обращении, чтобы координатор и клиника могли с ними работать.",
+    "Hujjatlaringiz murojaatingizda xavfsiz saqlanadi — koordinator va shifoxona ular bilan ishlashi uchun.",
   ),
   questions: {
     problem: l("What is the main problem?", "В чём основная проблема?", "Asosiy muammo nima?"),
@@ -182,7 +182,7 @@ export const WIZARD_COPY = {
   trust: [
     l("Free, no obligation", "Бесплатно и без обязательств", "Bepul, majburiyatsiz"),
     l("Draft in minutes, hospital-confirmed in 48\u00a0h", "Черновик за минуты, подтверждение клиники за 48\u00a0ч", "Reja daqiqalarda, shifoxona tasdig'i 48 soatda"),
-    l("Reports deleted after 30 days", "Документы удаляются через 30 дней", "Hujjatlar 30 kundan keyin o'chiriladi"),
+    l("Your reports stay private", "Ваши документы конфиденциальны", "Hujjatlaringiz maxfiy saqlanadi"),
   ],
 };
 

@@ -409,7 +409,6 @@ export const notifications = cache(async (): Promise<Notice[]> => {
     webChatsRead(),
   ]);
   const today = indiaToday();
-  const soon = new Date(Date.now() + 3 * 86_400_000).toISOString();
   const out: Notice[] = [];
   for (const record of cases) {
     if (record.status === "plan-failed") out.push({ icon: "alert", tone: "red", title: `Plan failed for ${record.patient.name}`, sub: record.planError ?? "The planner could not read the reports", href: caseLink(record._id) });
@@ -424,9 +423,6 @@ export const notifications = cache(async (): Promise<Notice[]> => {
     }
     for (const task of record.tasks ?? []) {
       if (task.status === "open" && task.owner === "desk" && (!task.due || task.due <= today)) out.push({ icon: "check", tone: "sky", title: task.title, sub: `${record.patient.name}${task.due ? ` · due ${task.due}` : ""}`, href: caseLink(record._id) });
-    }
-    if (record.reports.length && record.reportsExpireAt && record.reportsExpireAt < soon && record.reportsExpireAt > new Date().toISOString()) {
-      out.push({ icon: "file", tone: "teal", title: "Reports expire soon", sub: `${record.patient.name} — ${record.reportsExpireAt.slice(0, 10)}`, href: "/admin/system/settings" });
     }
   }
   const fresh = cases.filter((record) => record.status === "new" && !record.care?.coordinatorId).length;

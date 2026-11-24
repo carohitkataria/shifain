@@ -15,7 +15,7 @@ export type LegalSection = { title: L; paragraphs: L[] };
 export type LegalDoc = { title: L; lead: L; sections: LegalSection[] };
 
 /** The version date, shown in the reader's language. */
-export const LEGAL_UPDATED = "2026-11-22";
+export const LEGAL_UPDATED = "2026-11-24";
 
 export const LEGAL_COMMON = {
   updated: l("Last updated", "Последнее обновление", "Oxirgi yangilanish"),
@@ -86,9 +86,9 @@ export const PRIVACY: LegalDoc = {
       title: l("How long we keep it", "Сколько мы храним", "Qancha saqlaymiz"),
       paragraphs: [
         l(
-          "Uploaded reports and scans are deleted automatically 30 days after they arrive,. You can ask for them to be deleted sooner. Your case record (contact details and the plan) is kept while we are helping you and for as long as the law requires afterwards.",
-          "Загруженные выписки и снимки удаляются автоматически через 30 дней после получения. Вы можете попросить удалить их раньше. Запись о вашем случае (контакты и план) хранится, пока мы вам помогаем, и затем столько, сколько требует закон.",
-          "Yuklangan hujjat va tasvirlar kelganidan 30 kun o'tib avtomatik o'chiriladi. Ularni ertaroq o'chirishni so'rashingiz mumkin. Ishingiz yozuvi (aloqa ma'lumotlari va reja) sizga yordam berayotganimizda va undan keyin qonun talab qilganicha saqlanadi.",
+          "Your case record, including your contact details, the plan and the reports and scans you upload, is kept on file. It is not deleted automatically. To have it removed, write to us and our team will delete it.",
+          "Запись о вашем случае — контакты, план и загруженные выписки и снимки — хранится у нас. Она не удаляется автоматически. Чтобы её удалить, напишите нам, и наша команда её удалит.",
+          "Ishingiz yozuvi — aloqa ma'lumotlari, reja va siz yuklagan hujjat va tasvirlar — bizda saqlanadi. U avtomatik o'chirilmaydi. Uni o'chirish uchun bizga yozing, jamoamiz uni o'chiradi.",
         ),
       ],
     },
@@ -96,9 +96,9 @@ export const PRIVACY: LegalDoc = {
       title: l("Your choices and rights", "Ваш выбор и права", "Tanlovingiz va huquqlaringiz"),
       paragraphs: [
         l(
-          "You can ask to see the information we hold about you, to correct it, to have it deleted, or to withdraw your consent at any time. In your account you can delete your uploaded reports yourself and choose what each family member sees. Withdrawing consent does not affect what was done before, but we may then be unable to keep helping with your treatment.",
-          "Вы можете в любой момент попросить показать, исправить или удалить ваши данные либо отозвать согласие. В личном кабинете вы сами можете удалить загруженные документы и выбрать, что видит каждый член семьи. Отзыв согласия не меняет уже сделанного, но после этого мы, возможно, не сможем продолжать помогать с лечением.",
-          "Istalgan vaqtda biz saqlayotgan ma'lumotlarni ko'rsatish, tuzatish, o'chirish yoki rozilikni qaytarib olishni so'rashingiz mumkin. Shaxsiy kabinetda yuklangan hujjatlarni o'zingiz o'chira olasiz va har bir oila a'zosi nimani ko'rishini tanlaysiz. Rozilikni qaytarib olish avval qilinganlarga ta'sir qilmaydi, lekin keyin davolanishingizda yordam berishni davom ettira olmasligimiz mumkin.",
+          "You can ask to see the information we hold about you, to correct it, to have it deleted, or to withdraw your consent at any time. In your account you can choose what each family member sees. Withdrawing consent does not affect what was done before, but we may then be unable to keep helping with your treatment.",
+          "Вы можете в любой момент попросить показать, исправить или удалить ваши данные либо отозвать согласие. В личном кабинете вы можете выбрать, что видит каждый член семьи. Отзыв согласия не меняет уже сделанного, но после этого мы, возможно, не сможем продолжать помогать с лечением.",
+          "Istalgan vaqtda biz saqlayotgan ma'lumotlarni ko'rsatish, tuzatish, o'chirish yoki rozilikni qaytarib olishni so'rashingiz mumkin. Shaxsiy kabinetda har bir oila a'zosi nimani ko'rishini tanlaysiz. Rozilikni qaytarib olish avval qilinganlarga ta'sir qilmaydi, lekin keyin davolanishingizda yordam berishni davom ettira olmasligimiz mumkin.",
         ),
       ],
     },

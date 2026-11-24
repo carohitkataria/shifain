@@ -24,7 +24,6 @@ import { COUNTRIES } from "@/lib/countries";
 import { listPartners } from "@/lib/partners";
 import { currentActor } from "@/lib/onboarding";
 import { indiaToday } from "@/lib/patient-app";
-import { getSettings } from "@/lib/settings";
 import type { Appointment } from "@/lib/patient-portal";
 import { logoutAction } from "@/app/(admin)/admin/actions";
 import { attributeCaseAction, deleteCaseAction, saveCaseAction } from "@/app/(admin)/admin/cases/actions";
@@ -327,7 +326,7 @@ async function CaseDrawer({ url, close, reference, tab }: { url: string; close: 
       </Frame>
     );
   }
-  const [ctx, coords, providers, rows, partners, settings] = await Promise.all([careContext(record), consoleCoordinators(), consoleProviders(), caseRows(), listPartners(), getSettings()]);
+  const [ctx, coords, providers, rows, partners] = await Promise.all([careContext(record), consoleCoordinators(), consoleProviders(), caseRows(), listPartners()]);
   const row = rows.find((item) => item.id === record._id);
   const here = withDrawer(url, { d: "case", ref: record._id, tab });
   const drivers = providers.filter((item) => item.kind === "driver");
@@ -781,8 +780,8 @@ async function CaseDrawer({ url, close, reference, tab }: { url: string; close: 
             Upload and share with the patient
           </button>
         </form>
-        <Note tone="amber" icon="alert">
-          Files are deleted after {settings.reportRetentionDays} days under the current storage setting{record.reportsExpireAt ? ` (these on ${record.reportsExpireAt.slice(0, 10)})` : ""}.
+        <Note tone="teal" icon="file">
+          Files are kept on the case until it is deleted.
         </Note>
       </div>
     );

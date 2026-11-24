@@ -111,7 +111,7 @@ export default async function ReportsPage(props: AppProps) {
         })}
       </ul>
       <p className="a-tiny a-muted" style={{ marginTop: 10 }}>
-        {t(APP.retention(app.retentionDays), locale)}
+        {t(APP.filesKept, locale)}
       </p>
     </AppShell>
   );
